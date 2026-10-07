@@ -62,28 +62,28 @@ function armyBanner(x) {
 
 // metropolis: the wooden gate piece from the box, in yellow whatever the track. Two pointed pillars joined by a bar,
 // with an opening underneath that fits over the roof of the city (the city's peak stands inside the opening)
-export const METRO_GATE_D = 'M-17 -1 V-29 L-10.7 -37 L-6.9 -29 H6.9 L11.2 -37 L17 -29 V-1 H6.9 V-14.6 H-6.9 V-1 Z';
+export const METRO_GATE_D = 'M-15.5 -1 V-28 L-11 -36 L-6.5 -28 H6.5 L11 -36 L15.5 -28 V-1 H6.5 V-13 H-6.5 V-1 Z';
 export const METRO_YELLOW = '#F2C230', METRO_YELLOW_D = '#C99A12', METRO_INK = '#5E4106';
 export function metroTowerInner() {
   const ink = METRO_INK;
-  return `<path d="${METRO_GATE_D}" fill="${METRO_YELLOW}" stroke="${ink}" stroke-width="1.8" stroke-linejoin="round"/>
-    <path d="M6.9 -29 L11.2 -37 L17 -29 V-1 H6.9 V-14.6 H-6.9 V-23 H6.9 Z" fill="rgba(140,90,0,.22)"/>
-    <path d="M-15.4 -3 V-28.4 L-10.7 -34.4" fill="none" stroke="rgba(255,248,200,.8)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M-5.2 -16.4 V-27.6 M-5.2 -2.6 V-8 M-12.6 -20 V-3 M12.6 -20 V-3 M0 -26.4 V-21" stroke="rgba(120,80,0,.3)" stroke-width=".8" stroke-linecap="round"/>
-    <path d="M-6.9 -14.6 H6.9" stroke="${ink}" stroke-width="1.6" stroke-linecap="round"/>
-    <circle cx="-10.7" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/><circle cx="11.2" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/>`;
+  return `<path d="${METRO_GATE_D}" fill="${METRO_YELLOW}" stroke="${ink}" stroke-width="1.7" stroke-linejoin="round"/>
+    <path d="M6.5 -28 L11 -36 L15.5 -28 V-1 H6.5 V-13 H-6.5 V-20 H6.5 Z" fill="rgba(140,90,0,.22)"/>
+    <path d="M-14 -3 V-27.4 L-11 -33" fill="none" stroke="rgba(255,248,200,.8)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-4.5 -15 V-26 M-4.5 -2.6 V-8 M-11 -20 V-3 M11 -20 V-3 M0 -25 V-19" stroke="rgba(120,80,0,.3)" stroke-width=".8" stroke-linecap="round"/>
+    <path d="M-6.5 -13 H6.5" stroke="${ink}" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="-11" cy="-29.4" r="1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/><circle cx="11" cy="-29.4" r="1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/>`;
 }
 // The gate straddles the city: the whole gate stands behind it (the left pillar disappears behind the city) and the
-// right pillar is drawn again in front, so it hugs the city. A little larger and lower than before, so it fits.
-const METRO_PLACE = 'translate(0,12.8) scale(1.12)';
-const METRO_FRONT_D = 'M6.9 -29 L11.2 -37 L17 -29 V-1 H6.9 Z';
+// right pillar is drawn again in front, so it hugs the city. Its base lines up with the city's and its bar rests on the roof.
+const METRO_PLACE = 'translate(0,13.6)';
+const METRO_FRONT_D = 'M6.5 -28 L11 -36 L15.5 -28 V-1 H6.5 Z';
 function metroBack() {
   // a thin light rim keeps the yellow gate readable on a yellow field tile
   return `<g class="metro-gate" transform="${METRO_PLACE}">${shade(METRO_GATE_D)}<path d="${METRO_GATE_D}" fill="none" stroke="rgba(255,246,220,.8)" stroke-width="4.4" stroke-linejoin="round"/>${metroTowerInner()}</g>`;
 }
 function metroFront() {
   return `<g class="metro-gate" transform="${METRO_PLACE}"><path d="${METRO_FRONT_D}" fill="${METRO_YELLOW}" stroke="${METRO_INK}" stroke-width="1.8" stroke-linejoin="round"/>
-    <path d="${METRO_FRONT_D}" fill="rgba(140,90,0,.22)"/><path d="M12.6 -20 V-3" stroke="rgba(120,80,0,.3)" stroke-width=".8" stroke-linecap="round"/><circle cx="11.2" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${METRO_INK}" stroke-width=".7"/></g>`;
+    <path d="${METRO_FRONT_D}" fill="rgba(140,90,0,.22)"/><path d="M11 -20 V-3" stroke="rgba(120,80,0,.3)" stroke-width=".8" stroke-linecap="round"/><circle cx="11" cy="-29.4" r="1" fill="#FFF2B3" stroke="${METRO_INK}" stroke-width=".7"/></g>`;
 }
 const discShade = (r, dy = 2.6) => `<circle r="${r}" cy="${dy}" cx="1" fill="rgba(0,0,0,.3)"/>`;
 
