@@ -73,9 +73,17 @@ export function metroTowerInner() {
     <path d="M-6.9 -18.6 H6.9" stroke="${ink}" stroke-width="1.6" stroke-linecap="round"/>
     <circle cx="-10.7" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/><circle cx="11.2" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/>`;
 }
-function metroGate() {
+// The gate straddles the city: the whole gate stands behind it (the left pillar disappears behind the city) and the
+// right pillar is drawn again in front, so it hugs the city. A little larger and lower than before, so it fits.
+const METRO_PLACE = 'translate(0,7.1) scale(1.12)';
+const METRO_FRONT_D = 'M6.9 -29 L11.2 -37 L17 -29 V-1 H6.9 Z';
+function metroBack() {
   // a thin light rim keeps the yellow gate readable on a yellow field tile
-  return `<g class="metro-gate" transform="translate(0,-8) scale(.92)">${shade(METRO_GATE_D)}<path d="${METRO_GATE_D}" fill="none" stroke="rgba(255,246,220,.8)" stroke-width="4.4" stroke-linejoin="round"/>${metroTowerInner()}</g>`;
+  return `<g class="metro-gate" transform="${METRO_PLACE}">${shade(METRO_GATE_D)}<path d="${METRO_GATE_D}" fill="none" stroke="rgba(255,246,220,.8)" stroke-width="4.4" stroke-linejoin="round"/>${metroTowerInner()}</g>`;
+}
+function metroFront() {
+  return `<g class="metro-gate" transform="${METRO_PLACE}"><path d="${METRO_FRONT_D}" fill="${METRO_YELLOW}" stroke="${METRO_INK}" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="${METRO_FRONT_D}" fill="rgba(140,90,0,.22)"/><path d="M12.6 -20 V-3" stroke="rgba(120,80,0,.3)" stroke-width=".8" stroke-linecap="round"/><circle cx="11.2" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${METRO_INK}" stroke-width=".7"/></g>`;
 }
 const discShade = (r, dy = 2.6) => `<circle r="${r}" cy="${dy}" cx="1" fill="rgba(0,0,0,.3)"/>`;
 
@@ -497,8 +505,10 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
     if (b.p === army) g += armyBanner(b.type === 'city' ? -6 : 0);
     const wallS = b.wall ? `<rect x="-19" y="4" width="38" height="12" rx="3" fill="#8B8478" stroke="#3F3A33" stroke-width="1.6"/><path d="M-15 4 V1 H-11 V4 M-5 4 V1 H-1 V4 M5 4 V1 H9 V4" stroke="#3F3A33" stroke-width="1.4" fill="#8B8478"/>` : '';
     g += job && job.kind === 'wall' ? grow(wallS) : wallS;
+    const metro = job && job.kind === 'metro' ? grow : x => x;
+    if (b.metro) g += metro(metroBack());
     g += b.type === 'city' ? cityPath(c) : settlementPath(c);
-    if (b.metro) g += job && job.kind === 'metro' ? grow(metroGate(b.metro)) : metroGate(b.metro);
+    if (b.metro) g += metro(metroFront());
     if (b.p === boot) { boot = null; g += `<g transform="translate(${b.type === 'city' ? 17 : 12},6) rotate(-8)"><title>${t('Old boot')}</title><path d="M-3.4 -7.5 H2.2 V0.6 L6.6 2.6 Q8.4 3.5 8.4 5.6 V7.2 H-3.4 Z" fill="#7A5232" stroke="#3A2614" stroke-width="1.3" stroke-linejoin="round"/><path d="M-3.4 4.6 H8.4" stroke="#3A2614" stroke-width="1"/><path d="M-1.6 -5.6 H0.6 M-1.6 -3.4 H0.6" stroke="#E8D3A8" stroke-width=".8"/></g>`; }
     const isNew = fr.verts.has(+vid) && !job;
     const d = b.type === 'city' ? CITY_D : SETTLE_D;
