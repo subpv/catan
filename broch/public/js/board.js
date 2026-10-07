@@ -62,20 +62,20 @@ function armyBanner(x) {
 
 // metropolis: the wooden gate piece from the box, in yellow whatever the track. Two pointed pillars joined by a bar,
 // with an opening underneath that fits over the roof of the city (the city's peak stands inside the opening)
-export const METRO_GATE_D = 'M-17 -1 V-29 L-10.7 -37 L-6.9 -29 H6.9 L11.2 -37 L17 -29 V-1 H6.9 V-18.6 H-6.9 V-1 Z';
+export const METRO_GATE_D = 'M-17 -1 V-29 L-10.7 -37 L-6.9 -29 H6.9 L11.2 -37 L17 -29 V-1 H6.9 V-14.6 H-6.9 V-1 Z';
 export const METRO_YELLOW = '#F2C230', METRO_YELLOW_D = '#C99A12', METRO_INK = '#5E4106';
 export function metroTowerInner() {
   const ink = METRO_INK;
   return `<path d="${METRO_GATE_D}" fill="${METRO_YELLOW}" stroke="${ink}" stroke-width="1.8" stroke-linejoin="round"/>
-    <path d="M6.9 -29 L11.2 -37 L17 -29 V-1 H6.9 V-18.6 H-6.9 V-23 H6.9 Z" fill="rgba(140,90,0,.22)"/>
+    <path d="M6.9 -29 L11.2 -37 L17 -29 V-1 H6.9 V-14.6 H-6.9 V-23 H6.9 Z" fill="rgba(140,90,0,.22)"/>
     <path d="M-15.4 -3 V-28.4 L-10.7 -34.4" fill="none" stroke="rgba(255,248,200,.8)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M-5.2 -20.4 V-27.6 M-5.2 -2.6 V-10 M-12.6 -20 V-3 M12.6 -20 V-3 M0 -26.4 V-21" stroke="rgba(120,80,0,.3)" stroke-width=".8" stroke-linecap="round"/>
-    <path d="M-6.9 -18.6 H6.9" stroke="${ink}" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M-5.2 -16.4 V-27.6 M-5.2 -2.6 V-8 M-12.6 -20 V-3 M12.6 -20 V-3 M0 -26.4 V-21" stroke="rgba(120,80,0,.3)" stroke-width=".8" stroke-linecap="round"/>
+    <path d="M-6.9 -14.6 H6.9" stroke="${ink}" stroke-width="1.6" stroke-linecap="round"/>
     <circle cx="-10.7" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/><circle cx="11.2" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/>`;
 }
 // The gate straddles the city: the whole gate stands behind it (the left pillar disappears behind the city) and the
 // right pillar is drawn again in front, so it hugs the city. A little larger and lower than before, so it fits.
-const METRO_PLACE = 'translate(0,7.1) scale(1.12)';
+const METRO_PLACE = 'translate(0,12.8) scale(1.12)';
 const METRO_FRONT_D = 'M6.9 -29 L11.2 -37 L17 -29 V-1 H6.9 Z';
 function metroBack() {
   // a thin light rim keeps the yellow gate readable on a yellow field tile
