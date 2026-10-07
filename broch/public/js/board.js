@@ -75,7 +75,7 @@ export function metroTowerInner() {
 }
 // The gate straddles the city: the whole gate stands behind it (the left pillar disappears behind the city) and the
 // right pillar is drawn again in front, so it hugs the city. Its base lines up with the city's and its bar rests on the roof.
-const METRO_PLACE = 'translate(0,13.6)';
+const METRO_PLACE = 'translate(0,13.1) scale(1,.85)';
 const METRO_FRONT_D = 'M6.5 -28 L11 -36 L15.5 -28 V-1 H6.5 Z';
 function metroBack() {
   // a thin light rim keeps the yellow gate readable on a yellow field tile
