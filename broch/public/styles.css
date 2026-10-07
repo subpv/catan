@@ -944,8 +944,8 @@ svg.board:not(.alive) .wave, svg.board:not(.alive) .boat-bob, svg.board:not(.ali
 .life, .lf-dim, .lf-rring, .lf-rmarch, .lf-sack, .lf-coin { pointer-events: none; }
 .alive .lf-walk { animation: lfwalk 14s ease-in-out infinite; }
 @keyframes lfwalk {
-  0% { transform: translateX(-22px) scaleX(1); } 40% { transform: translateX(20px) scaleX(1); } 49% { transform: translateX(20px) scaleX(1); }
-  51% { transform: translateX(20px) scaleX(-1); } 90% { transform: translateX(-22px) scaleX(-1); } 99% { transform: translateX(-22px) scaleX(-1); } 100% { transform: translateX(-22px) scaleX(1); }
+  0% { transform: translateX(-18px) scaleX(1); } 40% { transform: translateX(15px) scaleX(1); } 49% { transform: translateX(15px) scaleX(1); }
+  51% { transform: translateX(15px) scaleX(-1); } 90% { transform: translateX(-18px) scaleX(-1); } 99% { transform: translateX(-18px) scaleX(-1); } 100% { transform: translateX(-18px) scaleX(1); }
 }
 .alive .lf-walk .lf-leg { animation: lfleg .45s ease-in-out infinite; }
 .alive .lf-walk .lf-leg.b { animation-delay: -.22s; }

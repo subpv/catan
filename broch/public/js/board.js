@@ -220,7 +220,7 @@ function lifeFor(h, cx, cy, nth = 0) {
       const kinds = [['white', 'white', 'white'], ['black', 'white', 'white'], ['white', 'white', 'black'], ['white', 'brown', 'grey'], ['white', 'white', 'white'], ['white', 'black', 'white']][v];
       const lamb = v === 4 ? at(-16 + jit(5, 3), 40, `<g transform="scale(.62)"><g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 2 }, 7), 'white')}</g></g>`) : '';
       return mirror(v === 2 || v === 5)(
-        at(jit(1, 6), 31 + jit(2, 2), `<g class="lf-walk" style="${dl(h, 14)}">${sheepSvg('lf-sheep-b', dl(h, 7), kinds[0])}</g>`) +
+        at(jit(1, 2), 31 + jit(2, 2), `<g class="lf-walk" style="${dl(h, 14)}">${sheepSvg('lf-sheep-b', dl(h, 7), kinds[0])}</g>`) +
         at(31 + jit(3, 3), -4 + jit(4, 4), `<g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 1 }, 7), kinds[1])}</g>`) +
         at(-30 + jit(5, 3), -2 + jit(6, 4), `<g transform="scale(-.85,.85)"><g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 4 }, 7), kinds[2])}</g></g>`) + lamb);
     }
@@ -229,8 +229,8 @@ function lifeFor(h, cx, cy, nth = 0) {
       const shirt = SHIRTS[v], hat = HATS[(v + 3) % 6], logs = [3, 2, 4, 3, 2, 4][v];
       return mirror([0, 0, 1, 0, 1, 1][v])(
         at(-14 + jit(1, 3), 37, ROUND_LOGS(logs)) +
-        at(17, 38, `<g class="lf-tree" style="${dl(h, 9)}">${tree}</g><g class="lf-chips" style="${dl(h, 1.1)}"><rect x="-3" y="-3" width="1.6" height="1.6" fill="#E8C48A"/><rect x="-5" y="-1" width="1.4" height="1.4" fill="#C9A26B"/></g>`) +
-        at(7, 40, `<g class="lf-cutter"><circle cx="0" cy="-8.2" r="2.3" fill="#F1C9A5"/><path d="M-2.2 -9.6 h4.4 l-.6 -1.9 h-3.2z" fill="${hat}"/><rect x="-2.1" y="-6" width="4.2" height="5.6" rx="1.2" fill="${shirt}"/><rect x="-1.9" y="-.6" width="1.5" height="4" fill="#4A3426"/><rect x=".4" y="-.6" width="1.5" height="4" fill="#4A3426"/>
+        at(12.4, 31, `<g transform="scale(.8)"><g class="lf-tree" style="${dl(h, 9)}">${tree}</g></g><g class="lf-chips" style="${dl(h, 1.1)}"><rect x="-3" y="-3" width="1.6" height="1.6" fill="#E8C48A"/><rect x="-5" y="-1" width="1.4" height="1.4" fill="#C9A26B"/></g>`) +
+        at(6, 37, `<g class="lf-cutter"><circle cx="0" cy="-8.2" r="2.3" fill="#F1C9A5"/><path d="M-2.2 -9.6 h4.4 l-.6 -1.9 h-3.2z" fill="${hat}"/><rect x="-2.1" y="-6" width="4.2" height="5.6" rx="1.2" fill="${shirt}"/><rect x="-1.9" y="-.6" width="1.5" height="4" fill="#4A3426"/><rect x=".4" y="-.6" width="1.5" height="4" fill="#4A3426"/>
           ${v === 3 ? '<path d="M-1.6 -5.6 h3.2 v1.1 h-3.2z" fill="rgba(255,255,255,.55)"/>' : ''}<g class="lf-axe" style="${dl(h, 1.1)}"><line x1="1" y1="-4.6" x2="6.5" y2="-9.6" stroke="#7A4A23" stroke-width="1.3" stroke-linecap="round"/><path d="M5.4 -11.4 l3 .5 -.8 3.1 z" fill="#D5DADF" stroke="#7D858C" stroke-width=".4"/></g></g>`) +
         at(-33 + jit(2, 2), 8 + jit(3, 3), v % 2 ? OAK('#3F7B3D') : PINE('#24603F'), 'lf-static') + at(33, 6 + jit(4, 3), `<g transform="scale(.8)">${v % 3 === 2 ? OAK('#2E6B35') : PINE('#1B4F33')}</g>`));
     }
@@ -271,9 +271,12 @@ function lifeFor(h, cx, cy, nth = 0) {
         if (i % 2) a += stalk; else b += stalk;
       }
       const shirt = ['#B23A2A', '#2F5D8A', '#3B7D3A', '#7A4A9A', '#E07B20'][v], hat = ['#8C6239', '#4A3426', '#D9A21B', '#2B2B2B', '#8C6239'][v];
-      const extra = v === 1 ? at(-34, 36, `<ellipse rx="4.6" ry="3.6" fill="#E8832A" stroke="#9A4A12" stroke-width=".8"/><path d="M0 -3.4 q1 -2 2.6 -2.2" fill="none" stroke="#3E7C3A" stroke-width="1.3"/>`, 'lf-static')
-        : v === 2 ? at(-33, 36, `<path d="M-6 3 Q-6 -8 0 -9 Q6 -8 6 3 Z" fill="#E2BE5C" stroke="#9C7A24" stroke-width=".9"/><path d="M-3 -1 L3 -5 M-4 2 L4 -2" stroke="#B8923A" stroke-width=".8"/>`, 'lf-static')
-        : v === 3 ? at(-33, 34, `<g transform="translate(0,-2)"><path d="M-3 0 q3 -4 6 0 q-3 1.5 -6 0z" fill="#2B2B2B"/><path d="M3 0 l2.4 -.8 -1.8 1.8z" fill="#E8A23A"/></g>`, 'lf-static') : '';
+      const pumpkin = `<ellipse cx="-3.4" rx="3.7" ry="4.5" fill="#E27A22" stroke="#9A4A12" stroke-width=".9"/><ellipse cx="3.4" rx="3.7" ry="4.5" fill="#E27A22" stroke="#9A4A12" stroke-width=".9"/><ellipse rx="3.5" ry="4.9" fill="#F08A2C" stroke="#9A4A12" stroke-width="1"/>
+        <path d="M-1.7 -4.2 Q-2.5 0 -1.7 4.2 M1.7 -4.2 Q2.5 0 1.7 4.2 M-5.4 -2.6 Q-6.4 0 -5.4 2.6 M5.4 -2.6 Q6.4 0 5.4 2.6" fill="none" stroke="#B35A18" stroke-width=".9" stroke-linecap="round"/><path d="M-.4 -3.6 Q-.6 -1 -.4 1.6" fill="none" stroke="rgba(255,235,190,.7)" stroke-width="1" stroke-linecap="round"/>
+        <path d="M0 -4.8 q.3 -2.2 1.8 -2.7" fill="none" stroke="#3E7C3A" stroke-width="1.6" stroke-linecap="round"/><path d="M1.6 -6.8 q2.2 -.3 2.8 1.5 q-1.5 -.2 -1.4 1" fill="none" stroke="#5E9A44" stroke-width=".9" stroke-linecap="round"/>`;
+      const extra = v === 1 ? at(-18, 34, pumpkin, 'lf-static')
+        : v === 2 ? at(-18, 34, `<path d="M-6 3 Q-6 -8 0 -9 Q6 -8 6 3 Z" fill="#E2BE5C" stroke="#9C7A24" stroke-width=".9"/><path d="M-3 -1 L3 -5 M-4 2 L4 -2" stroke="#B8923A" stroke-width=".8"/>`, 'lf-static')
+        : v === 3 ? at(-26, 35, `<g transform="translate(0,-2)"><path d="M-3 0 q3 -4 6 0 q-3 1.5 -6 0z" fill="#2B2B2B"/><path d="M3 0 l2.4 -.8 -1.8 1.8z" fill="#E8A23A"/></g>`, 'lf-static') : '';
       return mirror(v === 1 || v === 4)(at(0, 0, `<g class="lf-wheat a" style="${dl(h, 3)}">${a}</g><g class="lf-wheat b" style="animation-delay:-${((h.id * 1.37 + 1.4) % 3).toFixed(2)}s">${b}</g>`) + extra +
         at(33, -2, `<g class="lf-crow" style="${dl(h, 6)}"><line x1="0" y1="2" x2="0" y2="-9" stroke="#6B4A2A" stroke-width="1.2"/><line x1="-5" y1="-6" x2="5" y2="-6" stroke="#6B4A2A" stroke-width="1.2"/><circle cy="-10.5" r="2.2" fill="#F1D9A0"/><path d="M-3 -12 h6 l-3 -3.2z" fill="${hat}"/><path d="M-2.4 -6 h4.8 l-1 5 h-2.8z" fill="${shirt}"/></g>`));
     }
