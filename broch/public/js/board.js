@@ -180,7 +180,11 @@ const dl = (h, span) => `animation-delay:-${((h.id * 1.37) % span).toFixed(2)}s`
 // Every tile gets its own small differences (a black sheep, another shirt, a scene the other way round). The variant
 // comes from the tile's rank among the tiles of the same kind, so two pastures on one board never look alike.
 const hr = (id, k) => { const x = Math.sin(id * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
-const WOOLS = { white: ['#FFFDF5', '#D8CFBD', '#3A2E28', '#FFF'], black: ['#34302E', '#171413', '#7A6D64', '#FFF'], brown: ['#A98B66', '#7A5F3F', '#3A2E28', '#FFF'], grey: ['#C9C6C0', '#9A968E', '#3A2E28', '#FFF'] };
+const WOOLS = { white: ['#FFFDF5', '#D8CFBD', '#3A2E28', '#FFF'], black: ['#34302E', '#171413', '#7A6D64', '#FFF'], brown: ['#A98B66', '#7A5F3F', '#3A2E28', '#FFF'], grey: ['#C9C6C0', '#9A968E', '#3A2E28', '#FFF'], rainbow: ['url(#rainbowg)', '#7A5AA0', '#3A2E28', '#FFF'] };
+// a proper integer hash for the real dice rolls (the sine hash above is fine for jitter, but its values for neighbouring tiles are alike)
+const roll32 = (a, b, c) => { let x = (Math.imul(a + 1, 374761393) + Math.imul(b + 1, 668265263) + Math.imul(c + 1, 2246822519)) | 0; x = Math.imul(x ^ (x >>> 13), 1274126177); x = Math.imul(x ^ (x >>> 16), 2246822519); x ^= x >>> 15; return (x >>> 0) / 4294967296; };
+const RAINBOW_ODDS = 0.01; // one sheep in a hundred wears every colour
+const seedOf = id => [...String(id)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 100003, 7);
 const sheepSvg = (cls, delay, kind = 'white') => {
   const [w, s, face, eye] = WOOLS[kind], leg = kind === 'black' ? '#171413' : '#3A2E28';
   return `<g class="${cls}"><rect class="lf-leg a" x="-3.6" y="2.4" width="1.5" height="3.4" rx=".7" fill="${leg}"/><rect class="lf-leg b" x="-1.2" y="2.4" width="1.5" height="3.4" rx=".7" fill="${leg}"/><rect class="lf-leg a" x="1.4" y="2.4" width="1.5" height="3.4" rx=".7" fill="${leg}"/><rect class="lf-leg b" x="3.4" y="2.4" width="1.5" height="3.4" rx=".7" fill="${leg}"/>
@@ -209,7 +213,7 @@ const digger = (cx, cy, x, y, dir, { cap, shirt, block, fleck, chip, tool, delay
       <g class="lf-axe" style="${delay}"><line x1="1" y1="-4.6" x2="6.5" y2="-9.6" stroke="#7A4A23" stroke-width="1.3" stroke-linecap="round"/>${head}</g></g></g>`;
 };
 
-function lifeFor(h, cx, cy, nth = 0) {
+function lifeFor(h, cx, cy, nth = 0, seed = 0) {
   const at = (x, y, inner, cls = '') => `<g transform="translate(${f(cx + x)},${f(cy + y)})"${cls ? ` class="${cls}"` : ''}>${inner}</g>`;
   const mirror = on => out => on ? `<g transform="translate(${f(2 * cx)},0) scale(-1,1)">${out}</g>` : out;
   const jit = (k, r) => Math.round((hr(h.id, k) - .5) * 2 * r); // a few pixels of difference in where things stand
@@ -218,11 +222,16 @@ function lifeFor(h, cx, cy, nth = 0) {
       // 0 all white · 1 the walker is black · 2 a black sheep grazes on the left · 3 a brown and a grey one · 4 a lamb joins · 5 black sheep on the right
       const v = nth % 6;
       const kinds = [['white', 'white', 'white'], ['black', 'white', 'white'], ['white', 'white', 'black'], ['white', 'brown', 'grey'], ['white', 'white', 'white'], ['white', 'black', 'white']][v];
-      const lamb = v === 4 ? at(-16 + jit(5, 3), 40, `<g transform="scale(.62)"><g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 2 }, 7), 'white')}</g></g>`) : '';
+      // chance is rolled per game and sheep (the game id is the seed), so a rainbow sheep turns up in about one board in ten
+      const roll = k => roll32(seed, h.id, 20 + k);
+      const sheepKind = (k, base) => (roll(k) < RAINBOW_ODDS ? 'rainbow' : base);
+      // lambs: every pasture tile has a one in three chance of one, and the variant with a lamb always has it
+      const hasLamb = v === 4 || roll32(seed, h.id, 11) < 0.34;
+      const lamb = hasLamb ? at(-16 + jit(5, 3), 40, `<g transform="scale(.62)"><g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 2 }, 7), sheepKind(3, 'white'))}</g></g>`) : '';
       return mirror(v === 2 || v === 5)(
-        at(jit(1, 2), 31 + jit(2, 2), `<g class="lf-walk" style="${dl(h, 14)}">${sheepSvg('lf-sheep-b', dl(h, 7), kinds[0])}</g>`) +
-        at(31 + jit(3, 3), -4 + jit(4, 4), `<g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 1 }, 7), kinds[1])}</g>`) +
-        at(-30 + jit(5, 3), -2 + jit(6, 4), `<g transform="scale(-.85,.85)"><g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 4 }, 7), kinds[2])}</g></g>`) + lamb);
+        at(jit(1, 2), 31 + jit(2, 2), `<g class="lf-walk" style="${dl(h, 14)}">${sheepSvg('lf-sheep-b', dl(h, 7), sheepKind(0, kinds[0]))}</g>`) +
+        at(31 + jit(3, 3), -4 + jit(4, 4), `<g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 1 }, 7), sheepKind(1, kinds[1]))}</g>`) +
+        at(-30 + jit(5, 3), -2 + jit(6, 4), `<g transform="scale(-.85,.85)"><g class="lf-graze">${sheepSvg('lf-sheep-s', dl({ id: h.id + 4 }, 7), sheepKind(2, kinds[2]))}</g></g>`) + lamb);
     }
     case 'forest': {
       const v = nth % 6, tree = v % 2 ? OAK(['#3C7A3A', '#2E6B35', '#4F8A3A'][(v >> 1) % 3]) : PINE(['#1E5A38', '#24603F', '#2B6B4A'][(v >> 1) % 3]);
@@ -348,6 +357,7 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
     <radialGradient id="tok" cx="40%" cy="35%"><stop offset="0" stop-color="#FFFBEE"/><stop offset="1" stop-color="#EFDFB6"/></radialGradient>
     <radialGradient id="sand" cx="50%" cy="50%" r="60%"><stop offset="0.8" stop-color="#EAD9AC"/><stop offset="1" stop-color="#D9C08A"/></radialGradient>
     <radialGradient id="fog" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#C9D6DF"/><stop offset="1" stop-color="#7F95A6"/></radialGradient>
+    <linearGradient id="rainbowg" gradientUnits="userSpaceOnUse" x1="-7" y1="0" x2="8" y2="0"><stop offset="0" stop-color="#E8453C"/><stop offset=".2" stop-color="#F39A2B"/><stop offset=".4" stop-color="#F5D93A"/><stop offset=".6" stop-color="#5CBF5A"/><stop offset=".8" stop-color="#3E8EDE"/><stop offset="1" stop-color="#8E5BD0"/></linearGradient>
     <linearGradient id="goldg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4CB52"/><stop offset="1" stop-color="#C58E12"/></linearGradient>
   </defs>`);
   if (jobs.size) out.push(`<style>${[...jobs.values()].map(jobCss).join('')}</style>`);
@@ -405,7 +415,7 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
     if (g) out.push(`<g transform="translate(${cx - 13},${cy - 44}) scale(1.08)" style="color:rgba(255,255,255,${h.terrain === 'gold' ? .9 : .55})">${GLYPH[g]}</g>`);
     if (life) {
       if (view.robber === h.id) out.push(`<polygon class="lf-dim" points="${hexPoints(board, h, 0.97)}" fill="rgba(24,10,4,.38)"/>`);
-      else if (!(h.terrain === 'desert' && view.fishing)) out.push(`<g class="life">${lifeFor(h, cx, cy, rankOf[h.id])}</g>`);
+      else if (!(h.terrain === 'desert' && view.fishing)) out.push(`<g class="life">${lifeFor(h, cx, cy, rankOf[h.id], seedOf(view.id))}</g>`);
     }
     if (h.terrain === 'gold') out.push(`<g class="sparkle" style="color:#FFF6C8"><circle cx="${f(cx - 30)}" cy="${f(cy - 18)}" r="2.4" fill="currentColor"/><circle cx="${f(cx + 32)}" cy="${f(cy - 8)}" r="1.8" fill="currentColor"/><circle cx="${f(cx + 20)}" cy="${f(cy + 34)}" r="2.2" fill="currentColor"/></g>`);
     if (h.terrain === 'desert' && view.fishing) {
