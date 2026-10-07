@@ -60,26 +60,22 @@ function armyBanner(x) {
     <g class="army-cloth"><path d="M0.6 -30.4 H14.5 L11 -26.3 L14.5 -22.2 H0.6 Z" fill="#B3261E" stroke="#5C120D" stroke-width=".9" stroke-linejoin="round"/><path d="M1.2 -24.2 H12.6" stroke="#F0C24A" stroke-width="1.1"/><path d="M5.2 -28.6 L8.6 -25.2 M8.6 -28.6 L5.2 -25.2" stroke="#F6D77A" stroke-width="1.1" stroke-linecap="round"/></g></g>`;
 }
 
-// metropolis: a tall wooden-looking tower on the flat roof of the city, like the piece from the wooden box. It is
-// always yellow, whatever the track (the tooltip on the improvement lane tells which one it is)
-export const METRO_TOWER = { body: 'M3.6 1 V-21 H14.4 V1 Z', roof: 'M1.8 -21 L9 -36 L16.2 -21 Z', wing: 'M14.4 1 V-10.5 H19.4 V1 Z', wingRoof: 'M13.4 -10.5 L16.9 -17.5 L20.4 -10.5 Z' };
-const METRO_SHADOW = Object.values(METRO_TOWER).join(' ');
+// metropolis: the wooden gate piece from the box, in yellow whatever the track. Two pointed pillars joined by a bar,
+// with an opening underneath that fits over the roof of the city (the city's peak stands inside the opening)
+export const METRO_GATE_D = 'M-17 -1 V-29 L-10.7 -37 L-6.9 -29 H6.9 L11.2 -37 L17 -29 V-1 H6.9 V-18.6 H-6.9 V-1 Z';
 export const METRO_YELLOW = '#F2C230', METRO_YELLOW_D = '#C99A12', METRO_INK = '#5E4106';
 export function metroTowerInner() {
-  const T = METRO_TOWER, ink = METRO_INK, y = METRO_YELLOW, yd = METRO_YELLOW_D;
-  return `<path d="${T.wing}" fill="${yd}" stroke="${ink}" stroke-width="1.6" stroke-linejoin="round"/><path d="${T.wingRoof}" fill="#E0A012" stroke="${ink}" stroke-width="1.6" stroke-linejoin="round"/>
-    <path d="${T.body}" fill="${y}" stroke="${ink}" stroke-width="1.8" stroke-linejoin="round"/>
-    <path d="M9 -21 H14.4 V1 H9 Z" fill="rgba(120,80,0,.18)"/>
-    <path d="M6.3 -20 V0 M9 -20 V0 M11.7 -20 V0" stroke="rgba(120,80,0,.28)" stroke-width=".7"/><path d="M4.6 -19 V-1" stroke="rgba(255,248,200,.7)" stroke-width="1.1" stroke-linecap="round"/>
-    <path d="${T.roof}" fill="#E0A012" stroke="${ink}" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 -36 L16.2 -21 H9 Z" fill="rgba(90,50,0,.22)"/><path d="M4.4 -22.6 L9 -32.4" stroke="rgba(255,240,170,.7)" stroke-width="1.1" stroke-linecap="round"/>
-    <circle cx="9" cy="-37.4" r="1.7" fill="#FFF2B3" stroke="${ink}" stroke-width="1.1"/>
-    <path d="M6.6 -14.4 V-16.6 a2.4 2.4 0 0 1 4.8 0 V-14.4 Z" fill="#7A4A12" stroke="${ink}" stroke-width=".9"/><path d="M7.6 -14.4 V-16.4 a1.4 1.4 0 0 1 2.8 0 V-14.4 Z" fill="#FFE59A"/>
-    <path d="M6.2 1 V-6 A2.8 2.8 0 0 1 11.8 -6 V1 Z" fill="#6B3E12" stroke="${ink}" stroke-width=".9"/><circle cx="10.4" cy="-3" r=".6" fill="#F2C230"/>
-    <path d="M16.4 1 V-4.4 a1.5 1.5 0 0 1 3 0 V1 Z" fill="#6B3E12" opacity=".8"/>`;
+  const ink = METRO_INK;
+  return `<path d="${METRO_GATE_D}" fill="${METRO_YELLOW}" stroke="${ink}" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M6.9 -29 L11.2 -37 L17 -29 V-1 H6.9 V-18.6 H-6.9 V-23 H6.9 Z" fill="rgba(140,90,0,.22)"/>
+    <path d="M-15.4 -3 V-28.4 L-10.7 -34.4" fill="none" stroke="rgba(255,248,200,.8)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-5.2 -20.4 V-27.6 M-5.2 -2.6 V-10 M-12.6 -20 V-3 M12.6 -20 V-3 M0 -26.4 V-21" stroke="rgba(120,80,0,.3)" stroke-width=".8" stroke-linecap="round"/>
+    <path d="M-6.9 -18.6 H6.9" stroke="${ink}" stroke-width="1.6" stroke-linecap="round"/>
+    <circle cx="-10.7" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/><circle cx="11.2" cy="-30.5" r="1.1" fill="#FFF2B3" stroke="${ink}" stroke-width=".7"/>`;
 }
 function metroGate() {
-  // a thin light rim keeps the yellow tower readable on a yellow field tile
-  return `<g class="metro-gate">${shade(METRO_SHADOW)}<path d="${METRO_SHADOW}" fill="none" stroke="rgba(255,246,220,.8)" stroke-width="4.4" stroke-linejoin="round"/>${metroTowerInner()}</g>`;
+  // a thin light rim keeps the yellow gate readable on a yellow field tile
+  return `<g class="metro-gate" transform="translate(0,-8) scale(.92)">${shade(METRO_GATE_D)}<path d="${METRO_GATE_D}" fill="none" stroke="rgba(255,246,220,.8)" stroke-width="4.4" stroke-linejoin="round"/>${metroTowerInner()}</g>`;
 }
 const discShade = (r, dy = 2.6) => `<circle r="${r}" cy="${dy}" cx="1" fill="rgba(0,0,0,.3)"/>`;
 

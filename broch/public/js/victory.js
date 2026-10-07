@@ -143,7 +143,7 @@ function breakdownChips(view, w) {
   const col = w.color;
   if (b.settlements) chip(houseIcon(col, 16), b.settlements, `${b.settlements} × ${t('Settlements')}`);
   if (b.cities) chip(`<svg viewBox="-16 -14 32 28" width="20" height="18"><path d="M-15 12 V-3 L-6 -13 L3 -3 V0 H15 V12 Z" fill="${PCOLOR[col]}" stroke="${PCOLOR_DARK[col]}" stroke-width="2.4" stroke-linejoin="round"/></svg>`, b.cities * 2, `${b.cities} × ${t('Cities')}`);
-  if (b.metropolis) chip(`<svg viewBox="0 -39 22 41" width="12" height="22">${metroTowerInner()}</svg>`, b.metropolis * 2, t('Metropolis'));
+  if (b.metropolis) chip(`<svg viewBox="-19 -39 38 40" width="22" height="22">${metroTowerInner()}</svg>`, b.metropolis * 2, t('Metropolis'));
   if (b.longestRoad) chip(ico('road', 16, '#F6CF57'), 2, t(view.expansion === 'seafarers' || view.expansion === 'explorers' ? 'Longest Trade Route' : 'Longest Road'));
   if (b.largestArmy) chip(ico('sword', 16, '#F6CF57'), 2, t('Largest Army'));
   if (b.defender) chip('<span style="color:#8FC1E6;font-size:15px">♛</span>', b.defender, t('Defender of Broch'));
