@@ -571,7 +571,13 @@ function playersHtml() {
 
 function tradeHtml() {
   const v = G.view, tr = v.trade;
-  if (!tr) return '';
+  if (!tr || G.tradeGone === tr.id) return '';
+  // everybody said no: the offer fades out by itself (see the timer below)
+  const allNo = v.players.every((p, i) => i === tr.from || tr.responses[i] === 'reject');
+  if (allNo && G.tradeFading !== tr.id) {
+    G.tradeFading = tr.id;
+    setTimeout(() => { if (G && G.view) { G.tradeGone = tr.id; render(); } }, 2000);
+  }
   const mineOffer = tr.from === v.me;
   let body = `<div class="trade-line">${t('{name} gives', { name: pname(tr.from) })} ${cardsHtml(tr.give)}</div><div class="trade-line" style="margin-top:4px">${tx('and wants')} ${cardsHtml(tr.get)}</div>`;
   if (mineOffer) {
@@ -583,7 +589,10 @@ function tradeHtml() {
     body += r ? `<div class="muted" style="margin-top:8px;font-size:13px">${r === 'accept' ? tx('You accepted. Waiting for them to confirm.') : tx('You declined.')}</div>`
       : `<div class="row" style="margin-top:10px"><button class="btn small gold" data-respond="1" ${can ? '' : 'disabled'}>${tx('Accept')}</button><button class="btn small" data-respond="0">${tx('Decline')}</button>${can ? '' : `<span class="muted" style="font-size:12px">${tx('You lack the cards.')}</span>`}</div>`;
   }
-  return `<div class="board-trade fx-slide"><div class="panel-h">${tx('Trade offer')}</div><div class="trade-box">${body}</div></div>`;
+  // slide in once per offer; later answers only change the text (a fresh slide on every answer looked like a new window)
+  const first = G.tradeSeen !== tr.id;
+  G.tradeSeen = tr.id;
+  return `<div class="board-trade ${first ? 'fx-slide' : ''} ${allNo ? 'trade-out' : ''}"><div class="panel-h">${tx('Trade offer')}</div><div class="trade-box">${body}</div></div>`;
 }
 
 

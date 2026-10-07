@@ -1374,3 +1374,7 @@ svg.board:not(.alive) .wave, svg.board:not(.alive) .boat-bob, svg.board:not(.ali
 .bw-site { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .bw-bob, .bw-leg, .bw-swing { animation: none !important; } }
 .aq-chip.todo { background: #2E6B45; animation: breathe 1.6s ease-in-out infinite; }
+
+/* an offer that everybody declined fades away */
+.board-trade.trade-out { animation: tradeout .6s ease-in 1.3s both; pointer-events: none; }
+@keyframes tradeout { to { opacity: 0; transform: translateY(8px); } }
