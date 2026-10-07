@@ -368,7 +368,7 @@ function render() {
   renderStatus();
   renderBoardPart();
   setHtml(G.app.querySelector('.hud-host'), 'hud', hudHtml());
-  setHtml(G.app.querySelector('.trade-host'), 'trade', tradeHtml());
+  renderTrade();
   setHtml(G.app.querySelector('.hand-host'), 'hand', isMine() ? handHtml() : `<div class="hand watching"><b>${tx('You are watching this game.')}</b></div>`);
   setHtml(G.app.querySelector('.players-host'), 'players', playersHtml());
   if (setHtml(G.app.querySelector('.imp-host'), 'imp', G.view.mode === 'knights' ? improveHtml() : '')) animateImprovements();
@@ -569,6 +569,25 @@ function playersHtml() {
   return `<div class="panel"><div class="panel-h"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tx('Players')}</span><span class="spacer"></span><span style="white-space:nowrap">${esc(modeLabel(v))} · ${tx('turn {n}', { n: v.turn })}</span></div>${rows}</div>`;
 }
 
+// The offer panel is created once per offer; later answers only swap the text inside it, so the window never
+// redraws, re-slides or flickers when somebody declines.
+function renderTrade() {
+  const host = G.app.querySelector('.trade-host');
+  if (!host) return;
+  const html = tradeHtml();
+  if (G.html.trade === html) return;
+  const cur = host.querySelector('.board-trade');
+  const tid = G.view.trade && G.view.trade.id;
+  if (cur && html && cur.dataset.tid === String(tid)) {
+    const next = new DOMParser().parseFromString(`<body>${html}</body>`, 'text/html').querySelector('.board-trade');
+    cur.querySelector('.trade-box').innerHTML = next.querySelector('.trade-box').innerHTML;
+    cur.classList.toggle('trade-out', next.classList.contains('trade-out'));
+    G.html.trade = html;
+    return;
+  }
+  setHtml(host, 'trade', html);
+}
+
 function tradeHtml() {
   const v = G.view, tr = v.trade;
   if (!tr || G.tradeGone === tr.id) return '';
@@ -592,7 +611,7 @@ function tradeHtml() {
   // slide in once per offer; later answers only change the text (a fresh slide on every answer looked like a new window)
   const first = G.tradeSeen !== tr.id;
   G.tradeSeen = tr.id;
-  return `<div class="board-trade ${first ? 'fx-slide' : ''} ${allNo ? 'trade-out' : ''}"><div class="panel-h">${tx('Trade offer')}</div><div class="trade-box">${body}</div></div>`;
+  return `<div class="board-trade ${first ? 'fx-slide' : ''} ${allNo ? 'trade-out' : ''}" data-tid="${tr.id}"><div class="panel-h">${tx('Trade offer')}</div><div class="trade-box">${body}</div></div>`;
 }
 
 

@@ -1,7 +1,7 @@
 // Juice: sounds (synthesised, no files), board animations and full-screen moments.
 import { t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, glyph, cardName, inkOn, tf, houseIcon, pipsHtml, term } from './core.js';
 import { cardDesc, deckOf } from './cards.js';
-import { findJob, jobAge } from './builder.js';
+import { findJob, jobAge, buildersBusyFor } from './builder.js';
 
 const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -96,7 +96,9 @@ export const fxBusy = () => busy > 0;
 function enqueue(fn) {
   busy++;
   window.BROCH_FX_BUSY = true;
-  queue = queue.then(fn).catch(() => {}).finally(() => { busy--; if (!busy) window.BROCH_FX_BUSY = false; });
+  // full-screen moments (dice, a new turn, loot) wait until the builders have finished, so they are never cut off
+  const afterBuilders = async () => { const left = buildersBusyFor(); if (left > 0) await wait(Math.min(left + 150, 9000)); return fn(); };
+  queue = queue.then(afterBuilders).catch(() => {}).finally(() => { busy--; if (!busy) window.BROCH_FX_BUSY = false; });
   return queue;
 }
 const wait = ms => new Promise(r => setTimeout(r, ms));

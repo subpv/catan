@@ -7,11 +7,10 @@
 import { PCOLOR, PCOLOR_DARK } from './core.js';
 
 const S = 56; // pixels per unit, same as board.js
-const SPEED = 125; // px per second on the way out
-const POP = 240; // the builder steps out of the door
-const HIT = 400; // one hammer swing
-const HOME = 220; // and steps back in
-const MAX_WALK = 2400;
+const SPEED = 92; // px per second on the way out
+const POP = 340; // the builder steps out of the door
+const HOME = 320; // and steps back in
+const MAX_WALK = 3400;
 const reduced = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const JOBS = new Map();
 let SEQ = 0;
@@ -20,27 +19,60 @@ const clock = () => (typeof performance !== 'undefined' ? performance.now() : Da
 const vx = (board, i) => board.vertices[i].x * S;
 const vy = (board, i) => board.vertices[i].y * S;
 
-// shortest way over this player's finished roads from any of `starts` to a vertex that satisfies `goal`
-function route(board, roads, p, starts, goal, blocked) {
+// The builder never cuts across the land: he walks along edges of the board. This player's own roads are the way he
+// prefers; where none is built yet he goes along free edges (where a road could be). Other players' roads, houses and
+// ships block the way.
+const LAND = new WeakMap();
+function landGraph(board) {
+  let g = LAND.get(board);
+  if (g) return g;
+  const key = (a, b) => (a < b ? `${a}-${b}` : `${b}-${a}`);
+  const land = new Set();
+  board.hexes.forEach(h => {
+    if (h.terrain === 'sea') return;
+    for (let i = 0; i < h.verts.length; i++) land.add(key(h.verts[i], h.verts[(i + 1) % h.verts.length]));
+  });
   const adj = new Map();
-  for (const [e, owner] of Object.entries(roads)) {
-    if (owner !== p || blocked.has(+e)) continue;
-    const [a, b] = board.edges[e].v;
-    (adj.get(a) || adj.set(a, []).get(a)).push(b);
-    (adj.get(b) || adj.set(b, []).get(b)).push(a);
-  }
-  const from = new Map(starts.map(s => [s, null]));
-  const queue = [...starts];
-  for (let i = 0; i < queue.length; i++) {
-    const v = queue[i];
-    if (goal(v)) {
+  board.edges.forEach(e => {
+    const [a, b] = e.v;
+    if (!land.has(key(a, b))) return;
+    (adj.get(a) || adj.set(a, []).get(a)).push([b, e.id]);
+    (adj.get(b) || adj.set(b, []).get(b)).push([a, e.id]);
+  });
+  g = { adj };
+  LAND.set(board, g);
+  return g;
+}
+
+// cheapest way from any of `starts` to a vertex that satisfies `goal`; returns the vertices goal ... start, or null
+function route(view, p, starts, goal, { skip = new Set(), pending = new Set() } = {}) {
+  const { adj } = landGraph(view.board);
+  const cost = (e, to) => {
+    if (skip.has(+e)) return Infinity;
+    if (pending.has(+e)) return 1;
+    const owner = view.roads[e];
+    if (owner === p) return 0.3;
+    if (owner !== undefined || (view.ships && view.ships[e])) return Infinity;
+    const b = view.buildings[to];
+    if (b && b.p !== p) return Infinity;
+    return 1;
+  };
+  const dist = new Map(starts.map(s => [s, 0])), from = new Map(starts.map(s => [s, null])), done = new Set();
+  for (;;) {
+    let cur = null;
+    for (const [v, d] of dist) if (!done.has(v) && (cur === null || d < dist.get(cur))) cur = v;
+    if (cur === null) return null;
+    if (goal(cur)) {
       const path = [];
-      for (let c = v; c !== null; c = from.get(c)) path.push(c);
-      return path; // goal ... start
+      for (let c = cur; c !== null; c = from.get(c)) path.push(c);
+      return path;
     }
-    for (const n of adj.get(v) || []) if (!from.has(n)) { from.set(n, v); queue.push(n); }
+    done.add(cur);
+    for (const [n, e] of adj.get(cur) || []) {
+      const d = dist.get(cur) + cost(e, n);
+      if (d < (dist.has(n) ? dist.get(n) : Infinity)) { dist.set(n, d); from.set(n, cur); }
+    }
   }
-  return null;
 }
 
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -71,11 +103,11 @@ function timeline(points, work) {
   const work0 = t;
   if (work.kind === 'site') {
     face.push([t, work.face]);
-    const hitAt = [t + 300, t + 700, t + 1100];
-    phase.push([t + 60, t + 1240]);
+    const hitAt = [t + 420, t + 960, t + 1500];
+    phase.push([t + 80, t + 1760]);
     hitAt.forEach((h, i) => { hits.push({ t: h, at: work.at }); grow.push([h, [0.4, 0.75, 1][i]]); });
     grow.unshift([t, 0]);
-    t += 1260;
+    t += 1800;
     pos.push([t, work.at[0], work.at[1], 1]);
   } else {
     const { from, to } = work;
@@ -83,11 +115,11 @@ function timeline(points, work) {
     grow.push([t, 0]);
     for (let k = 1; k <= 3; k++) {
       const p = [lerp(from[0], to[0], k / 3), lerp(from[1], to[1], k / 3)];
-      step(p, 170);
-      phase.push([t, t + 380]);
-      hits.push({ t: t + 190, at: p });
-      grow.push([t + 190, k / 3]);
-      t += 380;
+      step(p, 240);
+      phase.push([t, t + 540]);
+      hits.push({ t: t + 270, at: p });
+      grow.push([t + 270, k / 3]);
+      t += 540;
       pos.push([t, p[0], p[1], 1]);
     }
   }
@@ -111,54 +143,42 @@ function timeline(points, work) {
 function makeJob(view, kind, key, p, opts) {
   const { board } = view;
   const color = view.players[p].color;
-  const blocked = new Set([...JOBS.values()].filter(j => j.game === view.id && j.edge != null).map(j => j.edge));
+  const active = [...JOBS.values()].filter(j => j.game === view.id);
+  const pending = new Set(active.filter(j => j.edge != null).map(j => j.edge));
   // houses that are still being put up (or upgraded) cannot send anyone out yet
-  const raising = new Set([...JOBS.values()].filter(j => j.game === view.id && j.v != null).map(j => j.v));
-  const mine = Object.entries(view.buildings).filter(([v, b]) => b.p === p && !raising.has(+v)).map(([v]) => +v);
+  const raising = new Set(active.filter(j => j.v != null).map(j => j.v));
+  const mine = new Set(Object.entries(view.buildings).filter(([v, b]) => b.p === p && !raising.has(+v)).map(([v]) => +v));
+  const door = i => [vx(board, i), vy(board, i) + 10];
+  const at = i => [vx(board, i), vy(board, i)];
   let points, work, site = null, ghost = null, edge = null;
 
   if (kind === 'road') {
     edge = opts.edge;
     const [a, b] = board.edges[edge].v;
-    blocked.add(edge);
-    const src = new Set(mine);
-    const ra = route(board, view.roads, p, [a], v => src.has(v), blocked);
-    const rb = route(board, view.roads, p, [b], v => src.has(v), blocked);
-    let start = a, far = b, path = ra;
-    if (rb && (!ra || rb.length < ra.length)) { start = b; far = a; path = rb; }
+    const path = route(view, p, [a, b], v => mine.has(v), { skip: new Set([edge]), pending });
+    const start = path ? path[path.length - 1] : a;
+    const far = start === a ? b : a;
     const k = 0.16;
     const from = [lerp(vx(board, start), vx(board, far), k), lerp(vy(board, start), vy(board, far), k)];
     const to = [lerp(vx(board, far), vx(board, start), k), lerp(vy(board, far), vy(board, start), k)];
-    if (path) {
-      points = path.map(v => [vx(board, v), vy(board, v)]); // route() lists it from the house to the road's start
-      points[0] = [points[0][0], points[0][1] + 10]; // out of the door
-      points.push(from);
-    } else points = [from];
+    points = path ? [door(path[0]), ...path.map(at), from] : [from]; // out of the door, along the way, onto the new road
     work = { kind: 'road', from, to };
-    ghost = { from, to, flip: start !== a };
+    ghost = { from, to };
     return finish({ kind, key, p, color, edge, ghost, points, work, flip: start !== a });
   }
 
   // a building (new settlement, upgrade to a city, or a metropolis / wall on a city)
-  const v = opts.v, T = [vx(board, v), vy(board, v)];
-  const others = new Set(mine.filter(x => x !== v));
-  const path = route(board, view.roads, p, [v], x => others.has(x), blocked);
-  let src = null;
-  if (path) src = path[path.length - 1];
-  else {
-    // no road leads there: a house close by still sends someone over, otherwise he steps out of the site itself
-    const near = [...others].map(o => [o, dist(T, [vx(board, o), vy(board, o)])]).sort((x, y) => x[1] - y[1])[0];
-    if (near && near[1] < S * 2.3) src = near[0];
-  }
-  const road = path ? path.slice(0, -1) : src != null ? [src] : []; // from the house to the corner before the site
-  points = road.map(i => [vx(board, i), vy(board, i)]);
-  if (points.length) points[0] = [points[0][0], points[0][1] + 10];
-  const before = points.length ? points[points.length - 1] : [T[0], T[1] + 10];
-  const side = before[0] <= T[0] ? -1 : 1;
-  const at = [T[0] + side * 17, T[1] + 10];
-  if (!points.length) points = [at];
-  else points.push(at);
-  work = { kind: 'site', at, face: -side };
+  const v = opts.v, T = at(v);
+  mine.delete(v);
+  const path = route(view, p, [v], x => mine.has(x), { pending });
+  let stand; // where he stands while he works: on the edge that leads to the site, a little short of it
+  const toward = path && path.length > 1 ? path[path.length - 2] : (landGraph(board).adj.get(v) || [])[0]?.[0];
+  if (toward != null) {
+    const U = at(toward), d = dist(T, U) || 1;
+    stand = [T[0] + (U[0] - T[0]) * 18 / d, T[1] + (U[1] - T[1]) * 18 / d];
+  } else stand = [T[0] + 17, T[1] + 10];
+  points = path && path.length > 1 ? [door(path[0]), ...path.slice(0, -1).map(at), stand] : [stand];
+  work = { kind: 'site', at: stand, face: stand[0] <= T[0] ? 1 : -1 };
   site = { x: T[0], y: T[1] };
   return finish({ kind, key, p, color, v, prev: opts.prev, site, points, work });
 
@@ -259,7 +279,16 @@ export function jobOverlay(j, view) {
   let out = '';
   if (j.site) out += `<ellipse class="bw-site" cx="${f1(j.site.x)}" cy="${f1(j.site.y + 8)}" rx="17" ry="7" fill="rgba(255,255,255,.18)" stroke="${col}" stroke-width="2" stroke-dasharray="4 3" style="${animOf(`bws${j.id}`, j)}"/>`;
   if (j.ghost) out += `<line class="bw-site" x1="${f1(j.ghost.from[0])}" y1="${f1(j.ghost.from[1])}" x2="${f1(j.ghost.to[0])}" y2="${f1(j.ghost.to[1])}" stroke="${col}" stroke-width="3.2" stroke-dasharray="3 5" stroke-linecap="round" style="${animOf(`bws${j.id}`, j)}"/>`;
-  j.hits.forEach(h => { out += `<circle class="bw-dust" cx="${f1(h.at[0])}" cy="${f1(h.at[1])}" r="8" style="animation-delay:${Math.round(h.t - e)}ms"/>`; });
+  j.hits.forEach((h, i) => {
+    out += `<circle class="bw-dust" cx="${f1(h.at[0])}" cy="${f1(h.at[1])}" r="8" style="animation-delay:${Math.round(h.t - e)}ms"/>`;
+    // smoke: a few small puffs with every hammer blow, and a big cloud when the piece is finished
+    const last = i === j.hits.length - 1;
+    const n = last ? 7 : 3;
+    for (let k = 0; k < n; k++) {
+      const dx = ((k * 37 + i * 11) % 23) - 11, r = last ? 5 + (k % 3) * 1.6 : 3 + (k % 2);
+      out += `<circle class="bw-puff" cx="${f1(h.at[0] + dx * (last ? 0.9 : 0.5))}" cy="${f1(h.at[1] + 2 - (k % 2) * 2)}" r="${f1(r)}" style="--dx:${dx * 0.35}px;--rise:${last ? 26 + (k % 3) * 6 : 15}px;animation-delay:${Math.round(h.t + 60 + k * (last ? 70 : 50) - e)}ms"/>`;
+    }
+  });
   out += `<g class="bw" style="${animOf(`bwp${j.id}`, j)}"><g style="${j.face.length ? animOf(`bwf${j.id}`, j) : ''}">
     <g style="${animOf(`bww${j.id}`, j)}">${sp.shadow}${sp.walk}</g><g style="${animOf(`bwh${j.id}`, j)}">${sp.shadow}${sp.work}</g></g></g>`;
   return out;
@@ -280,3 +309,11 @@ export function findJob(kind, id) {
   return null;
 }
 export const jobAge = j => elapsed(j);
+
+// milliseconds until every builder of this game is back home (0 when nobody is working)
+export function buildersBusyFor() {
+  let left = 0;
+  const t = clock();
+  for (const j of JOBS.values()) left = Math.max(left, j.start + j.total - t);
+  return Math.max(0, left);
+}

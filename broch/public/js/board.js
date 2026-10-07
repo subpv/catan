@@ -193,6 +193,22 @@ const ROUND_LOGS = n => ['<circle r="2.6" fill="#7A4A23"/><circle r="1.2" fill="
 const SHIRTS = ['#2F5D8A', '#B23A2A', '#3B7D3A', '#D9A21B', '#7A4A9A', '#E07B20'];
 const HATS = ['#B23A2A', '#2F5D8A', '#E8D9A8', '#4A3426', '#D9A21B', '#2F5D8A'];
 
+// materials the miners dig out: silver, copper, sapphire, gold, emerald, ruby (a tile's cart and its miner's rock differ)
+const MATS = [['#B7C3CC', '#94A3AE'], ['#E0A050', '#C98A3A'], ['#8FD0E8', '#5FB0D0'], ['#F2D24A', '#D9A91E'], ['#7FD99A', '#3FAE66'], ['#E86A6A', '#B83A3A']];
+// a worker who hacks at a block: ore from a rock (miner) or clay (mason). `dir` -1 puts him on the right, facing left
+const digger = (cx, cy, x, y, dir, { cap, shirt, block, fleck, chip, tool, delay, kind }) => {
+  const rock = kind === 'miner'
+    ? `<path d="M3 4 L5 -4 L11 -6.4 L15.4 -1 L14.6 4 Z" fill="${block}" stroke="#4E4840" stroke-width=".9" stroke-linejoin="round"/><path d="M5 -3.6 L11 -6.4 L12 -1 Z" fill="rgba(255,255,255,.26)"/><circle cx="9" cy=".6" r="1.3" fill="${fleck}"/><circle cx="12.6" cy="2" r="1" fill="${fleck}"/><circle cx="6.6" cy="2.4" r=".9" fill="${fleck}"/>`
+    : `<rect x="3.6" y="-4.6" width="11" height="8.8" rx="1.2" fill="${block}" stroke="#6B2C1B" stroke-width=".9"/><path d="M3.6 -.6 H14.6 M9 -4.6 V-.6 M6.4 -.6 V4.2 M12 -.6 V4.2" stroke="rgba(90,30,14,.55)" stroke-width=".7" fill="none"/>`;
+  const head = kind === 'miner'
+    ? `<path d="M4.4 -11.6 q3.6 -.6 5.2 1.8 q-3 -.4 -5.2 -1.8z" fill="#C9D0D6" stroke="#6B747B" stroke-width=".5"/>`
+    : `<rect x="5" y="-11.4" width="4.6" height="3.2" rx=".6" fill="#A6AEB6" stroke="#5C646B" stroke-width=".6"/>`;
+  return `<g transform="translate(${f(cx + x)},${f(cy + y)}) scale(${dir},1)" class="lf-dig">${rock}
+    <g class="lf-chips" style="${delay}"><rect x="9" y="-1" width="1.7" height="1.7" fill="${chip}"/><rect x="12" y="-3" width="1.4" height="1.4" fill="${chip}"/><rect x="7" y="-5" width="1.4" height="1.4" fill="${fleck}"/></g>
+    <g class="lf-cutter"><circle cx="0" cy="-8.2" r="2.3" fill="#F1C9A5"/><path d="M-2.6 -9.2 h5.2 l-.5 -2.1 h-4.2z" fill="${cap}"/><rect x="-2.1" y="-6" width="4.2" height="5.6" rx="1.2" fill="${shirt}"/><rect x="-1.9" y="-.6" width="1.5" height="4" fill="#3A2E28"/><rect x=".4" y="-.6" width="1.5" height="4" fill="#3A2E28"/>
+      <g class="lf-axe" style="${delay}"><line x1="1" y1="-4.6" x2="6.5" y2="-9.6" stroke="#7A4A23" stroke-width="1.3" stroke-linecap="round"/>${head}</g></g></g>`;
+};
+
 function lifeFor(h, cx, cy, nth = 0) {
   const at = (x, y, inner, cls = '') => `<g transform="translate(${f(cx + x)},${f(cy + y)})"${cls ? ` class="${cls}"` : ''}>${inner}</g>`;
   const mirror = on => out => on ? `<g transform="translate(${f(2 * cx)},0) scale(-1,1)">${out}</g>` : out;
@@ -233,7 +249,8 @@ function lifeFor(h, cx, cy, nth = 0) {
         at(-33, 14, `<path d="M-7 5 Q-6 -3 0 -4 Q6 -3 7 5 Z" fill="#B5693F" stroke="#6B2C1B" stroke-width=".9"/><path d="M-3 4 Q-2 -1 0 -2 M2 4 Q2 0 3.4 -1" fill="none" stroke="rgba(255,255,255,.25)" stroke-width=".9"/>`, 'lf-static'),
         at(-33, 8, `<path d="M0 0 V-7" stroke="#5A4A3C" stroke-width="1.4"/><path d="M-4.4 -7 H4.4 L3.2 -9.6 H-3.2 Z" fill="#8C8478" stroke="#4A4238" stroke-width=".8"/><circle cx="0" cy="-12" r="2" fill="rgba(240,234,224,.8)"/>`, 'lf-static'),
       ][v];
-      return mirror(v % 2 === 1)(extra + at(13, 33, `<path d="M-9 5 a9 9 0 0 1 18 0 z" fill="${v === 2 ? '#7A4A32' : '#8A3A22'}" stroke="#4E1E12" stroke-width="1"/><path d="M-6.5 1.5 h13 M-4 -2 h8 M-2.4 -2 v3.5 M2.4 -2 v3.5 M0 1.5 v3.5" stroke="#5E2414" stroke-width=".7" fill="none"/>
+      const mason = digger(cx, cy, 33, 25, -1, { kind: 'mason', cap: ['#E8D9A8', '#B23A2A', '#2F5D8A', '#4A3426', '#D9A21B'][v], shirt: ['#6B7A4A', '#C9A23B', '#8C4A7A', '#3E7C8C', '#B55A2C'][v], block: ['#B5693F', '#C77A4A', '#A85A34', '#BC6A44', '#CF8A58'][v], fleck: tint, chip: '#E4A27A', delay: dl(h, 1.1) });
+      return mirror(v % 2 === 1)(extra + mason + at(13, 33, `<path d="M-9 5 a9 9 0 0 1 18 0 z" fill="${v === 2 ? '#7A4A32' : '#8A3A22'}" stroke="#4E1E12" stroke-width="1"/><path d="M-6.5 1.5 h13 M-4 -2 h8 M-2.4 -2 v3.5 M2.4 -2 v3.5 M0 1.5 v3.5" stroke="#5E2414" stroke-width=".7" fill="none"/>
           <rect x="3.6" y="-10.5" width="3.8" height="7.5" fill="#6B2C1B" stroke="#4E1E12" stroke-width=".8"/>
           <path d="M-3.6 5 v-2.6 a3.6 3.6 0 0 1 7.2 0 V5 z" fill="#2A120A"/>
           <path class="lf-flame a" d="M-2.6 5 q.4 -4 2.6 -5.6 q2.2 1.6 2.6 5.6 z" fill="#FF8A2B"/><path class="lf-flame b" d="M-1.4 5 q.2 -2.8 1.4 -3.8 q1.2 1 1.4 3.8 z" fill="#FFE07A"/>
@@ -261,26 +278,27 @@ function lifeFor(h, cx, cy, nth = 0) {
         at(33, -2, `<g class="lf-crow" style="${dl(h, 6)}"><line x1="0" y1="2" x2="0" y2="-9" stroke="#6B4A2A" stroke-width="1.2"/><line x1="-5" y1="-6" x2="5" y2="-6" stroke="#6B4A2A" stroke-width="1.2"/><circle cy="-10.5" r="2.2" fill="#F1D9A0"/><path d="M-3 -12 h6 l-3 -3.2z" fill="${hat}"/><path d="M-2.4 -6 h4.8 l-1 5 h-2.8z" fill="${shirt}"/></g>`));
     }
     case 'mountains': {
-      // 0 classic mine with a red-helmet miner · 1 copper cart, boulders and a blue miner · 2 blue crystals and a lantern · 3 gold nuggets and a yellow miner
+      // 0 plain mine · 1 boulders · 2 blue crystals and a lantern · 3 gold nuggets. Every tile has a miner who chips ore out of a
+      // rock; the cart and the rock carry different materials from tile to tile
       const v = nth % 4;
-      const cart = ['#5A4A3C', '#8A4A2A', '#3E5A7A', '#6A6A30'][v], [o1, o2] = [['#B7C3CC', '#94A3AE'], ['#E0A050', '#C98A3A'], ['#8FD0E8', '#5FB0D0'], ['#F2D24A', '#D9A91E']][v];
+      const [o1, o2] = MATS[(nth * 2) % 6], [r1, r2] = MATS[(nth * 2 + 3) % 6];
+      const cart = ['#5A4A3C', '#8A4A2A', '#3E5A7A', '#6A6A30'][v];
       const lamp = ['#FFD27A', '#FF9A5A', '#BFE8FF', '#D8FF9A'][v];
       const helmet = ['#B23A2A', '#2F5D8A', '#E8D9A8', '#D9A21B'][v], shirt = ['#4A6A3A', '#7A8C9A', '#8C4A7A', '#B55A2C'][v];
-      const miner = (x, y) => at(x, y, `<g class="lf-cutter"><circle cx="0" cy="-8.2" r="2.3" fill="#F1C9A5"/><path d="M-2.6 -9.2 h5.2 l-.5 -2.1 h-4.2z" fill="${helmet}"/><circle cx="0" cy="-11.6" r=".9" fill="#FFE59A"/><rect x="-2.1" y="-6" width="4.2" height="5.6" rx="1.2" fill="${shirt}"/><rect x="-1.9" y="-.6" width="1.5" height="4" fill="#3A2E28"/><rect x=".4" y="-.6" width="1.5" height="4" fill="#3A2E28"/>
-        <g class="lf-axe" style="${dl(h, 1.1)}"><line x1="1" y1="-4.6" x2="6.5" y2="-9.6" stroke="#7A4A23" stroke-width="1.3" stroke-linecap="round"/><path d="M4.4 -11.6 q3.6 -.6 5.2 1.8 q-3 -.4 -5.2 -1.8z" fill="#C9D0D6" stroke="#6B747B" stroke-width=".5"/></g></g>`);
+      const miner = digger(cx, cy, v === 2 || v === 1 ? 33 : -37, v === 2 || v === 1 ? 27 : 13, v === 2 || v === 1 ? -1 : 1, { kind: 'miner', cap: helmet, shirt, block: '#8C857A', fleck: r1, chip: r2, delay: dl(h, 1.1) });
       const rock = (x, y, k, c = '#8C857A') => at(x, y, `<path d="M-${4 * k} 4 L-${2.6 * k} -${2 * k} L${1.4 * k} -${3.2 * k} L${4 * k} 4 Z" fill="${c}" stroke="#4E4840" stroke-width=".9" stroke-linejoin="round"/><path d="M-${.6 * k} -${2.4 * k} L${1.4 * k} -${3.2 * k} L${2.6 * k} 0 Z" fill="rgba(255,255,255,.28)"/>`, 'lf-static');
       const crystal = (x, y, k, c) => at(x, y, `<path d="M-2.2 4 L-1.6 -${5 * k} L0 -${7 * k} L1.6 -${5 * k} L2.2 4 Z" fill="${c}" stroke="#2B4A5A" stroke-width=".8" stroke-linejoin="round"/><path d="M-.4 -${6 * k} L-.2 3" stroke="rgba(255,255,255,.7)" stroke-width=".9"/>`, 'lf-static');
       const nugget = (x, y) => at(x, y, `<ellipse rx="2.8" ry="2" fill="#F2D24A" stroke="#A8741C" stroke-width=".8"/><ellipse cx="-.7" cy="-.7" rx=".9" ry=".5" fill="#FFF3B0"/>`, 'lf-static');
       const extras = [
-        miner(-33, 12),
-        rock(-34, 8, 1.3) + rock(-27, 14, .9, '#9A9186') + miner(32, 38),
-        crystal(-34, 12, 1.4, o2) + crystal(-28, 14, 1, o1) + crystal(-31, 5, .8, o1) + at(30, 24, `<line y1="-8" y2="-2" stroke="#5A4A3C" stroke-width="1.2"/><rect x="-2.4" y="-2" width="4.8" height="5.4" rx="1" fill="#8A8F96" stroke="#3A3F44" stroke-width=".8"/><circle cy=".7" r="1.4" fill="${lamp}"/>`, 'lf-static'),
-        nugget(-34, 14) + nugget(-29, 16) + nugget(-31, 10) + miner(31, 40),
+        '',
+        rock(-34, 8, 1.3) + rock(-27, 14, .9, '#9A9186'),
+        crystal(-34, 12, 1.4, '#5FB0D0') + crystal(-28, 14, 1, '#8FD0E8') + crystal(-31, 5, .8, '#8FD0E8') + at(22, 16, `<line y1="-8" y2="-2" stroke="#5A4A3C" stroke-width="1.2"/><rect x="-2.4" y="-2" width="4.8" height="5.4" rx="1" fill="#8A8F96" stroke="#3A3F44" stroke-width=".8"/><circle cy=".7" r="1.4" fill="${lamp}"/>`, 'lf-static'),
+        nugget(30, 22) + nugget(25, 25) + nugget(34, 26),
       ][v];
       return mirror(v === 1)(at(-15, 31, `<path d="M-8 5 V-1 a8 8 0 0 1 16 0 V5 z" fill="#2B2620" stroke="#5A4A3C" stroke-width="1.4"/><circle class="lf-lamp" cx="-6.5" cy="-4" r="1.6" fill="${lamp}"/>
           <line x1="8" y1="5" x2="31" y2="5" stroke="#5A4A3C" stroke-width="1"/><line x1="12" y1="5" x2="12" y2="6.4" stroke="#5A4A3C" stroke-width="1"/><line x1="20" y1="5" x2="20" y2="6.4" stroke="#5A4A3C" stroke-width="1"/><line x1="28" y1="5" x2="28" y2="6.4" stroke="#5A4A3C" stroke-width="1"/>
-          <g class="lf-cart" style="${dl(h, 8)}"><path d="M-4 0 h8 l-1.4 4 h-5.2 z" fill="${cart}" stroke="#2B2620" stroke-width=".6"/><circle cx="-2.2" cy="-.6" r="1.3" fill="${o1}"/><circle cx="1" cy="-1" r="1.5" fill="${o2}"/><circle cx="-2" cy="4.4" r="1.1" fill="#2B2620"/><circle cx="2" cy="4.4" r="1.1" fill="#2B2620"/></g>`) +
-        at(30 - (v >> 1) * 8, -14 + (v % 2) * 4, `<path d="M-6 5 L-1 -4 L1.5 0 L3.5 -2.5 L7 5 z" fill="rgba(255,255,255,.25)"/>`, 'lf-static') + extras);
+          <g class="lf-cart" style="${dl(h, 8)}"><path d="M-4 0 h8 l-1.4 4 h-5.2 z" fill="${cart}" stroke="#2B2620" stroke-width=".6"/><circle cx="-2.2" cy="-.6" r="1.3" fill="${o1}"/><circle cx="1" cy="-1" r="1.5" fill="${o2}"/><circle cx="-.6" cy="-2" r="1.1" fill="${o1}"/><circle cx="-2" cy="4.4" r="1.1" fill="#2B2620"/><circle cx="2" cy="4.4" r="1.1" fill="#2B2620"/></g>`) +
+        at(30 - (v >> 1) * 8, -14 + (v % 2) * 4, `<path d="M-6 5 L-1 -4 L1.5 0 L3.5 -2.5 L7 5 z" fill="rgba(255,255,255,.25)"/>`, 'lf-static') + extras + miner);
     }
     case 'desert': {
       const v = nth % 3;

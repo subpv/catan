@@ -1362,12 +1362,12 @@ svg.board:not(.alive) .wave, svg.board:not(.alive) .boat-bob, svg.board:not(.ali
 /* the builder (see js/builder.js) */
 .bw-grow { transform-box: fill-box; transform-origin: 50% 100%; }
 .bw-road .rl { animation: none; }
-.bw-bob { animation: bwbob .26s ease-in-out infinite alternate; }
+.bw-bob { animation: bwbob .34s ease-in-out infinite alternate; }
 @keyframes bwbob { from { transform: translateY(0); } to { transform: translateY(-1.3px); } }
-.bw-leg { transform-box: fill-box; transform-origin: 50% 0; animation: bwleg .26s ease-in-out infinite alternate; }
+.bw-leg { transform-box: fill-box; transform-origin: 50% 0; animation: bwleg .34s ease-in-out infinite alternate; }
 .bw-leg.b { animation-direction: alternate-reverse; }
 @keyframes bwleg { from { transform: rotate(-26deg); } to { transform: rotate(26deg); } }
-.bw-swing { animation: bwswing .4s cubic-bezier(.5,0,.8,.4) infinite; }
+.bw-swing { animation: bwswing .54s cubic-bezier(.5,0,.8,.4) infinite; }
 @keyframes bwswing { 0% { transform: translate(3.4px,-9.4px) rotate(-72deg); } 55% { transform: translate(3.4px,-9.4px) rotate(24deg); } 70% { transform: translate(3.4px,-9.4px) rotate(14deg); } 100% { transform: translate(3.4px,-9.4px) rotate(-72deg); } }
 .bw-dust { fill: none; stroke: #FFF3DC; stroke-width: 2.4; opacity: 0; transform-box: fill-box; transform-origin: center; animation: bwdust .55s ease-out both; }
 @keyframes bwdust { 0% { opacity: 0; transform: scale(.3); } 12% { opacity: .85; } 100% { opacity: 0; transform: scale(2.2); } }
@@ -1378,3 +1378,7 @@ svg.board:not(.alive) .wave, svg.board:not(.alive) .boat-bob, svg.board:not(.ali
 /* an offer that everybody declined fades away */
 .board-trade.trade-out { animation: tradeout .6s ease-in 1.3s both; pointer-events: none; }
 @keyframes tradeout { to { opacity: 0; transform: translateY(8px); } }
+/* smoke while building: soft grey puffs that rise, swell and fade */
+.bw-puff { fill: rgba(236,230,220,.9); stroke: rgba(150,140,128,.5); stroke-width: .8; opacity: 0; transform-box: fill-box; transform-origin: center; animation: bwpuff 1.1s ease-out both; pointer-events: none; }
+@keyframes bwpuff { 0% { opacity: 0; transform: translate(0,0) scale(.4); } 15% { opacity: .85; } 100% { opacity: 0; transform: translate(var(--dx,0), calc(-1 * var(--rise,16px))) scale(2.1); } }
+@media (prefers-reduced-motion: reduce) { .bw-puff { animation: none !important; opacity: 0; } }
