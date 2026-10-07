@@ -1,0 +1,953 @@
+1|Spela
+2|Statistik
+3|Profil
+4|Språk
+5|Ljud av
+6|Ljud på
+7|Fungerar något inte, eller har du en idé?
+8|Skicka feedback
+9|Stäng
+10|Bosätt, handla och bygg med dina vänner.
+11|Logga in
+12|Skapa konto
+13|Visningsnamn
+14|Land
+15|E-post
+16|Lösenord
+17|Inbjudningskod (fråga den som driver servern)
+18|Du är första spelaren, så det här kontot blir administratör.
+19|Din färg
+20|Var kommer du ifrån? Din flagga visas bredvid ditt namn.
+21|Spara
+22|Sparat.
+23|Riddare
+24|Klassisk
+25|{n} poäng
+26|drag {n}
+27|{name}s spel
+28|Nytt spel
+29|Version
+30|Bosätt, handla, bygg. Utvecklingskort, längsta väg, största armé. 10 poäng.
+31|Riddare & Barbarer
+32|Varor, stadsförbättringar, riddare och barbarräder. 13 poäng.
+33|Spelare
+34|Färre
+35|Fler
+36|Poäng för att vinna
+37|Fem eller sex spelare använder den större spelplanen, med en särskild byggfas mellan dragen.
+38|Upp till fyra spelare använder den vanliga spelplanen.
+39|Skapa spel
+40|Dina spel
+41|Din tur
+42|Öppna
+43|värd
+44|Ledig plats
+45|Välj din färg
+46|Starta spelet
+47|Väntar på att värden startar…
+48|Kopiera inbjudningslänk
+49|Lämna
+50|Öppna spel
+51|Gå med
+52|Inga öppna spel. Skapa ett och bjud in dina vänner.
+53|Titta
+54|Spelet är skapat. Välj din färg och bjud in dina vänner.
+55|Inbjudningslänken kopierades.
+56|Favoritfärg (används i spel när den är ledig, och på statistiksidan)
+57|Inloggad som {email}
+58|administratör
+59|Byt lösenord
+60|Nuvarande lösenord
+61|Nytt lösenord
+62|Klar för idag?
+63|Logga ut
+64|Lösenordet är bytt.
+65|Du gick med i spelet.
+66|Värden har stängt spelet.
+67|Det gick inte att ladda Broch
+68|Hamn: byt 3 likadana kort mot 1
+69|Hamn: byt 2 {res} mot 1
+70|Spelplan
+71|ingenting
+72|Något gick fel
+73|Berätta vad du gjorde så fixar vi det. Knappen kopierar feldetaljerna så att du kan klistra in dem i formuläret.
+74|Feldetaljer
+75|Stäng
+76|Feldetaljerna kopierades. Klistra in dem i feedbackformuläret.
+77|Kunde inte nå Broch-servern. Kontrollera din anslutning.
+78|Begäran misslyckades ({n})
+79|Återansluter till servern… försök igen om en stund.
+80|Servern svarade inte.
+81|Återansluter…
+82|Appen stötte på ett oväntat fel
+83|Servern rapporterade ett fel
+84|Förlorade anslutningen till spelservern
+85|Trä
+86|Lera
+87|Ull
+88|Säd
+89|Malm
+90|Papper
+91|Tyg
+92|Mynt
+93|Handel
+94|Politik
+95|Vetenskap
+96|barbarskepp
+97|handelsport
+98|politikport
+99|vetenskapsport
+100|enkel
+101|stark
+102|mäktig
+103|Riddare
+104|Segerpoäng
+105|Vägbygge
+106|Överflödets år
+107|Monopol
+108|Alkemist
+109|Uppfinnare
+110|Kran
+111|Ingenjör
+112|Bevattning
+113|Medicin
+114|Gruvdrift
+115|Boktryck
+116|Smed
+117|Handelshamn
+118|Mästerköpman
+119|Köpman
+120|Handelsflotta
+121|Råvarumonopol
+122|Handelsmonopol
+123|Biskop
+124|Författning
+125|Desertör
+126|Diplomat
+127|Intrig
+128|Sabotör
+129|Spion
+130|Krigsherre
+131|Bröllop
+132|Röd
+133|Blå
+134|Orange
+135|Vit
+136|Turkos
+137|Lila
+138|Svart
+139|Rosa
+140|Gul
+141|Brun
+142|Metropol!
+143|Längsta vägen
+144|Största armén
+145|+2 segerpoäng
+146|Spelare med för många kort måste slänga hälften.
+147|Ingen behöver slänga kort.
+148|Rövaren är på väg.
+149|Barbarerna har inte anfallit än, så rövaren står kvar.
+150|Rövaren slår till!
+151|Barbarerna anfaller!
+152|Barbarer (städer)
+153|Aktiva riddare
+154|Tillbakaslagna!
+155|Broch plundras!
+156|Laddar spelet…
+157|Du stal 1 {res} från {name}.
+158|{name} stal 1 {res} från dig.
+159|Ditt drag
+160|{name} vinner!
+161|Resultatet är sparat på statistiksidan.
+162|Fira
+163|Avbryt
+164|Placera en väg bredvid.
+165|Placera din stad.
+166|Placera din första bosättning.
+167|Placera din andra bosättning.
+168|Tryck på en lysande kant.
+169|Tryck på ett lysande hörn. Det måste finnas minst ett tomt hörn mellan byggnader.
+170|{name} placerar en väg…
+171|{name} placerar en byggnad…
+172|Släng {n} kort.
+173|Du har fler kort än din handgräns.
+174|Välj kort
+175|Ge {name} {n} kort.
+176|Bröllopsgåva: du väljer vilka kort.
+177|Flytta rövaren (Biskop).
+178|Flytta rövaren.
+179|Tryck på en ruta. Du stjäl från en spelare med en byggnad där.
+180|Välj vem du stjäl från.
+181|Välj
+182|Din riddare blev bortkörd.
+183|Tryck på ett lysande hörn för att flytta den dit.
+184|Välj en stad för din metropol ({track}).
+185|Tryck på en av dina markerade städer.
+186|Barbarerna plundrar en av dina städer.
+187|Tryck på staden som blir en bosättning.
+188|Du hjälpte till att försvara Broch. Dra ett framstegskort.
+189|Välj hög
+190|Du har fler än 4 framstegskort.
+191|Släng tills du har 4.
+192|Välj kort
+193|Din akvedukt ger en råvara.
+194|Det här slaget gav dig ingenting.
+195|En riddare har deserterat till din sida.
+196|Tryck på ett hörn vid din väg, eller hoppa över.
+197|Din spion ser deras framstegskort.
+198|Ta 2 kort från deras hand.
+199|Gör ditt val.
+200|Hoppa över
+201|Särskild byggfas.
+202|Du får bygga eller köpa nu. Ingen handel.
+203|Klar
+204|{name} är i den särskilda byggfasen…
+205|Väntar på att {name} slår…
+206|{name} gör sitt drag.
+207|Din tur. Slå tärningarna.
+208|Du kan spela en riddare innan du slår.
+209|Slå tärningarna
+210|Placera gratis vägar: {n}.
+211|Bygg, handla eller avsluta ditt drag.
+212|Gratis befordringar kvar: {n} (tryck på en riddare).
+213|Avsluta drag
+214|Barbarskepp
+215|{track}-port
+216|Slog {n}
+217|Det finns ingenstans att göra det just nu.
+218|Du tittar på det här spelet.
+219|Barbarskepp: anfaller när det når slutet
+220|Barbarernas styrka (städer) mot aktiva riddare
+221|Utvecklingskort kvar: {n}
+222|{n} kvar
+223|Väg
+224|Bosättning
+225|Stad
+226|Utv.kort
+227|Stadsmur
+228|Bankhandel
+229|4:1 eller bättre
+230|Utvecklingskort
+231|ny
+232|Framstegskort
+233|Din hand
+234|Kort: {n} · gräns {m}
+235|Kort: {n}
+236|Utv.: {n}
+237|Riddare: {n}
+238|Framsteg: {n}
+239|Förbättringar: handel / politik / vetenskap
+240|du
+241|Online
+242|Offline
+243|av {n}
+244|{name} ger
+245|och vill ha
+246|Handla med {name}
+247|Nekade
+248|Funderar…
+249|Dra tillbaka erbjudandet
+250|Du accepterade. Väntar på bekräftelse.
+251|Du nekade.
+252|Acceptera
+253|Neka
+254|Du saknar korten.
+255|Handelserbjudande
+256|Metropol: {name}
+257|Förbättra {track} ({n} {res})
+258|Högar: vetenskap {a}, handel {b}, politik {c}
+259|Stadsförbättringar
+260|Nivå 3 låser upp en bonus. Den som först når nivå 4 bygger en metropol (+2).
+261|Säg hej till bordet.
+262|Spellogg
+263|Chatt
+264|Kostnader
+265|Meddelande
+266|Skicka
+267|Tryck där vägen ska byggas.
+268|Tryck där bosättningen ska byggas.
+269|Tryck på bosättningen som ska uppgraderas.
+270|Tryck på ett hörn vid din väg för riddaren.
+271|Tryck på staden som ska få mur.
+272|Bekräfta
+273|har {n}
+274|Mindre
+275|Släng {n} kort
+276|En 7:a slogs och du har fler än {n} kort.
+277|Bröllopsgåva till {name}
+278|Välj {n} kort att ge.
+279|Stjäl från…
+280|Du tar ett slumpmässigt kort.
+281|Dra ett framstegskort
+282|Välj en hög.
+283|Akvedukt
+284|Ta valfri råvara.
+285|Släng ett framstegskort
+286|Du får ha högst 4.
+287|Ta ingenting
+288|{name}s framstegskort
+289|Ta ett.
+290|{name}s hand
+291|Ta {n} kort.
+292|Föreslå en handel
+293|Alla ser erbjudandet och kan acceptera. Du väljer vem du handlar med.
+294|Du ger
+295|Du vill ha
+296|Banken istället
+297|Erbjud
+298|Handla med banken
+299|Dina kurser kommer från dina hamnar och förbättringar.
+300|Dina kurser kommer från dina hamnar.
+301|Ge
+302|Få 1
+303|Byt {n} {a} mot 1 {b}
+304|Räknas automatiskt.
+305|Spela det under din tur.
+306|Du har redan spelat ett kort den här turen.
+307|Kort som köps den här turen kan spelas nästa tur.
+308|Spela kort
+309|Ta valfria 2 råvaror från banken.
+310|Alla ger dig allt av råvaran du nämner.
+311|Alkemisten spelas innan du slår.
+312|Slå tärningarna först.
+313|Välj den röda och den gula tärningen. Händelsetärningen slås som vanligt.
+314|Slå {n}
+315|Uppfinnare: tryck på två sifferrutor att byta.
+316|Ingenjör: tryck på en stad för en gratis mur.
+317|Medicin: tryck på bosättningen som ska uppgraderas (1 säd, 2 malm).
+318|Köpman: tryck på en ruta vid din byggnad.
+319|Diplomat: tryck på en öppen väg att ta bort.
+320|Intrig: tryck på en motståndares riddare vid din väg.
+321|Poäng: {n}
+322|Vilken korttyp vill du byta 2:1 den här turen?
+323|Varje motståndare ger dig upp till 2.
+324|Varje motståndare ger dig 1.
+325|Enkel riddare
+326|Stark riddare
+327|Mäktig riddare
+328|Aktivera (1 säd)
+329|Befordra (gratis, Smed)
+330|Befordra (1 ull, 1 malm)
+331|Flytta längs dina vägar
+332|Kör bort en svagare riddare
+333|Jaga bort rövaren
+334|Aktiv (aktiverad denna tur, kan agera nästa tur)
+335|Aktiv
+336|Inaktiv
+337|Inget att göra med den just nu.
+338|Tryck dit riddaren ska gå.
+339|Tryck på riddaren som ska köras bort.
+340|1 poäng
+341|2 poäng, dubbel produktion
+342|Utvecklingskort
+343|Riddare, framsteg eller poäng
+344|Enkel riddare (inaktiv)
+345|Aktivera riddare
+346|Befordra riddare
+347|Mäktig kräver politik 3
+348|+2 handgräns
+349|Byggkostnader
+350|Förbättringar kostar 1–5 varor: tyg för handel, mynt för politik, papper för vetenskap. Städer vid skog, betesmark och berg ger en vara istället för en andra råvara.
+351|Se statistik
+352|Tillbaka till lobbyn
+353|Spelservern stötte på ett fel när ditt drag hanterades
+354|Flytta rövaren och stjäl ett kort. Räknas till största armén.
+355|Ger 1 poäng. Hålls dold för de andra tills spelet slutar.
+356|Bygg 2 vägar gratis.
+357|Nämn en råvara. Alla ger dig allt de har av den.
+358|Välj båda produktionstärningarna innan du slår.
+359|Byt två sifferbrickor (inte 2, 6, 8 eller 12).
+360|Din nästa stadsförbättring den här turen kostar 1 mindre.
+361|Bygg en stadsmur gratis.
+362|Ta 2 säd för varje åker vid dina byggnader.
+363|Uppgradera en bosättning till stad för 2 malm och 1 säd.
+364|Ta 2 malm för varje berg vid dina byggnader.
+365|Befordra 2 riddare gratis.
+366|Byt en av dina råvaror mot en vara från varje motståndare.
+367|Titta på handen hos en spelare med fler poäng och ta 2 kort.
+368|Placera köpmannen vid din byggnad: byt den råvaran 2:1 och håll 1 poäng.
+369|Byt valfri korttyp 2:1 den här turen.
+370|Varje motståndare ger dig upp till 2 av en råvara.
+371|Varje motståndare ger dig 1 av en vara.
+372|Flytta rövaren och stjäl 1 kort från varje spelare vid den rutan.
+373|En motståndares svagaste riddare deserterar. Du får placera en lika stark.
+374|Ta bort en öppen väg. Är den din bygger du den igen gratis.
+375|Kör bort en motståndares riddare som står vid en av dina vägar.
+376|Spelare med lika många poäng som du eller fler slänger hälften av sina kort.
+377|Titta på en motståndares framstegskort och ta ett.
+378|Aktivera alla dina riddare gratis.
+379|Varje spelare med fler poäng ger dig 2 valfria kort.
+380|Väntar på att {names} slänger kort…
+381|Väntar på att {names} flyttar rövaren…
+382|Väntar på att {names} stjäl…
+383|Väntar på att {names} flyttar en riddare…
+384|Väntar på att {names} ger kort…
+385|Väntar på att {names} väljer en stad att förlora…
+386|Väntar på att {names} drar framstegskort…
+387|Väntar på {names}…
+388|{name} vinner
+389|Laddar…
+390|Någon
+391|Föregående år
+392|PÅGÅR
+393|AVSLUTAT
+394|Nästa år
+395|Alla spel
+396|LEDER JUST NU
+397|MÄSTARE {year}
+398|Ingen än
+399|Vinster
+400|Spel: {n}
+401|Se segerfirandet
+402|Ställning {year}
+403|p
+404|Inga spel än
+405|Inga spelare än.
+406|Över tid
+407|Inbördes möten
+408|Varje siffra visar hur ofta spelaren i raden har slagit spelaren i kolumnen.
+409|Registrera ett spel vid bordet
+410|Alla spel {year}
+411|Inget registrerat än.
+412|Vinst nr {n} under {year}
+413|Vinster: {n}
+414|Ta bort?
+415|Borttaget.
+416|Inga spel i år än.
+417|Bästa svit
+418|Nuvarande svit
+419|Favoritversion
+420|Nemesis: {name} ({n}×)
+421|spelat vid bordet
+422|Drag: {n}
+423|{n} min
+424|Bord
+425|Ta bort
+426|Snabbaste vinst
+427|Högsta poäng
+428|Flest kort skördade
+429|{n} i ett spel
+430|Längsta spel
+431|Rekord
+432|Tärningar
+433|Hur ofta varje tal slogs
+434|Staplar: slag i år. Streckad linje: vad sannolikheten förutsäger. Hetaste tal: {n} ({m} av {total} slag).
+435|Diagrammet fylls i allteftersom ni spelar.
+436|Ackumulerade vinster under året
+437|När spelades det
+438|Vem spelade
+439|Vem vann
+440|Välj spelarna först.
+441|Spara spel
+442|Sparat i statistiken.
+443|Okänt läge
+444|Broch kräver 2–6 spelare
+445|Spelet börjar. {@ps} tar plats.
+446|{@p} placerar först.
+447|{@p} vinner med {n} segerpoäng!
+448|{@p} har nu längsta vägen ({n}).
+449|Ingen har längsta vägen längre.
+450|{@p} slog {n} ({#e}).
+451|{@p} slog {n}.
+452|Banken fick slut på {#r}; ingen får något.
+453|{@p} får {$c}.
+454|Barbarskeppet närmar sig ({n}/{m}).
+455|Barbarerna anfaller! Styrka {n} mot riddarnas {m}.
+456|Barbarerna är tillbakaslagna. {@p} blir Brochs försvarare (+1 SP).
+457|Barbarerna är tillbakaslagna. {@ps} delar äran och drar varsitt framstegskort.
+458|Barbarerna är tillbakaslagna.
+459|Barbarerna vinner! {@ps} förlorar varsin stad.
+460|Barbarerna vinner, men det finns inga oskyddade städer att plundra.
+461|{@p}s stad blir en bosättning.
+462|Högen {#d} är tom.
+463|{@p} visar {%c} (+1 SP).
+464|{@p} drar ett framstegskort ({#d}).
+465|{@p} har ingen ledig stad för metropolen ({#t}).
+466|{@p} bygger en metropol ({#t}).
+467|Särskild byggfas: {@ps}.
+468|Du kan inte bygga en väg där.
+469|Inga vägar kvar.
+470|Inte tillräckligt med råvaror.
+471|{@p} byggde en väg.
+472|Ogiltig åtgärd.
+473|Spelet är över.
+474|Du är inte med i det här spelet.
+475|Okänd åtgärd.
+476|Det är inte ditt drag just nu.
+477|Inte tillåtet just nu.
+478|Bara i riddarläget.
+479|Det är inte din placering.
+480|För nära en annan byggnad.
+481|{@p} placerade en bosättning.
+482|{@p} placerade en stad.
+483|Vägen måste ansluta till din nya byggnad.
+484|Uppställningen är klar. {@p} börjar.
+485|Redan slaget.
+486|Inga gratis vägar att hoppa över.
+487|Det är inte din särskilda byggfas.
+488|Du kan inte bygga en bosättning där.
+489|Inga bosättningar kvar.
+490|{@p} byggde en bosättning.
+491|Uppgradera en av dina bosättningar.
+492|Inga städer kvar.
+493|{@p} byggde en stad.
+494|Inga utvecklingskort i riddarläget.
+495|Högen med utvecklingskort är tom.
+496|{@p} köpte ett utvecklingskort.
+497|Bara ett utvecklingskort per tur.
+498|Du har inget spelbart kort av den sorten (nya kort väntar en tur).
+499|{@p} spelade {%c}.
+500|{@p} har nu största armén.
+501|Välj två råvaror.
+502|Banken har inte de korten.
+503|{@p} spelade {%c} och tog {$c2}.
+504|Välj en råvara.
+505|{@p} spelade {%c} på {#r} och samlade {n}.
+506|Okänt kort.
+507|Inget att slänga.
+508|Välj exakt {n} kort.
+509|Du har inte de korten.
+510|{@p} slängde kort: {n}.
+511|Inget att ge.
+512|{@p} ger {@q} kort: {n}.
+513|Du flyttar inte rövaren.
+514|Flytta rövaren till en annan ruta.
+515|{@p} flyttade rövaren.
+516|Välj någon vid rövaren.
+517|Fyll i båda sidorna av handeln.
+518|{@p} erbjuder {$g} för {$w}.
+519|Det erbjudandet finns inte.
+520|Du har inte de begärda korten.
+521|Den spelaren har inte accepterat.
+522|Någon har inte korten längre.
+523|{@p} bytte {$g} med {@q} mot {$w}.
+524|Inget erbjudande att dra tillbaka.
+525|Välj vad du ger och vad du får.
+526|Du behöver {$c}.
+527|Banken har slut på det.
+528|{@p} bytte {$g} med banken mot {$w}.
+529|Riddare placeras på ett tomt hörn vid din väg.
+530|Inga enkla riddare kvar.
+531|{@p} rekryterade en riddare.
+532|Välj en av dina inaktiva riddare.
+533|Aktivering kräver 1 säd.
+534|{@p} aktiverade en riddare.
+535|Välj en av dina riddare.
+536|En riddare kan bara befordras en gång per tur.
+537|Inga riddare på nästa nivå kvar.
+538|{@p} befordrade en riddare ({#l}).
+539|Riddaren kan inte nå det hörnet.
+540|{@p} flyttade en riddare.
+541|Ingen nåbar motståndarriddare där.
+542|Du kan bara köra bort en svagare riddare.
+543|{@p}s riddare kör bort {@q}s riddare.
+544|Rövaren kan inte flyttas före det första barbaranfallet.
+545|Den riddaren står inte vid rövaren.
+546|{@p}s riddare jagar bort rövaren.
+547|Ingen riddare att flytta.
+548|Välj ett markerat hörn.
+549|{@p} flyttade en bortkörd riddare.
+550|Murar byggs runt dina städer.
+551|Inga murar kvar.
+552|{@p} byggde en stadsmur.
+553|Okänd förbättring.
+554|Du behöver en stad först.
+555|Redan på toppen.
+556|{@p} förbättrade {#t} till nivå {n}.
+557|{@p} tar metropolen ({#t}) från {@q}.
+558|Ingen metropol att placera.
+559|Välj en av dina städer.
+560|Inget att förlora.
+561|Välj en av dina oskyddade städer.
+562|Välj ett kort.
+563|{@p} slängde ett framstegskort.
+564|{@p}s akvedukt ger {$c}.
+565|Ingen riddare att placera.
+566|Välj ett tomt hörn vid din väg.
+567|{@p} placerar den deserterade riddaren.
+568|Inget att ta.
+569|{@p}s spion stjäl ett framstegskort från {@q}.
+570|Välj {n} av deras kort.
+571|{@p} tar kort från {@q}: {n}.
+572|Spela Alkemisten innan du slår.
+573|{@p} stal ett kort från {@q}.
+574|Den riddaren är inte aktiv.
+575|En riddare som aktiverats den här turen måste vänta till nästa tur.
+576|{@p}s riddare har ingenstans att ta vägen och lämnar planen.
+577|Välj båda tärningarna.
+578|Välj två sifferrutor (inte 2, 6, 8 eller 12).
+579|Välj en av dina städer utan mur.
+580|Välj en av dina bosättningar.
+581|Medicin kräver 1 säd och 2 malm.
+582|{@p} byter {$g} mot {@q}s {$w}.
+583|Välj en spelare med fler poäng än du.
+584|De har inga kort.
+585|Välj en landruta.
+586|Köpmannen måste stå vid din bosättning eller stad.
+587|Välj en korttyp.
+588|{@p} samlar {$c}.
+589|Välj en vara.
+590|Rövaren kan inte flytta före det första barbaranfallet.
+591|Välj en spelare som har riddare.
+592|En av {@p}s riddare deserterar.
+593|Välj en öppen väg (med en lös ände).
+594|{@p} tog bort en väg från {@q}.
+595|Välj en motståndares riddare vid en av dina vägar.
+596|Välj en motståndare.
+597|De har inga framstegskort.
+598|Ogiltiga data
+599|Spelet hittades inte
+600|Logga in först.
+601|För många försök. Försök igen om några minuter.
+602|Ange en giltig e-postadress.
+603|Välj ett visningsnamn.
+604|Lösenordet måste vara minst 6 tecken.
+605|Välj ditt land.
+606|Fel inbjudningskod.
+607|Den e-postadressen är redan registrerad.
+608|Det namnet är upptaget.
+609|Fel e-post eller lösenord.
+610|Namnet får inte vara tomt.
+611|Okänd färg.
+612|Okänt språk.
+613|Nuvarande lösenord är fel.
+614|Spelet har redan startat.
+615|Gå med i spelet först.
+616|Någon annan har redan den färgen.
+617|Det spelet har redan startat.
+618|Spelet är fullt.
+619|Du kan inte lämna ett pågående spel. Värden kan avbryta det.
+620|Bara värden kan starta.
+621|Redan startat.
+622|Vänta på minst en spelare till.
+623|Bara värden kan avbryta spelet.
+624|Välj vinnaren bland spelarna.
+625|Hittades inte
+626|Bara den som registrerade det (eller en administratör) kan ta bort det.
+627|Okänd slutpunkt
+628|Spelet är inte igång.
+629|Scenario
+630|Varianter
+631|Uppdrag
+632|Välj en expansion för att se dess alternativ.
+633|Städer & Riddare
+634|5–6
+635|Bosätt, handla, bygg. Utvecklingskort, Längsta vägen, Största armén.
+636|Varor, stadsförbättringar, riddare och barbarräder.
+637|Expansion
+638|Ingen
+639|Standardön.
+640|Sjöfarare
+641|Skepp och utforskning av öar.
+642|Handelsmän & Barbarer
+643|Fiskare, floder och händelsekort.
+644|Upptäckare & Pirater
+645|Uppdrag genom dimman.
+646|Expansion för 5–6 spelare
+647|Större spelplan och en särskild byggfas. Fungerar med valfritt antal spelare.
+648|Fiskeplats
+649|Fiskstim
+650|Piratnäste
+651|Bonus för ny ö: +1 segerpoäng för den första bosättningen
+652|Pirat
+653|Skog
+654|Kullar
+655|Betesmark
+656|Åkrar
+657|Berg
+658|Öken
+659|Guld
+660|Flod
+661|fisk
+662|krydda
+663|Upptäckt
+664|Startresurser
+665|Byte
+666|Flytta rövaren eller piraten.
+667|Tryck på en landbricka för rövaren eller en havsbricka för piraten. Du stjäl från en spelare bredvid.
+668|Guld! Välj {n} resurser.
+669|Ta valfria resurser som banken har.
+670|Tryck på ett av dina pulserande skepp för att segla (en gång per tur).
+671|Tryck där skeppet ska segla.
+672|Zooma in
+673|Zooma ut
+674|Visa hela spelplanen
+675|Fiskmarker kvar i påsen
+676|Händelsekort kvar innan leken blandas om
+677|Skepp
+678|Bro
+679|Fisk
+680|{n} fisk
+681|2 guld = 1 kort
+682|Leverera, attackera
+683|Guld från platser vid floder. 2 guld köper vilket kort som helst.
+684|{n} guld
+685|Fisk är säker från rövaren och kan inte handlas.
+686|Den gamla kängan: du behöver en poäng till för att vinna.
+687|Gammal känga
+688|Fisk på plan · levererad
+689|Krydda på plan · levererad
+690|Pjäser kvar
+691|Aktiv riddarstyrka
+692|Levererad fisk · krydda
+693|Nivå 3: handla varor 2:1 med banken.
+694|Nivå 3: dina riddare kan bli mäktiga.
+695|Nivå 3: akvedukten ger en resurs när du inte får något.
+696|Nivå 4: första spelaren här reser en metropol (+2 poäng).
+697|alla på en gång
+698|Tryck på havskanten dit skeppet ska.
+699|Tryck på flodövergången för din bro.
+700|Guld!
+701|Välj {n} resurser från banken.
+702|Jaga bort rövaren
+703|Flytta rövaren till valfri bricka och stjäl från en granne.
+704|Stjäl ett kort
+705|Ta ett slumpat kort från en spelare du väljer.
+706|Ta en resurs
+707|Ta valfri resurs från banken.
+708|Gratis väg
+709|Bygg en väg utan att betala.
+710|Framstegskort
+711|Dra ett framstegskort från en hög du väljer.
+712|Dra ett utvecklingskort gratis.
+713|Använd fisk
+714|Du har {n} fisk. Fisk kan inte stjälas eller förloras till rövaren.
+715|Ingen har kort att stjäla.
+716|Byt guld mot kort
+717|Du har {n} guld. 2 guld köper valfri resurs, högst två gånger per tur.
+718|På plan: {n} · levererat: {d} · {v}/3 poäng
+719|Leverera
+720|Var 2:a leverans till rådet ger 1 poäng, upp till 3 poäng per uppdrag. Ett förstört piratnäste ger 1 poäng till den som träffade det mest.
+721|Fisk till Broch
+722|Kryddor till Broch
+723|Piratnästen
+724|Varje träff kostar 1 malm och 1 ull och kräver ett skepp intill nästet.
+725|Inga nästen hittade än. Utforska dimman.
+726|Näste · {n} träffar kvar
+727|Attackera
+728|Seglar på havskanter; rör sig en gång per tur
+729|Korsar en flod; ger 3 guld
+730|Väntar på att {names} ska välja från guldfältet…
+731|Expansioner
+732|Flytta piraten till en annan havsbricka.
+733|{@p} flyttade piraten.
+734|Händelsekorten blandas om.
+735|{@p} seglar ut på öppet vatten.
+736|{@p} upptäcker land: {#t}.
+737|{@p} hittar guld och får välja {n} resurser.
+738|{@p} fångar {n} fisk.
+739|{@p} drar upp den gamla kängan och behöver en poäng till för att vinna.
+740|{@p} lastar {n} krydda.
+741|{@p} drar in en fin fångst fisk.
+742|{@p} tjänar {n} guld.
+743|{@p} bosätter sig på en ny ö och får en bonuspoäng (+1 SP).
+744|Det finns inga skepp i det här spelet.
+745|Inga skepp kvar.
+746|Du kan inte segla ett skepp dit.
+747|{@p} byggde ett skepp.
+748|Det skeppet kan inte åka dit.
+749|{@p} seglade ett skepp till en ny plats.
+750|Inget guld att spendera.
+751|{@p} tar {$c} från guldfältet.
+752|Det finns inga floder i det här spelet.
+753|Inga broar kvar.
+754|Du kan inte bygga en bro där.
+755|{@p} byggde en bro.
+756|Du kan bara byta guld två gånger per tur.
+757|Du behöver 2 guld.
+758|{@p} byter 2 guld mot {$c}.
+759|Det finns inga fiskare i det här spelet.
+760|Okänd fiskhandel.
+761|Du behöver {n} fisk.
+762|{@p} betalar {n} fisk för att jaga bort rövaren.
+763|Välj en spelare med kort.
+764|Välj en resurs som banken har.
+765|{@p} byter {n} fisk mot {$c}.
+766|{@p} byter {n} fisk mot en gratis väg.
+767|{@p} byter {n} fisk mot ett framstegskort.
+768|{@p} byter {n} fisk mot ett utvecklingskort.
+769|Det finns inga uppdrag i det här spelet.
+770|Det uppdraget finns inte i det här spelet.
+771|Du har inget att leverera.
+772|Du behöver en bosättning att leverera till.
+773|{@p} levererar {n} {#k} till rådet.
+774|Det finns inga piratnästen i det här spelet.
+775|Det finns inget näste där.
+776|Du behöver ett skepp intill nästet.
+777|Attack kostar 1 malm och 1 ull.
+778|{@p} attackerar ett piratnäste ({n} kvar).
+779|Piratnästet är förstört. {@p} får prispengarna (+1 SP).
+780|Mot nya stränder
+781|De fyra öarna
+782|Dimöarna
+783|Fiskarna på Catan
+784|Floderna på Catan
+785|Händelsekort
+786|Fisk till Catan
+787|Kryddor till Catan
+788|Fiskeplatser, fiskmarker och den gamla kängan.
+789|Broar, guld, och rikaste och fattigaste spelaren.
+790|En hög med händelsekort ersätter tärningarna.
+791|Husregel: bortglömd rövare
+792|Om en spelare avslutar sin tur utan att flytta rövaren går den tillbaka till öknen.
+793|Om du avslutar din tur nu går rövaren tillbaka till öknen.
+794|Den husregeln är inte påslagen.
+795|{@p} glömde flytta rövaren, så den går tillbaka till öknen.
+796|Husregel: startresurser för båda
+797|Husregler
+798|Båda byggnaderna från uppställningsfasen ger startresurser. I Städer & Riddare räknas staden som en bosättning.
+799|Inget har hänt än.
+800|Uppställningsfas
+801|Diagrammen fylls i när de första dragen har spelats.
+802|Segerpoäng över tid
+803|Tärningsslag
+804|Staplar: utfall · linje: förväntat efter {n} slag
+805|Mottagna råvaror
+806|Slag
+807|Vanligast
+808|Sjuor
+809|Mål
+810|utfall
+811|förväntat
+812|Fler än {n} kort: vid en 7:a förlorar du hälften.
+813|Bara senaste slaget
+814|Visa tidigare drag
+815|Brochs försvarare
+816|−1 stad
+817|Levande spelplan
+818|Levande spelplan: på
+819|Levande spelplan: av
+820|Bank
+821|Ger 1 poäng. Läggs öppet framför dig.
+822|Så spelar du: {mode}
+823|Så spelar du
+824|Så fungerar {mode} (1 min)
+825|Välkommen till Broch!
+826|Bygg, handla och väx. Först till 10 poäng vinner.
+827|Varje ruta ger en råvara.
+828|Skog, kullar, betesmark, åkrar och berg. Öknen ger ingenting.
+829|Bygg bosättningar på hörnen.
+830|Tryck på det lysande hörnet.
+831|En bosättning rör vid upp till 3 rutor.
+832|Dina motståndare bygger också.
+833|Slå tärningarna varje tur.
+834|Tryck på tärningarna.
+835|Alla rutor med det talet ger råvaror.
+836|Alla intill får ett kort, även under andras tur.
+837|Fler prickar, mer tur.
+838|Röda 6 och 8 slås oftast, 2 och 12 sällan.
+839|Använd kort för att bygga.
+840|En väg kostar trä och lera. Tryck på den lysande kanten.
+841|Städer ger dubbelt.
+842|Uppgradera en bosättning med 2 säd och 3 malm. Tryck på din bosättning.
+843|En 7:a väcker rövaren!
+844|Flytta rövaren till en ruta.
+845|Rutan slutar ge råvaror. Tryck på en ruta intill din motståndare.
+846|Stjäl sedan ett kort från någon där.
+847|Den som har fler än 7 kort förlorar hälften.
+848|Handla med spelarna eller banken.
+849|Banken byter 4 likadana mot 1. Hamnar: 3:1 eller 2:1.
+850|Riddare flyttar rövaren. Andra kort ger vägar, råvaror eller en segerpoäng.
+851|3 spelade riddare: Största armén, +2 poäng.
+852|Innehavaren hissar krigsfanor på spelplanen.
+853|5 vägar i rad: Längsta vägen, +2 poäng.
+854|Den längsta sträckan lyser i guld.
+855|Nå 10 poäng för att vinna!
+856|Bosättning 1 · Stad 2 · Längsta vägen 2 · Största armén 2 · Segerpoängkort 1
+857|Allt från Klassisk, plus varor, riddare och barbarer. Först till 13 poäng vinner.
+858|Städer ger varor.
+859|Skog: papper · Betesmark: tyg · Berg: mynt
+860|Med varor köper du stadsförbättringar.
+861|Handel kostar tyg, politik mynt, vetenskap papper. Tryck på +.
+862|Nivå 3 låser upp en specialförmåga.
+863|Vetenskap: ta en råvara när du inte får något. Handel: varor 2:1. Politik: starkare riddare.
+864|Först till nivå 4 bygger en metropol.
+865|Den är värd 2 poäng och står på din stad.
+866|Riddare försvarar Broch.
+867|Rekrytera en för ull och malm. Tryck på det lysande hörnet.
+868|Aktivera den med säd.
+869|Bara aktiva riddare strider. Befordra dem för att göra dem starkare.
+870|Ett skepp på händelsetärningen flyttar barbarerna.
+871|Varje skepp för dem ett steg närmare Broch.
+872|Deras styrka: alla städer på spelplanen. Ditt försvar: alla aktiva riddare.
+873|Den starkaste försvararen får en poäng. Vinner barbarerna plundras den svagaste staden.
+874|En färgad port på händelsetärningen ger kort till spelare med tillräckligt höga förbättringar.
+875|Stadsmurar
+876|Varje mur låter dig behålla 2 kort till när en 7:a slås.
+877|Nå 13 poäng för att vinna!
+878|Bosättning 1 · Stad 2 · Metropol 2 · Försvarare 1 · Längsta vägen 2
+879|Landet är uppdelat i öar. Skepp korsar havet.
+880|Bygg skepp på vattnet.
+881|Ett skepp kostar trä och ull. Tryck på den lysande kanten.
+882|Skepp bildar en kedja, precis som vägar.
+883|Det sista skeppet i en öppen kedja får segla till en ny plats en gång per tur.
+884|Segla intill dimman för att avslöja den.
+885|Att upptäcka land ger dig en råvara.
+886|Bosätt dig på en ny ö: +1 poäng!
+887|Guldfält ger valfri råvara.
+888|Piraten
+889|Skepp intill hans ruta blockeras, och han stjäl. En 7:a eller en riddare flyttar honom.
+890|Vinn med 12 till 14 poäng.
+891|Välj ett scenario när du skapar spelet: Mot nya stränder, De fyra öarna eller Dimöarna.
+892|Tre varianter som går att kombinera: Fiskare, Floder och Händelsekort.
+893|Fiskare
+894|Öknen blir en sjö och kusten får fiskeplatser.
+895|Slå talet vid en fiskeplats för att fånga fisk.
+896|Sjön ger fisk på 2, 3, 11 och 12.
+897|Betala med fisk
+898|2 jaga bort rövaren · 3 stjäl · 4 ta en råvara · 5 en väg · 7 ett utvecklingskort
+899|Den gamla kängan
+900|Den som fiskar upp den behöver en poäng till för att vinna, och får ge den vidare till den som leder.
+901|Floder
+902|Varje väg eller bosättning vid en flod ger 1 guld.
+903|Broar korsar floden.
+904|En bro kostar 2 lera och 1 trä och ger 3 guld.
+905|Byt 2 guld mot valfri råvara. Rikaste spelaren får +1 poäng, fattigaste −2.
+906|En hög med alla 36 tärningsutfall ersätter tärningarna, så varje tal kommer så ofta som det ska.
+907|Segla in i dimman, upptäck land och fullfölj uppdrag.
+908|Utforska dimman med skepp.
+909|Tryck på den lysande kanten. Nytt land ger dig en råvara.
+910|Ett skepp intill ett fiskstim drar upp fisk när dess tal slås.
+911|Kryddor till Broch
+912|Bosättningar vid ett kryddfält lastar kryddor när det ger.
+913|Leverera lasten till rådet.
+914|Var 2:a leverans ger 1 poäng, upp till 3 poäng per uppdrag.
+915|Attackera från ett skepp intill ett näste för 1 malm och 1 ull. Den som träffat mest när det faller får en poäng.
+916|Nå 12 poäng för att vinna!
+917|Bosättningar, städer, nya öar, uppdrag och nästen räknas alla.
+918|En större spelplan med fler rutor, hamnar och kort för upp till 6 spelare.
+919|Särskild byggfas
+920|Efter varje tur får alla andra bygga i tur och ordning, men inte handla.
+921|Så att ingen behöver vänta länge.
+922|Turerna hålls korta, även vid fullt bord.
+923|Tillbaka
+924|Paus
+925|Nästa
+926|Nu kan du {mode}!
+927|Se igen
+928|Nästa: {mode}
+929|Dags att spela!
+930|Händelsekort
+931|Slå
+932|Seger!
+933|Spelet är slut
+934|Du vann!
+935|segerpoäng
+936|Du slutade på plats {n} med {m} poäng.
+937|Slutställning
+938|Titta på spelplanen
+939|Bosättningar
+940|Städer
+941|Metropol
+942|Segerpoängkort
+943|Bonuspoäng
+944|Så gick loppet
+945|Flest råvaror
+946|Vanligaste talet
+947|{n}×
+948|Spellängd
+949|{n} drag
+950|Höjdpunkter
+951|Längsta handelsvägen
+952|Välj din råvara en gång. Från och med nu betalar akvedukten ut den varje gång ett kast inte ger dig något (utom vid en 7:a).
+953|Akvedukt: {res}. Tryck för att ändra.

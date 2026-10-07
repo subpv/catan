@@ -1,0 +1,953 @@
+1|Spielen
+2|Statistik
+3|Profil
+4|Sprache
+5|Ton aus
+6|Ton an
+7|Funktioniert etwas nicht, oder hast du eine Idee?
+8|Feedback senden
+9|Schließen
+10|Siedeln, handeln und bauen mit deinen Freunden.
+11|Anmelden
+12|Konto erstellen
+13|Anzeigename
+14|Land
+15|E-Mail
+16|Passwort
+17|Einladungscode (frag die Person, die den Server betreibt)
+18|Du bist der erste Spieler, daher wird dieses Konto zum Admin.
+19|Deine Farbe
+20|Woher kommst du? Deine Flagge erscheint neben deinem Namen.
+21|Speichern
+22|Gespeichert.
+23|Ritter
+24|Klassisch
+25|{n} Punkte
+26|Zug {n}
+27|Spiel von {name}
+28|Neues Spiel
+29|Version
+30|Siedeln, handeln, bauen. Entwicklungskarten, längste Straße, größte Rittermacht. 10 Punkte.
+31|Ritter & Barbaren
+32|Waren, Stadtausbauten, Ritter und Barbarenangriffe. 13 Punkte.
+33|Spieler
+34|Weniger
+35|Mehr
+36|Punkte zum Sieg
+37|Fünf oder sechs Spieler nutzen das größere Spielfeld, mit einer Sonderbauphase zwischen den Zügen.
+38|Bis zu vier Spieler nutzen das normale Spielfeld.
+39|Spiel erstellen
+40|Deine Spiele
+41|Du bist dran
+42|Öffnen
+43|Gastgeber
+44|Freier Platz
+45|Wähle deine Farbe
+46|Spiel starten
+47|Warten, bis der Gastgeber startet…
+48|Einladungslink kopieren
+49|Verlassen
+50|Offene Spiele
+51|Beitreten
+52|Keine offenen Spiele. Erstelle eins und lade deine Freunde ein.
+53|Zuschauen
+54|Spiel erstellt. Wähle deine Farbe und lade deine Freunde ein.
+55|Einladungslink kopiert.
+56|Lieblingsfarbe (wird im Spiel genutzt, wenn sie frei ist, und auf der Statistikseite)
+57|Angemeldet als {email}
+58|Admin
+59|Passwort ändern
+60|Aktuelles Passwort
+61|Neues Passwort
+62|Genug für heute?
+63|Abmelden
+64|Passwort geändert.
+65|Du bist dem Spiel beigetreten.
+66|Der Gastgeber hat dieses Spiel beendet.
+67|Broch konnte nicht geladen werden
+68|Hafen: 3 gleiche Karten gegen 1 tauschen
+69|Hafen: 2 {res} gegen 1 tauschen
+70|Spielfeld
+71|nichts
+72|Etwas ist schiefgelaufen
+73|Erzähl uns, was du gerade gemacht hast, dann beheben wir es. Der Knopf kopiert die Fehlerdetails, damit du sie ins Formular einfügen kannst.
+74|Fehlerdetails
+75|Ausblenden
+76|Fehlerdetails kopiert. Füge sie ins Feedback-Formular ein.
+77|Der Broch-Server ist nicht erreichbar. Prüfe deine Verbindung.
+78|Anfrage fehlgeschlagen ({n})
+79|Verbindung wird wiederhergestellt… versuch es gleich noch einmal.
+80|Der Server hat nicht geantwortet.
+81|Verbinde neu…
+82|Die App hatte einen unerwarteten Fehler
+83|Der Server hat einen Fehler gemeldet
+84|Verbindung zum Spielserver verloren
+85|Holz
+86|Lehm
+87|Wolle
+88|Getreide
+89|Erz
+90|Papier
+91|Tuch
+92|Münze
+93|Handel
+94|Politik
+95|Wissenschaft
+96|Barbarenschiff
+97|Handelstor
+98|Politiktor
+99|Wissenschaftstor
+100|einfach
+101|stark
+102|mächtig
+103|Ritter
+104|Siegpunkt
+105|Straßenbau
+106|Erfindung
+107|Monopol
+108|Alchemist
+109|Erfinder
+110|Kran
+111|Ingenieur
+112|Bewässerung
+113|Medizin
+114|Bergbau
+115|Buchdruck
+116|Schmied
+117|Handelshafen
+118|Meisterhändler
+119|Händler
+120|Handelsflotte
+121|Rohstoffmonopol
+122|Handelsmonopol
+123|Bischof
+124|Verfassung
+125|Deserteur
+126|Diplomat
+127|Intrige
+128|Saboteur
+129|Spion
+130|Kriegsherr
+131|Hochzeit
+132|Rot
+133|Blau
+134|Orange
+135|Weiß
+136|Türkis
+137|Lila
+138|Schwarz
+139|Pink
+140|Gelb
+141|Braun
+142|Metropole!
+143|Längste Straße
+144|Größte Rittermacht
+145|+2 Siegpunkte
+146|Wer zu viele Karten hat, muss die Hälfte abwerfen.
+147|Niemand muss Karten abwerfen.
+148|Der Räuber zieht weiter.
+149|Die Barbaren haben noch nicht angegriffen, also bleibt der Räuber stehen.
+150|Der Räuber schlägt zu!
+151|Die Barbaren greifen an!
+152|Barbaren (Städte)
+153|Aktive Ritter
+154|Abgewehrt!
+155|Broch wird geplündert!
+156|Spiel wird geladen…
+157|Du hast {name} 1 {res} gestohlen.
+158|{name} hat dir 1 {res} gestohlen.
+159|Du bist dran
+160|{name} gewinnt!
+161|Das Ergebnis ist auf der Statistikseite gespeichert.
+162|Feiern
+163|Abbrechen
+164|Setze eine Straße daneben.
+165|Setze deine Stadt.
+166|Setze deine erste Siedlung.
+167|Setze deine zweite Siedlung.
+168|Tippe auf eine leuchtende Kante.
+169|Tippe auf eine leuchtende Ecke. Zwischen Gebäuden muss mindestens eine Ecke frei bleiben.
+170|{name} setzt eine Straße…
+171|{name} setzt ein Gebäude…
+172|Wirf {n} Karten ab.
+173|Du hast mehr Karten als dein Handlimit erlaubt.
+174|Karten wählen
+175|Gib {name} {n} Karten.
+176|Hochzeitsgeschenk: Du wählst die Karten aus.
+177|Versetze den Räuber (Bischof).
+178|Versetze den Räuber.
+179|Tippe auf ein Feld. Du ziehst eine Karte von einem Spieler mit Gebäude dort.
+180|Wähle, von wem du ziehst.
+181|Wählen
+182|Dein Ritter wurde vertrieben.
+183|Tippe auf eine leuchtende Ecke, um ihn dorthin zu stellen.
+184|Wähle eine Stadt für deine Metropole ({track}).
+185|Tippe auf eine deiner markierten Städte.
+186|Die Barbaren plündern eine deiner Städte.
+187|Tippe auf die Stadt, die zur Siedlung wird.
+188|Du hast Broch verteidigt. Ziehe eine Fortschrittskarte.
+189|Stapel wählen
+190|Du hast mehr als 4 Fortschrittskarten.
+191|Wirf ab, bis du 4 hast.
+192|Karte wählen
+193|Dein Aquädukt liefert einen Rohstoff.
+194|Dieser Wurf hat dir nichts eingebracht.
+195|Ein Ritter ist zu dir übergelaufen.
+196|Tippe auf eine Ecke an deiner Straße oder überspringe.
+197|Dein Spion sieht ihre Fortschrittskarten.
+198|Nimm 2 Karten aus ihrer Hand.
+199|Triff deine Wahl.
+200|Überspringen
+201|Sonderbauphase.
+202|Du darfst jetzt bauen oder kaufen. Kein Handel.
+203|Fertig
+204|{name} ist in der Sonderbauphase…
+205|Warten, bis {name} würfelt…
+206|{name} ist am Zug.
+207|Du bist dran. Würfle.
+208|Du kannst vor dem Würfeln einen Ritter ausspielen.
+209|Würfeln
+210|Kostenlose Straßen setzen: {n}.
+211|Baue, handle oder beende deinen Zug.
+212|Kostenlose Beförderungen übrig: {n} (tippe auf einen Ritter).
+213|Zug beenden
+214|Barbarenschiff
+215|{track}-Tor
+216|{n} gewürfelt
+217|Dafür gibt es gerade keinen Platz.
+218|Du schaust diesem Spiel zu.
+219|Barbarenschiff: greift an, wenn es das Ende erreicht
+220|Stärke der Barbaren (Städte) gegen aktive Ritter
+221|Entwicklungskarten übrig: {n}
+222|noch {n}
+223|Straße
+224|Siedlung
+225|Stadt
+226|Entwicklung
+227|Stadtmauer
+228|Bankhandel
+229|4:1 oder besser
+230|Entwicklungskarten
+231|neu
+232|Fortschrittskarten
+233|Deine Hand
+234|Karten: {n} · Limit {m}
+235|Karten: {n}
+236|Entw.: {n}
+237|Ritter: {n}
+238|Fortschritt: {n}
+239|Ausbauten: Handel / Politik / Wissenschaft
+240|du
+241|Online
+242|Offline
+243|von {n}
+244|{name} gibt
+245|und möchte
+246|Mit {name} handeln
+247|Abgelehnt
+248|Überlegt…
+249|Angebot zurückziehen
+250|Du hast angenommen. Warte auf die Bestätigung.
+251|Du hast abgelehnt.
+252|Annehmen
+253|Ablehnen
+254|Dir fehlen die Karten.
+255|Handelsangebot
+256|Metropole: {name}
+257|{track} ausbauen ({n} {res})
+258|Stapel: Wissenschaft {a}, Handel {b}, Politik {c}
+259|Stadtausbauten
+260|Stufe 3 schaltet einen Bonus frei. Wer zuerst Stufe 4 erreicht, baut eine Metropole (+2).
+261|Sag hallo in die Runde.
+262|Spielverlauf
+263|Chat
+264|Kosten
+265|Nachricht
+266|Senden
+267|Tippe, wo deine Straße hin soll.
+268|Tippe, wo deine Siedlung hin soll.
+269|Tippe auf die Siedlung, die du ausbaust.
+270|Tippe auf eine Ecke an deiner Straße für den Ritter.
+271|Tippe auf die Stadt, die eine Mauer bekommt.
+272|Bestätigen
+273|du hast {n}
+274|Weniger
+275|Wirf {n} Karten ab
+276|Eine 7 wurde gewürfelt und du hast mehr als {n} Karten.
+277|Hochzeitsgeschenk für {name}
+278|Wähle {n} Karten zum Verschenken.
+279|Ziehen von…
+280|Du ziehst eine zufällige Karte.
+281|Fortschrittskarte ziehen
+282|Wähle einen Stapel.
+283|Aquädukt
+284|Nimm einen Rohstoff deiner Wahl.
+285|Fortschrittskarte abwerfen
+286|Du darfst höchstens 4 haben.
+287|Nichts nehmen
+288|Fortschrittskarten von {name}
+289|Nimm eine.
+290|Hand von {name}
+291|Nimm {n} Karten.
+292|Handel anbieten
+293|Alle sehen das Angebot und können annehmen. Du wählst, mit wem du handelst.
+294|Du gibst
+295|Du willst
+296|Lieber mit der Bank
+297|Anbieten
+298|Mit der Bank handeln
+299|Deine Kurse hängen von deinen Häfen und Ausbauten ab.
+300|Deine Kurse hängen von deinen Häfen ab.
+301|Geben
+302|1 bekommen
+303|{n} {a} gegen 1 {b} tauschen
+304|Zählt automatisch.
+305|Spiele sie in deinem Zug.
+306|Du hast in diesem Zug schon eine Karte gespielt.
+307|Karten, die du in diesem Zug kaufst, kannst du ab dem nächsten Zug spielen.
+308|Karte spielen
+309|Nimm 2 beliebige Rohstoffe aus der Bank.
+310|Alle geben dir sämtliche Karten des Rohstoffs, den du nennst.
+311|Der Alchemist wird vor dem Würfeln gespielt.
+312|Würfle zuerst.
+313|Wähle den roten und den gelben Würfel. Der Ereigniswürfel wird normal geworfen.
+314|{n} würfeln
+315|Erfinder: Tippe auf zwei Zahlenfelder zum Tauschen.
+316|Ingenieur: Tippe auf eine Stadt für eine kostenlose Mauer.
+317|Medizin: Tippe auf die Siedlung zum Ausbauen (1 Getreide, 2 Erz).
+318|Händler: Tippe auf ein Feld neben deinem Gebäude.
+319|Diplomat: Tippe auf eine offene Straße zum Entfernen.
+320|Intrige: Tippe auf einen gegnerischen Ritter an deiner Straße.
+321|Punkte: {n}
+322|Welche Kartenart willst du in diesem Zug 2:1 tauschen?
+323|Jeder Gegner gibt dir bis zu 2.
+324|Jeder Gegner gibt dir 1.
+325|Einfacher Ritter
+326|Starker Ritter
+327|Mächtiger Ritter
+328|Aktivieren (1 Getreide)
+329|Befördern (kostenlos, Schmied)
+330|Befördern (1 Wolle, 1 Erz)
+331|Entlang deiner Straßen ziehen
+332|Schwächeren Ritter vertreiben
+333|Räuber verjagen
+334|Aktiv (in diesem Zug aktiviert, kann ab dem nächsten Zug handeln)
+335|Aktiv
+336|Inaktiv
+337|Gerade gibt es nichts für ihn zu tun.
+338|Tippe, wohin der Ritter ziehen soll.
+339|Tippe auf den Ritter, den du vertreibst.
+340|1 Punkt
+341|2 Punkte, doppelter Ertrag
+342|Entwicklungskarte
+343|Ritter, Fortschritt oder Punkt
+344|Einfacher Ritter (inaktiv)
+345|Ritter aktivieren
+346|Ritter befördern
+347|Mächtig braucht Politik 3
+348|+2 Handlimit
+349|Baukosten
+350|Ausbauten kosten 1–5 Waren: Tuch für Handel, Münzen für Politik, Papier für Wissenschaft. Städte an Wald, Weide und Gebirge liefern eine Ware statt eines zweiten Rohstoffs.
+351|Statistik ansehen
+352|Zurück zur Lobby
+353|Der Spielserver hatte einen Fehler bei deinem Zug
+354|Versetze den Räuber und ziehe eine Karte. Zählt für die größte Rittermacht.
+355|Zählt 1 Punkt. Bleibt bis zum Spielende verdeckt.
+356|Baue 2 Straßen kostenlos.
+357|Nenne einen Rohstoff. Alle geben dir ihre Karten davon.
+358|Bestimme beide Ertragswürfel, bevor du würfelst.
+359|Tausche zwei Zahlenchips (nicht 2, 6, 8 oder 12).
+360|Dein nächster Stadtausbau in diesem Zug kostet 1 weniger.
+361|Baue eine Stadtmauer kostenlos.
+362|Nimm 2 Getreide für jedes Feld neben deinen Gebäuden.
+363|Baue eine Siedlung für 2 Erz und 1 Getreide zur Stadt aus.
+364|Nimm 2 Erz für jedes Gebirge neben deinen Gebäuden.
+365|Befördere 2 Ritter kostenlos.
+366|Tausche mit jedem Gegner einen deiner Rohstoffe gegen eine Ware.
+367|Sieh dir die Hand eines Spielers mit mehr Punkten an und nimm 2 Karten.
+368|Stelle den Händler neben dein Gebäude: Tausche diesen Rohstoff 2:1 und halte 1 Punkt.
+369|Tausche in diesem Zug eine Kartenart deiner Wahl 2:1.
+370|Jeder Gegner gibt dir bis zu 2 eines Rohstoffs.
+371|Jeder Gegner gibt dir 1 einer Ware.
+372|Versetze den Räuber und ziehe von jedem Spieler an diesem Feld 1 Karte.
+373|Der schwächste Ritter eines Gegners desertiert. Du darfst einen gleich starken einsetzen.
+374|Entferne eine offene Straße. Ist es deine, baust du sie kostenlos neu.
+375|Vertreibe einen gegnerischen Ritter, der an einer deiner Straßen steht.
+376|Spieler mit mindestens so vielen Punkten wie du werfen die Hälfte ihrer Karten ab.
+377|Sieh dir die Fortschrittskarten eines Gegners an und nimm eine.
+378|Aktiviere alle deine Ritter kostenlos.
+379|Jeder Spieler mit mehr Punkten gibt dir 2 Karten seiner Wahl.
+380|Warten, bis {names} Karten abwerfen…
+381|Warten, bis {names} den Räuber versetzt…
+382|Warten, bis {names} eine Karte zieht…
+383|Warten, bis {names} einen Ritter umsetzt…
+384|Warten, bis {names} Karten abgeben…
+385|Warten, bis {names} eine Stadt zum Verlieren wählen…
+386|Warten, bis {names} Fortschrittskarten ziehen…
+387|Warten auf {names}…
+388|{name} gewinnt
+389|Lädt…
+390|Jemand
+391|Vorheriges Jahr
+392|LÄUFT
+393|ABGESCHLOSSEN
+394|Nächstes Jahr
+395|Alle Partien
+396|FÜHRT GERADE
+397|CHAMPION {year}
+398|Noch offen
+399|Siege
+400|Partien: {n}
+401|Siegerfeier ansehen
+402|Wertung {year}
+403|Pkt.
+404|Noch keine Partien
+405|Noch keine Spieler.
+406|Verlauf
+407|Direkter Vergleich
+408|Jede Zahl zeigt, wie oft der Spieler in der Zeile den Spieler in der Spalte geschlagen hat.
+409|Partie am Tisch eintragen
+410|Alle Partien {year}
+411|Noch nichts eingetragen.
+412|Sieg Nr. {n} in {year}
+413|Siege: {n}
+414|Löschen?
+415|Gelöscht.
+416|Dieses Jahr noch keine Partien.
+417|Beste Serie
+418|Aktuelle Serie
+419|Lieblingsversion
+420|Angstgegner: {name} ({n}×)
+421|am Tisch gespielt
+422|Züge: {n}
+423|{n} Min.
+424|Tisch
+425|Löschen
+426|Schnellster Sieg
+427|Höchste Punktzahl
+428|Meiste Karten geerntet
+429|{n} in einer Partie
+430|Längste Partie
+431|Rekorde
+432|Würfel
+433|Wie oft jede Zahl gewürfelt wurde
+434|Balken: Würfe in diesem Jahr. Gestrichelte Linie: was die Wahrscheinlichkeit erwarten lässt. Heißeste Zahl: {n} ({m} von {total} Würfen).
+435|Das Diagramm füllt sich, sobald gespielt wird.
+436|Siege im Jahresverlauf
+437|Wann gespielt
+438|Wer hat mitgespielt
+439|Wer hat gewonnen
+440|Wähle zuerst die Spieler.
+441|Partie eintragen
+442|In der Statistik gespeichert.
+443|Unbekannter Modus
+444|Broch braucht 2–6 Spieler
+445|Das Spiel beginnt. {@ps} nehmen Platz.
+446|{@p} setzt zuerst.
+447|{@p} gewinnt mit {n} Siegpunkten!
+448|{@p} hat jetzt die längste Straße ({n}).
+449|Niemand hat mehr die längste Straße.
+450|{@p} würfelt {n} ({#e}).
+451|{@p} würfelt {n}.
+452|Der Bank ist {#r} ausgegangen; niemand bekommt etwas.
+453|{@p} bekommt {$c}.
+454|Das Barbarenschiff rückt vor ({n}/{m}).
+455|Die Barbaren greifen an! Stärke {n} gegen {m} der Ritter.
+456|Die Barbaren sind abgewehrt. {@p} wird Verteidiger von Broch (+1 SP).
+457|Die Barbaren sind abgewehrt. {@ps} teilen sich den Ruhm und ziehen je eine Fortschrittskarte.
+458|Die Barbaren sind abgewehrt.
+459|Die Barbaren siegen! {@ps} verlieren je eine Stadt.
+460|Die Barbaren siegen, aber es gibt keine ungeschützten Städte zu plündern.
+461|Die Stadt von {@p} wird zur Siedlung.
+462|Der Stapel {#d} ist leer.
+463|{@p} deckt {%c} auf (+1 SP).
+464|{@p} zieht eine Fortschrittskarte ({#d}).
+465|{@p} hat keine freie Stadt für die Metropole ({#t}).
+466|{@p} errichtet eine Metropole ({#t}).
+467|Sonderbauphase: {@ps}.
+468|Dort kannst du keine Straße bauen.
+469|Keine Straßen mehr.
+470|Nicht genug Rohstoffe.
+471|{@p} baut eine Straße.
+472|Ungültige Aktion.
+473|Das Spiel ist vorbei.
+474|Du spielst in diesem Spiel nicht mit.
+475|Unbekannte Aktion.
+476|Du bist gerade nicht am Zug.
+477|Gerade nicht erlaubt.
+478|Nur im Ritter-Modus.
+479|Du bist nicht mit Setzen dran.
+480|Zu nah an einem anderen Gebäude.
+481|{@p} setzt eine Siedlung.
+482|{@p} setzt eine Stadt.
+483|Die Straße muss an dein neues Gebäude grenzen.
+484|Aufbau abgeschlossen. {@p} beginnt.
+485|Schon gewürfelt.
+486|Keine kostenlosen Straßen zum Überspringen.
+487|Du bist nicht mit Sonderbauen dran.
+488|Dort kannst du keine Siedlung bauen.
+489|Keine Siedlungen mehr.
+490|{@p} baut eine Siedlung.
+491|Baue eine deiner Siedlungen aus.
+492|Keine Städte mehr.
+493|{@p} baut eine Stadt.
+494|Im Ritter-Modus gibt es keine Entwicklungskarten.
+495|Der Entwicklungsstapel ist leer.
+496|{@p} kauft eine Entwicklungskarte.
+497|Nur eine Entwicklungskarte pro Zug.
+498|Du hast keine spielbare Karte dieser Art (neue Karten warten einen Zug).
+499|{@p} spielt {%c}.
+500|{@p} hat jetzt die größte Rittermacht.
+501|Wähle zwei Rohstoffe.
+502|Die Bank hat diese nicht.
+503|{@p} spielt {%c} und nimmt {$c2}.
+504|Wähle einen Rohstoff.
+505|{@p} spielt {%c} auf {#r} und sammelt {n} ein.
+506|Unbekannte Karte.
+507|Nichts abzuwerfen.
+508|Wähle genau {n} Karten.
+509|Du hast diese Karten nicht.
+510|{@p} wirft Karten ab: {n}.
+511|Nichts abzugeben.
+512|{@p} gibt {@q} Karten: {n}.
+513|Du versetzt gerade nicht den Räuber.
+514|Versetze den Räuber auf ein anderes Feld.
+515|{@p} versetzt den Räuber.
+516|Wähle jemanden neben dem Räuber.
+517|Lege beide Seiten des Handels fest.
+518|{@p} bietet {$g} für {$w}.
+519|Dieses Angebot gibt es nicht.
+520|Du hast die gewünschten Karten nicht.
+521|Dieser Spieler hat nicht angenommen.
+522|Jemand hat die Karten nicht mehr.
+523|{@p} tauscht {$g} mit {@q} gegen {$w}.
+524|Kein Angebot zum Zurückziehen.
+525|Wähle, was du gibst und was du bekommst.
+526|Du brauchst {$c}.
+527|Die Bank hat davon nichts mehr.
+528|{@p} tauscht {$g} mit der Bank gegen {$w}.
+529|Ritter kommen auf eine freie Ecke an deiner Straße.
+530|Keine einfachen Ritter mehr.
+531|{@p} rekrutiert einen Ritter.
+532|Wähle einen deiner inaktiven Ritter.
+533|Aktivieren kostet 1 Getreide.
+534|{@p} aktiviert einen Ritter.
+535|Wähle einen deiner Ritter.
+536|Ein Ritter kann nur einmal pro Zug befördert werden.
+537|Keine Ritter der nächsten Stufe mehr.
+538|{@p} befördert einen Ritter ({#l}).
+539|Der Ritter erreicht diese Ecke nicht.
+540|{@p} zieht einen Ritter.
+541|Dort ist kein erreichbarer gegnerischer Ritter.
+542|Du kannst nur einen schwächeren Ritter vertreiben.
+543|Der Ritter von {@p} vertreibt den Ritter von {@q}.
+544|Der Räuber kann vor dem ersten Barbarenangriff nicht versetzt werden.
+545|Dieser Ritter steht nicht neben dem Räuber.
+546|Der Ritter von {@p} verjagt den Räuber.
+547|Kein Ritter zum Umsetzen.
+548|Wähle eine markierte Ecke.
+549|{@p} setzt einen vertriebenen Ritter um.
+550|Mauern kommen um deine Städte.
+551|Keine Mauern mehr.
+552|{@p} baut eine Stadtmauer.
+553|Unbekannter Ausbau.
+554|Du brauchst zuerst eine Stadt.
+555|Schon ganz oben.
+556|{@p} baut {#t} auf Stufe {n} aus.
+557|{@p} übernimmt die Metropole ({#t}) von {@q}.
+558|Keine Metropole zu platzieren.
+559|Wähle eine deiner Städte.
+560|Nichts zu verlieren.
+561|Wähle eine deiner ungeschützten Städte.
+562|Wähle eine Karte.
+563|{@p} wirft eine Fortschrittskarte ab.
+564|Das Aquädukt von {@p} liefert {$c}.
+565|Kein Ritter zu platzieren.
+566|Wähle eine freie Ecke an deiner Straße.
+567|{@p} setzt den übergelaufenen Ritter ein.
+568|Nichts zu nehmen.
+569|Der Spion von {@p} stiehlt eine Fortschrittskarte von {@q}.
+570|Wähle {n} ihrer Karten.
+571|{@p} nimmt Karten von {@q}: {n}.
+572|Spiele den Alchemisten vor dem Würfeln.
+573|{@p} zieht eine Karte von {@q}.
+574|Dieser Ritter ist nicht aktiv.
+575|Ein in diesem Zug aktivierter Ritter muss bis zum nächsten Zug warten.
+576|Der Ritter von {@p} hat keinen Platz mehr und verlässt das Spielfeld.
+577|Wähle beide Würfel.
+578|Wähle zwei Zahlenfelder (nicht 2, 6, 8 oder 12).
+579|Wähle eine deiner Städte ohne Mauer.
+580|Wähle eine deiner Siedlungen.
+581|Medizin braucht 1 Getreide und 2 Erz.
+582|{@p} tauscht {$g} gegen {$w} von {@q}.
+583|Wähle einen Spieler mit mehr Punkten als du.
+584|Sie haben keine Karten.
+585|Wähle ein Landfeld.
+586|Der Händler muss neben deiner Siedlung oder Stadt stehen.
+587|Wähle eine Kartenart.
+588|{@p} sammelt {$c} ein.
+589|Wähle eine Ware.
+590|Der Räuber kann vor dem ersten Barbarenangriff nicht ziehen.
+591|Wähle einen Spieler mit Rittern.
+592|Ein Ritter von {@p} desertiert.
+593|Wähle eine offene Straße (mit losem Ende).
+594|{@p} entfernt eine Straße von {@q}.
+595|Wähle einen gegnerischen Ritter an einer deiner Straßen.
+596|Wähle einen Gegner.
+597|Sie haben keine Fortschrittskarten.
+598|Ungültige Daten
+599|Spiel nicht gefunden
+600|Bitte melde dich an.
+601|Zu viele Versuche. Versuch es in ein paar Minuten noch einmal.
+602|Gib eine gültige E-Mail-Adresse ein.
+603|Wähle einen Anzeigenamen.
+604|Das Passwort muss mindestens 6 Zeichen haben.
+605|Wähle dein Land.
+606|Falscher Einladungscode.
+607|Diese E-Mail ist schon registriert.
+608|Dieser Name ist schon vergeben.
+609|Falsche E-Mail oder falsches Passwort.
+610|Der Name darf nicht leer sein.
+611|Unbekannte Farbe.
+612|Unbekannte Sprache.
+613|Das aktuelle Passwort ist falsch.
+614|Das Spiel hat schon begonnen.
+615|Tritt dem Spiel zuerst bei.
+616|Diese Farbe hat schon jemand anderes.
+617|Dieses Spiel hat schon begonnen.
+618|Das Spiel ist voll.
+619|Ein laufendes Spiel kannst du nicht verlassen. Der Gastgeber kann es abbrechen.
+620|Nur der Gastgeber kann starten.
+621|Schon gestartet.
+622|Warte auf mindestens einen weiteren Spieler.
+623|Nur der Gastgeber kann das Spiel abbrechen.
+624|Wähle den Sieger unter den Spielern.
+625|Nicht gefunden
+626|Nur wer die Partie eingetragen hat (oder ein Admin) kann sie löschen.
+627|Unbekannter Endpunkt
+628|Spiel läuft nicht.
+629|Szenario
+630|Varianten
+631|Missionen
+632|Wähle eine Erweiterung, um ihre Optionen zu sehen.
+633|Städte & Ritter
+634|5–6
+635|Siedeln, handeln, bauen. Entwicklungskarten, längste Straße, größte Rittermacht.
+636|Waren, Stadtausbauten, Ritter und Barbarenangriffe.
+637|Erweiterung
+638|Keine
+639|Die Standardinsel.
+640|Seefahrer
+641|Schiffe und Inselerkundung.
+642|Händler & Barbaren
+643|Fischer, Flüsse und Ereigniskarten.
+644|Entdecker & Piraten
+645|Missionen durch den Nebel.
+646|Erweiterung für 5–6 Spieler
+647|Größeres Brett und Sonderbauphase. Funktioniert mit jeder Spielerzahl.
+648|Fischgrund
+649|Fischschwarm
+650|Piratennest
+651|Bonus für neue Insel: +1 Siegpunkt für die erste Siedlung
+652|Pirat
+653|Wald
+654|Hügelland
+655|Weideland
+656|Ackerland
+657|Gebirge
+658|Wüste
+659|Gold
+660|Fluss
+661|Fisch
+662|Gewürz
+663|Entdeckung
+664|Startrohstoffe
+665|Beute
+666|Versetze den Räuber oder den Piraten.
+667|Tippe auf ein Landfeld für den Räuber oder ein Meerfeld für den Piraten. Du ziehst von einem Spieler daneben.
+668|Gold! Wähle {n} Rohstoffe.
+669|Nimm beliebige Rohstoffe, welche die Bank hat.
+670|Tippe auf eines deiner pulsierenden Schiffe, um es zu segeln (einmal pro Zug).
+671|Tippe dorthin, wohin das Schiff segeln soll.
+672|Hineinzoomen
+673|Herauszoomen
+674|Ganzes Brett zeigen
+675|Fischplättchen im Beutel
+676|Ereigniskarten bis zum erneuten Mischen
+677|Schiff
+678|Brücke
+679|Fisch
+680|{n} Fisch(e)
+681|2 Gold = 1 Karte
+682|Liefern, angreifen
+683|Gold von Flüssen. 2 Gold kaufen jede beliebige Karte.
+684|{n} Gold
+685|Fische sind vor dem Räuber sicher und nicht handelbar.
+686|Der alte Stiefel: Du brauchst einen Punkt mehr zum Sieg.
+687|Alter Stiefel
+688|Fische auf dem Brett · geliefert
+689|Gewürze auf dem Brett · geliefert
+690|Verbleibende Teile
+691|Stärke aktiver Ritter
+692|Gelieferte Fische · Gewürze
+693|Stufe 3: Tausche Waren 2:1 bei der Bank.
+694|Stufe 3: Deine Ritter können mächtig werden.
+695|Stufe 3: Das Aquädukt liefert einen Rohstoff, wenn du nichts bekommst.
+696|Stufe 4: Wer zuerst hier ist, baut eine Metropole (+2 Punkte).
+697|alle auf einen Blick
+698|Tippe auf die Meereskante, zu der dein Schiff fahren soll.
+699|Tippe auf die Flusskreuzung für deine Brücke.
+700|Gold!
+701|Wähle {n} Rohstoffe aus der Bank.
+702|Räuber vertreiben
+703|Versetze den Räuber auf ein beliebiges Feld und ziehe von einem Nachbarn.
+704|Karte ziehen
+705|Nimm eine zufällige Karte von einem Spieler deiner Wahl.
+706|Rohstoff nehmen
+707|Nimm einen beliebigen Rohstoff aus der Bank.
+708|Gratisstraße
+709|Baue eine Straße ohne Bezahlung.
+710|Fortschrittskarte
+711|Ziehe eine Fortschrittskarte von einem Stapel deiner Wahl.
+712|Ziehe kostenlos eine Entwicklungskarte.
+713|Fische ausgeben
+714|Du hast {n} Fisch(e). Fische können nicht gestohlen werden und gehen nicht an den Räuber.
+715|Niemand hat Karten zum Ziehen.
+716|Gold gegen Karte
+717|Du hast {n} Gold. 2 Gold kaufen einen beliebigen Rohstoff, bis zu zweimal pro Zug.
+718|Auf dem Brett: {n} · geliefert: {d} · {v}/3 Punkte
+719|Liefern
+720|Je 2 Lieferungen an den Rat bringen 1 Punkt, höchstens 3 Punkte pro Mission. Ein zerstörtes Piratennest bringt dem, der es am meisten getroffen hat, 1 Punkt.
+721|Fisch für Broch
+722|Gewürze für Broch
+723|Piratennester
+724|Jeder Treffer kostet 1 Erz und 1 Wolle und braucht ein Schiff am Nest.
+725|Noch keine Nester gefunden. Erkunde den Nebel.
+726|Nest · noch {n} Treffer
+727|Angreifen
+728|Segelt auf Meereskanten; bewegt sich einmal pro Zug
+729|Überquert einen Fluss; bringt 3 Gold
+730|Warte auf {names} bei der Wahl vom Goldfeld…
+731|Erweiterungen
+732|Versetze den Piraten auf ein anderes Meerfeld.
+733|{@p} hat den Piraten versetzt.
+734|Die Ereigniskarten werden neu gemischt.
+735|{@p} segelt aufs offene Meer.
+736|{@p} entdeckt Land: {#t}.
+737|{@p} findet Gold und darf {n} Rohstoffe wählen.
+738|{@p} fängt {n} Fisch(e).
+739|{@p} angelt den alten Stiefel und braucht nun einen Punkt mehr zum Sieg.
+740|{@p} lädt {n} Gewürz(e) ein.
+741|{@p} holt einen großen Fischfang ein.
+742|{@p} verdient {n} Gold.
+743|{@p} besiedelt eine neue Insel und erhält einen Bonuspunkt (+1 SP).
+744|In diesem Spiel gibt es keine Schiffe.
+745|Keine Schiffe mehr.
+746|Dorthin kannst du kein Schiff segeln.
+747|{@p} hat ein Schiff gebaut.
+748|Das Schiff kann nicht dorthin.
+749|{@p} hat ein Schiff an eine neue Stelle gesegelt.
+750|Kein Gold zum Ausgeben.
+751|{@p} nimmt {$c} vom Goldfeld.
+752|In diesem Spiel gibt es keine Flüsse.
+753|Keine Brücken mehr.
+754|Dort kannst du keine Brücke bauen.
+755|{@p} hat eine Brücke gebaut.
+756|Du kannst Gold nur zweimal pro Zug tauschen.
+757|Du brauchst 2 Gold.
+758|{@p} tauscht 2 Gold gegen {$c}.
+759|In diesem Spiel gibt es keine Fischer.
+760|Unbekannter Fischhandel.
+761|Du brauchst {n} Fisch(e).
+762|{@p} zahlt {n} Fisch(e), um den Räuber zu vertreiben.
+763|Wähle einen Spieler mit Karten.
+764|Wähle einen Rohstoff, den die Bank hat.
+765|{@p} tauscht {n} Fisch(e) gegen {$c}.
+766|{@p} tauscht {n} Fisch(e) gegen eine Gratisstraße.
+767|{@p} tauscht {n} Fisch(e) gegen eine Fortschrittskarte.
+768|{@p} tauscht {n} Fisch(e) gegen eine Entwicklungskarte.
+769|In diesem Spiel gibt es keine Missionen.
+770|Diese Mission gibt es in diesem Spiel nicht.
+771|Du hast nichts zu liefern.
+772|Du brauchst eine Siedlung, an die du liefern kannst.
+773|{@p} liefert {n} {#k} an den Rat.
+774|In diesem Spiel gibt es keine Piratennester.
+775|Dort ist kein Nest.
+776|Du brauchst ein Schiff am Nest.
+777|Ein Angriff kostet 1 Erz und 1 Wolle.
+778|{@p} greift ein Piratennest an (noch {n}).
+779|Das Piratennest ist zerstört. {@p} erhält das Kopfgeld (+1 SP).
+780|Auf zu neuen Ufern
+781|Die vier Inseln
+782|Die Nebelinseln
+783|Die Fischer von Catan
+784|Die Flüsse von Catan
+785|Ereigniskarten
+786|Fisch für Catan
+787|Gewürz für Catan
+788|Fischgründe, Fischplättchen und der alte Stiefel.
+789|Brücken, Gold sowie der reichste und ärmste Spieler.
+790|Ein Stapel Ereigniskarten ersetzt die Würfel.
+791|Hausregel: vergessener Räuber
+792|Beendet ein Spieler seinen Zug, ohne den Räuber zu versetzen, kehrt er in die Wüste zurück.
+793|Wenn du deinen Zug jetzt beendest, kehrt der Räuber in die Wüste zurück.
+794|Diese Hausregel ist nicht aktiviert.
+795|{@p} hat vergessen, den Räuber zu versetzen, er kehrt daher in die Wüste zurück.
+796|Hausregel: Startrohstoffe für beide
+797|Hausregeln
+798|Beide Gebäude aus der Aufbauphase liefern Startrohstoffe. Bei Städte & Ritter zählt die Stadt wie eine Siedlung.
+799|Noch ist nichts passiert.
+800|Aufbauphase
+801|Die Diagramme füllen sich, sobald die ersten Züge gespielt sind.
+802|Siegpunkte im Spielverlauf
+803|Würfelergebnisse
+804|Balken: gewürfelt · Linie: erwartet nach {n} Würfen
+805|Erhaltene Rohstoffe
+806|Würfe
+807|Häufigste Zahl
+808|Siebener
+809|Ziel
+810|gewürfelt
+811|erwartet
+812|Mehr als {n} Karten: Bei einer 7 verlierst du die Hälfte.
+813|Nur letzter Wurf
+814|Frühere Züge zeigen
+815|Verteidiger von Broch
+816|−1 Stadt
+817|Lebendiges Spielfeld
+818|Lebendiges Spielfeld: an
+819|Lebendiges Spielfeld: aus
+820|Bank
+821|Zählt 1 Punkt. Wird offen vor dir ausgelegt.
+822|So wird gespielt: {mode}
+823|So wird gespielt
+824|So funktioniert {mode} (1 Min.)
+825|Willkommen in Broch!
+826|Bauen, handeln, wachsen. Wer zuerst 10 Punkte hat, gewinnt.
+827|Jedes Feld liefert einen Rohstoff.
+828|Wald, Hügelland, Weideland, Ackerland und Gebirge. Die Wüste liefert nichts.
+829|Baue Siedlungen auf den Ecken.
+830|Tippe auf die leuchtende Ecke.
+831|Eine Siedlung grenzt an bis zu 3 Felder.
+832|Deine Gegner bauen auch.
+833|Würfle in jedem Zug.
+834|Tippe auf die Würfel.
+835|Jedes Feld mit dieser Zahl bringt Ertrag.
+836|Wer daran grenzt, bekommt eine Karte – auch im Zug der anderen.
+837|Mehr Pünktchen, mehr Glück.
+838|Die roten 6 und 8 fallen am häufigsten, 2 und 12 selten.
+839|Bauen kostet Karten.
+840|Eine Straße kostet Holz und Lehm. Tippe auf die leuchtende Kante.
+841|Städte bringen doppelten Ertrag.
+842|Baue eine Siedlung für 2 Getreide und 3 Erz zur Stadt aus. Tippe auf deine Siedlung.
+843|Eine 7 weckt den Räuber!
+844|Versetze den Räuber auf ein Feld.
+845|Das Feld bringt dann keinen Ertrag mehr. Tippe auf ein Feld neben deinem Gegner.
+846|Dann ziehst du eine Karte von jemandem dort.
+847|Wer mehr als 7 Karten hat, verliert die Hälfte.
+848|Handle mit Spielern oder der Bank.
+849|Die Bank tauscht 4 gleiche Karten gegen 1. Häfen: 3:1 oder 2:1.
+850|Ritter versetzen den Räuber. Die anderen bringen Straßen, Rohstoffe oder einen Siegpunkt.
+851|3 Ritter ausgespielt: Größte Rittermacht, +2 Punkte.
+852|Wer sie hat, lässt Kriegsbanner auf dem Spielfeld wehen.
+853|5 Straßen am Stück: Längste Straße, +2 Punkte.
+854|Die längste Strecke leuchtet golden.
+855|Mit 10 Punkten gewinnst du!
+856|Siedlung 1 · Stadt 2 · Längste Straße 2 · Größte Rittermacht 2 · Siegpunktkarte 1
+857|Alles vom klassischen Spiel, dazu Waren, Ritter und Barbaren. Sieg mit 13 Punkten.
+858|Städte liefern Waren.
+859|Wald: Papier · Weideland: Tuch · Gebirge: Münzen
+860|Mit Waren kaufst du Stadtausbauten.
+861|Handel kostet Tuch, Politik Münzen, Wissenschaft Papier. Tippe auf +.
+862|Stufe 3 schaltet eine Sonderfähigkeit frei.
+863|Wissenschaft: ein Rohstoff, wenn du leer ausgehst. Handel: Waren 2:1. Politik: stärkere Ritter.
+864|Wer zuerst Stufe 4 erreicht, errichtet eine Metropole.
+865|Sie zählt 2 Punkte und thront auf deiner Stadt.
+866|Ritter verteidigen Broch.
+867|Rekrutiere einen für Wolle und Erz. Tippe auf die leuchtende Ecke.
+868|Aktiviere ihn mit Getreide.
+869|Nur aktive Ritter kämpfen. Befördere sie, dann werden sie stärker.
+870|Ein Schiff auf dem Ereigniswürfel lässt die Barbaren vorrücken.
+871|Jedes Schiff bringt sie Broch einen Schritt näher.
+872|Ihre Stärke: alle Städte auf dem Spielfeld. Deine Abwehr: alle aktiven Ritter.
+873|Der stärkste Verteidiger bekommt einen Punkt. Siegen die Barbaren, wird die schwächste Stadt geplündert.
+874|Ein farbiges Tor auf dem Ereigniswürfel bringt Karten für alle, deren Ausbau hoch genug ist.
+875|Stadtmauern
+876|Mit jeder Mauer darfst du 2 Karten mehr behalten, wenn eine 7 fällt.
+877|Mit 13 Punkten gewinnst du!
+878|Siedlung 1 · Stadt 2 · Metropole 2 · Verteidiger 1 · Längste Straße 2
+879|Das Land ist in Inseln geteilt. Schiffe überqueren das Meer.
+880|Baue Schiffe auf dem Wasser.
+881|Ein Schiff kostet Holz und Wolle. Tippe auf die leuchtende Kante.
+882|Schiffe bilden eine Kette, wie Straßen.
+883|Das letzte Schiff einer offenen Kette darf einmal pro Zug an eine neue Stelle segeln.
+884|Segle neben den Nebel, um ihn aufzudecken.
+885|Entdecktes Land bringt dir einen Rohstoff.
+886|Besiedle eine neue Insel: +1 Punkt!
+887|Goldfelder liefern einen Rohstoff deiner Wahl.
+888|Der Pirat
+889|Schiffe neben seinem Feld sind blockiert, und er stiehlt. Eine 7 oder ein Ritter versetzt ihn.
+890|Gewonnen wird mit 12 bis 14 Punkten.
+891|Wähle beim Erstellen des Spiels ein Szenario: Neue Ufer, Vier Inseln oder Nebelinseln.
+892|Drei Varianten zum Kombinieren: Fischer, Flüsse und Ereigniskarten.
+893|Fischer
+894|Die Wüste wird zum See, und an der Küste gibt es Fischgründe.
+895|Fällt die Zahl eines Fischgrunds, fängst du Fische.
+896|Der See bringt Fische bei 2, 3, 11 und 12.
+897|Mit Fisch bezahlen
+898|2 Räuber vertreiben · 3 Karte ziehen · 4 Rohstoff nehmen · 5 Straße · 7 Entwicklungskarte
+899|Der alte Stiefel
+900|Wer ihn angelt, braucht einen Punkt mehr zum Sieg und darf ihn an einen Führenden weitergeben.
+901|Flüsse
+902|Jede Straße und Siedlung an einem Fluss bringt 1 Gold.
+903|Brücken führen über den Fluss.
+904|Eine Brücke kostet 2 Lehm und 1 Holz und bringt 3 Gold.
+905|Tausche 2 Gold gegen einen beliebigen Rohstoff. Der Reichste bekommt +1 Punkt, der Ärmste −2.
+906|Ein Stapel mit allen 36 Würfelergebnissen ersetzt die Würfel – so fällt jede Zahl genau so oft, wie sie soll.
+907|Segle in den Nebel, entdecke Land und erfülle Missionen.
+908|Erkunde den Nebel mit Schiffen.
+909|Tippe auf die leuchtende Kante. Neues Land bringt dir einen Rohstoff.
+910|Ein Schiff neben einem Fischschwarm holt Fische an Bord, wenn dessen Zahl fällt.
+911|Gewürze für Broch
+912|Siedlungen an einem Gewürzfeld laden Gewürze ein, wenn es Ertrag bringt.
+913|Liefere Fracht an den Rat.
+914|Je 2 Lieferungen bringen 1 Punkt, höchstens 3 Punkte pro Mission.
+915|Greife für 1 Erz und 1 Wolle von einem Schiff neben einem Nest aus an. Fällt es, bekommt der mit den meisten Treffern einen Punkt.
+916|Mit 12 Punkten gewinnst du!
+917|Es zählen Siedlungen, Städte, neue Inseln, Missionen und Piratennester.
+918|Ein größeres Spielfeld mit mehr Feldern, Häfen und Karten für bis zu 6 Spieler.
+919|Sonderbauphase
+920|Nach jedem Zug dürfen alle anderen reihum bauen, aber nicht handeln.
+921|Damit niemand lange wartet.
+922|Die Züge bleiben kurz, auch bei vollem Tisch.
+923|Zurück
+924|Pause
+925|Weiter
+926|Jetzt kennst du {mode}!
+927|Nochmal ansehen
+928|Weiter mit {mode}
+929|Los geht's!
+930|Ereigniskarte
+931|Würfeln
+932|Sieg!
+933|Spielende
+934|Du hast gewonnen!
+935|Siegpunkte
+936|Du bist mit {m} Punkten auf Platz {n} gelandet.
+937|Endstand
+938|Spielfeld ansehen
+939|Siedlungen
+940|Städte
+941|Metropole
+942|Siegpunktkarten
+943|Bonuspunkte
+944|So lief das Rennen
+945|Meiste Rohstoffe
+946|Häufigste Würfelzahl
+947|{n}×
+948|Spieldauer
+949|{n} Züge
+950|Höhepunkte
+951|Längste Handelsroute
+952|Wähle einmal deine Ressource. Ab jetzt zahlt der Aquädukt sie jedes Mal aus, wenn dir ein Wurf nichts einbringt (außer bei einer 7).
+953|Aquädukt: {res}. Tippen zum Ändern.

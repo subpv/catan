@@ -1,0 +1,953 @@
+1|Spill
+2|Statistikk
+3|Profil
+4|Språk
+5|Lyd av
+6|Lyd på
+7|Fungerer noe ikke, eller har du en idé?
+8|Send tilbakemelding
+9|Lukk
+10|Bosett, handle og bygg sammen med vennene dine.
+11|Logg inn
+12|Opprett konto
+13|Visningsnavn
+14|Land
+15|E-post
+16|Passord
+17|Invitasjonskode (spør den som drifter serveren)
+18|Du er den første spilleren, så denne kontoen blir administrator.
+19|Din farge
+20|Hvor kommer du fra? Flagget ditt vises ved siden av navnet ditt.
+21|Lagre
+22|Lagret.
+23|Riddere
+24|Klassisk
+25|{n} poeng
+26|trekk {n}
+27|{name}s spill
+28|Nytt spill
+29|Versjon
+30|Bosett, handle, bygg. Utviklingskort, lengste vei, største hær. 10 poeng.
+31|Riddere & Barbarer
+32|Varer, byforbedringer, riddere og barbarangrep. 13 poeng.
+33|Spillere
+34|Færre
+35|Flere
+36|Poeng for å vinne
+37|Fem eller seks spillere bruker det større brettet, med en egen byggefase mellom trekkene.
+38|Opptil fire spillere bruker det vanlige brettet.
+39|Opprett spill
+40|Dine spill
+41|Din tur
+42|Åpne
+43|vert
+44|Ledig plass
+45|Velg din farge
+46|Start spillet
+47|Venter på at verten starter…
+48|Kopier invitasjonslenke
+49|Forlat
+50|Åpne spill
+51|Bli med
+52|Ingen åpne spill. Opprett et og inviter vennene dine.
+53|Se på
+54|Spillet er opprettet. Velg farge og inviter vennene dine.
+55|Invitasjonslenken er kopiert.
+56|Favorittfarge (brukes i spill når den er ledig, og på statistikksiden)
+57|Logget inn som {email}
+58|administrator
+59|Bytt passord
+60|Nåværende passord
+61|Nytt passord
+62|Ferdig for i dag?
+63|Logg ut
+64|Passordet er endret.
+65|Du ble med i spillet.
+66|Verten har lukket dette spillet.
+67|Kunne ikke laste Broch
+68|Havn: bytt 3 like kort mot 1
+69|Havn: bytt 2 {res} mot 1
+70|Spillbrett
+71|ingenting
+72|Noe gikk galt
+73|Fortell oss hva du gjorde, så fikser vi det. Knappen kopierer feildetaljene slik at du kan lime dem inn i skjemaet.
+74|Feildetaljer
+75|Lukk
+76|Feildetaljene er kopiert. Lim dem inn i tilbakemeldingsskjemaet.
+77|Fikk ikke kontakt med Broch-serveren. Sjekk tilkoblingen din.
+78|Forespørselen mislyktes ({n})
+79|Kobler til serveren igjen… prøv igjen om litt.
+80|Serveren svarte ikke.
+81|Kobler til igjen…
+82|Appen fikk en uventet feil
+83|Serveren rapporterte en feil
+84|Mistet forbindelsen til spillserveren
+85|Tømmer
+86|Leire
+87|Ull
+88|Korn
+89|Malm
+90|Papir
+91|Stoff
+92|Mynt
+93|Handel
+94|Politikk
+95|Vitenskap
+96|barbarskip
+97|handelsport
+98|politikkport
+99|vitenskapsport
+100|enkel
+101|sterk
+102|mektig
+103|Ridder
+104|Seierspoeng
+105|Veibygging
+106|Overflodens år
+107|Monopol
+108|Alkymist
+109|Oppfinner
+110|Kran
+111|Ingeniør
+112|Vanning
+113|Medisin
+114|Gruvedrift
+115|Boktrykk
+116|Smed
+117|Handelshavn
+118|Mesterkjøpmann
+119|Kjøpmann
+120|Handelsflåte
+121|Råvaremonopol
+122|Handelsmonopol
+123|Biskop
+124|Grunnlov
+125|Desertør
+126|Diplomat
+127|Intrige
+128|Sabotør
+129|Spion
+130|Krigsherre
+131|Bryllup
+132|Rød
+133|Blå
+134|Oransje
+135|Hvit
+136|Turkis
+137|Lilla
+138|Svart
+139|Rosa
+140|Gul
+141|Brun
+142|Metropol!
+143|Lengste vei
+144|Største hær
+145|+2 seierspoeng
+146|Spillere med for mange kort må kaste halvparten.
+147|Ingen må kaste kort.
+148|Røveren er på farten.
+149|Barbarene har ikke angrepet ennå, så røveren blir stående.
+150|Røveren slår til!
+151|Barbarene angriper!
+152|Barbarer (byer)
+153|Aktive riddere
+154|Slått tilbake!
+155|Broch blir plyndret!
+156|Laster spillet…
+157|Du stjal 1 {res} fra {name}.
+158|{name} stjal 1 {res} fra deg.
+159|Ditt trekk
+160|{name} vinner!
+161|Resultatet er lagret på statistikksiden.
+162|Feire
+163|Avbryt
+164|Plasser en vei ved siden av.
+165|Plasser byen din.
+166|Plasser din første bosetning.
+167|Plasser din andre bosetning.
+168|Trykk på en lysende kant.
+169|Trykk på et lysende hjørne. Det må være minst ett tomt hjørne mellom bygninger.
+170|{name} plasserer en vei…
+171|{name} plasserer en bygning…
+172|Kast {n} kort.
+173|Du har flere kort enn håndgrensen din.
+174|Velg kort
+175|Gi {name} {n} kort.
+176|Bryllupsgave: du velger hvilke kort.
+177|Flytt røveren (Biskop).
+178|Flytt røveren.
+179|Trykk på en rute. Du stjeler fra en spiller med en bygning der.
+180|Velg hvem du stjeler fra.
+181|Velg
+182|Ridderen din ble jaget bort.
+183|Trykk på et lysende hjørne for å flytte den dit.
+184|Velg en by til metropolen din ({track}).
+185|Trykk på en av de markerte byene dine.
+186|Barbarene plyndrer en av byene dine.
+187|Trykk på byen som blir en bosetning.
+188|Du hjalp med å forsvare Broch. Trekk et fremskrittskort.
+189|Velg bunke
+190|Du har mer enn 4 fremskrittskort.
+191|Kast til du har 4.
+192|Velg kort
+193|Akvedukten din gir en råvare.
+194|Dette kastet ga deg ingenting.
+195|En ridder har deserter til din side.
+196|Trykk på et hjørne ved veien din, eller hopp over.
+197|Spionen din ser fremskrittskortene deres.
+198|Ta 2 kort fra hånden deres.
+199|Gjør ditt valg.
+200|Hopp over
+201|Egen byggefase.
+202|Du kan bygge eller kjøpe nå. Ingen handel.
+203|Ferdig
+204|{name} er i den egne byggefasen…
+205|Venter på at {name} kaster…
+206|{name} gjør trekket sitt.
+207|Din tur. Kast terningene.
+208|Du kan spille en ridder før du kaster.
+209|Kast terningene
+210|Plasser gratis veier: {n}.
+211|Bygg, handle eller avslutt trekket.
+212|Gratis forfremmelser igjen: {n} (trykk på en ridder).
+213|Avslutt trekk
+214|Barbarskip
+215|{track}-port
+216|Kastet {n}
+217|Det er ikke noe sted å gjøre det akkurat nå.
+218|Du ser på dette spillet.
+219|Barbarskip: angriper når det når enden
+220|Barbarenes styrke (byer) mot aktive riddere
+221|Utviklingskort igjen: {n}
+222|{n} igjen
+223|Vei
+224|Bosetning
+225|By
+226|Utv.kort
+227|Bymur
+228|Bankhandel
+229|4:1 eller bedre
+230|Utviklingskort
+231|ny
+232|Fremskrittskort
+233|Hånden din
+234|Kort: {n} · grense {m}
+235|Kort: {n}
+236|Utv.: {n}
+237|Riddere: {n}
+238|Fremskritt: {n}
+239|Forbedringer: handel / politikk / vitenskap
+240|deg
+241|Pålogget
+242|Frakoblet
+243|av {n}
+244|{name} gir
+245|og vil ha
+246|Handle med {name}
+247|Avslått
+248|Tenker…
+249|Trekk tilbake tilbudet
+250|Du godtok. Venter på bekreftelse.
+251|Du avslo.
+252|Godta
+253|Avslå
+254|Du mangler kortene.
+255|Handelstilbud
+256|Metropol: {name}
+257|Forbedre {track} ({n} {res})
+258|Bunker: vitenskap {a}, handel {b}, politikk {c}
+259|Byforbedringer
+260|Nivå 3 låser opp en bonus. Den første på nivå 4 bygger en metropol (+2).
+261|Si hei til bordet.
+262|Spillogg
+263|Chat
+264|Kostnader
+265|Melding
+266|Send
+267|Trykk der veien skal bygges.
+268|Trykk der bosetningen skal bygges.
+269|Trykk på bosetningen som skal oppgraderes.
+270|Trykk på et hjørne ved veien din for ridderen.
+271|Trykk på byen som skal få mur.
+272|Bekreft
+273|har {n}
+274|Mindre
+275|Kast {n} kort
+276|Det ble kastet 7, og du har mer enn {n} kort.
+277|Bryllupsgave til {name}
+278|Velg {n} kort å gi bort.
+279|Stjel fra…
+280|Du tar et tilfeldig kort.
+281|Trekk et fremskrittskort
+282|Velg en bunke.
+283|Akvedukt
+284|Ta en valgfri råvare.
+285|Kast et fremskrittskort
+286|Du kan ha maks 4.
+287|Ta ingenting
+288|{name}s fremskrittskort
+289|Ta ett.
+290|{name}s hånd
+291|Ta {n} kort.
+292|Foreslå en handel
+293|Alle ser tilbudet og kan godta. Du velger hvem du handler med.
+294|Du gir
+295|Du vil ha
+296|Banken i stedet
+297|Tilby
+298|Handle med banken
+299|Kursene dine kommer fra havnene og forbedringene dine.
+300|Kursene dine kommer fra havnene dine.
+301|Gi
+302|Få 1
+303|Bytt {n} {a} mot 1 {b}
+304|Telles automatisk.
+305|Spill det i din tur.
+306|Du har allerede spilt et kort denne turen.
+307|Kort kjøpt denne turen kan spilles neste tur.
+308|Spill kort
+309|Ta 2 valgfrie råvarer fra banken.
+310|Alle gir deg alt av råvaren du nevner.
+311|Alkymisten spilles før du kaster.
+312|Kast terningene først.
+313|Velg den røde og den gule terningen. Hendelsesterningen kastes som vanlig.
+314|Kast {n}
+315|Oppfinner: trykk på to tallruter som skal byttes.
+316|Ingeniør: trykk på en by for en gratis mur.
+317|Medisin: trykk på bosetningen som skal oppgraderes (1 korn, 2 malm).
+318|Kjøpmann: trykk på en rute ved bygningen din.
+319|Diplomat: trykk på en åpen vei som skal fjernes.
+320|Intrige: trykk på en motstanders ridder ved veien din.
+321|Poeng: {n}
+322|Hvilken korttype vil du bytte 2:1 denne turen?
+323|Hver motstander gir deg opptil 2.
+324|Hver motstander gir deg 1.
+325|Enkel ridder
+326|Sterk ridder
+327|Mektig ridder
+328|Aktiver (1 korn)
+329|Forfrem (gratis, Smed)
+330|Forfrem (1 ull, 1 malm)
+331|Flytt langs veiene dine
+332|Jag bort en svakere ridder
+333|Jag bort røveren
+334|Aktiv (aktivert denne turen, kan handle neste tur)
+335|Aktiv
+336|Inaktiv
+337|Ingenting å gjøre med den akkurat nå.
+338|Trykk der ridderen skal gå.
+339|Trykk på ridderen som skal jages bort.
+340|1 poeng
+341|2 poeng, dobbel produksjon
+342|Utviklingskort
+343|Ridder, fremskritt eller poeng
+344|Enkel ridder (inaktiv)
+345|Aktiver ridder
+346|Forfrem ridder
+347|Mektig krever politikk 3
+348|+2 håndgrense
+349|Byggekostnader
+350|Forbedringer koster 1–5 varer: stoff for handel, mynter for politikk, papir for vitenskap. Byer ved skog, beite og fjell gir en vare i stedet for en ekstra råvare.
+351|Se statistikk
+352|Tilbake til lobbyen
+353|Spillserveren fikk en feil under trekket ditt
+354|Flytt røveren og stjel et kort. Teller mot største hær.
+355|Gir 1 poeng. Holdes skjult for de andre til spillet er over.
+356|Bygg 2 veier gratis.
+357|Nevn en råvare. Alle gir deg alt de har av den.
+358|Velg begge produksjonsterningene før du kaster.
+359|Bytt to tallbrikker (ikke 2, 6, 8 eller 12).
+360|Din neste byforbedring denne turen koster 1 mindre.
+361|Bygg en bymur gratis.
+362|Ta 2 korn for hver åker ved bygningene dine.
+363|Oppgrader en bosetning til by for 2 malm og 1 korn.
+364|Ta 2 malm for hvert fjell ved bygningene dine.
+365|Forfrem 2 riddere gratis.
+366|Bytt en av råvarene dine mot en vare fra hver motstander.
+367|Se hånden til en spiller med flere poeng og ta 2 kort.
+368|Plasser kjøpmannen ved bygningen din: bytt den råvaren 2:1 og hold 1 poeng.
+369|Bytt én valgfri korttype 2:1 denne turen.
+370|Hver motstander gir deg opptil 2 av en råvare.
+371|Hver motstander gir deg 1 av en vare.
+372|Flytt røveren og stjel 1 kort fra hver spiller ved den ruten.
+373|En motstanders svakeste ridder deserterer. Du kan plassere en like sterk.
+374|Fjern en åpen vei. Er den din, bygger du den på nytt gratis.
+375|Jag bort en motstanders ridder som står ved en av veiene dine.
+376|Spillere med like mange poeng som deg eller flere kaster halvparten av kortene sine.
+377|Se en motstanders fremskrittskort og ta ett.
+378|Aktiver alle ridderne dine gratis.
+379|Hver spiller med flere poeng gir deg 2 kort de velger selv.
+380|Venter på at {names} kaster kort…
+381|Venter på at {names} flytter røveren…
+382|Venter på at {names} stjeler…
+383|Venter på at {names} flytter en ridder…
+384|Venter på at {names} gir kort…
+385|Venter på at {names} velger en by å miste…
+386|Venter på at {names} trekker fremskrittskort…
+387|Venter på {names}…
+388|{name} vinner
+389|Laster…
+390|Noen
+391|Forrige år
+392|PÅGÅR
+393|AVSLUTTET
+394|Neste år
+395|Alle spill
+396|LEDER AKKURAT NÅ
+397|MESTER {year}
+398|Ingen ennå
+399|Seire
+400|Spill: {n}
+401|Se seiersfeiringen
+402|Stilling {year}
+403|p
+404|Ingen spill ennå
+405|Ingen spillere ennå.
+406|Over tid
+407|Innbyrdes
+408|Hvert tall viser hvor ofte spilleren i raden har slått spilleren i kolonnen.
+409|Registrer et spill spilt ved bordet
+410|Alle spill {year}
+411|Ingenting registrert ennå.
+412|Seier nr. {n} i {year}
+413|Seire: {n}
+414|Slette?
+415|Slettet.
+416|Ingen spill i år ennå.
+417|Beste rekke
+418|Nåværende rekke
+419|Favorittversjon
+420|Erkefiende: {name} ({n}×)
+421|spilt ved bordet
+422|Trekk: {n}
+423|{n} min
+424|Bord
+425|Slett
+426|Raskeste seier
+427|Høyeste poengsum
+428|Flest kort høstet
+429|{n} i ett spill
+430|Lengste spill
+431|Rekorder
+432|Terninger
+433|Hvor ofte hvert tall ble kastet
+434|Søyler: kast i år. Stiplet linje: hva sannsynligheten tilsier. Varmeste tall: {n} ({m} av {total} kast).
+435|Diagrammet fylles ut etter hvert som dere spiller.
+436|Samlede seire gjennom året
+437|Når ble det spilt
+438|Hvem spilte
+439|Hvem vant
+440|Velg spillerne først.
+441|Lagre spill
+442|Lagret i statistikken.
+443|Ukjent modus
+444|Broch krever 2–6 spillere
+445|Spillet begynner. {@ps} tar plass.
+446|{@p} plasserer først.
+447|{@p} vinner med {n} seierspoeng!
+448|{@p} har nå lengste vei ({n}).
+449|Ingen har lengste vei lenger.
+450|{@p} kastet {n} ({#e}).
+451|{@p} kastet {n}.
+452|Banken gikk tom for {#r}; ingen får noe.
+453|{@p} får {$c}.
+454|Barbarskipet nærmer seg ({n}/{m}).
+455|Barbarene angriper! Styrke {n} mot riddernes {m}.
+456|Barbarene er slått tilbake. {@p} blir Brochs forsvarer (+1 poeng).
+457|Barbarene er slått tilbake. {@ps} deler æren og trekker hvert sitt fremskrittskort.
+458|Barbarene er slått tilbake.
+459|Barbarene vinner! {@ps} mister hver sin by.
+460|Barbarene vinner, men det finnes ingen ubeskyttede byer å plyndre.
+461|{@p}s by blir en bosetning.
+462|Bunken {#d} er tom.
+463|{@p} viser {%c} (+1 poeng).
+464|{@p} trekker et fremskrittskort ({#d}).
+465|{@p} har ingen ledig by til metropolen ({#t}).
+466|{@p} bygger en metropol ({#t}).
+467|Egen byggefase: {@ps}.
+468|Du kan ikke bygge en vei der.
+469|Ingen veier igjen.
+470|Ikke nok råvarer.
+471|{@p} bygde en vei.
+472|Ugyldig handling.
+473|Spillet er over.
+474|Du er ikke med i dette spillet.
+475|Ukjent handling.
+476|Det er ikke ditt trekk akkurat nå.
+477|Ikke tillatt akkurat nå.
+478|Bare i riddermodus.
+479|Det er ikke din plassering.
+480|For nær en annen bygning.
+481|{@p} plasserte en bosetning.
+482|{@p} plasserte en by.
+483|Veien må berøre den nye bygningen din.
+484|Oppsettet er ferdig. {@p} begynner.
+485|Allerede kastet.
+486|Ingen gratis veier å hoppe over.
+487|Det er ikke din egne byggefase.
+488|Du kan ikke bygge en bosetning der.
+489|Ingen bosetninger igjen.
+490|{@p} bygde en bosetning.
+491|Oppgrader en av bosetningene dine.
+492|Ingen byer igjen.
+493|{@p} bygde en by.
+494|Ingen utviklingskort i riddermodus.
+495|Bunken med utviklingskort er tom.
+496|{@p} kjøpte et utviklingskort.
+497|Bare ett utviklingskort per tur.
+498|Du har ikke noe spillbart kort av den typen (nye kort venter en tur).
+499|{@p} spilte {%c}.
+500|{@p} har nå største hær.
+501|Velg to råvarer.
+502|Banken har ikke de kortene.
+503|{@p} spilte {%c} og tok {$c2}.
+504|Velg en råvare.
+505|{@p} spilte {%c} på {#r} og samlet {n}.
+506|Ukjent kort.
+507|Ingenting å kaste.
+508|Velg nøyaktig {n} kort.
+509|Du har ikke de kortene.
+510|{@p} kastet kort: {n}.
+511|Ingenting å gi.
+512|{@p} gir {@q} kort: {n}.
+513|Du flytter ikke røveren.
+514|Flytt røveren til en annen rute.
+515|{@p} flyttet røveren.
+516|Velg noen ved siden av røveren.
+517|Fyll ut begge sider av handelen.
+518|{@p} tilbyr {$g} for {$w}.
+519|Det tilbudet finnes ikke.
+520|Du har ikke de ønskede kortene.
+521|Den spilleren har ikke godtatt.
+522|Noen har ikke kortene lenger.
+523|{@p} byttet {$g} med {@q} mot {$w}.
+524|Ingen tilbud å trekke tilbake.
+525|Velg hva du gir og hva du får.
+526|Du trenger {$c}.
+527|Banken er tom for det.
+528|{@p} byttet {$g} med banken mot {$w}.
+529|Riddere plasseres på et tomt hjørne ved veien din.
+530|Ingen enkle riddere igjen.
+531|{@p} rekrutterte en ridder.
+532|Velg en av dine inaktive riddere.
+533|Aktivering krever 1 korn.
+534|{@p} aktiverte en ridder.
+535|Velg en av ridderne dine.
+536|En ridder kan bare forfremmes én gang per tur.
+537|Ingen riddere på neste nivå igjen.
+538|{@p} forfremmet en ridder ({#l}).
+539|Ridderen kan ikke nå det hjørnet.
+540|{@p} flyttet en ridder.
+541|Ingen motstanderridder innen rekkevidde der.
+542|Du kan bare jage bort en svakere ridder.
+543|{@p}s ridder jager bort {@q}s ridder.
+544|Røveren kan ikke flyttes før det første barbarangrepet.
+545|Den ridderen står ikke ved røveren.
+546|{@p}s ridder jager bort røveren.
+547|Ingen ridder å flytte.
+548|Velg et markert hjørne.
+549|{@p} flyttet en bortjaget ridder.
+550|Murer bygges rundt byene dine.
+551|Ingen murer igjen.
+552|{@p} bygde en bymur.
+553|Ukjent forbedring.
+554|Du trenger en by først.
+555|Allerede på toppen.
+556|{@p} forbedret {#t} til nivå {n}.
+557|{@p} tar metropolen ({#t}) fra {@q}.
+558|Ingen metropol å plassere.
+559|Velg en av byene dine.
+560|Ingenting å miste.
+561|Velg en av dine ubeskyttede byer.
+562|Velg et kort.
+563|{@p} kastet et fremskrittskort.
+564|{@p}s akvedukt gir {$c}.
+565|Ingen ridder å plassere.
+566|Velg et tomt hjørne ved veien din.
+567|{@p} plasserer den deserterte ridderen.
+568|Ingenting å ta.
+569|{@p}s spion stjeler et fremskrittskort fra {@q}.
+570|Velg {n} av kortene deres.
+571|{@p} tar kort fra {@q}: {n}.
+572|Spill Alkymisten før du kaster.
+573|{@p} stjal et kort fra {@q}.
+574|Den ridderen er ikke aktiv.
+575|En ridder som er aktivert denne turen, må vente til neste tur.
+576|{@p}s ridder har ingen steder å gå og forlater brettet.
+577|Velg begge terningene.
+578|Velg to tallruter (ikke 2, 6, 8 eller 12).
+579|Velg en av byene dine uten mur.
+580|Velg en av bosetningene dine.
+581|Medisin krever 1 korn og 2 malm.
+582|{@p} bytter {$g} mot {@q}s {$w}.
+583|Velg en spiller med flere poeng enn deg.
+584|De har ingen kort.
+585|Velg en landrute.
+586|Kjøpmannen må stå ved bosetningen eller byen din.
+587|Velg en korttype.
+588|{@p} samler {$c}.
+589|Velg en vare.
+590|Røveren kan ikke flytte før det første barbarangrepet.
+591|Velg en spiller som har riddere.
+592|En av {@p}s riddere deserterer.
+593|Velg en åpen vei (med en løs ende).
+594|{@p} fjernet en vei fra {@q}.
+595|Velg en motstanders ridder ved en av veiene dine.
+596|Velg en motstander.
+597|De har ingen fremskrittskort.
+598|Ugyldige data
+599|Fant ikke spillet
+600|Logg inn først.
+601|For mange forsøk. Prøv igjen om noen minutter.
+602|Skriv inn en gyldig e-postadresse.
+603|Velg et visningsnavn.
+604|Passordet må ha minst 6 tegn.
+605|Velg landet ditt.
+606|Feil invitasjonskode.
+607|Den e-postadressen er allerede registrert.
+608|Det navnet er opptatt.
+609|Feil e-post eller passord.
+610|Navnet kan ikke være tomt.
+611|Ukjent farge.
+612|Ukjent språk.
+613|Nåværende passord er feil.
+614|Spillet har allerede startet.
+615|Bli med i spillet først.
+616|Noen andre har allerede den fargen.
+617|Det spillet har allerede startet.
+618|Spillet er fullt.
+619|Du kan ikke forlate et pågående spill. Verten kan avbryte det.
+620|Bare verten kan starte.
+621|Allerede startet.
+622|Vent på minst én spiller til.
+623|Bare verten kan avbryte spillet.
+624|Velg vinneren blant spillerne.
+625|Ikke funnet
+626|Bare den som registrerte det (eller en administrator) kan slette det.
+627|Ukjent endepunkt
+628|Spillet kjører ikke.
+629|Scenario
+630|Varianter
+631|Oppdrag
+632|Velg en utvidelse for å se alternativene.
+633|Byer & Riddere
+634|5–6
+635|Bosett, handle, bygg. Utviklingskort, lengste vei, største hær.
+636|Varer, byforbedringer, riddere og barbarangrep.
+637|Utvidelse
+638|Ingen
+639|Standardøya.
+640|Sjøfarere
+641|Skip og øyutforsking.
+642|Handelsmenn & Barbarer
+643|Fiskere, elver og hendelseskort.
+644|Oppdagere & Pirater
+645|Oppdrag gjennom tåken.
+646|Utvidelse for 5–6 spillere
+647|Større brett og spesiell byggefase. Fungerer med alle spillerantall.
+648|Fiskeplass
+649|Fiskestim
+650|Piratgjemmested
+651|Bonus for ny øy: +1 seierspoeng for første bosetning
+652|Pirat
+653|Skog
+654|Åser
+655|Beite
+656|Åkrer
+657|Fjell
+658|Ørken
+659|Gull
+660|Elv
+661|fisk
+662|krydder
+663|Oppdagelse
+664|Startressurser
+665|Bytte
+666|Flytt røveren eller piraten.
+667|Trykk på en landrute for røveren eller en sjørute for piraten. Du stjeler fra en spiller ved siden av.
+668|Gull! Velg {n} ressurser.
+669|Ta ressurser banken har.
+670|Trykk på et pulserende skip for å seile (én gang per tur).
+671|Trykk der skipet skal seile.
+672|Zoom inn
+673|Zoom ut
+674|Vis hele brettet
+675|Fiskebrikker igjen i posen
+676|Hendelseskort igjen før bunken stokkes på nytt
+677|Skip
+678|Bro
+679|Fisk
+680|{n} fisk
+681|2 gull = 1 kort
+682|Lever, angrip
+683|Gull fra områder ved elver. 2 gull kjøper et valgfritt kort.
+684|{n} gull
+685|Fisk er trygge for røveren og kan ikke byttes.
+686|Den gamle støvelen: du trenger ett poeng til for å vinne.
+687|Gammel støvel
+688|Fisk på brettet · levert
+689|Krydder på brettet · levert
+690|Brikker igjen
+691|Aktiv ridderstyrke
+692|Levert fisk · krydder
+693|Nivå 3: bytt varer 2:1 i banken.
+694|Nivå 3: ridderne dine kan bli mektige.
+695|Nivå 3: akvedukten gir en ressurs når du ikke får noe.
+696|Nivå 4: første spiller hit reiser en metropol (+2 poeng).
+697|alle på et blikk
+698|Trykk på sjøkanten der skipet skal gå.
+699|Trykk på elvekryssingen for broen din.
+700|Gull!
+701|Velg {n} ressurser fra banken.
+702|Jag røveren bort
+703|Flytt røveren til en valgfri rute og stjel fra en nabo.
+704|Stjel et kort
+705|Ta et tilfeldig kort fra en valgfri spiller.
+706|Ta en ressurs
+707|Ta en valgfri ressurs fra banken.
+708|Gratis vei
+709|Bygg én vei uten å betale.
+710|Fremskrittskort
+711|Trekk et fremskrittskort fra en bunke du velger.
+712|Trekk et utviklingskort gratis.
+713|Bruk fisk
+714|Du har {n} fisk. Fisk kan ikke stjeles eller tapes til røveren.
+715|Ingen har kort å stjele.
+716|Bytt gull mot et kort
+717|Du har {n} gull. 2 gull kjøper en valgfri ressurs, opptil to ganger per tur.
+718|På brettet: {n} · levert: {d} · {v}/3 poeng
+719|Lever
+720|Hver 2. levering til rådet gir 1 poeng, opptil 3 poeng per oppdrag. Et ødelagt piratgjemmested gir 1 poeng til den som traff det mest.
+721|Fisk for Broch
+722|Krydder for Broch
+723|Piratgjemmesteder
+724|Hvert treff koster 1 malm og 1 ull og krever et skip ved gjemmestedet.
+725|Ingen gjemmesteder funnet ennå. Utforsk tåken.
+726|Gjemmested · {n} treff igjen
+727|Angrip
+728|Seiler på sjøkanter; flyttes én gang per tur
+729|Krysser en elv; gir 3 gull
+730|Venter på at {names} skal velge fra gullfeltet…
+731|Utvidelser
+732|Flytt piraten til en annen sjørute.
+733|{@p} flyttet piraten.
+734|Hendelseskortene stokkes på nytt.
+735|{@p} seiler ut på åpent hav.
+736|{@p} oppdager land: {#t}.
+737|{@p} finner gull og kan velge {n} ressurser.
+738|{@p} fanger {n} fisk.
+739|{@p} drar opp den gamle støvelen og trenger nå ett poeng til for å vinne.
+740|{@p} laster {n} krydder.
+741|{@p} drar inn en stor fangst fisk.
+742|{@p} tjener {n} gull.
+743|{@p} bosetter en ny øy og får et bonuspoeng (+1 poeng).
+744|Det er ingen skip i dette spillet.
+745|Ingen skip igjen.
+746|Du kan ikke seile et skip dit.
+747|{@p} bygde et skip.
+748|Det skipet kan ikke gå dit.
+749|{@p} seilte et skip til et nytt sted.
+750|Ikke noe gull å bruke.
+751|{@p} tar {$c} fra gullfeltet.
+752|Det er ingen elver i dette spillet.
+753|Ingen broer igjen.
+754|Du kan ikke bygge en bro der.
+755|{@p} bygde en bro.
+756|Du kan bare bytte gull to ganger per tur.
+757|Du trenger 2 gull.
+758|{@p} bytter 2 gull mot {$c}.
+759|Det er ingen fiskere i dette spillet.
+760|Ukjent fiskebytte.
+761|Du trenger {n} fisk.
+762|{@p} betaler {n} fisk for å jage røveren bort.
+763|Velg en spiller med kort.
+764|Velg en ressurs banken har.
+765|{@p} bytter {n} fisk mot {$c}.
+766|{@p} bytter {n} fisk mot en gratis vei.
+767|{@p} bytter {n} fisk mot et fremskrittskort.
+768|{@p} bytter {n} fisk mot et utviklingskort.
+769|Det er ingen oppdrag i dette spillet.
+770|Det oppdraget er ikke med i dette spillet.
+771|Du har ingenting å levere.
+772|Du trenger en bosetning å levere til.
+773|{@p} leverer {n} {#k} til rådet.
+774|Det er ingen piratgjemmesteder i dette spillet.
+775|Det er ikke noe gjemmested der.
+776|Du trenger et skip ved gjemmestedet.
+777|Angrep koster 1 malm og 1 ull.
+778|{@p} angriper et piratgjemmested ({n} igjen).
+779|Piratgjemmestedet er ødelagt. {@p} får dusøren (+1 poeng).
+780|Mot nye kyster
+781|De fire øyene
+782|Tåkeøyene
+783|Fiskerne på Catan
+784|Elvene på Catan
+785|Hendelseskort
+786|Fisk for Catan
+787|Krydder for Catan
+788|Fiskeplasser, fiskebrikker og den gamle støvelen.
+789|Broer, gull, og den rikeste og fattigste spilleren.
+790|En bunke hendelseskort erstatter terningene.
+791|Husregel: glemt røver
+792|Hvis en spiller avslutter runden uten å flytte røveren, går den tilbake til ørkenen.
+793|Hvis du avslutter runden nå, går røveren tilbake til ørkenen.
+794|Den husregelen er ikke slått på.
+795|{@p} glemte å flytte røveren, så den går tilbake til ørkenen.
+796|Husregel: startressurser for begge
+797|Husregler
+798|Begge bygningene fra startfasen gir startressurser. I Byer & Riddere teller byen som en bosetning.
+799|Ingenting har skjedd ennå.
+800|Startfase
+801|Diagrammene fylles ut når de første trekkene er spilt.
+802|Seierspoeng over tid
+803|Terningkast
+804|Søyler: kastet · linje: forventet etter {n} kast
+805|Mottatte råvarer
+806|Kast
+807|Oftest kastet
+808|Syvere
+809|Mål
+810|kastet
+811|forventet
+812|Mer enn {n} kort: kastes det 7, mister du halvparten.
+813|Bare siste kast
+814|Vis tidligere trekk
+815|Brochs forsvarer
+816|−1 by
+817|Levende brett
+818|Levende brett: på
+819|Levende brett: av
+820|Bank
+821|Gir 1 poeng. Legges åpent foran deg.
+822|Slik spiller du: {mode}
+823|Slik spiller du
+824|Slik fungerer {mode} (1 min)
+825|Velkommen til Broch!
+826|Bygg, handle og voks. Først til 10 poeng vinner.
+827|Hver rute gir en råvare.
+828|Skog, åser, beite, åkrer og fjell. Ørkenen gir ingenting.
+829|Bygg bosetninger på hjørnene.
+830|Trykk på det lysende hjørnet.
+831|En bosetning grenser til opptil 3 ruter.
+832|Motstanderne dine bygger også.
+833|Kast terningene hver tur.
+834|Trykk på terningene.
+835|Alle ruter med det tallet gir råvarer.
+836|Alle ved siden av får et kort, også i andres tur.
+837|Flere prikker, mer flaks.
+838|Røde 6 og 8 kommer oftest, 2 og 12 sjelden.
+839|Bruk kort for å bygge.
+840|En vei koster tømmer og leire. Trykk på den lysende kanten.
+841|Byer gir dobbelt.
+842|Oppgrader en bosetning med 2 korn og 3 malm. Trykk på bosetningen din.
+843|En 7-er vekker røveren!
+844|Flytt røveren til en rute.
+845|Ruten slutter å gi. Trykk på en rute ved motstanderen din.
+846|Stjel så et kort fra noen der.
+847|Alle med mer enn 7 kort mister halvparten.
+848|Handle med spillerne eller banken.
+849|Banken bytter 4 like mot 1. Havner: 3:1 eller 2:1.
+850|Riddere flytter røveren. Andre kort gir veier, råvarer eller et seierspoeng.
+851|3 riddere spilt: Største hær, +2 poeng.
+852|Innehaveren heiser krigsbannere på brettet.
+853|5 veier på rad: Lengste vei, +2 poeng.
+854|Den lengste strekningen lyser gyllent.
+855|Nå 10 poeng for å vinne!
+856|Bosetning 1 · By 2 · Lengste vei 2 · Største hær 2 · Seierspoengkort 1
+857|Alt fra Klassisk, pluss varer, riddere og barbarer. Først til 13 poeng vinner.
+858|Byer gir varer.
+859|Skog: papir · Beite: stoff · Fjell: mynt
+860|Med varer kjøper du byforbedringer.
+861|Handel koster stoff, politikk mynt, vitenskap papir. Trykk på +.
+862|Nivå 3 låser opp en spesialevne.
+863|Vitenskap: få en råvare når du ikke får noe. Handel: varer 2:1. Politikk: sterkere riddere.
+864|Den første på nivå 4 reiser en metropol.
+865|Den er verdt 2 poeng og står på byen din.
+866|Riddere forsvarer Broch.
+867|Rekrutter en for ull og malm. Trykk på det lysende hjørnet.
+868|Aktiver den med korn.
+869|Bare aktive riddere kjemper. Forfrem dem for å gjøre dem sterkere.
+870|Et skip på hendelsesterningen flytter barbarene.
+871|Hvert skip bringer dem et steg nærmere Broch.
+872|Deres styrke: alle byer på brettet. Ditt forsvar: alle aktive riddere.
+873|Den sterkeste forsvareren får et poeng. Vinner barbarene, blir den svakeste byen plyndret.
+874|En farget port på hendelsesterningen gir kort til spillere med høye nok forbedringer.
+875|Bymurer
+876|Hver mur lar deg beholde 2 kort til når det kastes 7.
+877|Nå 13 poeng for å vinne!
+878|Bosetning 1 · By 2 · Metropol 2 · Forsvarer 1 · Lengste vei 2
+879|Landet er delt i øyer. Skip krysser havet.
+880|Bygg skip på vannet.
+881|Et skip koster tømmer og ull. Trykk på den lysende kanten.
+882|Skip danner en kjede, akkurat som veier.
+883|Det siste skipet i en åpen kjede kan seile til et nytt sted én gang per tur.
+884|Seil inntil tåken for å avsløre den.
+885|Å oppdage land gir deg en råvare.
+886|Bosett en ny øy: +1 poeng!
+887|Gullfelt gir den råvaren du vil ha.
+888|Piraten
+889|Skip ved ruten hans blir blokkert, og han stjeler. En 7-er eller en ridder flytter ham.
+890|Vinn med 12 til 14 poeng.
+891|Velg et scenario når du oppretter spillet: Mot nye kyster, De fire øyene eller Tåkeøyene.
+892|Tre varianter du kan kombinere: Fiskere, Elver og Hendelseskort.
+893|Fiskere
+894|Ørkenen blir en innsjø, og kysten får fiskeplasser.
+895|Kast tallet til en fiskeplass for å fange fisk.
+896|Innsjøen gir fisk på 2, 3, 11 og 12.
+897|Betal med fisk
+898|2 jag bort røveren · 3 stjel · 4 ta en råvare · 5 en vei · 7 et utviklingskort
+899|Den gamle støvelen
+900|Den som fisker den opp, trenger ett poeng til for å vinne, og kan gi den videre til en som leder.
+901|Elver
+902|Hver vei eller bosetning ved en elv gir 1 gull.
+903|Broer krysser elven.
+904|En bro koster 2 leire og 1 tømmer og gir 3 gull.
+905|Bytt 2 gull mot en valgfri råvare. Den rikeste spilleren får +1 poeng, den fattigste −2.
+906|En bunke med alle de 36 terningutfallene erstatter terningene, så hvert tall kommer så ofte som det skal.
+907|Seil inn i tåken, oppdag land og fullfør oppdrag.
+908|Utforsk tåken med skip.
+909|Trykk på den lysende kanten. Nytt land gir deg en råvare.
+910|Et skip ved en fiskestim fanger fisk når tallet dens blir kastet.
+911|Krydder for Broch
+912|Bosetninger ved et krydderfelt laster krydder når det gir.
+913|Lever lasten til rådet.
+914|Hver 2. levering gir 1 poeng, opptil 3 poeng per oppdrag.
+915|Angrip fra et skip ved et gjemmested for 1 malm og 1 ull. Den som traff mest når det faller, får et poeng.
+916|Nå 12 poeng for å vinne!
+917|Bosetninger, byer, nye øyer, oppdrag og gjemmesteder teller alle.
+918|Et større brett med flere ruter, havner og kort for opptil 6 spillere.
+919|Egen byggefase
+920|Etter hver tur kan alle de andre bygge etter hverandre, men ikke handle.
+921|Så ingen venter lenge.
+922|Turene holder seg korte, selv ved fullt bord.
+923|Tilbake
+924|Pause
+925|Neste
+926|Nå kan du {mode}!
+927|Se igjen
+928|Neste: {mode}
+929|La oss spille!
+930|Hendelseskort
+931|Kast
+932|Seier!
+933|Spillet er over
+934|Du vant!
+935|seierspoeng
+936|Du endte på {n}. plass med {m} poeng.
+937|Sluttstilling
+938|Se på brettet
+939|Bosetninger
+940|Byer
+941|Metropol
+942|Seierspoengkort
+943|Bonuspoeng
+944|Slik gikk løpet
+945|Flest råvarer
+946|Hyppigste tall
+947|{n}×
+948|Spillets lengde
+949|{n} trekk
+950|Høydepunkter
+951|Lengste handelsvei
+952|Velg råvaren din én gang. Fra nå av utbetaler akvedukten den hver gang et kast ikke gir deg noe (unntatt ved en 7-er).
+953|Akvedukt: {res}. Trykk for å endre.

@@ -1,0 +1,20 @@
+{
+  "name": "broch",
+  "version": "1.0.0",
+  "description": "Broch: an online settlers-style board game for friends, with classic and knights modes.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node test/simulate.js 30"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2"
+  }
+}

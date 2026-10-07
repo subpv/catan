@@ -1,0 +1,953 @@
+1|Jouer
+2|Statistiques
+3|Profil
+4|Langue
+5|Son coupé
+6|Son activé
+7|Quelque chose ne marche pas, ou vous avez une idée ?
+8|Envoyer un avis
+9|Fermer
+10|Colonisez, échangez et construisez entre amis.
+11|Se connecter
+12|Créer un compte
+13|Nom affiché
+14|Pays
+15|E-mail
+16|Mot de passe
+17|Code d'invitation (demandez à la personne qui gère le serveur)
+18|Vous êtes le premier joueur : ce compte devient administrateur.
+19|Votre couleur
+20|D'où venez-vous ? Votre drapeau s'affiche à côté de votre nom.
+21|Enregistrer
+22|Enregistré.
+23|Chevaliers
+24|Classique
+25|{n} points
+26|tour {n}
+27|Partie de {name}
+28|Nouvelle partie
+29|Version
+30|Colonisez, échangez, construisez. Cartes développement, route la plus longue, armée la plus puissante. 10 points.
+31|Chevaliers & Barbares
+32|Marchandises, améliorations de ville, chevaliers et raids barbares. 13 points.
+33|Joueurs
+34|Moins
+35|Plus
+36|Points pour gagner
+37|À cinq ou six joueurs, on utilise le grand plateau, avec une phase de construction spéciale entre les tours.
+38|Jusqu'à quatre joueurs, on utilise le plateau standard.
+39|Créer la partie
+40|Vos parties
+41|À vous de jouer
+42|Ouvrir
+43|hôte
+44|Place libre
+45|Choisissez votre couleur
+46|Lancer la partie
+47|En attente du lancement par l'hôte…
+48|Copier le lien d'invitation
+49|Quitter
+50|Parties ouvertes
+51|Rejoindre
+52|Aucune partie ouverte. Créez-en une et invitez vos amis.
+53|Regarder
+54|Partie créée. Choisissez votre couleur et invitez vos amis.
+55|Lien d'invitation copié.
+56|Couleur préférée (utilisée en partie si elle est libre, et sur la page des statistiques)
+57|Connecté en tant que {email}
+58|administrateur
+59|Changer le mot de passe
+60|Mot de passe actuel
+61|Nouveau mot de passe
+62|Fini pour aujourd'hui ?
+63|Se déconnecter
+64|Mot de passe modifié.
+65|Vous avez rejoint la partie.
+66|L'hôte a fermé cette partie.
+67|Impossible de charger Broch
+68|Port : échangez 3 cartes identiques contre 1
+69|Port : échangez 2 {res} contre 1
+70|Plateau de jeu
+71|rien
+72|Un problème est survenu
+73|Dites-nous ce que vous faisiez et nous corrigerons le problème. Le bouton copie les détails de l'erreur pour que vous puissiez les coller dans le formulaire.
+74|Détails de l'erreur
+75|Masquer
+76|Détails de l'erreur copiés. Collez-les dans le formulaire d'avis.
+77|Impossible de joindre le serveur Broch. Vérifiez votre connexion.
+78|La requête a échoué ({n})
+79|Reconnexion au serveur… réessayez dans un instant.
+80|Le serveur n'a pas répondu.
+81|Reconnexion…
+82|L'application a rencontré une erreur inattendue
+83|Le serveur a signalé une erreur
+84|Connexion au serveur de jeu perdue
+85|Bois
+86|Argile
+87|Laine
+88|Blé
+89|Minerai
+90|Papier
+91|Tissu
+92|Pièce
+93|Commerce
+94|Politique
+95|Science
+96|navire barbare
+97|porte du commerce
+98|porte de la politique
+99|porte de la science
+100|simple
+101|fort
+102|puissant
+103|Chevalier
+104|Point de victoire
+105|Construction de routes
+106|Invention
+107|Monopole
+108|Alchimiste
+109|Inventeur
+110|Grue
+111|Ingénieur
+112|Irrigation
+113|Médecine
+114|Exploitation minière
+115|Imprimerie
+116|Forgeron
+117|Port de commerce
+118|Maître marchand
+119|Marchand
+120|Flotte marchande
+121|Monopole des ressources
+122|Monopole commercial
+123|Évêque
+124|Constitution
+125|Déserteur
+126|Diplomate
+127|Intrigue
+128|Saboteur
+129|Espion
+130|Seigneur de guerre
+131|Mariage
+132|Rouge
+133|Bleu
+134|Orange
+135|Blanc
+136|Turquoise
+137|Violet
+138|Noir
+139|Rose
+140|Jaune
+141|Marron
+142|Métropole !
+143|Route la plus longue
+144|Armée la plus puissante
+145|+2 points de victoire
+146|Les joueurs qui ont trop de cartes doivent en défausser la moitié.
+147|Personne ne doit défausser.
+148|Le voleur se déplace.
+149|Les barbares n'ont pas encore attaqué, le voleur reste donc en place.
+150|Le voleur frappe !
+151|Les barbares attaquent !
+152|Barbares (villes)
+153|Chevaliers actifs
+154|Repoussés !
+155|Broch est pillée !
+156|Chargement de la partie…
+157|Vous avez volé 1 {res} à {name}.
+158|{name} vous a volé 1 {res}.
+159|À vous de jouer
+160|{name} gagne !
+161|Le résultat est enregistré sur la page des statistiques.
+162|Célébrer
+163|Annuler
+164|Placez une route à côté.
+165|Placez votre ville.
+166|Placez votre première colonie.
+167|Placez votre deuxième colonie.
+168|Touchez un bord lumineux.
+169|Touchez un coin lumineux. Il faut au moins un coin libre entre deux bâtiments.
+170|{name} place une route…
+171|{name} place un bâtiment…
+172|Défaussez {n} cartes.
+173|Vous avez plus de cartes que votre limite.
+174|Choisir les cartes
+175|Donnez {n} cartes à {name}.
+176|Cadeau de mariage : vous choisissez les cartes.
+177|Déplacez le voleur (Évêque).
+178|Déplacez le voleur.
+179|Touchez une tuile. Vous volez un joueur qui a un bâtiment dessus.
+180|Choisissez qui voler.
+181|Choisir
+182|Votre chevalier a été chassé.
+183|Touchez un coin lumineux pour l'y déplacer.
+184|Choisissez une ville pour votre métropole ({track}).
+185|Touchez une de vos villes en surbrillance.
+186|Les barbares pillent une de vos villes.
+187|Touchez la ville qui redevient une colonie.
+188|Vous avez aidé à défendre Broch. Piochez une carte progrès.
+189|Choisir la pioche
+190|Vous avez plus de 4 cartes progrès.
+191|Défaussez jusqu'à en avoir 4.
+192|Choisir une carte
+193|Votre aqueduc fournit une ressource.
+194|Ce lancer ne vous a rien rapporté.
+195|Un chevalier a rejoint votre camp.
+196|Touchez un coin à côté de votre route, ou passez.
+197|Votre espion voit leurs cartes progrès.
+198|Prenez 2 cartes dans leur main.
+199|Faites votre choix.
+200|Passer
+201|Phase de construction spéciale.
+202|Vous pouvez construire ou acheter maintenant. Pas d'échange.
+203|Terminé
+204|{name} est en phase de construction spéciale…
+205|En attente du lancer de {name}…
+206|{name} joue son tour.
+207|À vous. Lancez les dés.
+208|Vous pouvez jouer un chevalier avant de lancer.
+209|Lancer les dés
+210|Routes gratuites à placer : {n}.
+211|Construisez, échangez ou terminez votre tour.
+212|Promotions gratuites restantes : {n} (touchez un chevalier).
+213|Fin du tour
+214|Navire barbare
+215|Porte {track}
+216|{n} obtenu
+217|Il n'y a nulle part où faire cela pour l'instant.
+218|Vous regardez cette partie.
+219|Navire barbare : attaque quand il atteint le bout
+220|Force des barbares (villes) contre chevaliers actifs
+221|Cartes développement restantes : {n}
+222|reste {n}
+223|Route
+224|Colonie
+225|Ville
+226|Développement
+227|Rempart
+228|Commerce avec la banque
+229|4:1 ou mieux
+230|Cartes développement
+231|nouvelle
+232|Cartes progrès
+233|Votre main
+234|Cartes : {n} · limite {m}
+235|Cartes : {n}
+236|Dév. : {n}
+237|Chevaliers : {n}
+238|Progrès : {n}
+239|Améliorations : commerce / politique / science
+240|vous
+241|En ligne
+242|Hors ligne
+243|sur {n}
+244|{name} donne
+245|et veut
+246|Échanger avec {name}
+247|Refusé
+248|Réfléchit…
+249|Retirer l'offre
+250|Vous avez accepté. En attente de confirmation.
+251|Vous avez refusé.
+252|Accepter
+253|Refuser
+254|Il vous manque les cartes.
+255|Offre d'échange
+256|Métropole : {name}
+257|Améliorer {track} ({n} {res})
+258|Pioches : science {a}, commerce {b}, politique {c}
+259|Améliorations de ville
+260|Le niveau 3 débloque un bonus. Le premier au niveau 4 bâtit une métropole (+2).
+261|Dites bonjour à la table.
+262|Journal
+263|Discussion
+264|Coûts
+265|Message
+266|Envoyer
+267|Touchez l'endroit où construire votre route.
+268|Touchez l'endroit où construire votre colonie.
+269|Touchez la colonie à améliorer.
+270|Touchez un coin à côté de votre route pour le chevalier.
+271|Touchez la ville à fortifier.
+272|Confirmer
+273|vous avez {n}
+274|Moins
+275|Défaussez {n} cartes
+276|Un 7 est sorti et vous avez plus de {n} cartes.
+277|Cadeau de mariage pour {name}
+278|Choisissez {n} cartes à donner.
+279|Voler…
+280|Vous prenez une carte au hasard.
+281|Piocher une carte progrès
+282|Choisissez une pioche.
+283|Aqueduc
+284|Prenez une ressource de votre choix.
+285|Défausser une carte progrès
+286|Vous pouvez en garder 4 au maximum.
+287|Ne rien prendre
+288|Cartes progrès de {name}
+289|Prenez-en une.
+290|Main de {name}
+291|Prenez {n} cartes.
+292|Proposer un échange
+293|Tout le monde voit l'offre et peut accepter. Vous choisissez avec qui échanger.
+294|Vous donnez
+295|Vous voulez
+296|Plutôt la banque
+297|Proposer
+298|Échanger avec la banque
+299|Vos taux dépendent de vos ports et de vos améliorations.
+300|Vos taux dépendent de vos ports.
+301|Donner
+302|Recevoir 1
+303|Échanger {n} {a} contre 1 {b}
+304|Compté automatiquement.
+305|Jouez-la pendant votre tour.
+306|Vous avez déjà joué une carte ce tour-ci.
+307|Les cartes achetées ce tour-ci se jouent au tour suivant.
+308|Jouer la carte
+309|Prenez 2 ressources au choix à la banque.
+310|Tout le monde vous donne toute la ressource que vous nommez.
+311|L'Alchimiste se joue avant de lancer les dés.
+312|Lancez d'abord les dés.
+313|Choisissez le dé rouge et le dé jaune. Le dé d'événement est lancé normalement.
+314|Faire {n}
+315|Inventeur : touchez deux tuiles numérotées à échanger.
+316|Ingénieur : touchez une ville pour un rempart gratuit.
+317|Médecine : touchez la colonie à améliorer (1 blé, 2 minerais).
+318|Marchand : touchez une tuile à côté de votre bâtiment.
+319|Diplomate : touchez une route ouverte à retirer.
+320|Intrigue : touchez un chevalier adverse sur votre route.
+321|Points : {n}
+322|Quel type de carte voulez-vous échanger à 2:1 ce tour-ci ?
+323|Chaque adversaire vous en donne jusqu'à 2.
+324|Chaque adversaire vous en donne 1.
+325|Chevalier simple
+326|Chevalier fort
+327|Chevalier puissant
+328|Activer (1 blé)
+329|Promouvoir (gratuit, Forgeron)
+330|Promouvoir (1 laine, 1 minerai)
+331|Se déplacer le long de vos routes
+332|Chasser un chevalier plus faible
+333|Chasser le voleur
+334|Actif (activé ce tour-ci, pourra agir au prochain tour)
+335|Actif
+336|Inactif
+337|Rien à faire avec lui pour l'instant.
+338|Touchez la destination du chevalier.
+339|Touchez le chevalier à chasser.
+340|1 point
+341|2 points, production double
+342|Carte développement
+343|Chevalier, progrès ou point
+344|Chevalier simple (inactif)
+345|Activer un chevalier
+346|Promouvoir un chevalier
+347|Puissant exige politique 3
+348|+2 à la limite de main
+349|Coûts de construction
+350|Les améliorations coûtent 1 à 5 marchandises : tissu pour le commerce, pièces pour la politique, papier pour la science. Les villes près des forêts, pâturages et montagnes produisent une marchandise au lieu d'une deuxième ressource.
+351|Voir les statistiques
+352|Retour au salon
+353|Le serveur de jeu a rencontré une erreur en traitant votre coup
+354|Déplacez le voleur et volez une carte. Compte pour l'armée la plus puissante.
+355|Vaut 1 point. Reste caché jusqu'à la fin de la partie.
+356|Construisez 2 routes gratuitement.
+357|Nommez une ressource. Tout le monde vous donne tout ce qu'il en a.
+358|Choisissez les deux dés de production avant de lancer.
+359|Échangez deux jetons numérotés (sauf 2, 6, 8 ou 12).
+360|Votre prochaine amélioration de ville ce tour-ci coûte 1 de moins.
+361|Construisez un rempart gratuitement.
+362|Prenez 2 blés par champ à côté de vos bâtiments.
+363|Transformez une colonie en ville pour 2 minerais et 1 blé.
+364|Prenez 2 minerais par montagne à côté de vos bâtiments.
+365|Promouvez 2 chevaliers gratuitement.
+366|Échangez une de vos ressources contre une marchandise de chaque adversaire.
+367|Regardez la main d'un joueur qui a plus de points et prenez 2 cartes.
+368|Placez le marchand près de votre bâtiment : échangez cette ressource à 2:1 et gagnez 1 point.
+369|Échangez un type de carte au choix à 2:1 ce tour-ci.
+370|Chaque adversaire vous donne jusqu'à 2 d'une ressource.
+371|Chaque adversaire vous donne 1 d'une marchandise.
+372|Déplacez le voleur et volez 1 carte à chaque joueur présent sur cette tuile.
+373|Le chevalier le plus faible d'un adversaire déserte. Vous pouvez en placer un de même force.
+374|Retirez une route ouverte. Si elle est à vous, reconstruisez-la gratuitement.
+375|Chassez un chevalier adverse posté sur une de vos routes.
+376|Les joueurs qui ont au moins autant de points que vous défaussent la moitié de leurs cartes.
+377|Regardez les cartes progrès d'un adversaire et prenez-en une.
+378|Activez tous vos chevaliers gratuitement.
+379|Chaque joueur qui a plus de points vous donne 2 cartes de son choix.
+380|En attente de la défausse de {names}…
+381|En attente que {names} déplace le voleur…
+382|En attente que {names} vole…
+383|En attente que {names} déplace un chevalier…
+384|En attente que {names} donnent des cartes…
+385|En attente que {names} choisissent une ville à perdre…
+386|En attente que {names} piochent des cartes progrès…
+387|En attente de {names}…
+388|{name} gagne
+389|Chargement…
+390|Quelqu'un
+391|Année précédente
+392|EN COURS
+393|TERMINÉE
+394|Année suivante
+395|Toutes les parties
+396|EN TÊTE ACTUELLEMENT
+397|CHAMPION {year}
+398|Personne pour l'instant
+399|Victoires
+400|Parties : {n}
+401|Revoir la célébration
+402|Classement {year}
+403|pts
+404|Aucune partie
+405|Aucun joueur pour l'instant.
+406|Au fil du temps
+407|Face-à-face
+408|Chaque nombre indique combien de fois le joueur de la ligne a battu celui de la colonne.
+409|Enregistrer une partie jouée autour de la table
+410|Toutes les parties {year}
+411|Rien d'enregistré pour l'instant.
+412|Victoire n° {n} en {year}
+413|Victoires : {n}
+414|Supprimer ?
+415|Supprimé.
+416|Aucune partie cette année.
+417|Meilleure série
+418|Série en cours
+419|Version préférée
+420|Bête noire : {name} ({n}×)
+421|jouée autour de la table
+422|Tours : {n}
+423|{n} min
+424|Table
+425|Supprimer
+426|Victoire la plus rapide
+427|Meilleur score
+428|Le plus de cartes récoltées
+429|{n} en une partie
+430|Partie la plus longue
+431|Records
+432|Dés
+433|Fréquence de chaque nombre lancé
+434|Barres : lancers de l'année. Pointillés : ce que prévoient les probabilités. Nombre le plus chaud : {n} ({m} sur {total} lancers).
+435|Le graphique se remplit au fil des parties.
+436|Victoires cumulées sur l'année
+437|Date de la partie
+438|Qui a joué
+439|Qui a gagné
+440|Choisissez d'abord les joueurs.
+441|Enregistrer la partie
+442|Enregistré dans les statistiques.
+443|Mode inconnu
+444|Broch se joue à 2–6 joueurs
+445|La partie commence. {@ps} prennent place.
+446|{@p} place en premier.
+447|{@p} gagne avec {n} points de victoire !
+448|{@p} détient maintenant la route la plus longue ({n}).
+449|Plus personne ne détient la route la plus longue.
+450|{@p} a fait {n} ({#e}).
+451|{@p} a fait {n}.
+452|La banque manque de {#r} ; personne n'en reçoit.
+453|{@p} reçoit {$c}.
+454|Le navire barbare avance ({n}/{m}).
+455|Les barbares attaquent ! Force {n} contre {m} pour les chevaliers.
+456|Les barbares sont repoussés. {@p} devient Défenseur de Broch (+1 PV).
+457|Les barbares sont repoussés. {@ps} partagent la gloire et piochent chacun une carte progrès.
+458|Les barbares sont repoussés.
+459|Les barbares l'emportent ! {@ps} perdent chacun une ville.
+460|Les barbares l'emportent, mais il n'y a aucune ville sans protection à piller.
+461|La ville de {@p} redevient une colonie.
+462|La pioche {#d} est vide.
+463|{@p} révèle {%c} (+1 PV).
+464|{@p} pioche une carte progrès ({#d}).
+465|{@p} n'a pas de ville libre pour la métropole ({#t}).
+466|{@p} bâtit une métropole ({#t}).
+467|Phase de construction spéciale : {@ps}.
+468|Vous ne pouvez pas construire de route ici.
+469|Plus de routes.
+470|Pas assez de ressources.
+471|{@p} a construit une route.
+472|Action invalide.
+473|La partie est terminée.
+474|Vous ne participez pas à cette partie.
+475|Action inconnue.
+476|Ce n'est pas à vous de jouer.
+477|Pas autorisé pour l'instant.
+478|Uniquement en mode chevaliers.
+479|Ce n'est pas votre placement.
+480|Trop près d'un autre bâtiment.
+481|{@p} a placé une colonie.
+482|{@p} a placé une ville.
+483|La route doit toucher votre nouveau bâtiment.
+484|Mise en place terminée. {@p} commence.
+485|Déjà lancé.
+486|Aucune route gratuite à passer.
+487|Ce n'est pas votre construction spéciale.
+488|Vous ne pouvez pas construire de colonie ici.
+489|Plus de colonies.
+490|{@p} a construit une colonie.
+491|Améliorez une de vos colonies.
+492|Plus de villes.
+493|{@p} a construit une ville.
+494|Pas de cartes développement en mode chevaliers.
+495|La pioche de développement est vide.
+496|{@p} a acheté une carte développement.
+497|Une seule carte développement par tour.
+498|Vous n'avez pas de carte jouable de ce type (les nouvelles cartes attendent un tour).
+499|{@p} a joué {%c}.
+500|{@p} a maintenant l'armée la plus puissante.
+501|Choisissez deux ressources.
+502|La banque n'en a pas.
+503|{@p} a joué {%c} et pris {$c2}.
+504|Choisissez une ressource.
+505|{@p} a joué {%c} sur {#r} et récupéré {n}.
+506|Carte inconnue.
+507|Rien à défausser.
+508|Choisissez exactement {n} cartes.
+509|Vous n'avez pas ces cartes.
+510|{@p} a défaussé des cartes : {n}.
+511|Rien à donner.
+512|{@p} donne des cartes à {@q} : {n}.
+513|Ce n'est pas vous qui déplacez le voleur.
+514|Déplacez le voleur sur une autre tuile.
+515|{@p} a déplacé le voleur.
+516|Choisissez quelqu'un à côté du voleur.
+517|Remplissez les deux côtés de l'échange.
+518|{@p} propose {$g} contre {$w}.
+519|Cette offre n'existe pas.
+520|Vous n'avez pas les cartes demandées.
+521|Ce joueur n'a pas accepté.
+522|Quelqu'un n'a plus les cartes.
+523|{@p} a échangé {$g} avec {@q} contre {$w}.
+524|Aucune offre à retirer.
+525|Choisissez ce que vous donnez et ce que vous recevez.
+526|Il vous faut {$c}.
+527|La banque n'en a plus.
+528|{@p} a échangé {$g} avec la banque contre {$w}.
+529|Les chevaliers se placent sur un coin libre à côté de votre route.
+530|Plus de chevaliers simples.
+531|{@p} a recruté un chevalier.
+532|Choisissez un de vos chevaliers inactifs.
+533|L'activation coûte 1 blé.
+534|{@p} a activé un chevalier.
+535|Choisissez un de vos chevaliers.
+536|Un chevalier ne peut être promu qu'une fois par tour.
+537|Plus de chevaliers du niveau suivant.
+538|{@p} a promu un chevalier ({#l}).
+539|Le chevalier ne peut pas atteindre ce coin.
+540|{@p} a déplacé un chevalier.
+541|Aucun chevalier adverse accessible ici.
+542|Vous ne pouvez chasser qu'un chevalier plus faible.
+543|Le chevalier de {@p} chasse celui de {@q}.
+544|Le voleur ne peut pas être déplacé avant la première attaque barbare.
+545|Ce chevalier n'est pas à côté du voleur.
+546|Le chevalier de {@p} chasse le voleur.
+547|Aucun chevalier à déplacer.
+548|Choisissez un coin en surbrillance.
+549|{@p} a déplacé un chevalier chassé.
+550|Les remparts entourent vos villes.
+551|Plus de remparts.
+552|{@p} a construit un rempart.
+553|Amélioration inconnue.
+554|Il vous faut d'abord une ville.
+555|Déjà au maximum.
+556|{@p} a amélioré {#t} au niveau {n}.
+557|{@p} prend la métropole ({#t}) à {@q}.
+558|Aucune métropole à placer.
+559|Choisissez une de vos villes.
+560|Rien à perdre.
+561|Choisissez une de vos villes sans protection.
+562|Choisissez une carte.
+563|{@p} a défaussé une carte progrès.
+564|L'aqueduc de {@p} fournit {$c}.
+565|Aucun chevalier à placer.
+566|Choisissez un coin libre à côté de votre route.
+567|{@p} place le chevalier déserteur.
+568|Rien à prendre.
+569|L'espion de {@p} vole une carte progrès à {@q}.
+570|Choisissez {n} de leurs cartes.
+571|{@p} prend des cartes à {@q} : {n}.
+572|Jouez l'Alchimiste avant de lancer.
+573|{@p} a volé une carte à {@q}.
+574|Ce chevalier n'est pas actif.
+575|Un chevalier activé ce tour-ci doit attendre le tour suivant.
+576|Le chevalier de {@p} n'a nulle part où aller et quitte le plateau.
+577|Choisissez les deux dés.
+578|Choisissez deux tuiles numérotées (sauf 2, 6, 8 ou 12).
+579|Choisissez une de vos villes sans rempart.
+580|Choisissez une de vos colonies.
+581|La Médecine coûte 1 blé et 2 minerais.
+582|{@p} échange {$g} contre {$w} de {@q}.
+583|Choisissez un joueur qui a plus de points que vous.
+584|Ils n'ont pas de cartes.
+585|Choisissez une tuile terrestre.
+586|Le marchand doit être à côté de votre colonie ou ville.
+587|Choisissez un type de carte.
+588|{@p} récupère {$c}.
+589|Choisissez une marchandise.
+590|Le voleur ne peut pas bouger avant la première attaque barbare.
+591|Choisissez un joueur qui a des chevaliers.
+592|Un des chevaliers de {@p} déserte.
+593|Choisissez une route ouverte (avec une extrémité libre).
+594|{@p} a retiré une route de {@q}.
+595|Choisissez un chevalier adverse sur une de vos routes.
+596|Choisissez un adversaire.
+597|Ils n'ont pas de cartes progrès.
+598|Données invalides
+599|Partie introuvable
+600|Veuillez vous connecter.
+601|Trop de tentatives. Réessayez dans quelques minutes.
+602|Saisissez une adresse e-mail valide.
+603|Choisissez un nom affiché.
+604|Le mot de passe doit comporter au moins 6 caractères.
+605|Choisissez votre pays.
+606|Code d'invitation incorrect.
+607|Cette adresse e-mail est déjà inscrite.
+608|Ce nom est déjà pris.
+609|E-mail ou mot de passe incorrect.
+610|Le nom ne peut pas être vide.
+611|Couleur inconnue.
+612|Langue inconnue.
+613|Le mot de passe actuel est incorrect.
+614|La partie a déjà commencé.
+615|Rejoignez d'abord la partie.
+616|Quelqu'un d'autre a déjà cette couleur.
+617|Cette partie a déjà commencé.
+618|La partie est complète.
+619|Vous ne pouvez pas quitter une partie en cours. L'hôte peut l'abandonner.
+620|Seul l'hôte peut lancer la partie.
+621|Déjà lancée.
+622|Attendez au moins un joueur de plus.
+623|Seul l'hôte peut abandonner la partie.
+624|Choisissez le gagnant parmi les joueurs.
+625|Introuvable
+626|Seule la personne qui l'a enregistrée (ou un administrateur) peut la supprimer.
+627|Point d'accès inconnu
+628|La partie n'est pas en cours.
+629|Scénario
+630|Variantes
+631|Missions
+632|Choisissez une extension pour voir ses options.
+633|Cités et Chevaliers
+634|5–6
+635|Colonisez, échangez, construisez. Cartes développement, route la plus longue, armée la plus puissante.
+636|Marchandises, améliorations de villes, chevaliers et raids barbares.
+637|Extension
+638|Aucune
+639|L'île classique.
+640|Marins
+641|Navires et exploration d'îles.
+642|Marchands et Barbares
+643|Pêcheurs, rivières et cartes événement.
+644|Explorateurs et Pirates
+645|Des missions dans la brume.
+646|Extension 5–6 joueurs
+647|Plateau agrandi et phase de construction spéciale. Fonctionne avec tous les nombres de joueurs.
+648|Zone de pêche
+649|Banc de poissons
+650|Repaire de pirates
+651|Bonus nouvelle île : +1 point de victoire pour la première colonie
+652|Pirate
+653|Forêt
+654|Collines
+655|Pré
+656|Champs
+657|Montagnes
+658|Désert
+659|Or
+660|Rivière
+661|poisson
+662|épice
+663|Découverte
+664|Ressources de départ
+665|Butin
+666|Déplacez le voleur ou le pirate.
+667|Touchez une tuile de terre pour le voleur ou une tuile de mer pour le pirate. Vous volez un joueur à côté.
+668|De l'or ! Choisissez {n} ressources.
+669|Prenez les ressources que la banque possède.
+670|Touchez un de vos navires qui clignotent pour le faire naviguer (une fois par tour).
+671|Touchez la destination du navire.
+672|Zoom avant
+673|Zoom arrière
+674|Voir tout le plateau
+675|Jetons poisson restants dans le sac
+676|Cartes événement restantes avant le remélange
+677|Navire
+678|Pont
+679|Poisson
+680|{n} poissons
+681|2 or = 1 carte
+682|Livrer, attaquer
+683|Or gagné à côté des rivières. 2 or achètent n'importe quelle carte.
+684|{n} or
+685|Les poissons sont à l'abri du voleur et ne s'échangent pas.
+686|La vieille botte : il vous faut un point de plus pour gagner.
+687|Vieille botte
+688|Poissons à bord · livrés
+689|Épices à bord · livrées
+690|Pièces restantes
+691|Force des chevaliers actifs
+692|Poissons · épices livrés
+693|Niveau 3 : échangez les marchandises 2 contre 1 à la banque.
+694|Niveau 3 : vos chevaliers peuvent devenir puissants.
+695|Niveau 3 : l'aqueduc donne une ressource quand vous ne recevez rien.
+696|Niveau 4 : le premier joueur ici érige une métropole (+2 points).
+697|tout le monde en un coup d'œil
+698|Touchez le bord de mer où votre navire doit aller.
+699|Touchez le passage de rivière pour votre pont.
+700|De l'or !
+701|Choisissez {n} ressources à la banque.
+702|Chassez le voleur
+703|Déplacez le voleur sur n'importe quelle tuile et volez un voisin.
+704|Voler une carte
+705|Prenez une carte au hasard à un joueur de votre choix.
+706|Prendre une ressource
+707|Prenez une ressource de votre choix à la banque.
+708|Route gratuite
+709|Construisez une route sans payer.
+710|Carte progrès
+711|Piochez une carte progrès dans la pioche de votre choix.
+712|Piochez gratuitement une carte développement.
+713|Dépenser des poissons
+714|Vous avez {n} poissons. Les poissons ne peuvent être ni volés ni perdus à cause du voleur.
+715|Personne n'a de carte à voler.
+716|Échanger de l'or contre une carte
+717|Vous avez {n} or. 2 or achètent n'importe quelle ressource, deux fois par tour au maximum.
+718|En jeu : {n} · livrés : {d} · {v}/3 points
+719|Livrer
+720|Toutes les 2 livraisons au conseil rapportent 1 point, jusqu'à 3 points par mission. Un repaire de pirates détruit rapporte 1 point à celui qui l'a le plus frappé.
+721|Poissons pour Broch
+722|Épices pour Broch
+723|Repaires de pirates
+724|Chaque coup coûte 1 minerai et 1 laine et exige un navire à côté du repaire.
+725|Aucun repaire trouvé. Explorez la brume.
+726|Repaire · {n} coups restants
+727|Attaquer
+728|Navigue sur les bords de mer ; bouge une fois par tour
+729|Traverse une rivière ; rapporte 3 or
+730|En attente que {names} choisisse dans le champ d'or…
+731|Extensions
+732|Déplacez le pirate sur une autre tuile de mer.
+733|{@p} a déplacé le pirate.
+734|Les cartes événement sont remélangées.
+735|{@p} navigue en haute mer.
+736|{@p} découvre une terre : {#t}.
+737|{@p} trouve de l'or et peut choisir {n} ressources.
+738|{@p} pêche {n} poissons.
+739|{@p} remonte la vieille botte et a besoin d'un point de plus pour gagner.
+740|{@p} charge {n} épices.
+741|{@p} remonte une belle pêche.
+742|{@p} gagne {n} or.
+743|{@p} colonise une nouvelle île et gagne un point bonus (+1 PV).
+744|Il n'y a pas de navires dans cette partie.
+745|Plus de navires.
+746|Vous ne pouvez pas faire naviguer un navire là.
+747|{@p} a construit un navire.
+748|Ce navire ne peut pas aller là.
+749|{@p} a déplacé un navire.
+750|Pas d'or à dépenser.
+751|{@p} prend {$c} dans le champ d'or.
+752|Il n'y a pas de rivières dans cette partie.
+753|Plus de ponts.
+754|Vous ne pouvez pas construire de pont là.
+755|{@p} a construit un pont.
+756|Vous ne pouvez échanger de l'or que deux fois par tour.
+757|Il vous faut 2 or.
+758|{@p} échange 2 or contre {$c}.
+759|Il n'y a pas de pêcheurs dans cette partie.
+760|Échange de poissons inconnu.
+761|Il vous faut {n} poissons.
+762|{@p} paie {n} poissons pour chasser le voleur.
+763|Choisissez un joueur qui a des cartes.
+764|Choisissez une ressource que la banque possède.
+765|{@p} échange {n} poissons contre {$c}.
+766|{@p} échange {n} poissons contre une route gratuite.
+767|{@p} échange {n} poissons contre une carte progrès.
+768|{@p} échange {n} poissons contre une carte développement.
+769|Il n'y a pas de missions dans cette partie.
+770|Cette mission n'existe pas dans cette partie.
+771|Vous n'avez rien à livrer.
+772|Il vous faut une colonie pour livrer.
+773|{@p} livre {n} {#k} au conseil.
+774|Il n'y a pas de repaires de pirates dans cette partie.
+775|Il n'y a pas de repaire là.
+776|Il vous faut un navire à côté du repaire.
+777|Attaquer coûte 1 minerai et 1 laine.
+778|{@p} attaque un repaire de pirates ({n} restants).
+779|Le repaire de pirates est détruit. {@p} touche la prime (+1 PV).
+780|Cap sur de nouveaux rivages
+781|Les Quatre Îles
+782|Les Îles de la brume
+783|Pêcheurs de Catane
+784|Rivières de Catane
+785|Cartes événement
+786|Poissons pour Catane
+787|Épices pour Catane
+788|Zones de pêche, jetons poisson et vieille botte.
+789|Ponts, or, et joueur le plus riche et le plus pauvre.
+790|Un paquet de cartes événement remplace les dés.
+791|Règle maison : voleur oublié
+792|Si un joueur termine son tour sans déplacer le voleur, celui-ci retourne dans le désert.
+793|Si vous terminez votre tour maintenant, le voleur retourne dans le désert.
+794|Cette règle maison n'est pas activée.
+795|{@p} a oublié de déplacer le voleur, il retourne donc dans le désert.
+796|Règle maison : ressources de départ pour les deux
+797|Règles maison
+798|Les deux bâtiments de la mise en place rapportent des ressources de départ. Dans Cités et Chevaliers, la ville compte comme une colonie.
+799|Il ne s'est encore rien passé.
+800|Mise en place
+801|Les graphiques se remplissent dès que les premiers tours sont joués.
+802|Points de victoire au fil de la partie
+803|Lancers de dés
+804|Barres : obtenus · ligne : attendus après {n} lancers
+805|Ressources reçues
+806|Lancers
+807|Plus fréquent
+808|7 obtenus
+809|Objectif
+810|obtenus
+811|attendus
+812|Plus de {n} cartes : sur un 7, vous en perdez la moitié.
+813|Dernier lancer uniquement
+814|Voir les tours précédents
+815|Défenseur de Broch
+816|−1 ville
+817|Plateau vivant
+818|Plateau vivant : activé
+819|Plateau vivant : désactivé
+820|Banque
+821|Vaut 1 point. Se pose face visible devant vous.
+822|Comment jouer : {mode}
+823|Comment jouer
+824|Comment se joue {mode} (1 min)
+825|Bienvenue à Broch !
+826|Construisez, échangez, prospérez. Le premier à 10 points gagne.
+827|Chaque tuile produit une ressource.
+828|Forêt, collines, pré, champs et montagnes. Le désert ne produit rien.
+829|Construisez des colonies sur les coins.
+830|Touchez le coin lumineux.
+831|Une colonie touche jusqu'à 3 tuiles.
+832|Vos adversaires construisent aussi.
+833|Lancez les dés à chaque tour.
+834|Touchez les dés.
+835|Chaque tuile portant ce nombre produit.
+836|Chaque voisin reçoit une carte, même pendant le tour des autres.
+837|Plus de petits points, plus de chances.
+838|Les 6 et 8 rouges sortent le plus souvent, les 2 et 12 rarement.
+839|Dépensez des cartes pour construire.
+840|Une route coûte du bois et de l'argile. Touchez le bord lumineux.
+841|Les villes rapportent double.
+842|Transformez une colonie en ville pour 2 blés et 3 minerais. Touchez votre colonie.
+843|Un 7 réveille le voleur !
+844|Déplacez le voleur sur une tuile.
+845|Elle ne produit plus rien. Touchez une tuile à côté de votre adversaire.
+846|Puis volez une carte à quelqu'un sur place.
+847|Qui a plus de 7 cartes en perd la moitié.
+848|Échangez avec les joueurs ou la banque.
+849|La banque échange 4 cartes identiques contre 1. Ports : 3:1 ou 2:1.
+850|Les chevaliers déplacent le voleur. Les autres donnent des routes, des ressources ou un point de victoire.
+851|3 chevaliers joués : armée la plus puissante, +2 points.
+852|Son détenteur hisse des bannières de guerre sur le plateau.
+853|5 routes d'affilée : route la plus longue, +2 points.
+854|Le tracé le plus long s'illumine d'or.
+855|Atteignez 10 points pour gagner !
+856|Colonie 1 · Ville 2 · Route la plus longue 2 · Armée la plus puissante 2 · Carte point de victoire 1
+857|Tout le jeu Classique, plus marchandises, chevaliers et barbares. Victoire à 13 points.
+858|Les villes produisent des marchandises.
+859|Forêt : papier · Pré : tissu · Montagnes : pièces
+860|Les marchandises paient les améliorations de ville.
+861|Le commerce coûte du tissu, la politique des pièces, la science du papier. Touchez +.
+862|Le niveau 3 débloque un pouvoir spécial.
+863|Science : une ressource quand vous ne recevez rien. Commerce : marchandises à 2:1. Politique : chevaliers plus forts.
+864|Le premier au niveau 4 bâtit une métropole.
+865|Elle vaut 2 points et trône sur votre ville.
+866|Les chevaliers défendent Broch.
+867|Recrutez-en un pour de la laine et du minerai. Touchez le coin lumineux.
+868|Activez-le avec du blé.
+869|Seuls les chevaliers actifs combattent. Promouvez-les pour les renforcer.
+870|Un navire sur le dé d'événement fait avancer les barbares.
+871|Chaque navire les rapproche d'un pas de Broch.
+872|Leur force : toutes les villes du plateau. Votre défense : tous les chevaliers actifs.
+873|Le meilleur défenseur gagne un point. Si les barbares l'emportent, la ville la plus faible est pillée.
+874|Une porte colorée sur le dé d'événement donne des cartes aux joueurs dont les améliorations sont assez avancées.
+875|Remparts
+876|Chaque rempart vous permet de garder 2 cartes de plus quand un 7 sort.
+877|Atteignez 13 points pour gagner !
+878|Colonie 1 · Ville 2 · Métropole 2 · Défenseur 1 · Route la plus longue 2
+879|Les terres sont divisées en îles. Les navires traversent la mer.
+880|Construisez des navires sur l'eau.
+881|Un navire coûte du bois et de la laine. Touchez le bord lumineux.
+882|Les navires forment une chaîne, comme les routes.
+883|Le dernier navire d'une chaîne ouverte peut naviguer vers un nouvel endroit une fois par tour.
+884|Naviguez près de la brume pour la dévoiler.
+885|Découvrir une terre vous rapporte une ressource.
+886|Colonisez une nouvelle île : +1 point !
+887|Les champs d'or rapportent la ressource de votre choix.
+888|Le pirate
+889|Les navires près de sa tuile sont bloqués, et il vole. Un 7 ou un chevalier le déplace.
+890|Gagnez avec 12 à 14 points.
+891|Choisissez un scénario en créant la partie : Nouveaux rivages, Quatre Îles ou Îles de la brume.
+892|Trois variantes à combiner : Pêcheurs, Rivières et Cartes événement.
+893|Pêcheurs
+894|Le désert devient un lac et la côte se dote de zones de pêche.
+895|Obtenez le nombre d'une zone de pêche pour attraper des poissons.
+896|Le lac rapporte sur 2, 3, 11 et 12.
+897|Payer en poissons
+898|2 chasser le voleur · 3 voler · 4 prendre une ressource · 5 une route · 7 une carte développement
+899|La vieille botte
+900|Qui la repêche a besoin d'un point de plus pour gagner, et peut la refiler à un joueur en tête.
+901|Rivières
+902|Chaque route ou colonie au bord d'une rivière rapporte 1 or.
+903|Les ponts franchissent la rivière.
+904|Un pont coûte 2 argiles et 1 bois et rapporte 3 or.
+905|Échangez 2 or contre une ressource au choix. Le plus riche gagne +1 point, le plus pauvre −2.
+906|Un paquet des 36 résultats de dés remplace les dés : chaque nombre sort aussi souvent qu'il le doit.
+907|Naviguez dans la brume, découvrez des terres et accomplissez des missions.
+908|Explorez la brume avec vos navires.
+909|Touchez le bord lumineux. Une nouvelle terre vous rapporte une ressource.
+910|Un navire près d'un banc de poissons ramène du poisson quand son nombre sort.
+911|Épices pour Broch
+912|Les colonies près d'un champ d'épices chargent des épices quand il produit.
+913|Livrez votre cargaison au conseil.
+914|Toutes les 2 livraisons rapportent 1 point, jusqu'à 3 points par mission.
+915|Attaquez un repaire depuis un navire voisin pour 1 minerai et 1 laine. Quand il tombe, celui qui l'a le plus frappé gagne un point.
+916|Atteignez 12 points pour gagner !
+917|Colonies, villes, nouvelles îles, missions et repaires : tout compte.
+918|Un plateau plus grand, avec plus de tuiles, de ports et de cartes, jusqu'à 6 joueurs.
+919|Phase de construction spéciale
+920|Après chaque tour, tous les autres peuvent construire à tour de rôle, mais pas échanger.
+921|Pour que personne n'attende longtemps.
+922|Les tours restent courts, même quand la table est pleine.
+923|Précédent
+924|Pause
+925|Suivant
+926|Vous connaissez {mode} !
+927|Revoir
+928|Suivant : {mode}
+929|C'est parti !
+930|Carte événement
+931|Lancer
+932|Victoire !
+933|Partie terminée
+934|Vous avez gagné !
+935|points de victoire
+936|Vous terminez à la {n}e place avec {m} points.
+937|Classement final
+938|Voir le plateau
+939|Colonies
+940|Villes
+941|Métropole
+942|Cartes point de victoire
+943|Points bonus
+944|Le déroulé de la course
+945|Le plus de ressources
+946|Nombre le plus sorti
+947|{n}×
+948|Durée de la partie
+949|{n} tours
+950|Temps forts
+951|Route commerciale la plus longue
+952|Choisissez votre ressource une seule fois. Désormais, l’aqueduc la verse chaque fois qu’un lancer ne vous rapporte rien (sauf sur un 7).
+953|Aqueduc : {res}. Touchez pour changer.

@@ -1,0 +1,953 @@
+1|Oyna
+2|İstatistikler
+3|Profil
+4|Dil
+5|Ses kapalı
+6|Ses açık
+7|Bir şey çalışmıyor mu, ya da bir fikrin mi var?
+8|Geri bildirim gönder
+9|Kapat
+10|Arkadaşlarınla yerleş, ticaret yap ve inşa et.
+11|Giriş yap
+12|Hesap oluştur
+13|Görünen ad
+14|Ülke
+15|E-posta
+16|Şifre
+17|Davet kodu (sunucuyu yöneten kişiye sor)
+18|İlk oyuncu sensin, bu yüzden bu hesap yönetici olacak.
+19|Rengin
+20|Nerelisin? Bayrağın adının yanında görünür.
+21|Kaydet
+22|Kaydedildi.
+23|Şövalyeler
+24|Klasik
+25|{n} puan
+26|tur {n}
+27|{name} oyunu
+28|Yeni oyun
+29|Sürüm
+30|Yerleş, ticaret yap, inşa et. Gelişim kartları, en uzun yol, en büyük ordu. 10 puan.
+31|Şövalyeler ve Barbarlar
+32|Mallar, şehir geliştirmeleri, şövalyeler ve barbar akınları. 13 puan.
+33|Oyuncular
+34|Azalt
+35|Artır
+36|Kazanmak için puan
+37|Beş veya altı oyuncu daha büyük tahtayı kullanır; turlar arasında özel bir inşa aşaması vardır.
+38|Dört oyuncuya kadar standart tahta kullanılır.
+39|Oyun oluştur
+40|Oyunların
+41|Sıra sende
+42|Aç
+43|ev sahibi
+44|Boş yer
+45|Rengini seç
+46|Oyunu başlat
+47|Ev sahibinin başlatması bekleniyor…
+48|Davet bağlantısını kopyala
+49|Ayrıl
+50|Açık oyunlar
+51|Katıl
+52|Açık oyun yok. Bir tane oluştur ve arkadaşlarını davet et.
+53|İzle
+54|Oyun oluşturuldu. Rengini seç ve arkadaşlarını davet et.
+55|Davet bağlantısı kopyalandı.
+56|Favori renk (boşsa oyunlarda ve istatistik sayfasında kullanılır)
+57|{email} olarak giriş yapıldı
+58|yönetici
+59|Şifreyi değiştir
+60|Mevcut şifre
+61|Yeni şifre
+62|Bugünlük bu kadar mı?
+63|Çıkış yap
+64|Şifre değiştirildi.
+65|Oyuna katıldın.
+66|Ev sahibi bu oyunu kapattı.
+67|Broch yüklenemedi
+68|Liman: 3 aynı kartı 1 kartla takas et
+69|Liman: 2 {res} kartını 1 kartla takas et
+70|Oyun tahtası
+71|hiçbir şey
+72|Bir şeyler ters gitti
+73|Ne yaptığını bize anlat, düzeltelim. Düğme hata ayrıntılarını kopyalar, böylece forma yapıştırabilirsin.
+74|Hata ayrıntıları
+75|Kapat
+76|Hata ayrıntıları kopyalandı. Geri bildirim formuna yapıştır.
+77|Broch sunucusuna ulaşılamıyor. Bağlantını kontrol et.
+78|İstek başarısız oldu ({n})
+79|Sunucuya yeniden bağlanılıyor… birazdan tekrar dene.
+80|Sunucu yanıt vermedi.
+81|Yeniden bağlanılıyor…
+82|Uygulamada beklenmeyen bir hata oluştu
+83|Sunucu bir hata bildirdi
+84|Oyun sunucusuyla bağlantı koptu
+85|Kereste
+86|Tuğla
+87|Yün
+88|Tahıl
+89|Maden
+90|Kâğıt
+91|Kumaş
+92|Sikke
+93|Ticaret
+94|Siyaset
+95|Bilim
+96|barbar gemisi
+97|ticaret kapısı
+98|siyaset kapısı
+99|bilim kapısı
+100|temel
+101|güçlü
+102|kudretli
+103|Şövalye
+104|Zafer puanı
+105|Yol yapımı
+106|Bolluk yılı
+107|Tekel
+108|Simyacı
+109|Mucit
+110|Vinç
+111|Mühendis
+112|Sulama
+113|Tıp
+114|Madencilik
+115|Matbaa
+116|Demirci
+117|Ticaret limanı
+118|Usta tüccar
+119|Tüccar
+120|Ticaret filosu
+121|Kaynak tekeli
+122|Ticaret tekeli
+123|Piskopos
+124|Anayasa
+125|Asker kaçağı
+126|Diplomat
+127|Entrika
+128|Sabotajcı
+129|Casus
+130|Savaş beyi
+131|Düğün
+132|Kırmızı
+133|Mavi
+134|Turuncu
+135|Beyaz
+136|Turkuaz
+137|Mor
+138|Siyah
+139|Pembe
+140|Sarı
+141|Kahverengi
+142|Metropol!
+143|En uzun yol
+144|En büyük ordu
+145|+2 zafer puanı
+146|Çok fazla kartı olan oyuncular yarısını atmalı.
+147|Kimsenin kart atması gerekmiyor.
+148|Haydut harekete geçiyor.
+149|Barbarlar henüz saldırmadı, bu yüzden haydut yerinde kalıyor.
+150|Haydut saldırıyor!
+151|Barbarlar saldırıyor!
+152|Barbarlar (şehirler)
+153|Aktif şövalyeler
+154|Püskürtüldü!
+155|Broch yağmalanıyor!
+156|Oyun yükleniyor…
+157|{name} oyuncusundan 1 {res} çaldın.
+158|{name} senden 1 {res} çaldı.
+159|Hamle sırası sende
+160|{name} kazandı!
+161|Sonuç istatistik sayfasına kaydedildi.
+162|Kutla
+163|İptal
+164|Yanına bir yol koy.
+165|Şehrini koy.
+166|İlk köyünü koy.
+167|İkinci köyünü koy.
+168|Parlayan bir kenara dokun.
+169|Parlayan bir köşeye dokun. Binalar arasında en az bir boş köşe olmalı.
+170|{name} yol koyuyor…
+171|{name} bina koyuyor…
+172|{n} kart at.
+173|Elindeki kart sayısı sınırını aşıyor.
+174|Kartları seç
+175|{name} oyuncusuna {n} kart ver.
+176|Düğün hediyesi: kartları sen seçiyorsun.
+177|Hayduta yer değiştir (Piskopos).
+178|Hayduta yer değiştir.
+179|Bir alana dokun. Orada binası olan bir oyuncudan çalarsın.
+180|Kimden çalacağını seç.
+181|Seç
+182|Şövalyen yerinden edildi.
+183|Oraya taşımak için parlayan bir köşeye dokun.
+184|Metropolün için bir şehir seç ({track}).
+185|Vurgulanan şehirlerinden birine dokun.
+186|Barbarlar şehirlerinden birini yağmalıyor.
+187|Köye dönüşecek şehre dokun.
+188|Broch'u savunmaya yardım ettin. Bir ilerleme kartı çek.
+189|Deste seç
+190|4'ten fazla ilerleme kartın var.
+191|4 kalana kadar at.
+192|Kart seç
+193|Su kemerin bir kaynak veriyor.
+194|Bu zar sana hiçbir şey kazandırmadı.
+195|Bir şövalye senin tarafına geçti.
+196|Yolunun yanındaki bir köşeye dokun ya da atla.
+197|Casusun onların ilerleme kartlarını görüyor.
+198|Ellerinden 2 kart al.
+199|Seçimini yap.
+200|Atla
+201|Özel inşa aşaması.
+202|Şimdi inşa edebilir veya satın alabilirsin. Ticaret yok.
+203|Tamam
+204|{name} özel inşa aşamasında…
+205|{name} zar atması bekleniyor…
+206|Sıra {name} oyuncusunda.
+207|Sıra sende. Zarları at.
+208|Zar atmadan önce bir şövalye oynayabilirsin.
+209|Zar at
+210|Koyulacak ücretsiz yol: {n}.
+211|İnşa et, ticaret yap ya da turu bitir.
+212|Kalan ücretsiz terfi: {n} (bir şövalyeye dokun).
+213|Turu bitir
+214|Barbar gemisi
+215|{track} kapısı
+216|{n} geldi
+217|Şu anda bunu yapacak bir yer yok.
+218|Bu oyunu izliyorsun.
+219|Barbar gemisi: sona ulaşınca saldırır
+220|Barbar gücü (şehirler) ve aktif şövalyeler
+221|Kalan gelişim kartı: {n}
+222|{n} kaldı
+223|Yol
+224|Köy
+225|Şehir
+226|Gelişim kartı
+227|Şehir surları
+228|Banka ticareti
+229|4:1 veya daha iyi
+230|Gelişim kartları
+231|yeni
+232|İlerleme kartları
+233|Elin
+234|Kart: {n} · sınır {m}
+235|Kart: {n}
+236|Gel.: {n}
+237|Şövalye: {n}
+238|İlerleme: {n}
+239|Geliştirmeler: ticaret / siyaset / bilim
+240|sen
+241|Çevrimiçi
+242|Çevrimdışı
+243|/ {n}
+244|{name} veriyor
+245|ve istiyor
+246|{name} ile takas et
+247|Reddetti
+248|Düşünüyor…
+249|Teklifi geri çek
+250|Kabul ettin. Onay bekleniyor.
+251|Reddettin.
+252|Kabul et
+253|Reddet
+254|Kartların yetmiyor.
+255|Takas teklifi
+256|Metropol: {name}
+257|{track} geliştir ({n} {res})
+258|Desteler: bilim {a}, ticaret {b}, siyaset {c}
+259|Şehir geliştirmeleri
+260|3. seviye bir bonus açar. 4. seviyeye ilk ulaşan bir metropol kurar (+2).
+261|Masaya selam ver.
+262|Oyun günlüğü
+263|Sohbet
+264|Maliyetler
+265|Mesaj
+266|Gönder
+267|Yolunu kuracağın yere dokun.
+268|Köyünü kuracağın yere dokun.
+269|Geliştirilecek köye dokun.
+270|Şövalye için yolunun yanındaki bir köşeye dokun.
+271|Sur yapılacak şehre dokun.
+272|Onayla
+273|elinde {n}
+274|Azalt
+275|{n} kart at
+276|7 geldi ve elinde {n} karttan fazlası var.
+277|{name} için düğün hediyesi
+278|Verilecek {n} kartı seç.
+279|Kimden çalınsın…
+280|Rastgele bir kart alırsın.
+281|İlerleme kartı çek
+282|Bir deste seç.
+283|Su kemeri
+284|İstediğin bir kaynağı al.
+285|Bir ilerleme kartı at
+286|En fazla 4 tane tutabilirsin.
+287|Hiçbir şey alma
+288|{name} oyuncusunun ilerleme kartları
+289|Birini al.
+290|{name} oyuncusunun eli
+291|{n} kart al.
+292|Takas teklif et
+293|Herkes teklifi görür ve kabul edebilir. Kiminle takas edeceğini sen seçersin.
+294|Veriyorsun
+295|İstiyorsun
+296|Onun yerine banka
+297|Teklif et
+298|Bankayla takas
+299|Kurların limanlarına ve geliştirmelerine bağlı.
+300|Kurların limanlarına bağlı.
+301|Ver
+302|1 al
+303|{n} {a} karşılığında 1 {b}
+304|Otomatik sayılır.
+305|Kendi turunda oyna.
+306|Bu tur zaten bir kart oynadın.
+307|Bu tur alınan kartlar bir sonraki turda oynanabilir.
+308|Kartı oyna
+309|Bankadan istediğin 2 kaynağı al.
+310|Söylediğin kaynaktan herkes elindekinin tamamını sana verir.
+311|Simyacı zar atmadan önce oynanır.
+312|Önce zarları at.
+313|Kırmızı ve sarı zarı seç. Olay zarı normal şekilde atılır.
+314|{n} at
+315|Mucit: yer değiştirecek iki sayılı alana dokun.
+316|Mühendis: ücretsiz sur için bir şehre dokun.
+317|Tıp: geliştirilecek köye dokun (1 tahıl, 2 maden).
+318|Tüccar: binanın yanındaki bir alana dokun.
+319|Diplomat: kaldırılacak açık bir yola dokun.
+320|Entrika: yolundaki bir rakip şövalyeye dokun.
+321|Puan: {n}
+322|Bu tur hangi kart türünü 2:1 takas etmek istiyorsun?
+323|Her rakip sana en fazla 2 verir.
+324|Her rakip sana 1 verir.
+325|Temel şövalye
+326|Güçlü şövalye
+327|Kudretli şövalye
+328|Etkinleştir (1 tahıl)
+329|Terfi ettir (ücretsiz, Demirci)
+330|Terfi ettir (1 yün, 1 maden)
+331|Yollarında ilerle
+332|Daha zayıf bir şövalyeyi yerinden et
+333|Hayduta kovala
+334|Aktif (bu tur etkinleştirildi, sonraki tur hareket edebilir)
+335|Aktif
+336|Pasif
+337|Şu anda onunla yapılacak bir şey yok.
+338|Şövalyenin gideceği yere dokun.
+339|Yerinden edilecek şövalyeye dokun.
+340|1 puan
+341|2 puan, iki kat üretim
+342|Gelişim kartı
+343|Şövalye, ilerleme veya puan
+344|Temel şövalye (pasif)
+345|Şövalyeyi etkinleştir
+346|Şövalyeyi terfi ettir
+347|Kudretli için siyaset 3 gerekir
+348|+2 el sınırı
+349|İnşa maliyetleri
+350|Geliştirmeler 1–5 mal tutar: ticaret için kumaş, siyaset için sikke, bilim için kâğıt. Orman, mera ve dağ yanındaki şehirler ikinci kaynak yerine bir mal üretir.
+351|İstatistikleri gör
+352|Lobiye dön
+353|Oyun sunucusu hamleni işlerken bir hata ile karşılaştı
+354|Hayduta yer değiştir ve bir kart çal. En büyük orduya sayılır.
+355|1 puan değerindedir. Oyun bitene kadar diğerlerinden gizli kalır.
+356|Ücretsiz 2 yol yap.
+357|Bir kaynak söyle. Herkes elindekinin tamamını sana verir.
+358|Zar atmadan önce iki üretim zarını da seç.
+359|İki sayı pulunun yerini değiştir (2, 6, 8 veya 12 hariç).
+360|Bu turdaki bir sonraki şehir geliştirmen 1 eksik tutar.
+361|Ücretsiz bir şehir suru yap.
+362|Binalarının yanındaki her tarla için 2 tahıl al.
+363|2 maden ve 1 tahıl karşılığında bir köyü şehre yükselt.
+364|Binalarının yanındaki her dağ için 2 maden al.
+365|2 şövalyeyi ücretsiz terfi ettir.
+366|Her rakiple kaynaklarından birini bir mal karşılığında takas et.
+367|Senden fazla puanı olan bir oyuncunun eline bak ve 2 kart al.
+368|Tüccarı binanın yanına koy: o kaynağı 2:1 takas et ve 1 puan tut.
+369|Bu tur seçtiğin bir kart türünü 2:1 takas et.
+370|Her rakip sana bir kaynaktan en fazla 2 verir.
+371|Her rakip sana bir maldan 1 verir.
+372|Hayduta yer değiştir ve o alandaki her oyuncudan 1 kart çal.
+373|Bir rakibin en zayıf şövalyesi kaçar. Aynı güçte bir şövalye koyabilirsin.
+374|Açık bir yolu kaldır. Seninse ücretsiz olarak yeniden yaparsın.
+375|Yollarından birinde duran bir rakip şövalyeyi yerinden et.
+376|Senin kadar veya daha fazla puanı olan oyuncular kartlarının yarısını atar.
+377|Bir rakibin ilerleme kartlarına bak ve birini al.
+378|Tüm şövalyelerini ücretsiz etkinleştir.
+379|Senden fazla puanı olan her oyuncu sana seçtiği 2 kartı verir.
+380|{names} kart atması bekleniyor…
+381|{names} hayduta taşıması bekleniyor…
+382|{names} çalması bekleniyor…
+383|{names} şövalye taşıması bekleniyor…
+384|{names} kart vermesi bekleniyor…
+385|{names} kaybedilecek şehri seçmesi bekleniyor…
+386|{names} ilerleme kartı çekmesi bekleniyor…
+387|{names} bekleniyor…
+388|{name} kazandı
+389|Yükleniyor…
+390|Biri
+391|Önceki yıl
+392|DEVAM EDİYOR
+393|TAMAMLANDI
+394|Sonraki yıl
+395|Tüm oyunlar
+396|ŞU AN ÖNDE
+397|{year} ŞAMPİYONU
+398|Henüz kimse
+399|Galibiyet
+400|Oyun: {n}
+401|Zafer kutlamasını izle
+402|{year} sıralaması
+403|puan
+404|Henüz oyun yok
+405|Henüz oyuncu yok.
+406|Zaman içinde
+407|Karşılıklı
+408|Her sayı, satırdaki oyuncunun sütundaki oyuncuyu kaç kez yendiğini gösterir.
+409|Masada oynanan bir oyunu kaydet
+410|{year} tüm oyunlar
+411|Henüz kayıt yok.
+412|{year} yılındaki {n}. galibiyet
+413|Galibiyet: {n}
+414|Silinsin mi?
+415|Silindi.
+416|Bu yıl henüz oyun yok.
+417|En iyi seri
+418|Mevcut seri
+419|Favori sürüm
+420|Baş belası: {name} ({n}×)
+421|masada oynandı
+422|Tur: {n}
+423|{n} dk
+424|Masa
+425|Sil
+426|En hızlı galibiyet
+427|En yüksek puan
+428|En çok toplanan kart
+429|Bir oyunda {n}
+430|En uzun oyun
+431|Rekorlar
+432|Zarlar
+433|Her sayının kaç kez geldiği
+434|Çubuklar: bu yılki atışlar. Kesikli çizgi: olasılığın öngördüğü. En sıcak sayı: {n} ({total} atışta {m} kez).
+435|Oynadıkça grafik dolar.
+436|Yıl boyunca toplam galibiyetler
+437|Ne zaman oynandı
+438|Kim oynadı
+439|Kim kazandı
+440|Önce oyuncuları seç.
+441|Oyunu kaydet
+442|İstatistiklere kaydedildi.
+443|Bilinmeyen mod
+444|Broch için 2–6 oyuncu gerekir
+445|Oyun başlıyor. {@ps} yerlerini alıyor.
+446|İlk {@p} yerleştiriyor.
+447|{@p}, {n} zafer puanıyla kazandı!
+448|En uzun yol artık {@p} oyuncusunda ({n}).
+449|Artık kimsede en uzun yol yok.
+450|{@p} {n} attı ({#e}).
+451|{@p} {n} attı.
+452|Bankada {#r} kalmadı; kimse alamıyor.
+453|{@p} {$c} alıyor.
+454|Barbar gemisi yaklaşıyor ({n}/{m}).
+455|Barbarlar saldırıyor! Güç {n}, şövalyeler {m}.
+456|Barbarlar püskürtüldü. {@p}, Broch'un Savunucusu oldu (+1 ZP).
+457|Barbarlar püskürtüldü. {@ps} şanı paylaşıyor ve her biri bir ilerleme kartı çekiyor.
+458|Barbarlar püskürtüldü.
+459|Barbarlar kazandı! {@ps} birer şehir kaybediyor.
+460|Barbarlar kazandı ama yağmalanacak korumasız şehir yok.
+461|{@p} oyuncusunun şehri köye dönüşüyor.
+462|{#d} destesi boş.
+463|{@p}, {%c} kartını açıyor (+1 ZP).
+464|{@p} bir ilerleme kartı çekiyor ({#d}).
+465|{@p} oyuncusunun metropol için boş şehri yok ({#t}).
+466|{@p} bir metropol kuruyor ({#t}).
+467|Özel inşa aşaması: {@ps}.
+468|Oraya yol yapamazsın.
+469|Yolun kalmadı.
+470|Yeterli kaynak yok.
+471|{@p} bir yol yaptı.
+472|Geçersiz işlem.
+473|Oyun bitti.
+474|Bu oyunda değilsin.
+475|Bilinmeyen işlem.
+476|Şu an sıra sende değil.
+477|Şu an izin verilmiyor.
+478|Sadece şövalye modunda.
+479|Yerleştirme sırası sende değil.
+480|Başka bir binaya çok yakın.
+481|{@p} bir köy yerleştirdi.
+482|{@p} bir şehir yerleştirdi.
+483|Yol yeni binana değmeli.
+484|Kurulum tamam. {@p} başlıyor.
+485|Zar zaten atıldı.
+486|Atlanacak ücretsiz yol yok.
+487|Özel inşa sırası sende değil.
+488|Oraya köy kuramazsın.
+489|Köyün kalmadı.
+490|{@p} bir köy kurdu.
+491|Köylerinden birini geliştir.
+492|Şehrin kalmadı.
+493|{@p} bir şehir kurdu.
+494|Şövalye modunda gelişim kartı yok.
+495|Gelişim destesi boş.
+496|{@p} bir gelişim kartı aldı.
+497|Tur başına yalnızca bir gelişim kartı.
+498|Bu türden oynanabilir kartın yok (yeni kartlar bir tur bekler).
+499|{@p}, {%c} oynadı.
+500|En büyük ordu artık {@p} oyuncusunda.
+501|İki kaynak seç.
+502|Bankada bunlar yok.
+503|{@p}, {%c} oynadı ve {$c2} aldı.
+504|Bir kaynak seç.
+505|{@p}, {#r} için {%c} oynadı ve {n} topladı.
+506|Bilinmeyen kart.
+507|Atılacak bir şey yok.
+508|Tam olarak {n} kart seç.
+509|O kartlar sende yok.
+510|{@p} kart attı: {n}.
+511|Verilecek bir şey yok.
+512|{@p}, {@q} oyuncusuna kart veriyor: {n}.
+513|Hayduta sen taşımıyorsun.
+514|Hayduta başka bir alana taşı.
+515|{@p} hayduta taşıdı.
+516|Haydutun yanındaki birini seç.
+517|Takasın iki tarafını da doldur.
+518|{@p}, {$w} karşılığında {$g} teklif ediyor.
+519|Böyle bir teklif yok.
+520|İstenen kartlar sende yok.
+521|O oyuncu kabul etmedi.
+522|Birinin elinde artık o kartlar yok.
+523|{@p}, {@q} ile {$g} karşılığında {$w} takas etti.
+524|Geri çekilecek teklif yok.
+525|Ne vereceğini ve ne alacağını seç.
+526|{$c} gerekiyor.
+527|Bankada o kalmadı.
+528|{@p}, bankayla {$g} karşılığında {$w} takas etti.
+529|Şövalyeler yolunun yanındaki boş bir köşeye konur.
+530|Temel şövalyen kalmadı.
+531|{@p} bir şövalye topladı.
+532|Pasif şövalyelerinden birini seç.
+533|Etkinleştirmek 1 tahıl gerektirir.
+534|{@p} bir şövalyeyi etkinleştirdi.
+535|Şövalyelerinden birini seç.
+536|Bir şövalye her tur yalnızca bir kez terfi edebilir.
+537|Bir sonraki seviyede şövalye kalmadı.
+538|{@p} bir şövalyeyi terfi ettirdi ({#l}).
+539|Şövalye o köşeye ulaşamaz.
+540|{@p} bir şövalyeyi taşıdı.
+541|Orada ulaşılabilir bir rakip şövalye yok.
+542|Yalnızca daha zayıf bir şövalyeyi yerinden edebilirsin.
+543|{@p} oyuncusunun şövalyesi {@q} oyuncusunun şövalyesini yerinden ediyor.
+544|Haydut ilk barbar saldırısından önce taşınamaz.
+545|O şövalye haydutun yanında değil.
+546|{@p} oyuncusunun şövalyesi hayduta kovalıyor.
+547|Taşınacak şövalye yok.
+548|Vurgulanan bir köşe seç.
+549|{@p} yerinden edilen bir şövalyeyi taşıdı.
+550|Surlar şehirlerinin etrafına yapılır.
+551|Surun kalmadı.
+552|{@p} bir şehir suru yaptı.
+553|Bilinmeyen geliştirme.
+554|Önce bir şehre ihtiyacın var.
+555|Zaten en üstte.
+556|{@p}, {#t} alanını {n}. seviyeye geliştirdi.
+557|{@p}, metropolü ({#t}) {@q} oyuncusundan alıyor.
+558|Yerleştirilecek metropol yok.
+559|Şehirlerinden birini seç.
+560|Kaybedecek bir şey yok.
+561|Korumasız şehirlerinden birini seç.
+562|Bir kart seç.
+563|{@p} bir ilerleme kartı attı.
+564|{@p} oyuncusunun su kemeri {$c} veriyor.
+565|Yerleştirilecek şövalye yok.
+566|Yolunun yanındaki boş bir köşe seç.
+567|{@p} kaçak şövalyeyi yerleştiriyor.
+568|Alınacak bir şey yok.
+569|{@p} oyuncusunun casusu {@q} oyuncusundan bir ilerleme kartı çalıyor.
+570|Kartlarından {n} tanesini seç.
+571|{@p}, {@q} oyuncusundan kart alıyor: {n}.
+572|Simyacıyı zar atmadan önce oyna.
+573|{@p}, {@q} oyuncusundan bir kart çaldı.
+574|O şövalye aktif değil.
+575|Bu tur etkinleştirilen bir şövalye sonraki turu beklemeli.
+576|{@p} oyuncusunun şövalyesinin gidecek yeri yok ve tahtadan ayrılıyor.
+577|İki zarı da seç.
+578|İki sayılı alan seç (2, 6, 8 veya 12 hariç).
+579|Surları olmayan şehirlerinden birini seç.
+580|Köylerinden birini seç.
+581|Tıp için 1 tahıl ve 2 maden gerekir.
+582|{@p}, {$g} karşılığında {@q} oyuncusunun {$w} kartını alıyor.
+583|Senden fazla puanı olan bir oyuncu seç.
+584|Hiç kartları yok.
+585|Bir kara alanı seç.
+586|Tüccar köyünün veya şehrinin yanında durmalı.
+587|Bir kart türü seç.
+588|{@p} {$c} topluyor.
+589|Bir mal seç.
+590|Haydut ilk barbar saldırısından önce hareket edemez.
+591|Şövalyesi olan bir oyuncu seç.
+592|{@p} oyuncusunun şövalyelerinden biri kaçıyor.
+593|Açık bir yol seç (ucu boşta olan).
+594|{@p}, {@q} oyuncusunun bir yolunu kaldırdı.
+595|Yollarından birindeki bir rakip şövalyeyi seç.
+596|Bir rakip seç.
+597|Hiç ilerleme kartları yok.
+598|Geçersiz veri
+599|Oyun bulunamadı
+600|Lütfen giriş yap.
+601|Çok fazla deneme. Birkaç dakika sonra tekrar dene.
+602|Geçerli bir e-posta gir.
+603|Bir görünen ad seç.
+604|Şifre en az 6 karakter olmalı.
+605|Ülkeni seç.
+606|Davet kodu yanlış.
+607|Bu e-posta zaten kayıtlı.
+608|Bu ad alınmış.
+609|E-posta veya şifre yanlış.
+610|Ad boş olamaz.
+611|Bilinmeyen renk.
+612|Bilinmeyen dil.
+613|Mevcut şifre yanlış.
+614|Oyun zaten başladı.
+615|Önce oyuna katıl.
+616|O rengi başka biri zaten aldı.
+617|O oyun zaten başladı.
+618|Oyun dolu.
+619|Devam eden bir oyundan ayrılamazsın. Ev sahibi oyunu sonlandırabilir.
+620|Yalnızca ev sahibi başlatabilir.
+621|Zaten başladı.
+622|En az bir oyuncu daha bekle.
+623|Yalnızca ev sahibi oyunu sonlandırabilir.
+624|Kazananı oyuncular arasından seç.
+625|Bulunamadı
+626|Yalnızca kaydeden kişi (veya bir yönetici) silebilir.
+627|Bilinmeyen uç nokta
+628|Oyun devam etmiyor.
+629|Senaryo
+630|Varyantlar
+631|Görevler
+632|Seçeneklerini görmek için bir eklenti seç.
+633|Şehirler ve Şövalyeler
+634|5–6
+635|Yerleş, ticaret yap, inşa et. Gelişim kartları, En uzun yol, En büyük ordu.
+636|Ticari mallar, şehir geliştirmeleri, şövalyeler ve barbar akınları.
+637|Eklenti
+638|Yok
+639|Standart ada.
+640|Denizciler
+641|Gemiler ve ada keşfi.
+642|Tüccarlar ve Barbarlar
+643|Balıkçılar, nehirler ve olay kartları.
+644|Kâşifler ve Korsanlar
+645|Sisin ötesinde görevler.
+646|5–6 oyunculu eklenti
+647|Daha büyük tahta ve özel inşa aşaması. Her oyuncu sayısıyla çalışır.
+648|Balık sahası
+649|Balık sürüsü
+650|Korsan sığınağı
+651|Yeni ada bonusu: ilk köy için +1 zafer puanı
+652|Korsan
+653|Orman
+654|Tepeler
+655|Mera
+656|Tarla
+657|Dağlar
+658|Çöl
+659|Altın
+660|Nehir
+661|balık
+662|baharat
+663|Keşif
+664|Başlangıç kaynakları
+665|Ganimet
+666|Haydutu veya korsanı taşı.
+667|Haydut için bir kara karosuna, korsan için bir deniz karosuna dokun. Yanındaki bir oyuncudan kart çalarsın.
+668|Altın! {n} kaynak seç.
+669|Bankada bulunan herhangi bir kaynağı al.
+670|Gemiyi yürütmek için yanıp sönen gemilerinden birine dokun (turda bir kez).
+671|Bu geminin nereye gideceğine dokun.
+672|Yakınlaştır
+673|Uzaklaştır
+674|Tüm tahtayı göster
+675|Torbada kalan balık jetonları
+676|Deste karıştırılmadan önce kalan olay kartları
+677|Gemi
+678|Köprü
+679|Balık
+680|{n} balık
+681|2 altın = 1 kart
+682|Teslim et, saldır
+683|Nehir kıyısında kazanılan altın. 2 altın herhangi bir kartı alır.
+684|{n} altın
+685|Balıklar haydutun elinden güvendedir ve takas edilemez.
+686|Eski bot: kazanmak için bir puan daha gerekir.
+687|Eski bot
+688|Gemideki balık · teslim edilen
+689|Gemideki baharat · teslim edilen
+690|Kalan parçalar
+691|Aktif şövalye gücü
+692|Teslim edilen balık · baharat
+693|3. seviye: ticari malları bankayla 2:1 takas et.
+694|3. seviye: şövalyelerin güçlenebilir.
+695|3. seviye: hiçbir şey alamadığında su kemeri bir kaynak verir.
+696|4. seviye: buraya ilk ulaşan oyuncu metropol kurar (+2 puan).
+697|herkes bir bakışta
+698|Geminin gideceği deniz kenarına dokun.
+699|Köprün için nehir geçidine dokun.
+700|Altın!
+701|Bankadan {n} kaynak seç.
+702|Haydutu kov
+703|Haydutu istediğin karoya taşı ve komşudan kart çal.
+704|Kart çal
+705|Seçtiğin oyuncudan rastgele bir kart al.
+706|Kaynak al
+707|Bankadan istediğin kaynağı al.
+708|Bedava yol
+709|Ödemeden bir yol inşa et.
+710|İlerleme kartı
+711|Seçtiğin desteden bir ilerleme kartı çek.
+712|Bedava bir gelişim kartı çek.
+713|Balık harca
+714|{n} balığın var. Balıklar çalınamaz, haydut onları alamaz.
+715|Kimsenin çalınacak kartı yok.
+716|Altını karta çevir
+717|{n} altının var. 2 altın herhangi bir kaynak alır, turda en fazla iki kez.
+718|Gemide: {n} · teslim: {d} · {v}/3 puan
+719|Teslim et
+720|Konseye yapılan her 2 teslimat 1 puan kazandırır, görev başına en fazla 3 puan. Yıkılan korsan sığınağı, ona en çok vuran oyuncuya 1 puan değerindedir.
+721|Broch için balık
+722|Broch için baharat
+723|Korsan sığınakları
+724|Her vuruş 1 maden ve 1 yün tutar, sığınağın yanında bir gemi gerekir.
+725|Henüz sığınak bulunamadı. Sisi keşfet.
+726|Sığınak · {n} vuruş kaldı
+727|Saldır
+728|Deniz kenarlarında yüzer; turda bir kez hareket eder
+729|Nehri geçer; 3 altın kazandırır
+730|{names} altın sahasından seçim yapıyor…
+731|Eklentiler
+732|Korsanı başka bir deniz karosuna taşı.
+733|{@p} korsanı taşıdı.
+734|Olay kartları yeniden karıştırıldı.
+735|{@p} açık denize açılıyor.
+736|{@p} kara keşfediyor: {#t}.
+737|{@p} altın buldu ve {n} kaynak seçebilir.
+738|{@p} {n} balık tutuyor.
+739|{@p} eski botu çıkardı ve kazanmak için bir puan daha gerekiyor.
+740|{@p} {n} baharat yüklüyor.
+741|{@p} bol bir balık avı yapıyor.
+742|{@p} {n} altın kazanıyor.
+743|{@p} yeni bir adaya yerleşti ve bonus puan kazandı (+1 ZP).
+744|Bu oyunda gemi yok.
+745|Gemi kalmadı.
+746|Gemiyi oraya yürütemezsin.
+747|{@p} bir gemi inşa etti.
+748|Bu gemi oraya gidemez.
+749|{@p} bir gemiyi yeni bir yere götürdü.
+750|Harcanacak altın yok.
+751|{@p} altın sahasından {$c} alıyor.
+752|Bu oyunda nehir yok.
+753|Köprü kalmadı.
+754|Oraya köprü kuramazsın.
+755|{@p} bir köprü inşa etti.
+756|Altını turda yalnızca iki kez takas edebilirsin.
+757|2 altın gerekiyor.
+758|{@p} 2 altını {$c} ile takas ediyor.
+759|Bu oyunda balıkçı yok.
+760|Bilinmeyen balık takası.
+761|{n} balık gerekiyor.
+762|{@p} haydutu kovmak için {n} balık ödüyor.
+763|Kartı olan bir oyuncu seç.
+764|Bankada bulunan bir kaynağı seç.
+765|{@p} {n} balığı {$c} ile takas ediyor.
+766|{@p} {n} balığı bedava bir yolla takas ediyor.
+767|{@p} {n} balığı bir ilerleme kartıyla takas ediyor.
+768|{@p} {n} balığı bir gelişim kartıyla takas ediyor.
+769|Bu oyunda görev yok.
+770|Bu görev bu oyunda yok.
+771|Teslim edecek bir şeyin yok.
+772|Teslimat için bir köyün olmalı.
+773|{@p} konseye {n} {#k} teslim ediyor.
+774|Bu oyunda korsan sığınağı yok.
+775|Orada sığınak yok.
+776|Sığınağın yanında bir gemin olmalı.
+777|Saldırmak 1 maden ve 1 yün tutar.
+778|{@p} bir korsan sığınağına saldırıyor ({n} kaldı).
+779|Korsan sığınağı yıkıldı. {@p} ödülü kazanıyor (+1 ZP).
+780|Yeni Kıyılara Doğru
+781|Dört Ada
+782|Sis Adaları
+783|Catan Balıkçıları
+784|Catan Nehirleri
+785|Olay kartları
+786|Catan için balık
+787|Catan için baharat
+788|Balık sahaları, balık jetonları ve eski bot.
+789|Köprüler, altın ve en zengin ile en yoksul oyuncu.
+790|Zarların yerini bir olay kartı destesi alır.
+791|Ev kuralı: unutulan haydut
+792|Bir oyuncu hayduda dokunmadan turunu bitirirse haydut çöle geri döner.
+793|Turunu şimdi bitirirsen haydut çöle geri döner.
+794|Bu ev kuralı açık değil.
+795|{@p} hayduyu taşımayı unuttu, bu yüzden haydut çöle geri dönüyor.
+796|Ev kuralı: iki binadan da başlangıç kaynakları
+797|Ev kuralları
+798|Kurulum aşamasındaki iki bina da başlangıç kaynakları verir. Şehirler ve Şövalyeler'de şehir, köy gibi sayılır.
+799|Henüz bir şey olmadı.
+800|Kurulum aşaması
+801|İlk turlar oynanınca grafikler dolar.
+802|Zaman içinde zafer puanları
+803|Zar atışları
+804|Çubuklar: gelen · çizgi: {n} atışta beklenen
+805|Alınan kaynaklar
+806|Atışlar
+807|En çok gelen
+808|Gelen 7'ler
+809|Hedef
+810|gelen
+811|beklenen
+812|{n} karttan fazla: 7 gelirse yarısını kaybedersin.
+813|Yalnızca son atış
+814|Önceki turları göster
+815|Broch'un Savunucusu
+816|−1 şehir
+817|Canlı tahta
+818|Canlı tahta: açık
+819|Canlı tahta: kapalı
+820|Banka
+821|1 puan değerindedir. Önüne açık olarak konur.
+822|Nasıl oynanır: {mode}
+823|Nasıl oynanır
+824|{mode} nasıl oynanır (1 dk)
+825|Broch'a hoş geldin!
+826|İnşa et, ticaret yap, büyü. 10 puana ilk ulaşan kazanır.
+827|Her alan bir kaynak üretir.
+828|Orman, tepeler, mera, tarla ve dağlar. Çöl hiçbir şey üretmez.
+829|Köşelere köy kur.
+830|Parlayan köşeye dokun.
+831|Bir köy en fazla 3 alana değer.
+832|Rakiplerin de inşa ediyor.
+833|Her tur zar at.
+834|Zarlara dokun.
+835|O sayıdaki her alan ürün verir.
+836|Yanındaki herkes bir kart alır, başkalarının turunda bile.
+837|Daha çok nokta, daha çok şans.
+838|Kırmızı 6 ve 8 en sık gelir, 2 ve 12 nadiren.
+839|İnşa etmek için kart harca.
+840|Yol kereste ve tuğla tutar. Parlayan kenara dokun.
+841|Şehirler iki kat üretir.
+842|2 tahıl ve 3 madenle bir köyü şehre yükselt. Köyüne dokun.
+843|7 gelince haydut uyanır!
+844|Haydutu bir alana taşı.
+845|Orası artık ürün vermez. Rakibinin yanındaki bir alana dokun.
+846|Sonra oradaki birinden bir kart çal.
+847|Elinde 7'den fazla kart olan herkes yarısını kaybeder.
+848|Oyuncularla ya da bankayla ticaret yap.
+849|Banka 4 aynı kartı 1 karta değişir. Limanlar: 3:1 veya 2:1.
+850|Şövalyeler haydutu taşır. Diğerleri yol, kaynak ya da zafer puanı verir.
+851|3 şövalye oyna: En büyük ordu, +2 puan.
+852|Sahibinin savaş sancakları tahtada dalgalanır.
+853|Art arda 5 yol: En uzun yol, +2 puan.
+854|En uzun yol altın gibi parlar.
+855|Kazanmak için 10 puana ulaş!
+856|Köy 1 · Şehir 2 · En uzun yol 2 · En büyük ordu 2 · Zafer puanı kartı 1
+857|Klasik'teki her şey, artı ticari mallar, şövalyeler ve barbarlar. 13 puanla kazanılır.
+858|Şehirler ticari mal üretir.
+859|Orman: kâğıt · Mera: kumaş · Dağlar: sikke
+860|Şehir geliştirmeleri ticari mallarla alınır.
+861|Ticaret kumaş, siyaset sikke, bilim kâğıt ister. + düğmesine dokun.
+862|3. seviye özel bir güç açar.
+863|Bilim: hiçbir şey alamadığında bir kaynak al. Ticaret: mallarda 2:1 takas. Siyaset: daha güçlü şövalyeler.
+864|4. seviyeye ilk ulaşan bir metropol kurar.
+865|2 puan değerindedir ve şehrinin üstünde durur.
+866|Şövalyeler Broch'u savunur.
+867|Yün ve madenle bir şövalye al. Parlayan köşeye dokun.
+868|Onu tahılla etkinleştir.
+869|Yalnızca aktif şövalyeler savaşır. Güçlendirmek için terfi ettir.
+870|Olay zarında gemi gelirse barbarlar ilerler.
+871|Her gemi onları Broch'a bir adım daha yaklaştırır.
+872|Güçleri: tahtadaki tüm şehirler. Savunman: tüm aktif şövalyeler.
+873|En güçlü savunucu bir puan kazanır. Barbarlar kazanırsa en zayıf şehir yağmalanır.
+874|Olay zarındaki renkli kapı, geliştirmeleri yeterince yüksek oyunculara kart verir.
+875|Şehir surları
+876|Her sur, 7 geldiğinde elinde 2 kart daha tutmanı sağlar.
+877|Kazanmak için 13 puana ulaş!
+878|Köy 1 · Şehir 2 · Metropol 2 · Savunucu 1 · En uzun yol 2
+879|Kara adalara bölünmüştür. Gemiler denizi aşar.
+880|Denizde gemi inşa et.
+881|Gemi kereste ve yün tutar. Parlayan kenara dokun.
+882|Gemiler, yollar gibi zincir oluşturur.
+883|Açık bir zincirin son gemisi turda bir kez yeni bir yere gidebilir.
+884|Sisin yanına yelken aç, sis dağılsın.
+885|Kara keşfetmek sana bir kaynak kazandırır.
+886|Yeni bir adaya yerleş: +1 puan!
+887|Altın sahaları istediğin kaynağı verir.
+888|Korsan
+889|Yanındaki gemiler engellenir; korsan kart da çalar. 7 ya da şövalye onu taşır.
+890|12 ila 14 puanla kazan.
+891|Oyunu oluştururken bir senaryo seç: Yeni Kıyılar, Dört Ada ya da Sis Adaları.
+892|Birleştirebileceğin üç varyant: Balıkçılar, Nehirler ve Olay kartları.
+893|Balıkçılar
+894|Çöl göle dönüşür, kıyıda balık sahaları belirir.
+895|Balık sahasının sayısı gelince balık tutarsın.
+896|Göl 2, 3, 11 ve 12'de balık verir.
+897|Balıkla öde
+898|2 haydutu kov · 3 kart çal · 4 kaynak al · 5 yol · 7 gelişim kartı
+899|Eski bot
+900|Onu çıkaran, kazanmak için bir puan daha almalı; botu öndeki oyuncuya verebilir.
+901|Nehirler
+902|Nehir kenarındaki her yol ya da köy 1 altın kazandırır.
+903|Köprüler nehrin üzerinden geçer.
+904|Köprü 2 tuğla ve 1 kereste tutar, 3 altın kazandırır.
+905|2 altını istediğin bir kaynakla takas et. En zengin oyuncu +1 puan alır, en yoksul −2.
+906|Zarların yerini 36 zar sonucunun hepsini içeren bir deste alır; böylece her sayı olması gerektiği sıklıkta gelir.
+907|Sise yelken aç, kara keşfet ve görevleri tamamla.
+908|Sisi gemilerle keşfet.
+909|Parlayan kenara dokun. Yeni kara sana bir kaynak kazandırır.
+910|Balık sürüsünün yanındaki gemi, sürünün sayısı gelince balık toplar.
+911|Broch için baharat
+912|Baharat alanındaki köyler, alan ürün verince baharat yükler.
+913|Yükü konseye teslim et.
+914|Her 2 teslimat 1 puan kazandırır, görev başına en fazla 3 puan.
+915|Sığınağın yanındaki bir gemiden 1 maden ve 1 yünle saldır. Sığınak düşünce en çok vuran bir puan kazanır.
+916|Kazanmak için 12 puana ulaş!
+917|Köyler, şehirler, yeni adalar, görevler ve sığınaklar; hepsi sayılır.
+918|6 oyuncuya kadar: daha çok alan, liman ve kart içeren daha büyük bir tahta.
+919|Özel inşa aşaması
+920|Her turdan sonra diğer herkes sırayla inşa edebilir ama ticaret yapamaz.
+921|Böylece kimse uzun süre beklemez.
+922|Masa dolu olsa bile turlar kısa kalır.
+923|Geri
+924|Duraklat
+925|İleri
+926|{mode} kurallarını öğrendin!
+927|Tekrar izle
+928|Sıradaki: {mode}
+929|Hadi oynayalım!
+930|Olay kartı
+931|Zar at
+932|Zafer!
+933|Oyun bitti
+934|Kazandın!
+935|zafer puanı
+936|{m} puanla {n}. oldun.
+937|Son sıralama
+938|Tahtaya bak
+939|Köy
+940|Şehir
+941|Metropol
+942|Zafer puanı kartları
+943|Bonus puan
+944|Yarış nasıl geçti
+945|En çok kaynak
+946|En çok gelen sayı
+947|{n}×
+948|Oyun süresi
+949|{n} tur
+950|Öne çıkanlar
+951|En uzun ticaret yolu
+952|Kaynağını bir kez seç. Bundan sonra su kemeri, bir atış sana hiçbir şey getirmediğinde (7 hariç) onu otomatik verir.
+953|Su kemeri: {res}. Değiştirmek için dokun.

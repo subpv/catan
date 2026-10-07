@@ -1,0 +1,953 @@
+1|Gioca
+2|Statistiche
+3|Profilo
+4|Lingua
+5|Audio disattivato
+6|Audio attivo
+7|Qualcosa non funziona o hai un'idea?
+8|Invia un feedback
+9|Chiudi
+10|Colonizza, commercia e costruisci con i tuoi amici.
+11|Accedi
+12|Crea un account
+13|Nome visualizzato
+14|Paese
+15|Email
+16|Password
+17|Codice di invito (chiedilo a chi gestisce il server)
+18|Sei il primo giocatore, quindi questo account diventa amministratore.
+19|Il tuo colore
+20|Da dove vieni? La tua bandiera appare accanto al tuo nome.
+21|Salva
+22|Salvato.
+23|Cavalieri
+24|Classico
+25|{n} punti
+26|turno {n}
+27|Partita di {name}
+28|Nuova partita
+29|Versione
+30|Colonizza, commercia, costruisci. Carte sviluppo, strada più lunga, armata più grande. 10 punti.
+31|Cavalieri e Barbari
+32|Merci, migliorie cittadine, cavalieri e incursioni barbare. 13 punti.
+33|Giocatori
+34|Meno
+35|Più
+36|Punti per vincere
+37|Con cinque o sei giocatori si usa il tabellone grande, con una fase di costruzione speciale tra i turni.
+38|Fino a quattro giocatori si usa il tabellone normale.
+39|Crea partita
+40|Le tue partite
+41|Tocca a te
+42|Apri
+43|host
+44|Posto libero
+45|Scegli il tuo colore
+46|Avvia la partita
+47|In attesa che l'host avvii…
+48|Copia il link di invito
+49|Esci
+50|Partite aperte
+51|Unisciti
+52|Nessuna partita aperta. Creane una e invita i tuoi amici.
+53|Guarda
+54|Partita creata. Scegli il tuo colore e invita i tuoi amici.
+55|Link di invito copiato.
+56|Colore preferito (usato nelle partite se è libero, e nella pagina delle statistiche)
+57|Accesso come {email}
+58|amministratore
+59|Cambia password
+60|Password attuale
+61|Nuova password
+62|Basta per oggi?
+63|Esci dall'account
+64|Password cambiata.
+65|Ti sei unito alla partita.
+66|L'host ha chiuso questa partita.
+67|Impossibile caricare Broch
+68|Porto: scambia 3 carte uguali con 1
+69|Porto: scambia 2 {res} con 1
+70|Tabellone
+71|niente
+72|Qualcosa è andato storto
+73|Raccontaci cosa stavi facendo e lo sistemeremo. Il pulsante copia i dettagli dell'errore così puoi incollarli nel modulo.
+74|Dettagli dell'errore
+75|Chiudi
+76|Dettagli dell'errore copiati. Incollali nel modulo di feedback.
+77|Impossibile raggiungere il server di Broch. Controlla la connessione.
+78|Richiesta non riuscita ({n})
+79|Riconnessione al server… riprova tra un attimo.
+80|Il server non ha risposto.
+81|Riconnessione…
+82|L'app ha incontrato un errore imprevisto
+83|Il server ha segnalato un errore
+84|Connessione al server di gioco persa
+85|Legname
+86|Argilla
+87|Lana
+88|Grano
+89|Minerale
+90|Carta
+91|Stoffa
+92|Moneta
+93|Commercio
+94|Politica
+95|Scienza
+96|nave barbara
+97|porta del commercio
+98|porta della politica
+99|porta della scienza
+100|semplice
+101|forte
+102|potente
+103|Cavaliere
+104|Punto vittoria
+105|Costruzione strade
+106|Anno dell'abbondanza
+107|Monopolio
+108|Alchimista
+109|Inventore
+110|Gru
+111|Ingegnere
+112|Irrigazione
+113|Medicina
+114|Miniera
+115|Stampa
+116|Fabbro
+117|Porto commerciale
+118|Mercante esperto
+119|Mercante
+120|Flotta mercantile
+121|Monopolio delle risorse
+122|Monopolio commerciale
+123|Vescovo
+124|Costituzione
+125|Disertore
+126|Diplomatico
+127|Intrigo
+128|Sabotatore
+129|Spia
+130|Signore della guerra
+131|Matrimonio
+132|Rosso
+133|Blu
+134|Arancione
+135|Bianco
+136|Turchese
+137|Viola
+138|Nero
+139|Rosa
+140|Giallo
+141|Marrone
+142|Metropoli!
+143|Strada più lunga
+144|Armata più grande
+145|+2 punti vittoria
+146|Chi ha troppe carte deve scartarne la metà.
+147|Nessuno deve scartare.
+148|Il brigante si muove.
+149|I barbari non hanno ancora attaccato, quindi il brigante resta fermo.
+150|Il brigante colpisce!
+151|I barbari attaccano!
+152|Barbari (città)
+153|Cavalieri attivi
+154|Respinti!
+155|Broch viene saccheggiata!
+156|Caricamento della partita…
+157|Hai rubato 1 {res} a {name}.
+158|{name} ti ha rubato 1 {res}.
+159|Tocca a te
+160|{name} vince!
+161|Il risultato è salvato nella pagina delle statistiche.
+162|Festeggia
+163|Annulla
+164|Piazza una strada accanto.
+165|Piazza la tua città.
+166|Piazza il tuo primo insediamento.
+167|Piazza il tuo secondo insediamento.
+168|Tocca un lato illuminato.
+169|Tocca un incrocio illuminato. Tra gli edifici deve restare almeno un incrocio libero.
+170|{name} sta piazzando una strada…
+171|{name} sta piazzando un edificio…
+172|Scarta {n} carte.
+173|Hai più carte del tuo limite.
+174|Scegli le carte
+175|Dai {n} carte a {name}.
+176|Regalo di nozze: scegli tu le carte.
+177|Sposta il brigante (Vescovo).
+178|Sposta il brigante.
+179|Tocca un esagono. Rubi a un giocatore con un edificio lì.
+180|Scegli a chi rubare.
+181|Scegli
+182|Il tuo cavaliere è stato scacciato.
+183|Tocca un incrocio illuminato per spostarlo lì.
+184|Scegli una città per la tua metropoli ({track}).
+185|Tocca una delle tue città evidenziate.
+186|I barbari saccheggiano una delle tue città.
+187|Tocca la città che torna insediamento.
+188|Hai aiutato a difendere Broch. Pesca una carta progresso.
+189|Scegli il mazzo
+190|Hai più di 4 carte progresso.
+191|Scarta fino ad averne 4.
+192|Scegli una carta
+193|Il tuo acquedotto fornisce una risorsa.
+194|Questo tiro non ti ha dato nulla.
+195|Un cavaliere ha disertato dalla tua parte.
+196|Tocca un incrocio vicino alla tua strada, oppure salta.
+197|La tua spia vede le loro carte progresso.
+198|Prendi 2 carte dalla loro mano.
+199|Fai la tua scelta.
+200|Salta
+201|Fase di costruzione speciale.
+202|Ora puoi costruire o comprare. Niente scambi.
+203|Fatto
+204|{name} è nella fase di costruzione speciale…
+205|In attesa che {name} tiri…
+206|{name} sta giocando il suo turno.
+207|Tocca a te. Tira i dadi.
+208|Puoi giocare un cavaliere prima di tirare.
+209|Tira i dadi
+210|Strade gratuite da piazzare: {n}.
+211|Costruisci, commercia o termina il turno.
+212|Promozioni gratuite rimaste: {n} (tocca un cavaliere).
+213|Fine turno
+214|Nave barbara
+215|Porta {track}
+216|Uscito {n}
+217|Al momento non c'è posto per farlo.
+218|Stai guardando questa partita.
+219|Nave barbara: attacca quando arriva in fondo
+220|Forza dei barbari (città) contro cavalieri attivi
+221|Carte sviluppo rimaste: {n}
+222|ne restano {n}
+223|Strada
+224|Insediamento
+225|Città
+226|Sviluppo
+227|Mura
+228|Scambio con la banca
+229|4:1 o meglio
+230|Carte sviluppo
+231|nuova
+232|Carte progresso
+233|La tua mano
+234|Carte: {n} · limite {m}
+235|Carte: {n}
+236|Svil.: {n}
+237|Cavalieri: {n}
+238|Progresso: {n}
+239|Migliorie: commercio / politica / scienza
+240|tu
+241|Online
+242|Offline
+243|su {n}
+244|{name} dà
+245|e vuole
+246|Scambia con {name}
+247|Rifiutato
+248|Ci pensa…
+249|Ritira l'offerta
+250|Hai accettato. In attesa di conferma.
+251|Hai rifiutato.
+252|Accetta
+253|Rifiuta
+254|Non hai le carte.
+255|Offerta di scambio
+256|Metropoli: {name}
+257|Migliora {track} ({n} {res})
+258|Mazzi: scienza {a}, commercio {b}, politica {c}
+259|Migliorie cittadine
+260|Il livello 3 sblocca un bonus. Il primo al livello 4 costruisce una metropoli (+2).
+261|Saluta il tavolo.
+262|Registro
+263|Chat
+264|Costi
+265|Messaggio
+266|Invia
+267|Tocca dove costruire la strada.
+268|Tocca dove costruire l'insediamento.
+269|Tocca l'insediamento da migliorare.
+270|Tocca un incrocio vicino alla tua strada per il cavaliere.
+271|Tocca la città da cingere di mura.
+272|Conferma
+273|hai {n}
+274|Meno
+275|Scarta {n} carte
+276|È uscito un 7 e hai più di {n} carte.
+277|Regalo di nozze per {name}
+278|Scegli {n} carte da dare.
+279|Ruba a…
+280|Prendi una carta a caso.
+281|Pesca una carta progresso
+282|Scegli un mazzo.
+283|Acquedotto
+284|Prendi una risorsa a tua scelta.
+285|Scarta una carta progresso
+286|Puoi tenerne al massimo 4.
+287|Non prendere nulla
+288|Carte progresso di {name}
+289|Prendine una.
+290|Mano di {name}
+291|Prendi {n} carte.
+292|Proponi uno scambio
+293|Tutti vedono l'offerta e possono accettare. Scegli tu con chi scambiare.
+294|Dai
+295|Vuoi
+296|Meglio la banca
+297|Offri
+298|Scambia con la banca
+299|I tuoi tassi dipendono dai porti e dalle migliorie.
+300|I tuoi tassi dipendono dai porti.
+301|Dai
+302|Ricevi 1
+303|Scambia {n} {a} con 1 {b}
+304|Conta automaticamente.
+305|Giocala nel tuo turno.
+306|Hai già giocato una carta in questo turno.
+307|Le carte comprate in questo turno si giocano dal turno successivo.
+308|Gioca la carta
+309|Prendi 2 risorse a scelta dalla banca.
+310|Tutti ti danno tutta la risorsa che nomini.
+311|L'Alchimista si gioca prima di tirare.
+312|Tira prima i dadi.
+313|Scegli il dado rosso e quello giallo. Il dado evento si tira normalmente.
+314|Ottieni {n}
+315|Inventore: tocca due esagoni numerati da scambiare.
+316|Ingegnere: tocca una città per mura gratuite.
+317|Medicina: tocca l'insediamento da migliorare (1 grano, 2 minerali).
+318|Mercante: tocca un esagono vicino al tuo edificio.
+319|Diplomatico: tocca una strada aperta da rimuovere.
+320|Intrigo: tocca un cavaliere avversario sulla tua strada.
+321|Punti: {n}
+322|Quale tipo di carta vuoi scambiare 2:1 in questo turno?
+323|Ogni avversario te ne dà fino a 2.
+324|Ogni avversario te ne dà 1.
+325|Cavaliere semplice
+326|Cavaliere forte
+327|Cavaliere potente
+328|Attiva (1 grano)
+329|Promuovi (gratis, Fabbro)
+330|Promuovi (1 lana, 1 minerale)
+331|Muovi lungo le tue strade
+332|Scaccia un cavaliere più debole
+333|Scaccia il brigante
+334|Attivo (attivato in questo turno, potrà agire nel prossimo)
+335|Attivo
+336|Inattivo
+337|Al momento non c'è niente da fare con lui.
+338|Tocca dove deve andare il cavaliere.
+339|Tocca il cavaliere da scacciare.
+340|1 punto
+341|2 punti, produzione doppia
+342|Carta sviluppo
+343|Cavaliere, progresso o punto
+344|Cavaliere semplice (inattivo)
+345|Attiva cavaliere
+346|Promuovi cavaliere
+347|Potente richiede politica 3
+348|+2 al limite di mano
+349|Costi di costruzione
+350|Le migliorie costano da 1 a 5 merci: stoffa per il commercio, monete per la politica, carta per la scienza. Le città vicino a foreste, pascoli e montagne producono una merce invece di una seconda risorsa.
+351|Vedi le statistiche
+352|Torna alla lobby
+353|Il server di gioco ha avuto un errore nel gestire la tua mossa
+354|Sposta il brigante e ruba una carta. Conta per l'armata più grande.
+355|Vale 1 punto. Resta nascosta fino alla fine della partita.
+356|Costruisci 2 strade gratis.
+357|Nomina una risorsa. Tutti ti danno tutto quello che ne hanno.
+358|Scegli entrambi i dadi di produzione prima di tirare.
+359|Scambia due gettoni numerati (non 2, 6, 8 o 12).
+360|La tua prossima miglioria in questo turno costa 1 in meno.
+361|Costruisci delle mura gratis.
+362|Prendi 2 grano per ogni campo vicino ai tuoi edifici.
+363|Trasforma un insediamento in città per 2 minerali e 1 grano.
+364|Prendi 2 minerali per ogni montagna vicino ai tuoi edifici.
+365|Promuovi 2 cavalieri gratis.
+366|Scambia una tua risorsa con una merce di ogni avversario.
+367|Guarda la mano di un giocatore con più punti e prendi 2 carte.
+368|Piazza il mercante vicino al tuo edificio: scambia quella risorsa 2:1 e tieni 1 punto.
+369|Scambia 2:1 un tipo di carta a scelta in questo turno.
+370|Ogni avversario ti dà fino a 2 di una risorsa.
+371|Ogni avversario ti dà 1 di una merce.
+372|Sposta il brigante e ruba 1 carta a ogni giocatore su quell'esagono.
+373|Il cavaliere più debole di un avversario diserta. Puoi piazzarne uno della stessa forza.
+374|Rimuovi una strada aperta. Se è tua, la ricostruisci gratis.
+375|Scaccia un cavaliere avversario che si trova su una delle tue strade.
+376|I giocatori con almeno i tuoi punti scartano metà delle loro carte.
+377|Guarda le carte progresso di un avversario e prendine una.
+378|Attiva tutti i tuoi cavalieri gratis.
+379|Ogni giocatore con più punti ti dà 2 carte a sua scelta.
+380|In attesa che {names} scartino…
+381|In attesa che {names} sposti il brigante…
+382|In attesa che {names} rubi…
+383|In attesa che {names} sposti un cavaliere…
+384|In attesa che {names} diano carte…
+385|In attesa che {names} scelgano una città da perdere…
+386|In attesa che {names} peschino carte progresso…
+387|In attesa di {names}…
+388|{name} vince
+389|Caricamento…
+390|Qualcuno
+391|Anno precedente
+392|IN CORSO
+393|CONCLUSO
+394|Anno successivo
+395|Tutte le partite
+396|IN TESTA ORA
+397|CAMPIONE {year}
+398|Ancora nessuno
+399|Vittorie
+400|Partite: {n}
+401|Guarda la festa della vittoria
+402|Classifica {year}
+403|pt
+404|Ancora nessuna partita
+405|Ancora nessun giocatore.
+406|Nel tempo
+407|Scontri diretti
+408|Ogni numero indica quante volte il giocatore della riga ha battuto quello della colonna.
+409|Registra una partita giocata al tavolo
+410|Tutte le partite {year}
+411|Ancora niente di registrato.
+412|Vittoria n. {n} nel {year}
+413|Vittorie: {n}
+414|Eliminare?
+415|Eliminato.
+416|Ancora nessuna partita quest'anno.
+417|Serie migliore
+418|Serie attuale
+419|Versione preferita
+420|Bestia nera: {name} ({n}×)
+421|giocata al tavolo
+422|Turni: {n}
+423|{n} min
+424|Tavolo
+425|Elimina
+426|Vittoria più veloce
+427|Punteggio più alto
+428|Più carte raccolte
+429|{n} in una partita
+430|Partita più lunga
+431|Record
+432|Dadi
+433|Quante volte è uscito ogni numero
+434|Barre: tiri di quest'anno. Linea tratteggiata: ciò che prevedono le probabilità. Numero più caldo: {n} ({m} su {total} tiri).
+435|Il grafico si riempie man mano che giocate.
+436|Vittorie cumulative nell'anno
+437|Quando è stata giocata
+438|Chi ha giocato
+439|Chi ha vinto
+440|Scegli prima i giocatori.
+441|Salva la partita
+442|Salvata nelle statistiche.
+443|Modalità sconosciuta
+444|Broch richiede da 2 a 6 giocatori
+445|La partita inizia. {@ps} prendono posto.
+446|{@p} piazza per primo.
+447|{@p} vince con {n} punti vittoria!
+448|{@p} ora ha la strada più lunga ({n}).
+449|Nessuno ha più la strada più lunga.
+450|{@p} ha tirato {n} ({#e}).
+451|{@p} ha tirato {n}.
+452|La banca ha finito {#r}; nessuno riceve nulla.
+453|{@p} riceve {$c}.
+454|La nave barbara avanza ({n}/{m}).
+455|I barbari attaccano! Forza {n} contro {m} dei cavalieri.
+456|I barbari sono respinti. {@p} è nominato Difensore di Broch (+1 PV).
+457|I barbari sono respinti. {@ps} condividono la gloria e pescano una carta progresso ciascuno.
+458|I barbari sono respinti.
+459|Vincono i barbari! {@ps} perdono una città ciascuno.
+460|Vincono i barbari, ma non ci sono città indifese da saccheggiare.
+461|La città di {@p} torna insediamento.
+462|Il mazzo {#d} è vuoto.
+463|{@p} rivela {%c} (+1 PV).
+464|{@p} pesca una carta progresso ({#d}).
+465|{@p} non ha una città libera per la metropoli ({#t}).
+466|{@p} costruisce una metropoli ({#t}).
+467|Fase di costruzione speciale: {@ps}.
+468|Lì non puoi costruire una strada.
+469|Strade esaurite.
+470|Risorse insufficienti.
+471|{@p} ha costruito una strada.
+472|Azione non valida.
+473|La partita è finita.
+474|Non partecipi a questa partita.
+475|Azione sconosciuta.
+476|Ora non è il tuo turno.
+477|Al momento non è consentito.
+478|Solo in modalità cavalieri.
+479|Non è il tuo piazzamento.
+480|Troppo vicino a un altro edificio.
+481|{@p} ha piazzato un insediamento.
+482|{@p} ha piazzato una città.
+483|La strada deve toccare il tuo nuovo edificio.
+484|Preparazione completata. Inizia {@p}.
+485|Hai già tirato.
+486|Nessuna strada gratuita da saltare.
+487|Non è la tua costruzione speciale.
+488|Lì non puoi costruire un insediamento.
+489|Insediamenti esauriti.
+490|{@p} ha costruito un insediamento.
+491|Migliora uno dei tuoi insediamenti.
+492|Città esaurite.
+493|{@p} ha costruito una città.
+494|Niente carte sviluppo in modalità cavalieri.
+495|Il mazzo sviluppo è vuoto.
+496|{@p} ha comprato una carta sviluppo.
+497|Una sola carta sviluppo per turno.
+498|Non hai carte giocabili di quel tipo (le nuove aspettano un turno).
+499|{@p} ha giocato {%c}.
+500|{@p} ora ha l'armata più grande.
+501|Scegli due risorse.
+502|La banca non le ha.
+503|{@p} ha giocato {%c} e ha preso {$c2}.
+504|Scegli una risorsa.
+505|{@p} ha giocato {%c} su {#r} e ha raccolto {n}.
+506|Carta sconosciuta.
+507|Niente da scartare.
+508|Scegli esattamente {n} carte.
+509|Non hai quelle carte.
+510|{@p} ha scartato carte: {n}.
+511|Niente da dare.
+512|{@p} dà carte a {@q}: {n}.
+513|Non sei tu a spostare il brigante.
+514|Sposta il brigante su un altro esagono.
+515|{@p} ha spostato il brigante.
+516|Scegli qualcuno vicino al brigante.
+517|Compila entrambi i lati dello scambio.
+518|{@p} offre {$g} per {$w}.
+519|Questa offerta non esiste.
+520|Non hai le carte richieste.
+521|Quel giocatore non ha accettato.
+522|Qualcuno non ha più le carte.
+523|{@p} ha scambiato {$g} con {@q} per {$w}.
+524|Nessuna offerta da ritirare.
+525|Scegli cosa dare e cosa ricevere.
+526|Ti serve {$c}.
+527|La banca l'ha esaurito.
+528|{@p} ha scambiato {$g} con la banca per {$w}.
+529|I cavalieri vanno su un incrocio libero vicino alla tua strada.
+530|Cavalieri semplici esauriti.
+531|{@p} ha reclutato un cavaliere.
+532|Scegli uno dei tuoi cavalieri inattivi.
+533|Per attivare serve 1 grano.
+534|{@p} ha attivato un cavaliere.
+535|Scegli uno dei tuoi cavalieri.
+536|Un cavaliere può essere promosso solo una volta per turno.
+537|Nessun cavaliere del livello successivo disponibile.
+538|{@p} ha promosso un cavaliere ({#l}).
+539|Il cavaliere non può raggiungere quell'incrocio.
+540|{@p} ha spostato un cavaliere.
+541|Nessun cavaliere avversario raggiungibile lì.
+542|Puoi scacciare solo un cavaliere più debole.
+543|Il cavaliere di {@p} scaccia quello di {@q}.
+544|Il brigante non può essere spostato prima del primo attacco barbaro.
+545|Quel cavaliere non è vicino al brigante.
+546|Il cavaliere di {@p} scaccia il brigante.
+547|Nessun cavaliere da spostare.
+548|Scegli un incrocio evidenziato.
+549|{@p} ha spostato un cavaliere scacciato.
+550|Le mura vanno attorno alle tue città.
+551|Mura esaurite.
+552|{@p} ha costruito delle mura.
+553|Miglioria sconosciuta.
+554|Prima ti serve una città.
+555|Già al massimo.
+556|{@p} ha migliorato {#t} al livello {n}.
+557|{@p} prende la metropoli ({#t}) a {@q}.
+558|Nessuna metropoli da piazzare.
+559|Scegli una delle tue città.
+560|Niente da perdere.
+561|Scegli una delle tue città indifese.
+562|Scegli una carta.
+563|{@p} ha scartato una carta progresso.
+564|L'acquedotto di {@p} fornisce {$c}.
+565|Nessun cavaliere da piazzare.
+566|Scegli un incrocio libero vicino alla tua strada.
+567|{@p} piazza il cavaliere disertore.
+568|Niente da prendere.
+569|La spia di {@p} ruba una carta progresso a {@q}.
+570|Scegli {n} delle loro carte.
+571|{@p} prende carte da {@q}: {n}.
+572|Gioca l'Alchimista prima di tirare.
+573|{@p} ha rubato una carta a {@q}.
+574|Quel cavaliere non è attivo.
+575|Un cavaliere attivato in questo turno deve aspettare il prossimo.
+576|Il cavaliere di {@p} non ha dove andare e lascia il tabellone.
+577|Scegli entrambi i dadi.
+578|Scegli due esagoni numerati (non 2, 6, 8 o 12).
+579|Scegli una delle tue città senza mura.
+580|Scegli uno dei tuoi insediamenti.
+581|La Medicina richiede 1 grano e 2 minerali.
+582|{@p} scambia {$g} con {$w} di {@q}.
+583|Scegli un giocatore con più punti di te.
+584|Non hanno carte.
+585|Scegli un esagono di terra.
+586|Il mercante deve stare vicino al tuo insediamento o alla tua città.
+587|Scegli un tipo di carta.
+588|{@p} raccoglie {$c}.
+589|Scegli una merce.
+590|Il brigante non può muoversi prima del primo attacco barbaro.
+591|Scegli un giocatore che ha cavalieri.
+592|Uno dei cavalieri di {@p} diserta.
+593|Scegli una strada aperta (con un'estremità libera).
+594|{@p} ha rimosso una strada di {@q}.
+595|Scegli un cavaliere avversario su una delle tue strade.
+596|Scegli un avversario.
+597|Non hanno carte progresso.
+598|Dati non validi
+599|Partita non trovata
+600|Accedi, per favore.
+601|Troppi tentativi. Riprova tra qualche minuto.
+602|Inserisci un'email valida.
+603|Scegli un nome visualizzato.
+604|La password deve avere almeno 6 caratteri.
+605|Scegli il tuo paese.
+606|Codice di invito errato.
+607|Questa email è già registrata.
+608|Questo nome è già preso.
+609|Email o password errate.
+610|Il nome non può essere vuoto.
+611|Colore sconosciuto.
+612|Lingua sconosciuta.
+613|La password attuale è errata.
+614|La partita è già iniziata.
+615|Unisciti prima alla partita.
+616|Qualcun altro ha già quel colore.
+617|Quella partita è già iniziata.
+618|La partita è piena.
+619|Non puoi lasciare una partita in corso. L'host può abbandonarla.
+620|Solo l'host può avviare.
+621|Già avviata.
+622|Aspetta almeno un altro giocatore.
+623|Solo l'host può abbandonare la partita.
+624|Scegli il vincitore tra i giocatori.
+625|Non trovato
+626|Solo chi l'ha registrata (o un amministratore) può eliminarla.
+627|Endpoint sconosciuto
+628|La partita non è in corso.
+629|Scenario
+630|Varianti
+631|Missioni
+632|Scegli un'espansione per vedere le sue opzioni.
+633|Città e Cavalieri
+634|5–6
+635|Colonizza, commercia, costruisci. Carte sviluppo, strada più lunga, armata più grande.
+636|Merci, migliorie delle città, cavalieri e incursioni barbare.
+637|Espansione
+638|Nessuna
+639|L'isola classica.
+640|Navigatori
+641|Navi ed esplorazione di isole.
+642|Mercanti e Barbari
+643|Pescatori, fiumi e carte evento.
+644|Esploratori e Pirati
+645|Missioni tra la nebbia.
+646|Espansione 5–6 giocatori
+647|Tabellone più grande e fase di costruzione speciale. Funziona con qualsiasi numero di giocatori.
+648|Zona di pesca
+649|Banco di pesci
+650|Covo di pirati
+651|Bonus nuova isola: +1 punto vittoria per il primo insediamento
+652|Pirata
+653|Foresta
+654|Colline
+655|Pascolo
+656|Campi
+657|Montagne
+658|Deserto
+659|Oro
+660|Fiume
+661|pesce
+662|spezie
+663|Scoperta
+664|Risorse iniziali
+665|Bottino
+666|Sposta il brigante o il pirata.
+667|Tocca un esagono di terra per il brigante o di mare per il pirata. Rubi a un giocatore vicino.
+668|Oro! Scegli {n} risorse.
+669|Prendi le risorse che la banca possiede.
+670|Tocca una delle tue navi che pulsano per farla navigare (una volta per turno).
+671|Tocca dove deve navigare questa nave.
+672|Ingrandisci
+673|Riduci
+674|Mostra tutto il tabellone
+675|Gettoni pesce rimasti nel sacchetto
+676|Carte evento rimaste prima del rimescolamento
+677|Nave
+678|Ponte
+679|Pesce
+680|{n} pesci
+681|2 oro = 1 carta
+682|Consegna, attacca
+683|Oro guadagnato vicino ai fiumi. 2 oro comprano qualsiasi carta.
+684|{n} oro
+685|I pesci sono al sicuro dal brigante e non si possono scambiare.
+686|Il vecchio stivale: ti serve un punto in più per vincere.
+687|Vecchio stivale
+688|Pesci a bordo · consegnati
+689|Spezie a bordo · consegnate
+690|Pezzi rimasti
+691|Forza dei cavalieri attivi
+692|Pesci · spezie consegnati
+693|Livello 3: scambia le merci 2:1 con la banca.
+694|Livello 3: i tuoi cavalieri possono diventare potenti.
+695|Livello 3: l'acquedotto dà una risorsa quando non ricevi nulla.
+696|Livello 4: il primo giocatore qui erige una metropoli (+2 punti).
+697|tutti a colpo d'occhio
+698|Tocca il bordo di mare dove deve andare la tua nave.
+699|Tocca l'attraversamento del fiume per il tuo ponte.
+700|Oro!
+701|Scegli {n} risorse dalla banca.
+702|Scaccia il brigante
+703|Sposta il brigante su qualsiasi esagono e ruba a un vicino.
+704|Ruba una carta
+705|Prendi una carta a caso da un giocatore a tua scelta.
+706|Prendi una risorsa
+707|Prendi una risorsa a scelta dalla banca.
+708|Strada gratis
+709|Costruisci una strada senza pagare.
+710|Carta progresso
+711|Pesca una carta progresso da un mazzo a tua scelta.
+712|Pesca gratis una carta sviluppo.
+713|Spendi pesci
+714|Hai {n} pesci. I pesci non possono essere rubati né persi a causa del brigante.
+715|Nessuno ha carte da rubare.
+716|Scambia oro con una carta
+717|Hai {n} oro. 2 oro comprano qualsiasi risorsa, fino a due volte per turno.
+718|In gioco: {n} · consegnati: {d} · {v}/3 punti
+719|Consegna
+720|Ogni 2 consegne al consiglio valgono 1 punto, fino a 3 punti per missione. Un covo di pirati distrutto vale 1 punto a chi l'ha colpito di più.
+721|Pesci per Broch
+722|Spezie per Broch
+723|Covi di pirati
+724|Ogni colpo costa 1 minerale e 1 lana e richiede una nave accanto al covo.
+725|Nessun covo trovato. Esplora la nebbia.
+726|Covo · {n} colpi rimasti
+727|Attacca
+728|Naviga sui bordi di mare; si muove una volta per turno
+729|Attraversa un fiume; vale 3 oro
+730|In attesa che {names} scelga dal campo d'oro…
+731|Espansioni
+732|Sposta il pirata su un altro esagono di mare.
+733|{@p} ha spostato il pirata.
+734|Le carte evento vengono rimescolate.
+735|{@p} naviga in mare aperto.
+736|{@p} scopre una terra: {#t}.
+737|{@p} trova l'oro e può scegliere {n} risorse.
+738|{@p} pesca {n} pesci.
+739|{@p} tira su il vecchio stivale e ora gli serve un punto in più per vincere.
+740|{@p} carica {n} spezie.
+741|{@p} tira su una bella pescata.
+742|{@p} guadagna {n} oro.
+743|{@p} colonizza una nuova isola e guadagna un punto bonus (+1 PV).
+744|Non ci sono navi in questa partita.
+745|Navi esaurite.
+746|Non puoi far navigare una nave lì.
+747|{@p} ha costruito una nave.
+748|Quella nave non può andare lì.
+749|{@p} ha spostato una nave.
+750|Nessun oro da spendere.
+751|{@p} prende {$c} dal campo d'oro.
+752|Non ci sono fiumi in questa partita.
+753|Ponti esauriti.
+754|Non puoi costruire un ponte lì.
+755|{@p} ha costruito un ponte.
+756|Puoi scambiare oro solo due volte per turno.
+757|Ti servono 2 oro.
+758|{@p} scambia 2 oro con {$c}.
+759|Non ci sono pescatori in questa partita.
+760|Scambio di pesci sconosciuto.
+761|Ti servono {n} pesci.
+762|{@p} paga {n} pesci per scacciare il brigante.
+763|Scegli un giocatore con delle carte.
+764|Scegli una risorsa che la banca possiede.
+765|{@p} scambia {n} pesci con {$c}.
+766|{@p} scambia {n} pesci con una strada gratis.
+767|{@p} scambia {n} pesci con una carta progresso.
+768|{@p} scambia {n} pesci con una carta sviluppo.
+769|Non ci sono missioni in questa partita.
+770|Quella missione non c'è in questa partita.
+771|Non hai nulla da consegnare.
+772|Ti serve un insediamento a cui consegnare.
+773|{@p} consegna {n} {#k} al consiglio.
+774|Non ci sono covi di pirati in questa partita.
+775|Non c'è nessun covo lì.
+776|Ti serve una nave accanto al covo.
+777|Attaccare costa 1 minerale e 1 lana.
+778|{@p} attacca un covo di pirati ({n} rimasti).
+779|Il covo di pirati è distrutto. {@p} riceve la taglia (+1 PV).
+780|Verso nuove sponde
+781|Le Quattro Isole
+782|Le Isole della Nebbia
+783|Pescatori di Catan
+784|Fiumi di Catan
+785|Carte evento
+786|Pesci per Catan
+787|Spezie per Catan
+788|Zone di pesca, gettoni pesce e vecchio stivale.
+789|Ponti, oro, e il giocatore più ricco e più povero.
+790|Un mazzo di carte evento sostituisce i dadi.
+791|Regola della casa: brigante dimenticato
+792|Se un giocatore termina il turno senza spostare il brigante, questo torna nel deserto.
+793|Se termini ora il turno, il brigante torna nel deserto.
+794|Questa regola della casa non è attiva.
+795|{@p} ha dimenticato di spostare il brigante, quindi torna nel deserto.
+796|Regola della casa: risorse iniziali per entrambi
+797|Regole della casa
+798|Entrambi gli edifici della fase di preparazione danno risorse iniziali. In Città e Cavalieri la città conta come un insediamento.
+799|Non è ancora successo niente.
+800|Fase di preparazione
+801|I grafici si riempiono dopo i primi turni.
+802|Punti vittoria nel tempo
+803|Tiri dei dadi
+804|Barre: uscite · linea: attese dopo {n} tiri
+805|Risorse ricevute
+806|Tiri
+807|Più uscito
+808|Uscite del 7
+809|Obiettivo
+810|uscite
+811|attese
+812|Più di {n} carte: con un 7 ne perdi la metà.
+813|Solo l'ultimo tiro
+814|Mostra turni precedenti
+815|Difensore di Broch
+816|−1 città
+817|Tabellone vivo
+818|Tabellone vivo: attivo
+819|Tabellone vivo: disattivato
+820|Banca
+821|Vale 1 punto. Si mette scoperta davanti a te.
+822|Come si gioca: {mode}
+823|Come si gioca
+824|Come funziona {mode} (1 min)
+825|Benvenuto a Broch!
+826|Costruisci, commercia e cresci. Vince il primo a 10 punti.
+827|Ogni esagono produce una risorsa.
+828|Foresta, colline, pascolo, campi e montagne. Il deserto non produce nulla.
+829|Costruisci insediamenti sugli incroci.
+830|Tocca l'incrocio illuminato.
+831|Un insediamento tocca fino a 3 esagoni.
+832|Anche i tuoi avversari costruiscono.
+833|Tira i dadi a ogni turno.
+834|Tocca i dadi.
+835|Ogni esagono con quel numero produce.
+836|Chi è adiacente riceve una carta, anche nei turni degli altri.
+837|Più puntini, più fortuna.
+838|Il 6 e l'8 rossi escono più spesso, il 2 e il 12 di rado.
+839|Spendi carte per costruire.
+840|Una strada costa legname e argilla. Tocca il lato illuminato.
+841|Le città producono il doppio.
+842|Trasforma un insediamento in città con 2 grano e 3 minerali. Tocca il tuo insediamento.
+843|Un 7 sveglia il brigante!
+844|Sposta il brigante su un esagono.
+845|Smette di produrre. Tocca un esagono vicino al tuo avversario.
+846|Poi ruba una carta a qualcuno lì.
+847|Chi ha più di 7 carte ne perde la metà.
+848|Commercia con i giocatori o con la banca.
+849|La banca scambia 4 carte uguali con 1. Porti: 3:1 o 2:1.
+850|I cavalieri spostano il brigante. Le altre danno strade, risorse o un punto vittoria.
+851|3 cavalieri giocati: armata più grande, +2 punti.
+852|Chi la possiede issa stendardi di guerra sul tabellone.
+853|5 strade di fila: strada più lunga, +2 punti.
+854|Il percorso più lungo brilla d'oro.
+855|Raggiungi 10 punti per vincere!
+856|Insediamento 1 · Città 2 · Strada più lunga 2 · Armata più grande 2 · Carta punto vittoria 1
+857|Tutto il Classico, più merci, cavalieri e barbari. Si vince a 13 punti.
+858|Le città producono merci.
+859|Foresta: carta · Pascolo: stoffa · Montagne: monete
+860|Le merci comprano le migliorie cittadine.
+861|Il commercio costa stoffa, la politica monete, la scienza carta. Tocca +.
+862|Il livello 3 sblocca un potere speciale.
+863|Scienza: una risorsa quando non ricevi nulla. Commercio: merci 2:1. Politica: cavalieri più forti.
+864|Il primo al livello 4 costruisce una metropoli.
+865|Vale 2 punti e svetta sulla tua città.
+866|I cavalieri difendono Broch.
+867|Reclutane uno per lana e minerale. Tocca l'incrocio illuminato.
+868|Attivalo con il grano.
+869|Combattono solo i cavalieri attivi. Promuovili per renderli più forti.
+870|Una nave sul dado evento fa avanzare i barbari.
+871|Ogni nave li avvicina di un passo a Broch.
+872|La loro forza: tutte le città sul tabellone. La tua difesa: tutti i cavalieri attivi.
+873|Il difensore più forte guadagna un punto. Se vincono i barbari, la città più debole viene saccheggiata.
+874|Una porta colorata sul dado evento dà carte ai giocatori con migliorie abbastanza alte.
+875|Mura
+876|Ogni città con le mura ti fa tenere 2 carte in più quando esce un 7.
+877|Raggiungi 13 punti per vincere!
+878|Insediamento 1 · Città 2 · Metropoli 2 · Difensore 1 · Strada più lunga 2
+879|La terra è divisa in isole. Le navi attraversano il mare.
+880|Costruisci navi sull'acqua.
+881|Una nave costa legname e lana. Tocca il lato illuminato.
+882|Le navi formano una catena, come le strade.
+883|L'ultima nave di una catena aperta può navigare in un nuovo punto una volta per turno.
+884|Naviga vicino alla nebbia per svelarla.
+885|Scoprire nuove terre ti dà una risorsa.
+886|Colonizza una nuova isola: +1 punto!
+887|I campi d'oro danno la risorsa che preferisci.
+888|Il pirata
+889|Le navi vicino al suo esagono sono bloccate, e lui ruba. Un 7 o un cavaliere lo spostano.
+890|Per vincere servono da 12 a 14 punti.
+891|Scegli uno scenario quando crei la partita: Nuove sponde, Quattro Isole o Isole della Nebbia.
+892|Tre varianti da combinare: Pescatori, Fiumi e Carte evento.
+893|Pescatori
+894|Il deserto diventa un lago e sulla costa compaiono zone di pesca.
+895|Fai uscire il numero di una zona di pesca per pescare.
+896|Il lago produce con 2, 3, 11 e 12.
+897|Paga con i pesci
+898|2 scaccia il brigante · 3 ruba · 4 prendi una risorsa · 5 una strada · 7 una carta sviluppo
+899|Il vecchio stivale
+900|Chi lo pesca ha bisogno di un punto in più per vincere, e può passarlo a chi è in testa.
+901|Fiumi
+902|Ogni strada o insediamento vicino a un fiume frutta 1 oro.
+903|I ponti attraversano il fiume.
+904|Un ponte costa 2 argilla e 1 legname e frutta 3 oro.
+905|Scambia 2 oro con qualsiasi risorsa. Il più ricco ottiene +1 punto, il più povero −2.
+906|Un mazzo con tutti i 36 risultati dei dadi sostituisce i dadi, così ogni numero esce quanto deve.
+907|Naviga nella nebbia, scopri terre e completa missioni.
+908|Esplora la nebbia con le navi.
+909|Tocca il lato illuminato. Le nuove terre ti danno una risorsa.
+910|Una nave vicino a un banco di pesci pesca quando esce il suo numero.
+911|Spezie per Broch
+912|Gli insediamenti vicino a un campo di spezie caricano spezie quando produce.
+913|Consegna il carico al consiglio.
+914|Ogni 2 consegne valgono 1 punto, fino a 3 punti per missione.
+915|Attacca da una nave vicino a un covo per 1 minerale e 1 lana. Quando cade, chi l'ha colpito di più guadagna un punto.
+916|Raggiungi 12 punti per vincere!
+917|Contano insediamenti, città, nuove isole, missioni e covi.
+918|Un tabellone più grande con più esagoni, porti e carte, fino a 6 giocatori.
+919|Fase di costruzione speciale
+920|Dopo ogni turno, tutti gli altri possono costruire uno alla volta, ma non commerciare.
+921|Così nessuno aspetta a lungo.
+922|I turni restano brevi, anche a tavolo pieno.
+923|Indietro
+924|Pausa
+925|Avanti
+926|Ora conosci {mode}!
+927|Guarda di nuovo
+928|Avanti con {mode}
+929|Giochiamo!
+930|Carta evento
+931|Tira
+932|Vittoria!
+933|Partita finita
+934|Hai vinto!
+935|punti vittoria
+936|Hai chiuso al {n}° posto con {m} punti.
+937|Classifica finale
+938|Guarda il tabellone
+939|Insediamenti
+940|Città
+941|Metropoli
+942|Carte punto vittoria
+943|Punti bonus
+944|Com'è andata la corsa
+945|Più risorse
+946|Numero più uscito
+947|{n}×
+948|Durata della partita
+949|{n} turni
+950|Momenti salienti
+951|Rotta commerciale più lunga
+952|Scegli la tua risorsa una volta sola. D’ora in poi l’acquedotto la paga ogni volta che un lancio non ti dà nulla (tranne con un 7).
+953|Acquedotto: {res}. Tocca per cambiare.

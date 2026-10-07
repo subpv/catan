@@ -1,0 +1,953 @@
+1|Graj
+2|Statystyki
+3|Profil
+4|Język
+5|Dźwięk wyłączony
+6|Dźwięk włączony
+7|Coś nie działa albo masz pomysł?
+8|Wyślij opinię
+9|Zamknij
+10|Osiedlaj się, handluj i buduj ze znajomymi.
+11|Zaloguj się
+12|Utwórz konto
+13|Wyświetlana nazwa
+14|Kraj
+15|E-mail
+16|Hasło
+17|Kod zaproszenia (zapytaj osobę, która prowadzi serwer)
+18|Jesteś pierwszym graczem, więc to konto zostanie administratorem.
+19|Twój kolor
+20|Skąd jesteś? Twoja flaga pojawi się obok nazwy.
+21|Zapisz
+22|Zapisano.
+23|Rycerze
+24|Klasyczna
+25|Punkty: {n}
+26|tura {n}
+27|Gra: {name}
+28|Nowa gra
+29|Wersja
+30|Osiedlaj się, handluj, buduj. Karty rozwoju, najdłuższa droga, największa armia. 10 punktów.
+31|Rycerze i Barbarzyńcy
+32|Towary, ulepszenia miast, rycerze i najazdy barbarzyńców. 13 punktów.
+33|Gracze
+34|Mniej
+35|Więcej
+36|Punkty do zwycięstwa
+37|Przy pięciu lub sześciu graczach używa się większej planszy, z dodatkową fazą budowy między turami.
+38|Do czterech graczy używa się standardowej planszy.
+39|Utwórz grę
+40|Twoje gry
+41|Twoja tura
+42|Otwórz
+43|gospodarz
+44|Wolne miejsce
+45|Wybierz swój kolor
+46|Rozpocznij grę
+47|Czekamy, aż gospodarz rozpocznie…
+48|Kopiuj link z zaproszeniem
+49|Opuść
+50|Otwarte gry
+51|Dołącz
+52|Brak otwartych gier. Utwórz grę i zaproś znajomych.
+53|Oglądaj
+54|Gra utworzona. Wybierz kolor i zaproś znajomych.
+55|Link z zaproszeniem skopiowany.
+56|Ulubiony kolor (używany w grach, gdy jest wolny, oraz na stronie statystyk)
+57|Zalogowano jako {email}
+58|administrator
+59|Zmień hasło
+60|Obecne hasło
+61|Nowe hasło
+62|Koniec na dziś?
+63|Wyloguj się
+64|Hasło zmienione.
+65|Dołączono do gry.
+66|Gospodarz zamknął tę grę.
+67|Nie udało się wczytać Broch
+68|Port: wymień 3 takie same karty na 1
+69|Port: wymień 2 × {res} na 1
+70|Plansza
+71|nic
+72|Coś poszło nie tak
+73|Napisz nam, co robiłeś, a naprawimy problem. Przycisk kopiuje szczegóły błędu, żeby można je było wkleić do formularza.
+74|Szczegóły błędu
+75|Odrzuć
+76|Szczegóły błędu skopiowane. Wklej je do formularza opinii.
+77|Nie można połączyć się z serwerem Broch. Sprawdź połączenie.
+78|Żądanie nie powiodło się ({n})
+79|Ponowne łączenie z serwerem… spróbuj za chwilę.
+80|Serwer nie odpowiedział.
+81|Ponowne łączenie…
+82|Aplikacja napotkała nieoczekiwany błąd
+83|Serwer zgłosił błąd
+84|Utracono połączenie z serwerem gry
+85|Drewno
+86|Glina
+87|Wełna
+88|Zboże
+89|Ruda
+90|Papier
+91|Sukno
+92|Moneta
+93|Handel
+94|Polityka
+95|Nauka
+96|statek barbarzyńców
+97|brama handlu
+98|brama polityki
+99|brama nauki
+100|zwykły
+101|silny
+102|potężny
+103|Rycerz
+104|Punkt zwycięstwa
+105|Budowa dróg
+106|Rok obfitości
+107|Monopol
+108|Alchemik
+109|Wynalazca
+110|Dźwig
+111|Inżynier
+112|Nawadnianie
+113|Medycyna
+114|Górnictwo
+115|Drukarnia
+116|Kowal
+117|Port handlowy
+118|Mistrz kupiecki
+119|Kupiec
+120|Flota handlowa
+121|Monopol na surowiec
+122|Monopol handlowy
+123|Biskup
+124|Konstytucja
+125|Dezerter
+126|Dyplomata
+127|Intryga
+128|Sabotażysta
+129|Szpieg
+130|Watażka
+131|Wesele
+132|Czerwony
+133|Niebieski
+134|Pomarańczowy
+135|Biały
+136|Turkusowy
+137|Fioletowy
+138|Czarny
+139|Różowy
+140|Żółty
+141|Brązowy
+142|Metropolia!
+143|Najdłuższa droga
+144|Największa armia
+145|+2 punkty zwycięstwa
+146|Gracze z za dużą liczbą kart muszą odrzucić połowę.
+147|Nikt nie musi odrzucać kart.
+148|Złodziej rusza w drogę.
+149|Barbarzyńcy jeszcze nie zaatakowali, więc złodziej zostaje na miejscu.
+150|Złodziej atakuje!
+151|Barbarzyńcy atakują!
+152|Barbarzyńcy (miasta)
+153|Aktywni rycerze
+154|Odparci!
+155|Broch zostaje splądrowane!
+156|Wczytywanie gry…
+157|Ukradłeś 1 × {res} graczowi {name}.
+158|{name} ukradł ci 1 × {res}.
+159|Twój ruch
+160|{name} wygrywa!
+161|Wynik zapisano na stronie statystyk.
+162|Świętuj
+163|Anuluj
+164|Postaw obok drogę.
+165|Postaw swoje miasto.
+166|Postaw swoją pierwszą osadę.
+167|Postaw swoją drugą osadę.
+168|Dotknij świecącej krawędzi.
+169|Dotknij świecącego narożnika. Między budynkami musi być co najmniej jeden wolny narożnik.
+170|{name} stawia drogę…
+171|{name} stawia budynek…
+172|Odrzuć karty: {n}.
+173|Masz więcej kart, niż pozwala limit.
+174|Wybierz karty
+175|Daj graczowi {name} karty: {n}.
+176|Prezent weselny: sam wybierasz karty.
+177|Przesuń złodzieja (Biskup).
+178|Przesuń złodzieja.
+179|Dotknij pola. Okradasz gracza, który ma tam budynek.
+180|Wybierz, kogo okraść.
+181|Wybierz
+182|Twój rycerz został wyparty.
+183|Dotknij świecącego narożnika, żeby go tam przenieść.
+184|Wybierz miasto na metropolię ({track}).
+185|Dotknij jednego z podświetlonych miast.
+186|Barbarzyńcy plądrują jedno z twoich miast.
+187|Dotknij miasta, które stanie się osadą.
+188|Pomogłeś obronić Broch. Dobierz kartę postępu.
+189|Wybierz stos
+190|Masz więcej niż 4 karty postępu.
+191|Odrzucaj, aż zostaną 4.
+192|Wybierz kartę
+193|Twój akwedukt daje surowiec.
+194|Ten rzut nic ci nie dał.
+195|Rycerz przeszedł na twoją stronę.
+196|Dotknij narożnika przy swojej drodze albo pomiń.
+197|Twój szpieg widzi ich karty postępu.
+198|Weź 2 karty z ich ręki.
+199|Dokonaj wyboru.
+200|Pomiń
+201|Dodatkowa faza budowy.
+202|Możesz teraz budować lub kupować. Bez handlu.
+203|Gotowe
+204|{name} jest w dodatkowej fazie budowy…
+205|Czekamy, aż {name} rzuci kośćmi…
+206|{name} wykonuje swoją turę.
+207|Twoja tura. Rzuć kośćmi.
+208|Możesz zagrać rycerza przed rzutem.
+209|Rzuć kośćmi
+210|Darmowe drogi do postawienia: {n}.
+211|Buduj, handluj albo zakończ turę.
+212|Pozostałe darmowe awanse: {n} (dotknij rycerza).
+213|Zakończ turę
+214|Statek barbarzyńców
+215|Brama: {track}
+216|Wyrzucono {n}
+217|Teraz nie ma gdzie tego zrobić.
+218|Oglądasz tę grę.
+219|Statek barbarzyńców: atakuje, gdy dotrze do końca
+220|Siła barbarzyńców (miasta) kontra aktywni rycerze
+221|Pozostałe karty rozwoju: {n}
+222|zostało: {n}
+223|Droga
+224|Osada
+225|Miasto
+226|Karta rozwoju
+227|Mury miejskie
+228|Handel z bankiem
+229|4:1 lub lepiej
+230|Karty rozwoju
+231|nowa
+232|Karty postępu
+233|Twoja ręka
+234|Karty: {n} · limit {m}
+235|Karty: {n}
+236|Rozw.: {n}
+237|Rycerze: {n}
+238|Postęp: {n}
+239|Ulepszenia: handel / polityka / nauka
+240|ty
+241|Online
+242|Offline
+243|z {n}
+244|{name} daje
+245|i chce
+246|Handluj z: {name}
+247|Odrzucono
+248|Zastanawia się…
+249|Wycofaj ofertę
+250|Przyjąłeś. Czekamy na potwierdzenie.
+251|Odrzuciłeś.
+252|Przyjmij
+253|Odrzuć
+254|Brakuje ci kart.
+255|Oferta handlowa
+256|Metropolia: {name}
+257|Ulepsz: {track} ({n} × {res})
+258|Stosy: nauka {a}, handel {b}, polityka {c}
+259|Ulepszenia miast
+260|Poziom 3 odblokowuje premię. Kto pierwszy osiągnie poziom 4, buduje metropolię (+2).
+261|Przywitaj się ze stołem.
+262|Przebieg gry
+263|Czat
+264|Koszty
+265|Wiadomość
+266|Wyślij
+267|Dotknij miejsca na drogę.
+268|Dotknij miejsca na osadę.
+269|Dotknij osady do ulepszenia.
+270|Dotknij narożnika przy swojej drodze dla rycerza.
+271|Dotknij miasta, które dostanie mury.
+272|Potwierdź
+273|masz {n}
+274|Mniej
+275|Odrzuć karty: {n}
+276|Wypadła 7, a masz więcej kart niż {n}.
+277|Prezent weselny dla: {name}
+278|Wybierz karty do oddania: {n}.
+279|Okradnij…
+280|Bierzesz losową kartę.
+281|Dobierz kartę postępu
+282|Wybierz stos.
+283|Akwedukt
+284|Weź dowolny surowiec.
+285|Odrzuć kartę postępu
+286|Możesz mieć najwyżej 4.
+287|Nic nie bierz
+288|Karty postępu: {name}
+289|Weź jedną.
+290|Ręka: {name}
+291|Weź karty: {n}.
+292|Zaproponuj wymianę
+293|Wszyscy widzą ofertę i mogą ją przyjąć. Ty wybierasz, z kim handlujesz.
+294|Dajesz
+295|Chcesz
+296|Lepiej bank
+297|Zaproponuj
+298|Handel z bankiem
+299|Twoje kursy zależą od portów i ulepszeń.
+300|Twoje kursy zależą od portów.
+301|Daj
+302|Weź 1
+303|Wymień {n} × {a} na 1 × {b}
+304|Liczy się automatycznie.
+305|Zagraj ją w swojej turze.
+306|W tej turze już zagrałeś kartę.
+307|Karty kupione w tej turze można zagrać w następnej.
+308|Zagraj kartę
+309|Weź z banku 2 dowolne surowce.
+310|Wszyscy oddają ci cały surowiec, który wskażesz.
+311|Alchemika zagrywa się przed rzutem.
+312|Najpierw rzuć kośćmi.
+313|Wybierz czerwoną i żółtą kość. Kość zdarzeń rzuca się normalnie.
+314|Wyrzuć {n}
+315|Wynalazca: dotknij dwóch pól z liczbami do zamiany.
+316|Inżynier: dotknij miasta, by dostało darmowe mury.
+317|Medycyna: dotknij osady do ulepszenia (1 zboże, 2 rudy).
+318|Kupiec: dotknij pola obok swojego budynku.
+319|Dyplomata: dotknij otwartej drogi do usunięcia.
+320|Intryga: dotknij rycerza przeciwnika na swojej drodze.
+321|Punkty: {n}
+322|Jaki rodzaj kart chcesz wymieniać 2:1 w tej turze?
+323|Każdy przeciwnik daje ci do 2.
+324|Każdy przeciwnik daje ci 1.
+325|Zwykły rycerz
+326|Silny rycerz
+327|Potężny rycerz
+328|Aktywuj (1 zboże)
+329|Awansuj (za darmo, Kowal)
+330|Awansuj (1 wełna, 1 ruda)
+331|Idź wzdłuż swoich dróg
+332|Wypędź słabszego rycerza
+333|Przegoń złodzieja
+334|Aktywny (aktywowany w tej turze, zadziała w następnej)
+335|Aktywny
+336|Nieaktywny
+337|Teraz nie ma dla niego zadania.
+338|Dotknij miejsca, do którego ma iść rycerz.
+339|Dotknij rycerza do wypędzenia.
+340|1 punkt
+341|2 punkty, podwójna produkcja
+342|Karta rozwoju
+343|Rycerz, postęp lub punkt
+344|Zwykły rycerz (nieaktywny)
+345|Aktywuj rycerza
+346|Awansuj rycerza
+347|Potężny wymaga polityki 3
+348|+2 do limitu ręki
+349|Koszty budowy
+350|Ulepszenia kosztują 1–5 towarów: sukno na handel, monety na politykę, papier na naukę. Miasta przy lesie, pastwisku i górach dają towar zamiast drugiego surowca.
+351|Zobacz statystyki
+352|Wróć do poczekalni
+353|Serwer gry napotkał błąd podczas obsługi twojego ruchu
+354|Przesuń złodzieja i ukradnij kartę. Liczy się do największej armii.
+355|Daje 1 punkt. Pozostaje ukryta do końca gry.
+356|Zbuduj 2 drogi za darmo.
+357|Wskaż surowiec. Wszyscy oddają ci cały swój zapas.
+358|Wybierz obie kości produkcji przed rzutem.
+359|Zamień dwa żetony z liczbami (poza 2, 6, 8 i 12).
+360|Twoje następne ulepszenie miasta w tej turze kosztuje o 1 mniej.
+361|Zbuduj mury miejskie za darmo.
+362|Weź 2 zboża za każde pole uprawne przy twoich budynkach.
+363|Ulepsz osadę do miasta za 2 rudy i 1 zboże.
+364|Weź 2 rudy za każde góry przy twoich budynkach.
+365|Awansuj 2 rycerzy za darmo.
+366|Wymień jeden swój surowiec na towar od każdego przeciwnika.
+367|Obejrzyj rękę gracza z większą liczbą punktów i weź 2 karty.
+368|Postaw kupca przy swoim budynku: wymieniaj ten surowiec 2:1 i zdobądź 1 punkt.
+369|W tej turze wymieniaj wybrany rodzaj kart 2:1.
+370|Każdy przeciwnik daje ci do 2 sztuk surowca.
+371|Każdy przeciwnik daje ci 1 sztukę towaru.
+372|Przesuń złodzieja i ukradnij po 1 karcie każdemu graczowi przy tym polu.
+373|Najsłabszy rycerz przeciwnika dezerteruje. Możesz postawić rycerza tej samej siły.
+374|Usuń otwartą drogę. Jeśli jest twoja, odbudujesz ją za darmo.
+375|Wypędź rycerza przeciwnika stojącego na jednej z twoich dróg.
+376|Gracze z co najmniej taką liczbą punktów jak ty odrzucają połowę kart.
+377|Obejrzyj karty postępu przeciwnika i weź jedną.
+378|Aktywuj wszystkich swoich rycerzy za darmo.
+379|Każdy gracz z większą liczbą punktów daje ci 2 wybrane przez siebie karty.
+380|Czekamy, aż odrzucą karty: {names}…
+381|Czekamy, aż złodzieja przesunie: {names}…
+382|Czekamy, aż okradnie: {names}…
+383|Czekamy, aż rycerza przeniesie: {names}…
+384|Czekamy, aż karty oddadzą: {names}…
+385|Czekamy, aż miasto do utraty wybiorą: {names}…
+386|Czekamy, aż karty postępu dobiorą: {names}…
+387|Czekamy na: {names}…
+388|{name} wygrywa
+389|Wczytywanie…
+390|Ktoś
+391|Poprzedni rok
+392|W TOKU
+393|ZAKOŃCZONY
+394|Następny rok
+395|Wszystkie gry
+396|OBECNIE PROWADZI
+397|MISTRZ {year}
+398|Jeszcze nikt
+399|Zwycięstwa
+400|Gry: {n}
+401|Zobacz świętowanie zwycięstwa
+402|Klasyfikacja {year}
+403|pkt
+404|Jeszcze bez gier
+405|Jeszcze nie ma graczy.
+406|W czasie
+407|Bezpośrednie starcia
+408|Każda liczba pokazuje, ile razy gracz z wiersza pokonał gracza z kolumny.
+409|Zapisz grę rozegraną przy stole
+410|Wszystkie gry {year}
+411|Jeszcze nic nie zapisano.
+412|Zwycięstwo nr {n} w {year}
+413|Zwycięstwa: {n}
+414|Usunąć?
+415|Usunięto.
+416|W tym roku jeszcze bez gier.
+417|Najlepsza seria
+418|Obecna seria
+419|Ulubiona wersja
+420|Nemezis: {name} ({n}×)
+421|rozegrana przy stole
+422|Tury: {n}
+423|{n} min
+424|Stół
+425|Usuń
+426|Najszybsze zwycięstwo
+427|Najwyższy wynik
+428|Najwięcej zebranych kart
+429|{n} w jednej grze
+430|Najdłuższa gra
+431|Rekordy
+432|Kości
+433|Jak często wypadała każda liczba
+434|Słupki: rzuty w tym roku. Linia przerywana: czego można się spodziewać z prawdopodobieństwa. Najgorętsza liczba: {n} ({m} z {total} rzutów).
+435|Wykres wypełnia się w miarę gry.
+436|Łączne zwycięstwa w ciągu roku
+437|Kiedy rozegrano
+438|Kto grał
+439|Kto wygrał
+440|Najpierw wybierz graczy.
+441|Zapisz grę
+442|Zapisano w statystykach.
+443|Nieznany tryb
+444|Broch wymaga 2–6 graczy
+445|Gra się zaczyna. Przy stole: {@ps}.
+446|{@p} stawia pierwszy.
+447|{@p} wygrywa, mając punkty zwycięstwa: {n}!
+448|{@p} ma teraz najdłuższą drogę ({n}).
+449|Nikt nie ma już najdłuższej drogi.
+450|{@p} wyrzucił {n} ({#e}).
+451|{@p} wyrzucił {n}.
+452|W banku zabrakło: {#r}; nikt nic nie dostaje.
+453|{@p} dostaje: {$c}.
+454|Statek barbarzyńców się zbliża ({n}/{m}).
+455|Barbarzyńcy atakują! Siła {n} kontra {m} rycerzy.
+456|Barbarzyńcy odparci. {@p} zostaje Obrońcą Broch (+1 PZ).
+457|Barbarzyńcy odparci. {@ps} dzielą chwałę i każdy dobiera kartę postępu.
+458|Barbarzyńcy odparci.
+459|Barbarzyńcy wygrywają! Każdy traci miasto: {@ps}.
+460|Barbarzyńcy wygrywają, ale nie ma niechronionych miast do splądrowania.
+461|Miasto gracza {@p} staje się osadą.
+462|Stos {#d} jest pusty.
+463|{@p} odkrywa kartę {%c} (+1 PZ).
+464|{@p} dobiera kartę postępu ({#d}).
+465|{@p} nie ma wolnego miasta na metropolię ({#t}).
+466|{@p} buduje metropolię ({#t}).
+467|Dodatkowa faza budowy: {@ps}.
+468|Nie możesz tu zbudować drogi.
+469|Nie masz już dróg.
+470|Za mało surowców.
+471|{@p} zbudował drogę.
+472|Nieprawidłowa akcja.
+473|Gra się skończyła.
+474|Nie grasz w tej grze.
+475|Nieznana akcja.
+476|To nie twój ruch.
+477|Teraz niedozwolone.
+478|Tylko w trybie rycerzy.
+479|To nie twoje stawianie.
+480|Za blisko innego budynku.
+481|{@p} postawił osadę.
+482|{@p} postawił miasto.
+483|Droga musi dotykać twojego nowego budynku.
+484|Przygotowanie zakończone. Zaczyna {@p}.
+485|Już rzucono.
+486|Brak darmowych dróg do pominięcia.
+487|To nie twoja dodatkowa faza budowy.
+488|Nie możesz tu zbudować osady.
+489|Nie masz już osad.
+490|{@p} zbudował osadę.
+491|Ulepsz jedną ze swoich osad.
+492|Nie masz już miast.
+493|{@p} zbudował miasto.
+494|W trybie rycerzy nie ma kart rozwoju.
+495|Stos kart rozwoju jest pusty.
+496|{@p} kupił kartę rozwoju.
+497|Tylko jedna karta rozwoju na turę.
+498|Nie masz zagrywalnej karty tego rodzaju (nowe karty czekają turę).
+499|{@p} zagrał kartę {%c}.
+500|{@p} ma teraz największą armię.
+501|Wybierz dwa surowce.
+502|Bank ich nie ma.
+503|{@p} zagrał kartę {%c} i wziął: {$c2}.
+504|Wybierz surowiec.
+505|{@p} zagrał kartę {%c} na {#r} i zebrał {n}.
+506|Nieznana karta.
+507|Nie ma czego odrzucić.
+508|Wybierz dokładnie tyle kart: {n}.
+509|Nie masz tych kart.
+510|{@p} odrzucił karty: {n}.
+511|Nie ma czego oddać.
+512|{@p} daje graczowi {@q} karty: {n}.
+513|To nie ty przesuwasz złodzieja.
+514|Przesuń złodzieja na inne pole.
+515|{@p} przesunął złodzieja.
+516|Wybierz kogoś obok złodzieja.
+517|Uzupełnij obie strony wymiany.
+518|{@p} oferuje {$g} za {$w}.
+519|Nie ma takiej oferty.
+520|Nie masz żądanych kart.
+521|Ten gracz nie przyjął oferty.
+522|Ktoś nie ma już tych kart.
+523|{@p} wymienił {$g} z graczem {@q} na {$w}.
+524|Nie ma oferty do wycofania.
+525|Wybierz, co dajesz, a co bierzesz.
+526|Potrzebujesz: {$c}.
+527|Bankowi tego zabrakło.
+528|{@p} wymienił {$g} z bankiem na {$w}.
+529|Rycerze stają na wolnym narożniku przy twojej drodze.
+530|Nie masz już zwykłych rycerzy.
+531|{@p} zwerbował rycerza.
+532|Wybierz jednego z nieaktywnych rycerzy.
+533|Aktywacja kosztuje 1 zboże.
+534|{@p} aktywował rycerza.
+535|Wybierz jednego ze swoich rycerzy.
+536|Rycerza można awansować tylko raz na turę.
+537|Brak rycerzy następnego poziomu.
+538|{@p} awansował rycerza ({#l}).
+539|Rycerz nie dotrze do tego narożnika.
+540|{@p} przesunął rycerza.
+541|Nie ma tam osiągalnego rycerza przeciwnika.
+542|Możesz wypędzić tylko słabszego rycerza.
+543|Rycerz gracza {@p} wypędza rycerza gracza {@q}.
+544|Złodzieja nie można przesunąć przed pierwszym atakiem barbarzyńców.
+545|Ten rycerz nie stoi obok złodzieja.
+546|Rycerz gracza {@p} przegania złodzieja.
+547|Brak rycerza do przeniesienia.
+548|Wybierz podświetlony narożnik.
+549|{@p} przeniósł wypartego rycerza.
+550|Mury stawia się wokół twoich miast.
+551|Nie masz już murów.
+552|{@p} zbudował mury miejskie.
+553|Nieznane ulepszenie.
+554|Najpierw potrzebujesz miasta.
+555|Już na szczycie.
+556|{@p} ulepszył {#t} do poziomu {n}.
+557|{@p} odbiera metropolię ({#t}) graczowi {@q}.
+558|Brak metropolii do postawienia.
+559|Wybierz jedno ze swoich miast.
+560|Nie ma czego stracić.
+561|Wybierz jedno z niechronionych miast.
+562|Wybierz kartę.
+563|{@p} odrzucił kartę postępu.
+564|Akwedukt gracza {@p} daje: {$c}.
+565|Brak rycerza do postawienia.
+566|Wybierz wolny narożnik przy swojej drodze.
+567|{@p} stawia rycerza dezertera.
+568|Nie ma czego wziąć.
+569|Szpieg gracza {@p} kradnie kartę postępu graczowi {@q}.
+570|Wybierz ich karty: {n}.
+571|{@p} bierze karty od gracza {@q}: {n}.
+572|Zagraj Alchemika przed rzutem.
+573|{@p} ukradł kartę graczowi {@q}.
+574|Ten rycerz nie jest aktywny.
+575|Rycerz aktywowany w tej turze musi poczekać do następnej.
+576|Rycerz gracza {@p} nie ma dokąd pójść i opuszcza planszę.
+577|Wybierz obie kości.
+578|Wybierz dwa pola z liczbami (poza 2, 6, 8 i 12).
+579|Wybierz jedno ze swoich miast bez murów.
+580|Wybierz jedną ze swoich osad.
+581|Medycyna wymaga 1 zboża i 2 rud.
+582|{@p} wymienia {$g} na {$w} gracza {@q}.
+583|Wybierz gracza z większą liczbą punktów niż ty.
+584|Nie mają kart.
+585|Wybierz pole lądowe.
+586|Kupiec musi stać obok twojej osady lub miasta.
+587|Wybierz rodzaj kart.
+588|{@p} zbiera: {$c}.
+589|Wybierz towar.
+590|Złodziej nie może się ruszyć przed pierwszym atakiem barbarzyńców.
+591|Wybierz gracza, który ma rycerzy.
+592|Jeden z rycerzy gracza {@p} dezerteruje.
+593|Wybierz otwartą drogę (z wolnym końcem).
+594|{@p} usunął drogę gracza {@q}.
+595|Wybierz rycerza przeciwnika na jednej ze swoich dróg.
+596|Wybierz przeciwnika.
+597|Nie mają kart postępu.
+598|Nieprawidłowe dane
+599|Nie znaleziono gry
+600|Zaloguj się.
+601|Zbyt wiele prób. Spróbuj ponownie za kilka minut.
+602|Podaj prawidłowy adres e-mail.
+603|Wybierz wyświetlaną nazwę.
+604|Hasło musi mieć co najmniej 6 znaków.
+605|Wybierz swój kraj.
+606|Nieprawidłowy kod zaproszenia.
+607|Ten e-mail jest już zarejestrowany.
+608|Ta nazwa jest już zajęta.
+609|Nieprawidłowy e-mail lub hasło.
+610|Nazwa nie może być pusta.
+611|Nieznany kolor.
+612|Nieznany język.
+613|Obecne hasło jest nieprawidłowe.
+614|Gra już się zaczęła.
+615|Najpierw dołącz do gry.
+616|Ktoś inny ma już ten kolor.
+617|Ta gra już się zaczęła.
+618|Gra jest pełna.
+619|Nie możesz opuścić trwającej gry. Gospodarz może ją przerwać.
+620|Tylko gospodarz może rozpocząć.
+621|Już rozpoczęta.
+622|Poczekaj na co najmniej jednego gracza więcej.
+623|Tylko gospodarz może przerwać grę.
+624|Wybierz zwycięzcę spośród graczy.
+625|Nie znaleziono
+626|Usunąć może tylko osoba, która to zapisała (albo administrator).
+627|Nieznany punkt końcowy
+628|Gra nie trwa.
+629|Scenariusz
+630|Warianty
+631|Misje
+632|Wybierz dodatek, aby zobaczyć jego opcje.
+633|Miasta i Rycerze
+634|5–6
+635|Osiedlaj, handluj, buduj. Karty rozwoju, Najdłuższa Droga, Największa Armia.
+636|Towary, ulepszenia miast, rycerze i najazdy barbarzyńców.
+637|Dodatek
+638|Brak
+639|Standardowa wyspa.
+640|Żeglarze
+641|Statki i odkrywanie wysp.
+642|Kupcy i Barbarzyńcy
+643|Rybacy, rzeki i karty zdarzeń.
+644|Odkrywcy i Piraci
+645|Misje we mgle.
+646|Dodatek na 5–6 graczy
+647|Większa plansza i specjalna faza budowy. Działa z dowolną liczbą graczy.
+648|Łowisko
+649|Ławica ryb
+650|Gniazdo piratów
+651|Bonus za nową wyspę: +1 punkt zwycięstwa za pierwszą osadę
+652|Pirat
+653|Las
+654|Wzgórza
+655|Pastwisko
+656|Pola
+657|Góry
+658|Pustynia
+659|Złoto
+660|Rzeka
+661|ryby
+662|przyprawy
+663|Odkrycie
+664|Surowce startowe
+665|Łup
+666|Przesuń złodzieja lub pirata.
+667|Dotknij lądu, by przesunąć złodzieja, albo morza, by przesunąć pirata. Okradasz gracza obok.
+668|Złoto! Wybierz surowce: {n}.
+669|Weź dowolne surowce, które ma bank.
+670|Dotknij pulsującego statku, by nim popłynąć (raz na turę).
+671|Dotknij miejsca, dokąd ma popłynąć statek.
+672|Przybliż
+673|Oddal
+674|Pokaż całą planszę
+675|Żetony ryb pozostałe w worku
+676|Karty zdarzeń do ponownego przetasowania talii
+677|Statek
+678|Most
+679|Ryba
+680|Ryby: {n}
+681|2 złota = 1 karta
+682|Dostarcz, atakuj
+683|Złoto zdobywane przy rzekach. 2 złota kupują dowolną kartę.
+684|Złoto: {n}
+685|Ryby są bezpieczne przed złodziejem i nie można nimi handlować.
+686|Stary but: potrzebujesz jeszcze jednego punktu do wygranej.
+687|Stary but
+688|Ryby na planszy · dostarczone
+689|Przyprawy na planszy · dostarczone
+690|Pozostałe elementy
+691|Siła aktywnych rycerzy
+692|Dostarczone ryby · przyprawy
+693|Poziom 3: handluj towarami 2:1 z bankiem.
+694|Poziom 3: twoi rycerze mogą stać się potężni.
+695|Poziom 3: akwedukt daje surowiec, gdy nic nie otrzymujesz.
+696|Poziom 4: pierwszy gracz tutaj wznosi metropolię (+2 punkty).
+697|wszyscy w skrócie
+698|Dotknij krawędzi morza, dokąd ma popłynąć statek.
+699|Dotknij przeprawy przez rzekę, by zbudować most.
+700|Złoto!
+701|Wybierz z banku surowce: {n}.
+702|Przegoń złodzieja
+703|Przesuń złodzieja na dowolne pole i okradnij sąsiada.
+704|Ukradnij kartę
+705|Weź losową kartę od wybranego gracza.
+706|Weź surowiec
+707|Weź dowolny surowiec z banku.
+708|Darmowa droga
+709|Zbuduj jedną drogę za darmo.
+710|Karta postępu
+711|Dobierz kartę postępu z wybranego stosu.
+712|Dobierz za darmo kartę rozwoju.
+713|Wydaj ryby
+714|Masz ryby: {n}. Rybom nie zagraża kradzież ani złodziej.
+715|Nikt nie ma kart do ukradzenia.
+716|Wymień złoto na kartę
+717|Masz złota: {n}. 2 złota kupują dowolny surowiec, maks. dwa razy na turę.
+718|Na planszy: {n} · dostarczone: {d} · punkty: {v}/3
+719|Dostarcz
+720|Co 2 dostawy dla rady dają 1 punkt, maks. 3 punkty za misję. Zniszczone gniazdo piratów daje 1 punkt temu, kto uderzył je najczęściej.
+721|Ryby dla Broch
+722|Przyprawy dla Broch
+723|Gniazda piratów
+724|Każde uderzenie kosztuje 1 rudę i 1 wełnę i wymaga statku obok gniazda.
+725|Nie znaleziono jeszcze gniazd. Zbadaj mgłę.
+726|Gniazdo · pozostało uderzeń: {n}
+727|Atakuj
+728|Pływa po krawędziach morza; rusza się raz na turę
+729|Przekracza rzekę; zyskuje 3 złota
+730|Czekamy, aż {names} wybiorą ze złotego pola…
+731|Dodatki
+732|Przesuń pirata na inne pole morza.
+733|{@p} przesuwa pirata.
+734|Karty zdarzeń zostały przetasowane.
+735|{@p} wypływa na otwarte wody.
+736|{@p} odkrywa ląd: {#t}.
+737|{@p} znajduje złoto i może wybrać surowce: {n}.
+738|{@p} łowi ryby: {n}.
+739|{@p} wyławia stary but i potrzebuje jeszcze jednego punktu do wygranej.
+740|{@p} ładuje przyprawy: {n}.
+741|{@p} wyławia spory połów ryb.
+742|{@p} zdobywa złoto: {n}.
+743|{@p} zakłada osadę na nowej wyspie i zyskuje punkt bonusowy (+1 PZ).
+744|W tej grze nie ma statków.
+745|Brak statków.
+746|Nie można tam wypłynąć statkiem.
+747|{@p} buduje statek.
+748|Statek nie może tam płynąć.
+749|{@p} przepłynął statkiem w nowe miejsce.
+750|Brak złota do wydania.
+751|{@p} bierze {$c} ze złotego pola.
+752|W tej grze nie ma rzek.
+753|Brak mostów.
+754|Nie można tam zbudować mostu.
+755|{@p} buduje most.
+756|Złoto można wymieniać tylko dwa razy na turę.
+757|Potrzebujesz 2 złota.
+758|{@p} wymienia 2 złota na {$c}.
+759|W tej grze nie ma rybaków.
+760|Nieznana wymiana ryb.
+761|Potrzebujesz ryb: {n}.
+762|{@p} płaci rybami ({n}), by przegonić złodzieja.
+763|Wybierz gracza z kartami.
+764|Wybierz surowiec, który ma bank.
+765|{@p} wymienia ryby ({n}) na {$c}.
+766|{@p} wymienia ryby ({n}) na darmową drogę.
+767|{@p} wymienia ryby ({n}) na kartę postępu.
+768|{@p} wymienia ryby ({n}) na kartę rozwoju.
+769|W tej grze nie ma misji.
+770|Tej misji nie ma w tej grze.
+771|Nie masz nic do dostarczenia.
+772|Potrzebujesz osady, do której dostarczysz.
+773|{@p} dostarcza radzie: {#k} ({n}).
+774|W tej grze nie ma gniazd piratów.
+775|Nie ma tam gniazda.
+776|Potrzebujesz statku obok gniazda.
+777|Atak kosztuje 1 rudę i 1 wełnę.
+778|{@p} atakuje gniazdo piratów (pozostało: {n}).
+779|Gniazdo piratów zniszczone. {@p} zdobywa nagrodę (+1 PZ).
+780|Ku nowym brzegom
+781|Cztery wyspy
+782|Wyspy we mgle
+783|Rybacy z Catanu
+784|Rzeki Catanu
+785|Karty zdarzeń
+786|Ryby dla Catanu
+787|Przyprawy dla Catanu
+788|Łowiska, żetony ryb i stary but.
+789|Mosty, złoto oraz najbogatszy i najbiedniejszy gracz.
+790|Talia kart zdarzeń zastępuje kości.
+791|Zasada domowa: zapomniany złodziej
+792|Jeśli gracz zakończy turę bez przesunięcia złodzieja, wraca on na pustynię.
+793|Jeśli teraz zakończysz turę, złodziej wróci na pustynię.
+794|Ta zasada domowa nie jest włączona.
+795|{@p} zapomniał przesunąć złodzieja, więc wraca on na pustynię.
+796|Zasada domowa: surowce startowe z obu budynków
+797|Zasady domowe
+798|Oba budynki z fazy przygotowania dają surowce startowe. W Miastach i Rycerzach miasto liczy się jak osada.
+799|Jeszcze nic się nie wydarzyło.
+800|Faza przygotowania
+801|Wykresy wypełnią się po pierwszych turach.
+802|Punkty zwycięstwa w czasie
+803|Rzuty kośćmi
+804|Słupki: wyrzucone · linia: oczekiwane po {n} rzutach
+805|Otrzymane surowce
+806|Rzuty
+807|Najczęściej
+808|Siódemki
+809|Cel
+810|wyrzucone
+811|oczekiwane
+812|Więcej kart niż {n}: przy 7 tracisz połowę.
+813|Tylko ostatni rzut
+814|Pokaż wcześniejsze tury
+815|Obrońca Broch
+816|−1 miasto
+817|Żywa plansza
+818|Żywa plansza: włączona
+819|Żywa plansza: wyłączona
+820|Bank
+821|Daje 1 punkt. Kładziesz ją odkrytą przed sobą.
+822|Jak grać: {mode}
+823|Jak grać
+824|{mode}: jak to działa (1 min)
+825|Witaj w Broch!
+826|Buduj, handluj i rozwijaj się. Kto pierwszy zdobędzie 10 punktów, wygrywa.
+827|Każde pole daje surowiec.
+828|Las, wzgórza, pastwisko, pola i góry. Pustynia nic nie daje.
+829|Buduj osady na narożnikach.
+830|Dotknij świecącego narożnika.
+831|Osada styka się z maksymalnie 3 polami.
+832|Przeciwnicy też budują.
+833|Rzucaj kośćmi w każdej turze.
+834|Dotknij kości.
+835|Każde pole z tą liczbą daje surowce.
+836|Każdy, kto stoi obok, dostaje kartę, nawet w turze innych graczy.
+837|Więcej kropek, więcej szczęścia.
+838|Czerwone 6 i 8 wypadają najczęściej, 2 i 12 rzadko.
+839|Płać kartami za budowę.
+840|Droga kosztuje drewno i glinę. Dotknij świecącej krawędzi.
+841|Miasta dają podwójnie.
+842|Ulepsz osadę za 2 zboża i 3 rudy. Dotknij swojej osady.
+843|7 budzi złodzieja!
+844|Przesuń złodzieja na pole.
+845|Pole przestaje dawać surowce. Dotknij pola obok przeciwnika.
+846|Potem ukradnij kartę komuś, kto tam stoi.
+847|Kto ma więcej niż 7 kart, traci połowę.
+848|Handluj z graczami lub z bankiem.
+849|Bank wymienia 4 takie same karty na 1. Porty: 3:1 lub 2:1.
+850|Rycerze przesuwają złodzieja. Inne karty dają drogi, surowce lub punkt zwycięstwa.
+851|3 zagranych rycerzy: Największa armia, +2 punkty.
+852|Jej posiadacz wywiesza na planszy wojenne sztandary.
+853|5 dróg z rzędu: Najdłuższa droga, +2 punkty.
+854|Najdłuższy szlak świeci złotem.
+855|Zdobądź 10 punktów, aby wygrać!
+856|Osada 1 · Miasto 2 · Najdłuższa droga 2 · Największa armia 2 · Karta punktu zwycięstwa 1
+857|Wszystko z wersji klasycznej plus towary, rycerze i barbarzyńcy. Do wygranej potrzeba 13 punktów.
+858|Miasta dają towary.
+859|Las: papier · Pastwisko: sukno · Góry: moneta
+860|Za towary kupujesz ulepszenia miast.
+861|Handel kosztuje sukno, polityka monety, nauka papier. Dotknij +.
+862|Poziom 3 odblokowuje specjalną zdolność.
+863|Nauka: weź surowiec, gdy nic nie dostajesz. Handel: towary 2:1. Polityka: silniejsi rycerze.
+864|Kto pierwszy osiągnie poziom 4, wznosi metropolię.
+865|Jest warta 2 punkty i stoi na twoim mieście.
+866|Rycerze bronią Broch.
+867|Zwerbuj jednego za wełnę i rudę. Dotknij świecącego narożnika.
+868|Aktywuj go zbożem.
+869|Walczą tylko aktywni rycerze. Awansuj ich, aby byli silniejsi.
+870|Statek na kości zdarzeń przesuwa barbarzyńców.
+871|Każdy statek przybliża ich o krok do Broch.
+872|Ich siła: wszystkie miasta na planszy. Twoja obrona: wszyscy aktywni rycerze.
+873|Najsilniejszy obrońca zdobywa punkt. Gdy wygrają barbarzyńcy, najsłabsze miasto zostaje splądrowane.
+874|Kolorowa brama na kości zdarzeń daje karty graczom z odpowiednio wysokimi ulepszeniami.
+875|Mury miejskie
+876|Każdy mur pozwala zatrzymać 2 karty więcej, gdy wypadnie 7.
+877|Zdobądź 13 punktów, aby wygrać!
+878|Osada 1 · Miasto 2 · Metropolia 2 · Obrońca 1 · Najdłuższa droga 2
+879|Ląd jest podzielony na wyspy. Statki przemierzają morze.
+880|Buduj statki na wodzie.
+881|Statek kosztuje drewno i wełnę. Dotknij świecącej krawędzi.
+882|Statki tworzą łańcuch, tak jak drogi.
+883|Ostatni statek otwartego łańcucha może raz na turę popłynąć w nowe miejsce.
+884|Podpłyń do mgły, aby ją odsłonić.
+885|Odkrycie lądu daje ci surowiec.
+886|Zasiedl nową wyspę: +1 punkt!
+887|Złote pola dają dowolny surowiec.
+888|Pirat
+889|Statki obok jego pola są zablokowane, a on kradnie. Przesuwa go 7 lub rycerz.
+890|Do wygranej potrzeba od 12 do 14 punktów.
+891|Wybierz scenariusz przy tworzeniu gry: Ku nowym brzegom, Cztery wyspy lub Wyspy we mgle.
+892|Trzy warianty, które możesz łączyć: Rybacy, Rzeki i Karty zdarzeń.
+893|Rybacy
+894|Pustynia staje się jeziorem, a na wybrzeżu pojawiają się łowiska.
+895|Wyrzuć liczbę łowiska, aby złowić ryby.
+896|Jezioro daje ryby przy 2, 3, 11 i 12.
+897|Płać rybami
+898|2 przegonienie złodzieja · 3 kradzież · 4 surowiec · 5 droga · 7 karta rozwoju
+899|Stary but
+900|Kto go wyłowi, potrzebuje jeszcze jednego punktu do wygranej i może przekazać go liderowi.
+901|Rzeki
+902|Każda droga lub osada przy rzece daje 1 złoto.
+903|Mosty prowadzą przez rzekę.
+904|Most kosztuje 2 gliny i 1 drewno, a daje 3 złota.
+905|Wymień 2 złota na dowolny surowiec. Najbogatszy gracz dostaje +1 punkt, najbiedniejszy −2.
+906|Talia ze wszystkimi 36 wynikami rzutu zastępuje kości, więc każda liczba wypada tak często, jak powinna.
+907|Wypłyń we mgłę, odkrywaj lądy i wypełniaj misje.
+908|Odkrywaj mgłę statkami.
+909|Dotknij świecącej krawędzi. Nowy ląd daje ci surowiec.
+910|Statek obok ławicy ryb łowi ryby, gdy wypadnie jej liczba.
+911|Przyprawy dla Broch
+912|Osady przy polu przypraw ładują przyprawy, gdy pole daje plon.
+913|Dostarcz ładunek radzie.
+914|Co 2 dostawy dają 1 punkt, maks. 3 punkty za misję.
+915|Atakuj ze statku obok gniazda za 1 rudę i 1 wełnę. Gdy padnie, punkt zdobywa ten, kto trafił najwięcej razy.
+916|Zdobądź 12 punktów, aby wygrać!
+917|Liczą się osady, miasta, nowe wyspy, misje i gniazda.
+918|Większa plansza z dodatkowymi polami, portami i kartami, nawet dla 6 graczy.
+919|Dodatkowa faza budowy
+920|Po każdej turze pozostali gracze mogą po kolei budować, ale nie handlować.
+921|Dzięki temu nikt długo nie czeka.
+922|Tury pozostają krótkie, nawet przy pełnym stole.
+923|Wstecz
+924|Pauza
+925|Dalej
+926|Umiesz już grać: {mode}!
+927|Obejrzyj jeszcze raz
+928|Dalej: {mode}
+929|Zagrajmy!
+930|Karta zdarzeń
+931|Rzuć
+932|Zwycięstwo!
+933|Koniec gry
+934|Wygrywasz!
+935|punktów zwycięstwa
+936|Kończysz na {n}. miejscu z wynikiem {m} pkt.
+937|Klasyfikacja końcowa
+938|Zobacz planszę
+939|Osady
+940|Miasta
+941|Metropolia
+942|Karty punktów zwycięstwa
+943|Punkty bonusowe
+944|Przebieg wyścigu
+945|Najwięcej surowców
+946|Najczęściej wyrzucana liczba
+947|{n}×
+948|Długość gry
+949|Tury: {n}
+950|Ciekawostki
+951|Najdłuższy szlak handlowy
+952|Wybierz surowiec raz. Od teraz akwedukt wypłaca go za każdym razem, gdy rzut nic ci nie przyniesie (poza siódemką).
+953|Akwedukt: {res}. Dotknij, aby zmienić.
