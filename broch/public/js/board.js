@@ -221,7 +221,15 @@ function lifeFor(h, cx, cy, nth = 0) {
       const shirt = ['#B55A2C', '#3E7C8C', '#7A8C3A', '#8C4A7A', '#C9A23B'][v], cap = ['#4A3426', '#E8D9A8', '#4A3426', '#D9A21B', '#2F5D8A'][v];
       const brick = (x, y, cls = '', st = '') => `<rect ${cls ? `class="${cls}"` : ''} ${st ? `style="${st}"` : ''} x="${x}" y="${y}" width="5.4" height="2.8" rx=".5" fill="${tint}" stroke="${tintD}" stroke-width=".6"/>`;
       const stack = [`${brick(-8, 0)}${brick(-2.4, 0)}${brick(3.2, 0)}${brick(-5.2, -2.8)}${brick(.4, -2.8)}`, `${brick(-8, 0)}${brick(-2.4, 0)}${brick(3.2, 0)}${brick(-5.2, -2.8)}${brick(.4, -2.8)}${brick(-2.4, -5.6)}`, `${brick(-8, 0)}${brick(-2.4, 0)}${brick(-5.2, -2.8)}`, `${brick(-8, 0)}${brick(-2.4, 0)}${brick(3.2, 0)}${brick(-5.2, -2.8)}${brick(.4, -2.8)}`, `${brick(-8, 0)}${brick(-2.4, 0)}${brick(3.2, 0)}${brick(8.8, 0)}${brick(-5.2, -2.8)}${brick(.4, -2.8)}${brick(6, -2.8)}`][v];
-      return mirror(v % 2 === 1)(at(13, 33, `<path d="M-9 5 a9 9 0 0 1 18 0 z" fill="${v === 2 ? '#7A4A32' : '#8A3A22'}" stroke="#4E1E12" stroke-width="1"/><path d="M-6.5 1.5 h13 M-4 -2 h8 M-2.4 -2 v3.5 M2.4 -2 v3.5 M0 1.5 v3.5" stroke="#5E2414" stroke-width=".7" fill="none"/>
+      const clayPot = (x, y, c) => at(x, y, `<path d="M-3 4 Q-4.4 -1 -2 -3 H2 Q4.4 -1 3 4 Z" fill="${c}" stroke="#6B2C1B" stroke-width=".8"/><rect x="-2.4" y="-4" width="4.8" height="1.6" rx=".6" fill="${c}" stroke="#6B2C1B" stroke-width=".7"/>`, 'lf-static');
+      const extra = [
+        '',
+        clayPot(-34, 12, '#B5651D') + clayPot(-28, 14, '#C9794A'),
+        at(-33, 14, `<ellipse cx="0" cy="5" rx="5.5" ry="1.8" fill="rgba(0,0,0,.22)"/><path d="M-5 -2 H5 L3.4 4 H-3.4 Z" fill="#8A5A32" stroke="#4A2E18" stroke-width=".9"/>${brick(-3.4, -4.4)}${brick(.6, -4.4)}<circle cx="-3.6" cy="5" r="1.7" fill="#2B2620"/><line x1="5" y1="-2" x2="9.4" y2="-5" stroke="#4A2E18" stroke-width="1.2" stroke-linecap="round"/>`, 'lf-static'),
+        at(-33, 14, `<path d="M-7 5 Q-6 -3 0 -4 Q6 -3 7 5 Z" fill="#B5693F" stroke="#6B2C1B" stroke-width=".9"/><path d="M-3 4 Q-2 -1 0 -2 M2 4 Q2 0 3.4 -1" fill="none" stroke="rgba(255,255,255,.25)" stroke-width=".9"/>`, 'lf-static'),
+        at(-33, 8, `<path d="M0 0 V-7" stroke="#5A4A3C" stroke-width="1.4"/><path d="M-4.4 -7 H4.4 L3.2 -9.6 H-3.2 Z" fill="#8C8478" stroke="#4A4238" stroke-width=".8"/><circle cx="0" cy="-12" r="2" fill="rgba(240,234,224,.8)"/>`, 'lf-static'),
+      ][v];
+      return mirror(v % 2 === 1)(extra + at(13, 33, `<path d="M-9 5 a9 9 0 0 1 18 0 z" fill="${v === 2 ? '#7A4A32' : '#8A3A22'}" stroke="#4E1E12" stroke-width="1"/><path d="M-6.5 1.5 h13 M-4 -2 h8 M-2.4 -2 v3.5 M2.4 -2 v3.5 M0 1.5 v3.5" stroke="#5E2414" stroke-width=".7" fill="none"/>
           <rect x="3.6" y="-10.5" width="3.8" height="7.5" fill="#6B2C1B" stroke="#4E1E12" stroke-width=".8"/>
           <path d="M-3.6 5 v-2.6 a3.6 3.6 0 0 1 7.2 0 V5 z" fill="#2A120A"/>
           <path class="lf-flame a" d="M-2.6 5 q.4 -4 2.6 -5.6 q2.2 1.6 2.6 5.6 z" fill="#FF8A2B"/><path class="lf-flame b" d="M-1.4 5 q.2 -2.8 1.4 -3.8 q1.2 1 1.4 3.8 z" fill="#FFE07A"/>
@@ -249,14 +257,26 @@ function lifeFor(h, cx, cy, nth = 0) {
         at(33, -2, `<g class="lf-crow" style="${dl(h, 6)}"><line x1="0" y1="2" x2="0" y2="-9" stroke="#6B4A2A" stroke-width="1.2"/><line x1="-5" y1="-6" x2="5" y2="-6" stroke="#6B4A2A" stroke-width="1.2"/><circle cy="-10.5" r="2.2" fill="#F1D9A0"/><path d="M-3 -12 h6 l-3 -3.2z" fill="${hat}"/><path d="M-2.4 -6 h4.8 l-1 5 h-2.8z" fill="${shirt}"/></g>`));
     }
     case 'mountains': {
+      // 0 classic mine with a red-helmet miner · 1 copper cart, boulders and a blue miner · 2 blue crystals and a lantern · 3 gold nuggets and a yellow miner
       const v = nth % 4;
-      const cart = ['#5A4A3C', '#8A4A2A', '#3E5A7A', '#6A6A30'][v], [o1, o2] = [['#B7C3CC', '#94A3AE'], ['#E0A050', '#C98A3A'], ['#8FD0E8', '#5FB0D0'], ['#C9C9C9', '#E8D870']][v];
+      const cart = ['#5A4A3C', '#8A4A2A', '#3E5A7A', '#6A6A30'][v], [o1, o2] = [['#B7C3CC', '#94A3AE'], ['#E0A050', '#C98A3A'], ['#8FD0E8', '#5FB0D0'], ['#F2D24A', '#D9A91E']][v];
       const lamp = ['#FFD27A', '#FF9A5A', '#BFE8FF', '#D8FF9A'][v];
-      return mirror(v === 1 || v === 3)(at(-15, 31, `<path d="M-8 5 V-1 a8 8 0 0 1 16 0 V5 z" fill="#2B2620" stroke="#5A4A3C" stroke-width="1.4"/><circle class="lf-lamp" cx="-6.5" cy="-4" r="1.6" fill="${lamp}"/>
+      const helmet = ['#B23A2A', '#2F5D8A', '#E8D9A8', '#D9A21B'][v], shirt = ['#4A6A3A', '#7A8C9A', '#8C4A7A', '#B55A2C'][v];
+      const miner = (x, y) => at(x, y, `<g class="lf-cutter"><circle cx="0" cy="-8.2" r="2.3" fill="#F1C9A5"/><path d="M-2.6 -9.2 h5.2 l-.5 -2.1 h-4.2z" fill="${helmet}"/><circle cx="0" cy="-11.6" r=".9" fill="#FFE59A"/><rect x="-2.1" y="-6" width="4.2" height="5.6" rx="1.2" fill="${shirt}"/><rect x="-1.9" y="-.6" width="1.5" height="4" fill="#3A2E28"/><rect x=".4" y="-.6" width="1.5" height="4" fill="#3A2E28"/>
+        <g class="lf-axe" style="${dl(h, 1.1)}"><line x1="1" y1="-4.6" x2="6.5" y2="-9.6" stroke="#7A4A23" stroke-width="1.3" stroke-linecap="round"/><path d="M4.4 -11.6 q3.6 -.6 5.2 1.8 q-3 -.4 -5.2 -1.8z" fill="#C9D0D6" stroke="#6B747B" stroke-width=".5"/></g></g>`);
+      const rock = (x, y, k, c = '#8C857A') => at(x, y, `<path d="M-${4 * k} 4 L-${2.6 * k} -${2 * k} L${1.4 * k} -${3.2 * k} L${4 * k} 4 Z" fill="${c}" stroke="#4E4840" stroke-width=".9" stroke-linejoin="round"/><path d="M-${.6 * k} -${2.4 * k} L${1.4 * k} -${3.2 * k} L${2.6 * k} 0 Z" fill="rgba(255,255,255,.28)"/>`, 'lf-static');
+      const crystal = (x, y, k, c) => at(x, y, `<path d="M-2.2 4 L-1.6 -${5 * k} L0 -${7 * k} L1.6 -${5 * k} L2.2 4 Z" fill="${c}" stroke="#2B4A5A" stroke-width=".8" stroke-linejoin="round"/><path d="M-.4 -${6 * k} L-.2 3" stroke="rgba(255,255,255,.7)" stroke-width=".9"/>`, 'lf-static');
+      const nugget = (x, y) => at(x, y, `<ellipse rx="2.8" ry="2" fill="#F2D24A" stroke="#A8741C" stroke-width=".8"/><ellipse cx="-.7" cy="-.7" rx=".9" ry=".5" fill="#FFF3B0"/>`, 'lf-static');
+      const extras = [
+        miner(-33, 12),
+        rock(-34, 8, 1.3) + rock(-27, 14, .9, '#9A9186') + miner(32, 38),
+        crystal(-34, 12, 1.4, o2) + crystal(-28, 14, 1, o1) + crystal(-31, 5, .8, o1) + at(30, 24, `<line y1="-8" y2="-2" stroke="#5A4A3C" stroke-width="1.2"/><rect x="-2.4" y="-2" width="4.8" height="5.4" rx="1" fill="#8A8F96" stroke="#3A3F44" stroke-width=".8"/><circle cy=".7" r="1.4" fill="${lamp}"/>`, 'lf-static'),
+        nugget(-34, 14) + nugget(-29, 16) + nugget(-31, 10) + miner(31, 40),
+      ][v];
+      return mirror(v === 1)(at(-15, 31, `<path d="M-8 5 V-1 a8 8 0 0 1 16 0 V5 z" fill="#2B2620" stroke="#5A4A3C" stroke-width="1.4"/><circle class="lf-lamp" cx="-6.5" cy="-4" r="1.6" fill="${lamp}"/>
           <line x1="8" y1="5" x2="31" y2="5" stroke="#5A4A3C" stroke-width="1"/><line x1="12" y1="5" x2="12" y2="6.4" stroke="#5A4A3C" stroke-width="1"/><line x1="20" y1="5" x2="20" y2="6.4" stroke="#5A4A3C" stroke-width="1"/><line x1="28" y1="5" x2="28" y2="6.4" stroke="#5A4A3C" stroke-width="1"/>
           <g class="lf-cart" style="${dl(h, 8)}"><path d="M-4 0 h8 l-1.4 4 h-5.2 z" fill="${cart}" stroke="#2B2620" stroke-width=".6"/><circle cx="-2.2" cy="-.6" r="1.3" fill="${o1}"/><circle cx="1" cy="-1" r="1.5" fill="${o2}"/><circle cx="-2" cy="4.4" r="1.1" fill="#2B2620"/><circle cx="2" cy="4.4" r="1.1" fill="#2B2620"/></g>`) +
-        at(30 - (v >> 1) * 8, -14 + (v % 2) * 4, `<path d="M-6 5 L-1 -4 L1.5 0 L3.5 -2.5 L7 5 z" fill="rgba(255,255,255,.25)"/>`, 'lf-static') +
-        (v >= 2 ? at(-34, 8 + (v - 2) * 6, `<path d="M-4 4 L0 -5 L4 4 z" fill="${o2}" stroke="#2B2620" stroke-width=".8" stroke-linejoin="round"/><path d="M0 -5 L1.6 -.5 L-.4 4 z" fill="rgba(255,255,255,.35)"/>`, 'lf-static') : ''));
+        at(30 - (v >> 1) * 8, -14 + (v % 2) * 4, `<path d="M-6 5 L-1 -4 L1.5 0 L3.5 -2.5 L7 5 z" fill="rgba(255,255,255,.25)"/>`, 'lf-static') + extras);
     }
     case 'desert': {
       const v = nth % 3;
