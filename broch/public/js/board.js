@@ -2,7 +2,7 @@ import { PCOLOR, PCOLOR_DARK, TERRAIN_COLOR, CARD_COLOR, GLYPH, inkOn, isLightCo
 import { planBuilds, jobsByKey, jobCss, jobOverlay, animOf } from './builder.js';
 
 const S = 56; // pixels per unit (hex radius)
-const TERRAIN_GLYPH = { forest: 'lumber', hills: 'brick', pasture: 'wool', fields: 'grain', mountains: 'ore', gold: 'gold' };
+export const TERRAIN_GLYPH = { forest: 'lumber', hills: 'brick', pasture: 'wool', fields: 'grain', mountains: 'ore', gold: 'gold' };
 const PIPS = { 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3, 11: 2, 12: 1 };
 const TRACK_COLOR = { trade: '#E0A32E', politics: '#2C6E9B', science: '#2E6B45' };
 const f = n => n.toFixed(1);
@@ -341,7 +341,7 @@ function fishToken(g) {
     <g transform="translate(13,-13)"><circle r="8.5" fill="#1F7A99" stroke="#fff" stroke-width="1.8"/>${g24('fish', 0, 0, 11, '#fff')}</g></g>`;
 }
 
-export function renderBoard(view, targets = {}, fresh = null, zoom = null, life = false, builders = false) {
+export function renderBoard(view, targets = {}, fresh = null, zoom = null, life = false, builders = false, ext = null) {
   const { board } = view;
   const colorOf = p => view.players[p].color;
   const fr = fresh || { verts: new Set(), edges: new Set(), knights: new Set(), robber: false, merchant: false, ships: new Set(), hexes: new Set(), pirate: false };
@@ -442,6 +442,9 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
       out.push(`<g transform="translate(${cx - (h.number ? 26 : 0)},${cy + 6})">${fr.robber ? '<circle class="fx-dust" cy="13" r="9"/>' : ''}<ellipse cy="14" rx="11" ry="3.6" fill="rgba(0,0,0,.38)"/>${guard}<g class="${fr.robber ? 'fx-robber-drop' : ''}"><g class="${life ? 'lf-rob' : ''}"><path d="M-9 14 C-9 4 -6 0 -4 -2 A7 7 0 1 1 4 -2 C6 0 9 4 9 14 Z" fill="#2B1E12" stroke="#000" stroke-width="1"/><circle cy="-9" r="6.5" fill="#3A2A1C"/><g class="${life ? 'lf-eyes' : ''}"><g class="${life ? 'lf-blink' : ''}"><circle cx="-2.4" cy="-10" r="1.2" fill="#F0C24A"/><circle cx="2.4" cy="-10" r="1.2" fill="#F0C24A"/></g></g></g></g></g>`);
     }
   });
+
+  // standalone games draw their own things on the tiles (power plants, camps, ...)
+  if (ext && ext.tiles) out.push(ext.tiles({ view, board, S, life, fr, targets }));
 
   // sea markers: fish shoals and pirate lairs
   (board.shoals || []).forEach(sh => {
@@ -551,6 +554,9 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
       out.push(`<g transform="translate(${pt(v)})">${old}${grow(body)}</g>`);
     } else out.push(`<g transform="translate(${pt(v)})">${isNew ? lightBurst(b.type === 'city') + '<circle class="fx-dust" r="10"/>' : ''}<g class="${isNew ? 'fx-drop' : ''}">${body}</g></g>`);
   }
+
+  // and what sits on top of the buildings (hazards, flags, ...)
+  if (ext && ext.top) out.push(ext.top({ view, board, S, life, fr, targets, pt }));
 
   // knights
   for (const [vid, k] of Object.entries(view.knights)) {

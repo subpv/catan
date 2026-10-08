@@ -86,6 +86,9 @@ export const sfx = {
   },
   firework() { noise(0.55, { freq: 220, type: 'lowpass', vol: 0.5 }); for (let i = 0; i < 7; i++) noise(0.035, { at: 0.22 + Math.random() * 0.55, freq: 5200 + Math.random() * 2600, type: 'highpass', vol: 0.09 }); },
   hammer() { noise(0.045, { freq: 1900, q: 3, vol: 0.32 }); tone(240, 0.06, { type: 'square', vol: 0.1, slide: 130 }); },
+  zap() { tone(260, 0.2, { type: 'sawtooth', slide: 980, vol: 0.22 }); noise(0.1, { freq: 4200, type: 'highpass', vol: 0.18 }); },
+  smog() { noise(0.55, { freq: 180, type: 'lowpass', vol: 0.8 }); tone(110, 0.5, { type: 'sawtooth', slide: 58, vol: 0.14 }); },
+  leaf() { [660, 880, 1100].forEach((f, i) => tone(f, 0.28, { at: i * 0.07, type: 'sine', vol: 0.16 })); },
   tick(i = 0) { tone(900 + Math.min(i, 20) * 35, 0.05, { type: 'triangle', vol: 0.13 }); },
 };
 
@@ -614,3 +617,6 @@ async function cardScene(view, p, card, nameHtml) {
 }
 
 export function celebrateSound() { sfx.victory(); setTimeout(() => sfx.award(), 500); }
+
+// for the standalone games' own scenes (see games/*.js)
+export { banner, enqueue, layer, hold, wait, burst, boardPoint };

@@ -8,6 +8,8 @@ An online settlers-style board game for you and your friends, self-hosted on Tru
   - *Forgotten robber:* if a player has to move the robber and ends their turn instead, the robber goes back to the desert
   - *Knights without a limit (classic game):* knight cards can be played as often per turn as you like; every other development card is still limited to one per turn
   - *Starting resources for both:* both buildings from the setup phase pay starting resources; in Cities & Knights the city counts like a settlement (one resource per tile, no commodities)
+- **Standalone games** (own rules, own tile row in the lobby, 2–4 players, with the same board animations, a tutorial and all 16 languages; rules rebuilt from research, not copies of the printed ones):
+  - *New Energies* (Energiewende): towns and cities, plus power plants. Cities also make science; a fossil plant costs 1 science and makes 2 energy but grows the footprint, a renewable plant costs 3 science, makes 1 energy and adds a green disc to the event bag. Every turn starts by drawing discs from the bag (brown ones bring smog, blackouts, droughts, price spikes; green ones help), hazards block the building or plant they land on until you clear them with 2 energy. 10 points wins, or the cleanest builder when the bag runs dry; if nobody built more renewable than fossil plants, everybody loses together.
 - **5–6 player expansion:** a switch in the lobby, independent of the player count, so even four players can use the larger board; the special building phase runs when more than four play
 - **Accounts:** email and password; the first account becomes the admin
 - **Stats ("Siedlermeister"):** standings per year, wins over time, records, and the full game history. Online games are recorded automatically, and games played at a real table can be logged by hand.
@@ -138,10 +140,10 @@ A few simplifications in Cities & Knights:
 ## Project layout
 
 ```
-server/engine/   rules: board generation, game state machine, both versions
+server/engine/   rules: board generation, game state machines (index.js picks the engine, kit.js is shared by the standalone games)
 server/index.js  HTTP API, accounts, lobby, WebSocket play, stats
 server/store.js  JSON file storage
-public/          the web app (no build step); js/zoom.js zoom & pan, js/feed.js chat, history and graphs,
+public/          the web app (no build step); js/sgame.js + js/games/ the standalone games; js/zoom.js zoom & pan, js/feed.js chat, history and graphs,
                  js/tutorial.js the interactive tutorials, js/victory.js the victory scene
-test/            random-play rules tester
+test/            random-play rules tester (node test/simulate-games.js [games] [mode] for the standalone games)
 ```

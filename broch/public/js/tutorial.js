@@ -5,6 +5,7 @@ import { t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, GLYPH, glyph, houseIcon, dieHt
 import { renderBoard } from './board.js';
 import { sfx } from './fx.js';
 import { fireworks } from './victory.js';
+import { GAMES } from './games/registry.js';
 
 const S = 56;
 const SQ3 = Math.sqrt(3);
@@ -15,6 +16,10 @@ const clone = o => JSON.parse(JSON.stringify(o));
 const TRACK = { trade: '#E0A32E', politics: '#2C6E9B', science: '#2E6B45' };
 const TOKEN_COLOR = { fish: '#1F7A99', gold: '#C58E12', spice: '#B53A2A' };
 const HAND_ORDER = ['lumber', 'brick', 'wool', 'grain', 'ore', 'paper', 'cloth', 'coin', 'fish', 'gold', 'spice'];
+// the standalone games register their chapters and extra hand items here (see games/*-tutorial.js)
+export const addHandKeys = keys => keys.forEach(k => { if (!HAND_ORDER.includes(k)) HAND_ORDER.push(k); });
+export const addChapter = ch => { CHAPTERS.push(ch); };
+export { geometry, vAt, eAt, hAt, chain, baseView, sevenTiles, ico, S as TUT_S };
 const ico = (k, size = 18, color = '#fff') => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" style="color:${color}">${GLYPH[k] || ''}</svg>`;
 
 // ------------------------------------------------------------ tiny boards
@@ -574,7 +579,7 @@ export function openTutorial(id = 'classic') {
     <div class="tut-stage">
       <div class="tut-board"></div>
       <canvas class="tut-canvas" aria-hidden="true"></canvas>
-      <div class="tut-hud"><div class="tut-vp" hidden></div><div class="tut-dicebox"></div><div class="tut-barb" hidden></div><div class="tut-imp" hidden></div><div class="tut-turns" hidden></div><div class="tut-hand"></div></div>
+      <div class="tut-hud"><div class="tut-vp" hidden></div><div class="tut-dicebox"></div><div class="tut-barb" hidden></div><div class="tut-imp" hidden></div><div class="tut-turns" hidden></div><div class="tut-extra" hidden></div><div class="tut-hand"></div></div>
       <div class="tut-layer"></div>
     </div>
     <div class="tut-cap"><b class="tut-say"></b><span class="tut-small"></span></div>
@@ -637,7 +642,7 @@ class Player {
     this.el.querySelector('.tut-steps').innerHTML = spec.steps.map((_, i) => `<i data-step="${i}"></i>`).join('') + '<i class="end"></i>';
     this.goto(0);
   }
-  freshState(spec) { return { hand: {}, vp: null, vpTarget: spec.vpTarget, barb: null, imp: null, dice: null, turn: null }; }
+  freshState(spec) { return { hand: {}, vp: null, vpTarget: spec.vpTarget, barb: null, imp: null, dice: null, turn: null, extra: null }; }
   // ---- navigation
   cancel() {
     const r = this.run;
@@ -756,14 +761,15 @@ class Player {
   }
   // ---- drawing
   draw(targets = {}) {
-    this.boardEl.innerHTML = renderBoard(this.v, targets, this.freshSets(), null, !reduced());
+    const pg = GAMES[this.v.mode];
+    this.boardEl.innerHTML = renderBoard(this.v, targets, this.freshSets(), null, !reduced(), false, pg && pg.ext ? pg.ext(this.v) : null);
     const svg = this.boardEl.querySelector('svg');
     if (svg) { svg.removeAttribute('style'); syncLoops(this.boardEl); }
     this.fresh = null;
   }
   freshSets() {
     const f = this.fresh || {};
-    return { verts: new Set(f.verts || []), edges: new Set(f.edges || []), knights: new Set(f.knights || []), ships: new Set(f.ships || []), hexes: new Set(f.hexes || []), robber: !!f.robber, merchant: false, pirate: !!f.pirate };
+    return { verts: new Set(f.verts || []), edges: new Set(f.edges || []), knights: new Set(f.knights || []), ships: new Set(f.ships || []), hexes: new Set(f.hexes || []), plants: new Set(f.plants || []), robber: !!f.robber, merchant: false, pirate: !!f.pirate };
   }
   pt(x, y) {
     const svg = this.boardEl.querySelector('svg');
@@ -798,6 +804,12 @@ class Player {
     this.renderDice();
     this.renderBarb();
     this.renderImp();
+    this.renderExtra();
+  }
+  renderExtra() {
+    const el = this.hud.querySelector('.tut-extra');
+    el.hidden = !this.s.extra;
+    el.innerHTML = this.s.extra || '';
   }
   renderHand() {
     const h = this.s.hand;
@@ -1068,6 +1080,8 @@ class Player {
         T.float(to, '+1', '#F6CF57');
         if (!fast) sfx.award();
       },
+      // free-form hud pills for the standalone games (footprint, bag, ...)
+      extra(html) { P.s.extra = html; P.renderExtra(); },
       imp(levels) { P.s.imp = levels ? { ...levels } : null; P.renderImp(); },
       async impUp(track) {
         alive();

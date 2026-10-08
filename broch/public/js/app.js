@@ -1,6 +1,10 @@
 import { api, esc, toast, logoSvg, houseIcon, PCOLOR, PCOLOR_DARK, COLOR_KEYS, colorName, setFeedbackUrl, getFeedbackUrl, wsConnect, onWs, wsClose, reportProblem, modal, t, inkOn } from './core.js';
 import { LANGS, setLang, guessLang, lang } from './i18n.js';
 import { mountGame, unmountGame } from './game.js';
+import { mountSGame, unmountSGame } from './sgame.js';
+import { GAMES, isStandalone } from './games/registry.js';
+import './games/energies.js';
+import './games/energies-tutorial.js';
 import { mountStats } from './stats.js';
 import { isMuted, setMuted, sfx } from './fx.js';
 import { flag, countrySelect, guessCountry } from './countries.js';
@@ -92,7 +96,7 @@ function renderAuth(mode = 'login') {
 // ------------------------------------------------------------ lobby
 const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, events: false }, missions: ['fish', 'spice', 'lairs'], big: false, robberReturn: false, startBoth: false, maxPlayers: 4, vpTarget: 10, vpTouched: false };
 const SCEN_VP = { shores: 14, islands: 13, fog: 12 };
-const defaultVp = () => (newGame.mode === 'knights' ? 13 : newGame.expansion === 'seafarers' ? SCEN_VP[newGame.scenario] : newGame.expansion === 'explorers' ? 12 : 10);
+const defaultVp = () => (isStandalone(newGame.mode) ? GAMES[newGame.mode].vp : newGame.mode === 'knights' ? 13 : newGame.expansion === 'seafarers' ? SCEN_VP[newGame.scenario] : newGame.expansion === 'explorers' ? 12 : 10);
 const EXP_LABEL = { seafarers: 'Seafarers', traders: 'Traders & Barbarians', explorers: 'Explorers & Pirates' };
 const SCEN_LABEL = { shores: 'Heading for New Shores', islands: 'The Four Islands', fog: 'The Fog Islands' };
 function colorSwatches(g, meId) {
@@ -124,6 +128,7 @@ async function renderLobby() {
     if (newGame.expansion === 'seafarers') return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${Object.keys(SCEN_LABEL).map(k => chip(newGame.scenario === k, `data-scen="${k}"`, SCEN_LABEL[k])).join('')}</div>`;
     if (newGame.expansion === 'traders') return `<div class="muted sub-h">${tx('Variants')}</div><div class="chips">${chip(newGame.variants.fishermen, 'data-var="fishermen"', 'Fishermen of Catan', 'Fishing grounds, fish tokens and the old boot.')}${chip(newGame.variants.rivers, 'data-var="rivers"', 'Rivers of Catan', 'Bridges, gold, and the richest and poorest player.')}${chip(newGame.variants.events, 'data-var="events"', 'Event cards', 'A deck of event cards replaces the dice.')}</div>`;
     if (newGame.expansion === 'explorers') return `<div class="muted sub-h">${tx('Missions')}</div><div class="chips">${chip(newGame.missions.includes('fish'), 'data-mis="fish"', 'Fish for Catan')}${chip(newGame.missions.includes('spice'), 'data-mis="spice"', 'Spice for Catan')}${chip(newGame.missions.includes('lairs'), 'data-mis="lairs"', 'Pirate lairs')}</div>`;
+    if (isStandalone(newGame.mode)) return `<div class="muted sub-h">${tx(GAMES[newGame.mode].name)}</div><div class="muted" style="font-size:13px">${tx(GAMES[newGame.mode].blurb)}</div>`;
     if (newGame.mode === 'knights') return `<div class="muted sub-h">${tx('Cities & Knights')}</div><div class="muted" style="font-size:13px">${tx('Commodities, city improvements, knights and barbarian raids.')}</div>`;
     return `<div class="muted sub-h">${tx('Pick an expansion to see its options.')}</div>`;
   };
@@ -141,6 +146,7 @@ async function renderLobby() {
     const watch = L.playing.filter(g => !L.mine.includes(g.id));
     const seats = g => `<span class="seatdots">${g.seats.map(s => houseIcon(s.color, 14)).join('')}</span>`;
     const modeBadge = g => {
+      if (isStandalone(g.mode)) return `<span class="badge x">${tx(GAMES[g.mode].name)}</span>`;
       const hasExp = g.expansion && g.expansion !== 'none';
       return `${g.mode === 'knights' ? `<span class="badge k">${tx('Cities & Knights')}</span>` : hasExp ? '' : `<span class="badge">${tx('Classic')}</span>`}${hasExp ? `<span class="badge x">${tx(EXP_LABEL[g.expansion])}</span>` : ''}${g.big ? `<span class="badge">${tx('5–6')}</span>` : ''}${g.robberReturn || g.startBoth ? `<span class="badge h" title="${esc([g.robberReturn ? t('House rule: forgotten robber') : '', g.startBoth ? t('House rule: starting resources for both') : ''].filter(Boolean).join(' · '))}">${tx('House rules')}</span>` : ''}`;
     };
@@ -168,11 +174,16 @@ async function renderLobby() {
               <button class="mode-tile ${newGame.expansion === 'explorers' ? 'on' : ''}" data-exp="explorers" aria-pressed="${newGame.expansion === 'explorers'}"><b>${tx('Explorers & Pirates')}</b><small>${tx('Missions across the fog.')}</small>${help('explorers', 'Explorers & Pirates')}</button>
             </div>
           </div>
+          <div class="field"><span class="muted" style="font-size:13px">${tx('Standalone games')}</span>
+            <div class="mode-pick sa">
+              ${Object.values(GAMES).map(g => `<button class="mode-tile ${newGame.mode === g.id ? 'on' : ''}" data-game="${g.id}" aria-pressed="${newGame.mode === g.id}"><b>${tx(g.name)}</b><small>${tx(g.tagline)}</small>${help(g.tutorial, g.name)}</button>`).join('')}
+            </div>
+          </div>
           <div class="sub-opts">${subOpts()}</div>
-          ${sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx('Larger board and the special building phase. Works with any number of players.'))}
+          ${isStandalone(newGame.mode) ? '' : `${sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx('Larger board and the special building phase. Works with any number of players.'))}
           <div class="muted house-h">${tx('House rules')}</div>
           ${sw('robberReturn', tx('House rule: forgotten robber'), tx('If a player ends their turn without moving the robber, it goes back to the desert.'))}
-          ${sw('startBoth', tx('House rule: starting resources for both'), tx('Both buildings from the setup phase pay starting resources. In Cities & Knights the city counts like a settlement.'))}
+          ${sw('startBoth', tx('House rule: starting resources for both'), tx('Both buildings from the setup phase pay starting resources. In Cities & Knights the city counts like a settlement.'))}`}
           <div class="row wrap" style="gap:18px">
             <div class="field"><span>${tx('Players')}</span><div class="stepper"><button data-np="-1" aria-label="${tx('Fewer')}">−</button><b id="np">${newGame.maxPlayers}</b><button data-np="1" aria-label="${tx('More')}">+</button></div></div>
             <div class="field"><span>${tx('Points to win')}</span><div class="stepper"><button data-vp="-1" aria-label="${tx('Fewer')}">−</button><b id="vpt">${newGame.vpTarget}</b><button data-vp="1" aria-label="${tx('More')}">+</button></div></div>
@@ -193,8 +204,14 @@ async function renderLobby() {
         ${watch.length ? `<div class="card"><h3>${tx('Watch')}</h3>${watch.map(g => row(g, `<a class="btn small" href="#/game/${g.id}">${tx('Watch')}</a>`)).join('')}</div>` : ''}
       </div>`;
     const reVp = () => { if (!newGame.vpTouched) newGame.vpTarget = defaultVp(); };
+    el.querySelectorAll('[data-game]').forEach(b => b.onclick = () => {
+      newGame.mode = b.dataset.game; newGame.expansion = 'none'; newGame.big = false;
+      newGame.maxPlayers = Math.min(newGame.maxPlayers, GAMES[newGame.mode].maxPlayers || 4);
+      reVp(); sfx.click(); draw(false);
+    });
     el.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => {
       const k = b.dataset.exp;
+      if (isStandalone(newGame.mode)) newGame.mode = 'classic';
       if (k === 'none') { newGame.mode = 'classic'; newGame.expansion = 'none'; }
       else if (k === 'knights') newGame.mode = newGame.mode === 'knights' ? 'classic' : 'knights';
       else newGame.expansion = newGame.expansion === k ? 'none' : k;
@@ -205,7 +222,7 @@ async function renderLobby() {
       const go = e => { e.stopPropagation(); e.preventDefault(); sfx.click(); openTutorial(x.dataset.tut); };
       x.onclick = go; x.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') go(e); };
     });
-    el.querySelector('[data-tut-open]').onclick = () => { sfx.click(); openTutorial(newGame.expansion !== 'none' ? newGame.expansion : newGame.mode === 'knights' ? 'knights' : newGame.big ? 'big' : 'classic'); };
+    el.querySelector('[data-tut-open]').onclick = () => { sfx.click(); openTutorial(isStandalone(newGame.mode) ? GAMES[newGame.mode].tutorial : newGame.expansion !== 'none' ? newGame.expansion : newGame.mode === 'knights' ? 'knights' : newGame.big ? 'big' : 'classic'); };
     el.querySelectorAll('[data-sw]').forEach(b => {
       const flip = () => { newGame[b.dataset.sw] = !newGame[b.dataset.sw]; sfx.click(); draw(false); };
       b.onclick = flip; b.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } };
@@ -215,7 +232,7 @@ async function renderLobby() {
     el.querySelectorAll('[data-mis]').forEach(b => b.onclick = () => { const m = b.dataset.mis; newGame.missions = newGame.missions.includes(m) ? newGame.missions.filter(x => x !== m) : [...newGame.missions, m]; if (!newGame.missions.length) newGame.missions = [m]; sfx.click(); draw(false); });
     el.querySelectorAll('[data-np]').forEach(b => b.onclick = () => {
       const was = newGame.maxPlayers;
-      newGame.maxPlayers = Math.max(2, Math.min(6, was + +b.dataset.np));
+      newGame.maxPlayers = Math.max(2, Math.min(isStandalone(newGame.mode) ? (GAMES[newGame.mode].maxPlayers || 4) : 6, was + +b.dataset.np));
       if (was <= 4 && newGame.maxPlayers > 4) newGame.big = true;
       sfx.click(); draw(false);
     });
@@ -290,7 +307,7 @@ function renderProfile() {
 // ------------------------------------------------------------ router
 async function route(keepScroll) {
   if (cleanup) { try { cleanup(); } catch { /* ignore */ } cleanup = null; }
-  unmountGame();
+  unmountGame(); unmountSGame();
   if (keepScroll !== true) window.scrollTo(0, 0);
   const h = location.hash.replace(/^#/, '') || '/';
   if (!session.user) {
@@ -306,7 +323,13 @@ async function route(keepScroll) {
       try { await api(`/games/${m[1]}/join`, { body: {} }); toast(t('You joined the game.')); } catch (e) { toast(e.message, 'warn'); }
       location.hash = '#/'; return;
     }
-    if ((m = h.match(/^\/game\/([\w-]+)/))) { cleanup = mountGame(app, m[1]); return; }
+    if ((m = h.match(/^\/game\/([\w-]+)/))) {
+      // standalone games have their own screen; ask which game this is before building the page
+      let mode = 'classic';
+      try { mode = (await api(`/games/${m[1]}`)).game.mode; } catch { /* a missing game opens the normal screen, which reports it */ }
+      cleanup = isStandalone(mode) ? mountSGame(app, m[1], mode) : mountGame(app, m[1]);
+      return;
+    }
     if (h.startsWith('/stats')) { cleanup = await mountStats(app); return; }
     if (h.startsWith('/profile')) return renderProfile();
     await renderLobby();

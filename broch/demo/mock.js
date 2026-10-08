@@ -1,7 +1,9 @@
 // In-browser stand-in for the Broch server, used only by the demo build.
 // Runs the real rules engine locally; the other seats are played by simple bots.
-import engine from '../server/engine/game.js';
-import { decide } from './bots.js';
+import engine from '../server/engine/index.js';
+import { decide as decideClassic } from './bots.js';
+import { decide as decideStandalone } from './bots-standalone.js';
+const decide = v => (engine.isStandalone(v.mode) ? decideStandalone(v) : decideClassic(v));
 
 const COLORS = ['red', 'blue', 'orange', 'white', 'teal', 'purple', 'black', 'pink', 'yellow', 'brown'];
 const users = [
@@ -143,15 +145,16 @@ async function api(path, opts = {}) {
   }
   if (path === '/games' && method === 'POST') {
     const u = need();
-    const mode = b.mode === 'knights' ? 'knights' : 'classic';
-    const maxPlayers = Math.max(2, Math.min(6, b.maxPlayers | 0 || 4));
-    const expansion = ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
+    const mode = b.mode === 'knights' || engine.isStandalone(b.mode) ? b.mode : 'classic';
+    const standalone = engine.isStandalone(mode);
+    const maxPlayers = Math.max(2, Math.min(standalone ? 4 : 6, b.maxPlayers | 0 || 4));
+    const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
     const scenario = expansion === 'seafarers' ? (['shores', 'islands', 'fog'].includes(b.scenario) ? b.scenario : 'shores') : null;
     const bv = b.variants || {};
     const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, events: !!bv.events } : null;
     const missions = expansion === 'explorers' ? (Array.isArray(b.missions) ? b.missions.filter(x => ['fish', 'spice', 'lairs'].includes(x)) : ['fish', 'spice', 'lairs']) : null;
-    const big = typeof b.big === 'boolean' ? b.big : maxPlayers > 4;
-    const defVp = mode === 'knights' ? 13 : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : 10;
+    const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
+    const defVp = standalone ? engine.defaultVp(mode) : mode === 'knights' ? 13 : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : 10;
     const id = 'demo' + (++seq);
     // bots take the other seats straight away so you can start
     const seats = [u.id, ...users.slice(1, maxPlayers).map(x => x.id)];

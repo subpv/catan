@@ -5,6 +5,7 @@ import { t, esc, PCOLOR, PCOLOR_DARK, GLYPH, houseIcon, isLightColor } from './c
 import { flag } from './countries.js';
 import { sfx } from './fx.js';
 import { metroTowerInner } from './board.js';
+import { GAMES } from './games/registry.js';
 
 const tx = (k, p) => esc(t(k, p));
 const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -139,7 +140,9 @@ function breakdownChips(view, w) {
   const b = w.breakdown;
   if (!b) return [];
   const chips = [];
-  const chip = (icon, pts, label) => chips.push(`<span class="vic-chip"><i>${icon}</i><b>+${pts}</b><small>${esc(label)}</small></span>`);
+  const mk = (icon, pts, label) => `<span class="vic-chip"><i>${icon}</i><b>+${pts}</b><small>${esc(label)}</small></span>`;
+  const chip = (icon, pts, label) => chips.push(mk(icon, pts, label));
+  if (GAMES[view.mode] && GAMES[view.mode].victoryChips) return GAMES[view.mode].victoryChips(view, w, mk, ico);
   const col = w.color;
   if (b.settlements) chip(houseIcon(col, 16), b.settlements, `${b.settlements} × ${t('Settlements')}`);
   if (b.cities) chip(`<svg viewBox="-16 -14 32 28" width="20" height="18"><path d="M-15 12 V-3 L-6 -13 L3 -3 V0 H15 V12 Z" fill="${PCOLOR[col]}" stroke="${PCOLOR_DARK[col]}" stroke-width="2.4" stroke-linejoin="round"/></svg>`, b.cities * 2, `${b.cities} × ${t('Cities')}`);

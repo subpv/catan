@@ -42,6 +42,8 @@ export function guessLang() {
 export async function setLang(code) {
   if (!LANGS.some(l => l[0] === code)) code = 'en';
   dict = code === 'en' ? {} : (await LOADERS[code]()).default;
+  // the standalone games keep their texts in lang/x/<code>.js (built from lang/games/*.tsv)
+  if (code !== 'en') { try { dict = { ...dict, ...(await import(`./lang/x/${code}.js`)).default }; } catch { /* no texts for this language yet: English */ } }
   current = code;
   document.documentElement.lang = code;
   try { localStorage.setItem('broch_lang', code); } catch { /* storage blocked */ }

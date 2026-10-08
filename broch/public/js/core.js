@@ -17,6 +17,10 @@ export const CARD_COLOR = { lumber: '#2E6B45', brick: '#B4482A', wool: '#7FA65A'
 export const TERRAIN_COLOR = { forest: '#2E6B45', hills: '#B4482A', pasture: '#93B86A', fields: '#E8B23A', mountains: '#7C8A96', desert: '#E3CF9E', gold: '#CF7F1B', river: '#4FA3BD', sea: '#2C5F7A', fog: '#8FA3B3' };
 const RES_EN = { lumber: 'Lumber', brick: 'Brick', wool: 'Wool', grain: 'Grain', ore: 'Ore', paper: 'Paper', cloth: 'Cloth', coin: 'Coin' };
 export const resName = k => t(RES_EN[k] || k);
+// the standalone games add their own cards, colours, glyphs and game terms here (see games/*.js)
+export function extendCore({ names = {}, colors = {}, terms = {}, glyphs = {}, cards = {} } = {}) {
+  Object.assign(RES_EN, names); Object.assign(CARD_COLOR, colors); Object.assign(TERM_EN, terms); Object.assign(GLYPH, glyphs); Object.assign(CARD_EN, cards);
+}
 // translated names for game terms used in the log and UI
 const TERM_EN = {
   trade: 'Trade', politics: 'Politics', science: 'Science',

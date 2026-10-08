@@ -6,7 +6,8 @@ import { flag } from './countries.js';
 
 const tx = (k, p) => esc(t(k, p));
 const EXP_NAMES = { seafarers: 'Seafarers', traders: 'Traders & Barbarians', explorers: 'Explorers & Pirates' };
-const modeLabel = m => (m === 'knights' ? t('Cities & Knights') : t('Classic'));
+const STANDALONE = { energies: 'New Energies', humankind: 'Dawn of Humankind', inkas: 'Rise of the Inkas' };
+const modeLabel = m => (STANDALONE[m] ? t(STANDALONE[m]) : m === 'knights' ? t('Cities & Knights') : t('Classic'));
 const gameLabel = g => [modeLabel(g.mode), g.expansion && EXP_NAMES[g.expansion] ? t(EXP_NAMES[g.expansion]) : null, g.big ? t('5–6') : null].filter(Boolean).join(' + ');
 const hexPip = (color, i) => `<i class="pip" style="--c:${PCOLOR[color] || '#999'};--d:${PCOLOR_DARK[color] || '#555'};animation-delay:${Math.min(i, 14) * 45}ms"></i>`;
 
@@ -119,7 +120,7 @@ function draw(app) {
   const yIdx = years.indexOf(S.year);
   const games = history
     .filter(h => new Date(h.finishedAt).getFullYear() === S.year)
-    .filter(h => { const isExp = h.mode === 'knights' || (h.expansion && h.expansion !== 'none') || h.big; return S.tab === 'all' || (S.tab === 'expansion' ? isExp : !isExp); })
+    .filter(h => { const isExp = h.mode === 'knights' || !!STANDALONE[h.mode] || (h.expansion && h.expansion !== 'none') || h.big; return S.tab === 'all' || (S.tab === 'expansion' ? isExp : !isExp); })
     .sort((a, b) => a.finishedAt - b.finishedAt);
 
   const T = computeTallies(games, users);
@@ -225,7 +226,7 @@ function histRow(g, nameOf, colorOf) {
       ${g.players.slice().sort((a, b) => (b.vp || 0) - (a.vp || 0)).map(p => `<div class="sc"><span>${houseIcon(colorOf(p.userId, p.color), 13)} ${esc(nameOf(p.userId, p.name))}${p.userId === g.winner ? ' ♛' : ''}</span><span>${p.vp != null ? tx('Points: {n}', { n: p.vp }) : ''}${p.breakdown?.longestRoad ? ` · ${tx('Longest Road')}` : ''}${p.breakdown?.largestArmy ? ` · ${tx('Largest Army')}` : ''}</span></div>`).join('')}
     </div>` : '';
   return `<div class="hist-row" data-hist="${esc(g.id)}">${houseIcon(colorOf(g.winner, w?.color), 18)}<span class="d">${esc(fmtDateLocal(g.finishedAt))}</span>
-    <span class="w">${esc(nameOf(g.winner, w?.name))} <span class="badge ${g.mode === 'knights' ? 'k' : ''}">${g.mode === 'knights' ? tx('Cities & Knights') : tx('Classic')}</span>${g.expansion && g.expansion !== 'none' ? ` <span class="badge x">${tx(EXP_NAMES[g.expansion] || g.expansion)}</span>` : ''}${g.manual ? ` <span class="badge">${tx('Table')}</span>` : ''}</span>
+    <span class="w">${esc(nameOf(g.winner, w?.name))} <span class="badge ${g.mode === 'knights' ? 'k' : ''}">${STANDALONE[g.mode] ? tx(STANDALONE[g.mode]) : g.mode === 'knights' ? tx('Cities & Knights') : tx('Classic')}</span>${g.expansion && g.expansion !== 'none' ? ` <span class="badge x">${tx(EXP_NAMES[g.expansion] || g.expansion)}</span>` : ''}${g.manual ? ` <span class="badge">${tx('Table')}</span>` : ''}</span>
     ${canDel ? `<button class="btn small" style="padding:2px 8px" data-del="${esc(g.id)}" aria-label="${tx('Delete')}">×</button>` : ''}</div>${detail}`;
 }
 
