@@ -104,7 +104,7 @@ function classic() {
         await T.tap({ vertices: [home] });
         T.build(home, 'settlement', 0);
         T.vp(1);
-        T.say(t('A settlement touches up to 3 tiles.'), t('Your opponents build too.'));
+        T.say(t('A settlement touches up to 3 tiles.'), t('Never next to another settlement: keep one corner free.'));
         await T.wait(500);
         T.glow([C, NW, NE]);
         await T.wait(900);
@@ -149,25 +149,25 @@ function classic() {
         await T.wait(1000);
       },
       async T => {
-        T.say(t('A 7 wakes the robber!'));
+        T.say(t('A 7 wakes the robber!'), t('First, everyone with more than 7 cards gives back half (rounded down).'));
         await T.roll(3, 4);
         await T.banner('7!', 'red');
         T.say(t('Move the robber onto a tile.'), t('It stops paying. Tap a tile next to your opponent.'));
         await T.tap({ hexes: [SE] });
         T.moveRobber(SE);
         await T.wait(700);
-        T.say(t('Then steal a card from someone there.'), t('Anyone holding more than 7 cards loses half.'));
+        T.say(t('Then steal a card from someone there.'), t('You draw a random card from their hand.'));
         await T.steal(foe, 'ore');
         await T.wait(1100);
       },
       async T => {
-        T.say(t('Trade with players or the bank.'), t('The bank swaps 4 of a kind for 1. Harbors: 3:1 or 2:1.'));
+        T.say(t('Trade with players or the bank.'), t('Players only trade with whoever’s turn it is. The bank swaps 4 of a kind for 1, harbors make it 3:1 or 2:1.'));
         await T.give({ wool: 4 });
         await T.bankTrade({ wool: 4 }, 'brick');
         await T.wait(1200);
       },
       async T => {
-        T.say(t('Development cards'), t('Knights move the robber. Others give roads, resources or a victory point.'));
+        T.say(t('Development cards'), t('Knight, Road Building, Year of Plenty, Monopoly or a hidden point. One per turn, not on the turn you buy it.'));
         await T.bigCard({ title: t('Knight'), color: '#5B3A6E', icon: 'knight' });
         T.say(t('3 knights played: Largest Army, +2 points.'), t('Its holder flies war banners on the board.'));
         T.set(v2 => { v2.largestArmy = { p: 0, count: 3 }; });
@@ -175,7 +175,7 @@ function classic() {
         await T.wait(1800);
       },
       async T => {
-        T.say(t('5 roads in a row: Longest Road, +2 points.'), t('The longest trail glows gold.'));
+        T.say(t('5 roads in a row: Longest Road, +2 points.'), t('Branches do not count, and a foreign settlement breaks the road.'));
         for (const e of trail.slice(1)) { T.road(e, 0); await T.wait(380); }
         T.set(v2 => { v2.longestRoad = { p: 0, len: 5, edges: trail.slice() }; });
         sfx.award();
@@ -544,16 +544,25 @@ function big() {
         await T.wait(2600);
       },
       async T => {
-        T.say(t('Special building phase'), t('After each turn, everyone else may build in turn, but not trade.'));
-        const plan = [[1, [0, 1], [0, 2]], [2, [1.732, -1], [2.598, -0.5]], [3, [-2.598, -0.5], [-2.598, 0.5]]];
-        for (const [p, A, Bv] of plan) {
-          T.turnChip(p);
-          await T.wait(400);
-          T.road(eAt(B, vAt(B, ...A), vAt(B, ...Bv)), p);
-          await T.wait(700);
-        }
+        T.say(t('Two players share every turn'), t('Stone 1 rolls the dice, trades with everybody and builds.'));
+        T.turnChip(0);
+        await T.wait(2400);
+      },
+      async T => {
+        T.say(t('Then stone 2 plays, three seats to the left'), t('No dice, no trades with players: only the bank, building and 1 development card.'));
+        T.turnChip(3);
+        await T.wait(500);
+        T.road(eAt(B, vAt(B, -2.598, -0.5), vAt(B, -2.598, 0.5)), 3);
+        await T.wait(2400);
+      },
+      async T => {
+        T.say(t('Then both stones move one seat to the left.'), t('The next turn belongs to the next pair.'));
+        T.turnChip(1);
+        await T.wait(1100);
+        T.turnChip(4);
+        await T.wait(1100);
         T.turnChip(null);
-        await T.wait(900);
+        await T.wait(600);
       },
       async T => {
         T.say(t('So nobody waits long.'), t('Turns stay short, even at a full table.'));

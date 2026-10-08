@@ -94,7 +94,7 @@ function candidates(s, p) {
         const have = (me.res[t] ?? me.comm[t]) || 0;
         if (have >= r) out.push({ type: 'bankTrade', give: t, get: pick(C.RES) });
       }
-      if (!s.trade && Math.random() < 0.05) {
+      if (!s.trade && !s.flags.stone2 && Math.random() < 0.05) {
         const give = cardsOf(v, 1);
         if (Object.keys(give).length) out.push({ type: 'offerTrade', give, get: { [pick(C.RES)]: 1 } });
       }
@@ -123,6 +123,16 @@ function checkInvariants(s) {
       if (!a.some(v => b.includes(v))) throw new Error('longest road trail is not connected');
     }
   }
+  // 5–6 players: the turn is shared by stone 1 (rolls, trades with everybody) and stone 2 (3 seats to the left: no dice, bank trades only)
+  if (s.options.paired && s.phase === 'play') {
+    if (!s.pair) throw new Error('paired game without stones');
+    const n = s.players.length;
+    const want = s.pair.phase === 1 ? s.pair.one : (s.pair.one + 3) % n;
+    if (s.current !== want) throw new Error('wrong player for stone ' + s.pair.phase);
+    if (s.pair.phase === 2 && (s.step !== 'main' || !s.flags.stone2)) throw new Error('stone 2 must not roll');
+    if (s.pair.phase === 2 && s.trade) throw new Error('stone 2 cannot offer trades');
+  }
+  if (s.options.big !== true && s.players.length > 4) throw new Error('5-6 players need the big board');
   const def = C.BOARDS[s.options.big ? 'extended' : 'standard'];
   for (const r of C.RES) {
     const total = s.bank[r] + s.players.reduce((a, pl) => a + pl.res[r], 0);
@@ -174,6 +184,8 @@ const CONFIGS = {
   'knights-rr': ['knights', { robberReturn: true }],
   'sea-rr': ['classic', { expansion: 'seafarers', scenario: 'shores', robberReturn: true }],
   'classic-sb': ['classic', { startBoth: true }],
+  'classic-kf': ['classic', { knightsFree: true }],
+  'classic-56': ['classic', {}],
   'knights-sb': ['knights', { startBoth: true }],
 };
 const only = process.argv[3] ? process.argv[3].split(',') : Object.keys(CONFIGS).slice(0, 2);
@@ -182,7 +194,7 @@ const res = Object.fromEntries(only.map(k => [k, []]));
 for (let i = 0; i < runs; i++) {
   for (const k of only) {
     const [mode, opts] = CONFIGS[k];
-    const n = 2 + (i % 5);
+    const n = k === 'classic-56' ? 5 + (i % 2) : 2 + (i % 5);
     const o = { ...opts };
     if (opts.expansion && opts.expansion !== 'none' && opts.big === undefined && n > 4) o.big = true;
     res[k].push(play(mode, n, o));

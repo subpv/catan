@@ -125,7 +125,7 @@ function gameCard(g) {
   if (m.status === 'open') fixSeatColors(m);
   return {
     id: m.id, name: m.name, mode: m.mode, maxPlayers: m.maxPlayers, vpTarget: m.vpTarget, status: m.status,
-    expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth,
+    expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, knightsFree: !!m.knightsFree,
     host: m.host, createdAt: m.createdAt,
     seats: m.seats.map(id => {
       const u = publicUser(db.users.find(x => x.id === id)) || { id, name: '?' };
@@ -232,7 +232,7 @@ async function api(req, res, url) {
     const def = standalone ? engine.defaultVp(mode) : mode === 'knights' ? 13 : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : 10;
     const vpTarget = Math.max(5, Math.min(20, b.vpTarget | 0 || def));
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
-    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, maxPlayers, vpTarget, specialBuild: b.specialBuild !== false, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
+    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', maxPlayers, vpTarget, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
     db.games.set(g.meta.id, g); store.saveGame(g, true);
     broadcastLobby();
     return send(res, 200, { game: gameCard(g) });
@@ -271,7 +271,7 @@ async function api(req, res, url) {
       if (meta.seats.length < 2) throw new HttpError(400, 'Wait for at least one more player.');
       fixSeatColors(meta);
       const players = meta.seats.map(id => { const x = db.users.find(y => y.id === id); return { id, name: x.name, color: meta.colors[id], country: x.country || null }; });
-      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, specialBuild: meta.specialBuild && players.length > 4, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, missions: meta.missions, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, big: meta.big ?? players.length > 4 } });
+      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, missions: meta.missions, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, knightsFree: !!meta.knightsFree, big: meta.big ?? players.length > 4 } });
       meta.status = 'playing'; meta.startedAt = Date.now();
     } else if (m[2] === 'abandon') {
       if (meta.host !== u.id && !u.admin) throw new HttpError(403, 'Only the host can abandon the game.');

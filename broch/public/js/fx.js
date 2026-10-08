@@ -227,7 +227,7 @@ export function diff(prev, next) {
   for (const l of added) events.push({ type: 'log', k: l.k, a: l.a || {} });
   if (prev.longestRoad.p !== next.longestRoad.p && next.longestRoad.p != null) events.push({ type: 'award', what: 'road', p: next.longestRoad.p });
   if (next.largestArmy && prev.largestArmy.p !== next.largestArmy.p && next.largestArmy.p != null) events.push({ type: 'award', what: 'army', p: next.largestArmy.p });
-  if (next.phase === 'play' && prev.current !== next.current && next.current === next.me && next.step === 'roll') events.push({ type: 'yourTurn' });
+  if (next.phase === 'play' && prev.current !== next.current && next.current === next.me && (next.step === 'roll' || (next.pair && next.pair.phase === 2))) events.push({ type: 'yourTurn' });
   next.players.forEach((p, i) => { const o = prev.players[i]; if (o && p.vp > o.vp) events.push({ type: 'vp', p: i, d: p.vp - o.vp }); });
   if (fresh.robber) events.push({ type: 'robberMoved' });
   if (fresh.pirate) events.push({ type: 'pirateMoved' });

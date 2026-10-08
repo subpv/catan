@@ -98,7 +98,7 @@ function renderAuth(mode = 'login') {
 }
 
 // ------------------------------------------------------------ lobby
-const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, events: false }, missions: ['fish', 'spice', 'lairs'], big: false, robberReturn: false, startBoth: false, maxPlayers: 4, vpTarget: 10, vpTouched: false };
+const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, events: false }, missions: ['fish', 'spice', 'lairs'], big: false, robberReturn: false, startBoth: false, knightsFree: false, maxPlayers: 4, vpTarget: 10, vpTouched: false };
 const SCEN_VP = { shores: 14, islands: 13, fog: 12 };
 const defaultVp = () => (isStandalone(newGame.mode) ? GAMES[newGame.mode].vp : newGame.mode === 'knights' ? 13 : newGame.expansion === 'seafarers' ? SCEN_VP[newGame.scenario] : newGame.expansion === 'explorers' ? 12 : 10);
 const EXP_LABEL = { seafarers: 'Seafarers', traders: 'Traders & Barbarians', explorers: 'Explorers & Pirates' };
@@ -152,7 +152,7 @@ async function renderLobby() {
     const modeBadge = g => {
       if (isStandalone(g.mode)) return `<span class="badge x">${tx(GAMES[g.mode].name)}</span>`;
       const hasExp = g.expansion && g.expansion !== 'none';
-      return `${g.mode === 'knights' ? `<span class="badge k">${tx('Cities & Knights')}</span>` : hasExp ? '' : `<span class="badge">${tx('Classic')}</span>`}${hasExp ? `<span class="badge x">${tx(EXP_LABEL[g.expansion])}</span>` : ''}${g.big ? `<span class="badge">${tx('5–6')}</span>` : ''}${g.robberReturn || g.startBoth ? `<span class="badge h" title="${esc([g.robberReturn ? t('House rule: forgotten robber') : '', g.startBoth ? t('House rule: starting resources for both') : ''].filter(Boolean).join(' · '))}">${tx('House rules')}</span>` : ''}`;
+      return `${g.mode === 'knights' ? `<span class="badge k">${tx('Cities & Knights')}</span>` : hasExp ? '' : `<span class="badge">${tx('Classic')}</span>`}${hasExp ? `<span class="badge x">${tx(EXP_LABEL[g.expansion])}</span>` : ''}${g.big ? `<span class="badge">${tx('5–6')}</span>` : ''}${g.robberReturn || g.startBoth || g.knightsFree ? `<span class="badge h" title="${esc([g.robberReturn ? t('House rule: forgotten robber') : '', g.startBoth ? t('House rule: starting resources for both') : '', g.knightsFree ? t('House rule: knights without a limit') : ''].filter(Boolean).join(' · '))}">${tx('House rules')}</span>` : ''}`;
     };
     const sub = g => `${seats(g)} ${g.seats.map(s => `${flag(s.country)} ${esc(s.name)}`).join(', ')} · ${g.seats.length}/${g.maxPlayers} · ${tx('{n} points', { n: g.vpTarget })}${g.status === 'playing' ? ` · ${tx('turn {n}', { n: g.turn })}` : ''}`;
     const gname = g => {
@@ -184,10 +184,11 @@ async function renderLobby() {
             </div>
           </div>
           <div class="sub-opts">${subOpts()}</div>
-          ${isStandalone(newGame.mode) ? '' : `${sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx('Larger board and the special building phase. Works with any number of players.'))}
+          ${isStandalone(newGame.mode) ? '' : `${sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx('Larger board with 30 tiles. From 5 players on it is always used, and two players share every turn (stone 1 and stone 2).'))}
           <div class="muted house-h">${tx('House rules')}</div>
           ${sw('robberReturn', tx('House rule: forgotten robber'), tx('If a player ends their turn without moving the robber, it goes back to the desert.'))}
-          ${sw('startBoth', tx('House rule: starting resources for both'), tx('Both buildings from the setup phase pay starting resources. In Cities & Knights the city counts like a settlement.'))}`}
+          ${newGame.mode === 'classic' ? sw('knightsFree', tx('House rule: knights without a limit'), tx('Knight cards can be played as often per turn as you like. The rulebook allows only one development card per turn.')) : ''}
+          ${sw('startBoth', tx('House rule: starting resources for both'), tx('The rulebook pays starting resources only for the second building of the setup phase. With this rule both pay. In Cities & Knights the city counts like a settlement.'))}`}
           <div class="row wrap" style="gap:18px">
             <div class="field"><span>${tx('Players')}</span><div class="stepper"><button data-np="-1" aria-label="${tx('Fewer')}">−</button><b id="np">${newGame.maxPlayers}</b><button data-np="1" aria-label="${tx('More')}">+</button></div></div>
             <div class="field"><span>${tx('Points to win')}</span><div class="stepper"><button data-vp="-1" aria-label="${tx('Fewer')}">−</button><b id="vpt">${newGame.vpTarget}</b><button data-vp="1" aria-label="${tx('More')}">+</button></div></div>

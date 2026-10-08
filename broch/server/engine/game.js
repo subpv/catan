@@ -22,7 +22,8 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
   const knights = mode === 'knights';
   const expansion = C.EXPANSIONS.includes(options.expansion) ? options.expansion : 'none';
   const sea = expansion === 'seafarers' || expansion === 'explorers';
-  const big = options.big ?? players.length > 4;
+  // the 5–6 player set (30 tiles, 28 chips, 11 harbors) is needed from five players on; with fewer it is a switch (a bigger board)
+  const big = players.length > 4 || (options.big ?? false);
   const scenario = expansion === 'explorers' ? 'fog' : (X.SCENARIOS[options.scenario] ? options.scenario : 'shores');
   const kind = sea ? 'sea' : big ? 'extended' : 'standard';
   const def = C.BOARDS[big ? 'extended' : 'standard'];
@@ -36,9 +37,13 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
     id, mode, kind, expansion,
     options: {
       vpTarget: options.vpTarget || defaultVp,
-      specialBuild: options.specialBuild ?? (n > 4),
+      // 5–6 players: two players share every turn (stone 1 and stone 2, see nextTurn). The old special building phase is only kept for games saved before.
+      specialBuild: false,
+      paired: n > 4,
+      // house rules (switches in the lobby); with all of them off the rulebook applies
       robberReturn: !!options.robberReturn,
       startBoth: !!options.startBoth,
+      knightsFree: !!options.knightsFree && !knights,
       big, scenario: sea ? scenario : null, variants, missions: expansion === 'explorers' ? (options.missions || C.MISSIONS) : null,
     },
     board,
@@ -63,7 +68,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
     metropolis: knights ? { trade: null, politics: null, science: null } : null,
     trade: null, tradeSeq: 0,
     flags: {}, free: { roads: 0, promotes: 0 },
-    sbp: null,
+    sbp: null, pair: null,
     log: [], chat: [],
     stats: { rolls: zero([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), gained: seats.map(() => 0), turns: 0 },
     winner: null, startedAt: Date.now(), finishedAt: null, version: 0,
@@ -182,7 +187,9 @@ function vpBreakdown(s, p) {
 
 function checkWin(s) {
   if (s.phase !== 'play') return;
-  const p = s.current;
+  let p = s.current;
+  // 5–6 players: if both players of one turn reach the target in that turn, the holder of stone 1 has won
+  if (s.pair && s.pair.phase === 2 && vp(s, s.pair.one) >= X.vpTarget(s, s.pair.one)) p = s.pair.one;
   if (vp(s, p) >= X.vpTarget(s, p)) {
     s.phase = 'over'; s.winner = p; s.finishedAt = Date.now(); s.pending = []; s.trade = null;
     log(s, '{@p} wins with {n} victory points!', { p, n: vp(s, p) });
@@ -519,6 +526,9 @@ function awardMetropolis(s, p, track) {
 
 // ---------------------------------------------------------------- turn flow
 
+// 5–6 player rules: the player with stone 2 sits three places to the left of the one with stone 1
+const STONE2_GAP = 3;
+
 // one small record per finished turn: public points, hand sizes and resources gained so far (drives the graphs)
 function snapshot(s, final = false) {
   if (!s.track) s.track = [];
@@ -537,11 +547,26 @@ function nextTurn(s) {
   s.flags = {};
   s.free = { roads: 0, promotes: 0 };
   s.sbp = null;
-  s.current = (s.current + 1) % s.players.length;
+  const n = s.players.length;
+  if (s.pair && s.pair.phase === 1) {
+    // 5–6 players: after the turn of stone 1 comes the adapted turn of stone 2 (3 places to the left):
+    // no dice, trade with the bank only, build, 1 development card
+    s.pair.phase = 2;
+    s.current = (s.pair.one + STONE2_GAP) % n;
+    s.step = 'main';
+    s.flags = { rolled: true, stone2: true };
+  } else {
+    if (s.pair) {
+      // both stones (and the dice) move one seat to the left
+      s.pair.one = (s.pair.one + 1) % n; s.pair.phase = 1;
+      s.current = s.pair.one;
+    } else s.current = (s.current + 1) % n;
+    s.step = 'roll';
+    s.dice = null;
+  }
   s.turn++;
   s.stats.turns++;
-  s.step = 'roll';
-  s.dice = null;
+  if (s.flags.stone2) log(s, '{@p} has stone 2: no dice, trade with the bank only.', { p: s.current });
   // over-limit progress cards from own turn
   checkWin(s);
 }
@@ -646,6 +671,10 @@ const HANDLERS = {
       s.phase = 'play'; s.step = 'roll'; s.turn = 1; s.current = s.setup.queue[0]; s.setup = null;
       s.stats.turns = 1;
       log(s, 'Setup complete. {@p} begins.', { p: s.current });
+      if (s.options.paired) {
+        s.pair = { one: s.current, phase: 1 };
+        log(s, 'Stone 1: {@p}. Stone 2: {@q}.', { p: s.current, q: (s.current + STONE2_GAP) % n });
+      }
       s.track = [];
       snapshot(s);
       s.track[0].t = 0;
@@ -724,8 +753,8 @@ const HANDLERS = {
     if (K(s)) fail('No development cards in knights mode.');
     requireTurnAny(s, p);
     const pl = P(s, p);
-    // knights may be played as often as you like; every other card is limited to one per turn
-    if (a.card !== 'knight' && s.flags.devPlayed) fail('Only one development card per turn.');
+    // rulebook: only one development card per turn. House rule "knights without a limit": knights do not count against it.
+    if (s.flags.devPlayed && !(a.card === 'knight' && s.options.knightsFree)) fail('Only one development card per turn.');
     const idx = pl.dev.findIndex(d => d.type === a.card && d.turn < s.turn);
     if (idx < 0 || a.card === 'victoryPoint') fail('You have no playable card of that kind (new cards wait a turn).');
     switch (a.card) {
@@ -762,7 +791,7 @@ const HANDLERS = {
     }
     pl.dev.splice(idx, 1);
     pl.devPlayed++;
-    if (a.card !== 'knight') s.flags.devPlayed = true;
+    if (!(a.card === 'knight' && s.options.knightsFree)) s.flags.devPlayed = true;
   },
 
   // ---- robber / pending
@@ -820,7 +849,7 @@ const HANDLERS = {
     const d = s.board.hexes.find(h => h.terrain === 'desert');
     resolvePending(s, it);
     if (d) s.robber = d.id;
-    log(s, '{@p} forgot to move the robber, so it goes back to the desert.', { p, h: d ? d.id : undefined });
+    log(s, '{@p} forgot to move the robber, so it goes back to the desert (house rule).', { p, h: d ? d.id : undefined });
     if (a && a.endTurn && s.phase === 'play' && s.step === 'main' && !s.pending.length && p === s.current) { s.flags.ending = true; endTurn(s); }
   },
   steal(s, p, a) {
@@ -833,6 +862,7 @@ const HANDLERS = {
   // ---- trading
   offerTrade(s, p, a) {
     requireMain(s, p);
+    if (s.flags.stone2) fail('With stone 2 you may only trade with the bank.');
     if (!validCards(a.give, K(s)) || !validCards(a.get, K(s)) || !sum(a.give) || !sum(a.get)) fail('Set up both sides of the trade.');
     if (!has(P(s, p), a.give)) fail('You do not have those cards.');
     s.trade = { id: ++s.tradeSeq, from: p, give: clean(a.give), get: clean(a.get), responses: {} };
@@ -1409,7 +1439,8 @@ function viewFor(s, me) {
     }),
     longestRoad: s.longestRoad, largestArmy: s.largestArmy,
     dice: s.dice, pending, activeGroup, reveal,
-    trade: s.trade, flags: { devPlayed: !!s.flags.devPlayed, crane: !!s.flags.crane, fleet: s.flags.fleet || null, rolled: !!s.flags.rolled },
+    trade: s.trade, flags: { devPlayed: !!s.flags.devPlayed, crane: !!s.flags.crane, fleet: s.flags.fleet || null, rolled: !!s.flags.rolled, stone2: !!s.flags.stone2 },
+    pair: s.pair ? { one: s.pair.one, two: (s.pair.one + STONE2_GAP) % s.players.length, phase: s.pair.phase } : null,
     free: s.free, sbp: s.sbp,
     bank: s.bank, devDeck: s.devDeck.length,
     progressDecks: s.progressDecks && Object.fromEntries(Object.entries(s.progressDecks).map(([k, v]) => [k, v.length])),
@@ -1433,6 +1464,10 @@ function migrate(s) {
     s.options.big = s.options.big ?? (s.kind === 'extended');
     s.players.forEach(pl => { pl.gold = 0; pl.fish = 0; pl.cargo = { fish: 0, spice: 0 }; pl.delivered = { fish: 0, spice: 0 }; });
   }
+  // games saved before the house rule had its own switch were played with unlimited knights
+  if (s.options && s.options.knightsFree === undefined) s.options.knightsFree = s.mode !== 'knights';
+  if (s.options && s.options.paired === undefined) s.options.paired = false;
+  if (s.pair === undefined) s.pair = null;
   // games saved before the trail was kept: find it once so the golden road shows up
   if (s.longestRoad && s.longestRoad.p != null && !s.longestRoad.edges) s.longestRoad.edges = longestFor(s, s.longestRoad.p, true).edges;
   return s;
