@@ -142,7 +142,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 800; margin: 0; letter-spac
 .game-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 @media (max-width: 1040px) { .game { grid-template-columns: 1fr; padding: 0 8px 20px; } }
 .board-wrap { position: relative; background: radial-gradient(80% 80% at 50% 45%, #3A7593 0%, var(--sea) 50%, var(--sea-d) 100%); border-radius: 22px; box-shadow: inset 0 0 0 3px rgba(0,0,0,.25), 0 10px 30px -15px #000; overflow: hidden; }
-/* the frame clips the board; zoom.js sets the frame height and the SVG's size and position (the whole board is
+/* the frame clips the board; core/zoom.js sets the frame height and the SVG's size and position (the whole board is
    always painted, so panning never shows empty sea where tiles should be) */
 .board-host { position: relative; overflow: hidden; min-height: 280px; }
 .board-host > svg.board { position: absolute; left: 0; top: 0; display: block; width: 100%; height: 100%; transform-origin: 0 0; touch-action: pan-y; user-select: none; -webkit-user-select: none; will-change: transform; }
@@ -1359,7 +1359,7 @@ svg.board:not(.alive) .wave, svg.board:not(.alive) .boat-bob, svg.board:not(.ali
 .aq-chip { position: absolute; left: 32px; top: 3px; height: 22px; padding: 0 6px; border: 0; border-radius: 11px; display: inline-flex; align-items: center; gap: 2px; font-size: 11px; color: #fff; box-shadow: 0 2px 0 rgba(0,0,0,.25); cursor: pointer; }
 .aq-chip:hover { transform: translateY(-1px); }
 
-/* the builder (see js/builder.js) */
+/* the builder (see js/core/builder.js) */
 .bw-grow { transform-box: fill-box; transform-origin: 50% 100%; }
 .bw-road .rl { animation: none; }
 .bw-bob { animation: bwbob .34s ease-in-out infinite alternate; }
@@ -1515,7 +1515,7 @@ svg.board:not(.alive) .hk-prowl, svg.board:not(.alive) .hk-tail, svg.board:not(.
 @keyframes incast { 0%, 30%, 100% { transform: rotate(14deg); } 45% { transform: rotate(-52deg); } 60% { transform: rotate(-30deg); } 80% { transform: rotate(14deg); } }
 svg.board:not(.alive) .in-draw { stroke-dashoffset: 0 !important; animation: none !important; }
 
-/* =============================================================== Dawn of Humankind: the world map (humankind-board.js) */
+/* =============================================================== Dawn of Humankind: the world map (games/humankind/board.js) */
 .alive .alive-ex { animation: hkexbob 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
 @keyframes hkexbob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.3px); } }
 .alive .hk-spear { transform-box: fill-box; transform-origin: 50% 100%; animation: hkspear 3.6s ease-in-out infinite; }
@@ -1575,7 +1575,7 @@ svg.board:not(.alive) .in-draw { stroke-dashoffset: 0 !important; animation: non
 .in-thicket { pointer-events: none; }
 .sub-opts.tall { height: auto; min-height: 96px; }
 
-/* =============================================================== New Energies, second edition (games/energies.js, energies-art.js) */
+/* =============================================================== New Energies, second edition (games/energies/plugin.js, games/energies/art.js) */
 .alive .en-cog { transform-box: fill-box; transform-origin: center; animation: encog 22s linear infinite; }
 .alive .en-cog.fast { animation-duration: 7s; }
 @keyframes encog { to { transform: rotate(360deg); } }

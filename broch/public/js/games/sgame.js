@@ -1,16 +1,16 @@
-// The game screen for the standalone games. It is the same page as game.js (status line, board, hand, players, chat,
+// The game screen for the standalone games. It is the same page as games/classic/screen.js (status line, board, hand, players, chat,
 // log, graphs, trades, victory), but everything that belongs to one game's rules comes from its plugin in games/.
-import { esc, toast, modal, closeModals, wsWatch, wsAct, onWs, reportProblem, houseIcon, glyph, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, cardName, term, tf, t, isLightColor, dieHtml } from './core.js';
-import { lang } from './i18n.js';
-import { renderBoard } from './board.js';
-import { topbar } from './app.js';
-import { diff, play, sfx } from './fx.js';
-import { victoryScene, closeVictory } from './victory.js';
-import { openTutorial, closeTutorial, tutorialSeen } from './tutorial.js';
-import { flag } from './countries.js';
-import { createZoom } from './zoom.js';
-import { chatHtml, historyHtml, graphsHtml, wireGraphs } from './feed.js';
-import { GAMES } from './games/registry.js';
+import { esc, toast, modal, closeModals, wsWatch, wsAct, onWs, reportProblem, houseIcon, glyph, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, cardName, term, tf, t, isLightColor, dieHtml } from '../core/core.js';
+import { lang } from '../core/i18n.js';
+import { renderBoard } from '../core/board.js';
+import { topbar } from '../app.js';
+import { diff, play, sfx } from '../core/fx.js';
+import { victoryScene, closeVictory } from '../core/victory.js';
+import { openTutorial, closeTutorial, tutorialSeen } from '../core/tutorial.js';
+import { flag } from '../core/countries.js';
+import { createZoom } from '../core/zoom.js';
+import { chatHtml, historyHtml, graphsHtml, wireGraphs } from '../core/feed.js';
+import { GAMES } from './registry.js';
 
 let G = null;
 const tx = (k, p) => esc(t(k, p));
@@ -303,7 +303,7 @@ function renderBoardPart() {
     G.fxClean = setTimeout(() => host.querySelectorAll('.fx-flash,.fx-roadglow,.fx-light,.fx-dust,.fx-splash').forEach(el => el.remove()), 2600);
   }
 }
-// endless animations run on one clock so a redraw does not restart them (same trick as game.js)
+// endless animations run on one clock so a redraw does not restart them (same trick as games/classic/screen.js)
 function syncLoops(root) {
   if (!root || !root.getAnimations) return;
   let list;
@@ -376,7 +376,7 @@ function playersHtml() {
   return `<div class="panel"><div class="panel-h"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tx('Players')}</span><span class="spacer"></span><span style="white-space:nowrap">${esc(t(P.name))}${P.beta ? ' · Beta' : ''} · ${tx('turn {n}', { n: v.turn })}</span></div>${rows}</div>`;
 }
 
-// ------------------------------------------------------------ trade offers (same behaviour as game.js: one panel per offer)
+// ------------------------------------------------------------ trade offers (same behaviour as games/classic/screen.js: one panel per offer)
 function renderTrade() {
   const host = G.app.querySelector('.trade-host');
   if (!host) return;

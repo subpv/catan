@@ -1,8 +1,8 @@
 // Dawn of Humankind: the world map as one SVG. Land fields (flat-topped hexes) with their living scenes, the glacier in
 // the north, paths and crossings, camp site tiles, discovery fields with their conditions, hunting clouds, camps,
 // explorers and the two threats. The server sends the geometry (view.board) and the state (view.humankind).
-import { t, term } from '../core.js';
-import * as art from './humankind-art.js';
+import { t, term } from '../../core/core.js';
+import * as art from './art.js';
 
 const S = 56;
 const f = n => n.toFixed(1);

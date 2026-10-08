@@ -1,6 +1,6 @@
 import { api, esc, toast, onWs, houseIcon, PCOLOR, PCOLOR_DARK, t, isLightColor } from './core.js';
 import { fmtDateLocal } from './i18n.js';
-import { topbar, footer, session } from './app.js';
+import { topbar, footer, session } from '../app.js';
 import { sfx, celebrateSound } from './fx.js';
 import { flag } from './countries.js';
 

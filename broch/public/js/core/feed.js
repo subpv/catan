@@ -1,6 +1,6 @@
 // The side feed: chat, a visual game history (one card per turn) and graphs.
 import { esc, t, tf, glyph, houseIcon, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, cardName, term, isLightColor, inkOn } from './core.js';
-import { GAMES } from './games/registry.js';
+import { GAMES } from '../games/registry.js';
 
 const tx = (k, p) => esc(t(k, p));
 const EXTRA_COLOR = { fish: '#1F7A99', spice: '#B53A2A', gold: '#C58E12' };
@@ -22,7 +22,7 @@ export function chatHtml(v, pname) {
 
 // ------------------------------------------------------------ history: one card per turn
 const GAIN_C = new Set(['{@p} receives {$c}.', '{@p} collects {$c}.', "{@p}'s aqueduct provides {$c}.", '{@p} takes {$c} from the gold field.']);
-const GAIN_N = { '{@p} catches {n} fish tokens.': 'fish', '{@p} earns {n} gold.': 'gold', '{@p} loads {n} spice.': 'spice' };
+const GAIN_N = { '{@p} catches {n} fish tokens.': 'fish', '{@p} earns {n} gold.': 'gold' };
 const BUILD = {
   '{@p} built a road.': ['road', 'Road'], '{@p} built a settlement.': ['settlement', 'Settlement'], '{@p} built a city.': ['city', 'City'],
   '{@p} placed a settlement.': ['settlement', 'Settlement'], '{@p} placed a city.': ['city', 'City'],
@@ -79,7 +79,6 @@ function turnCard(v, tr, pname, newest) {
     if (!k || SKIP.has(k)) continue;
     if (GAIN_C.has(k)) { for (const [r, n] of Object.entries(a.c || {})) addGain(a.p, r, n); continue; }
     if (GAIN_N[k]) { addGain(a.p, GAIN_N[k], a.n || 1); continue; }
-    if (k === '{@p} hauls in a catch of fish.') { addGain(a.p, 'fish', 1); continue; }
     if (BUILD[k]) { builds.push({ p: a.p, icon: BUILD[k][0], label: t(BUILD[k][1]) }); continue; }
     if (k === '{@p} improved {#t} to level {n}.') { builds.push({ p: a.p, icon: a.t, label: `${term(a.t)} ${a.n}`, deck: a.t }); continue; }
     if (k === '{@p} traded {$g} with the bank for {$w}.') { rows.push(`<div class="ev trade">${owner && a.p === ownerP ? '' : chip(v.players[a.p], true)}<span class="ev-ic bank">${glyph('bank', 14)}</span><span class="cards">${cardsRow(a.g)}</span><span class="arrow">→</span><span class="cards">${cardsRow(a.w)}</span></div>`); continue; }

@@ -2,7 +2,7 @@
 // landscapes with their little living scenes (woodcutters, stone masons, llamas, miners, potato farmers, fishermen in
 // reed boats, coca pickers, macaws), huts and temples instead of houses, and the thickets that cover a tribe in decline.
 // Every scene loops on the living board (CSS classes in-*, lf-* and the shared hk-* ones in styles.css).
-import { PCOLOR, PCOLOR_DARK } from '../core.js';
+import { PCOLOR, PCOLOR_DARK } from '../../core/core.js';
 
 const f = n => n.toFixed(1);
 const hash = (id, k) => { const x = Math.sin(id * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };

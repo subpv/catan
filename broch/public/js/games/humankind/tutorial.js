@@ -1,8 +1,8 @@
-// How to play Dawn of Humankind: a short interactive chapter for the tutorial player (tutorial.js). It runs on a small
+// How to play Dawn of Humankind: a short interactive chapter for the tutorial player (core/tutorial.js). It runs on a small
 // piece of the real world map (Africa and the south of Europe) and teaches the rules of the book step by step.
-import { addChapter, addHandKeys } from '../tutorial.js';
-import { t, esc, glyph } from '../core.js';
-import { sfx } from '../fx.js';
+import { addChapter, addHandKeys } from '../../core/tutorial.js';
+import { t, esc, glyph } from '../../core/core.js';
+import { sfx } from '../../core/fx.js';
 
 addHandKeys(['fur', 'bone', 'meat', 'flint']);
 

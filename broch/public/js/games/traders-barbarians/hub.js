@@ -1,9 +1,12 @@
 // Traders & Barbarians in the game screen: the questions the engine asks (earthquake, wagons, knights ...), the fish and gold
-// dialogs, chips and pills. game.js builds the helper bundle `c` once and calls these hooks; everything else lives here.
-import { esc, glyph, GLYPH, PCOLOR, RES, CARD_COLOR, resName, cardName, term, t, extendCore, houseIcon, modal } from './core.js';
-import { layer, hold, sfx } from './fx.js';
+// dialogs, chips and pills. games/classic/screen.js builds the helper bundle `c` once and calls these hooks; everything else lives here.
+import { esc, glyph, GLYPH, PCOLOR, RES, CARD_COLOR, resName, cardName, term, t, extendCore, houseIcon, modal } from '../../core/core.js';
+import { layer, hold, sfx, SCENES } from '../../core/fx.js';
 
 const FISH_COST = { robber: 2, steal: 3, take: 4, road: 5, dev: 7 };
+const BRIDGE_COST = { brick: 2, lumber: 1 };
+// the card texts of the English rulebook
+const TB_DESC = { knight: 'Move a barbarian to another path or road. On a road, draw a card from its owner. Counts toward Largest Army.', victoryPoint: 'Worth 1 point. Reveal your Victory Point cards when they bring you to the points needed to win; until then they stay hidden.' };
 const WARE_COLOR = { glass: '#4FA3D9', tools: '#8C8C94', sand: '#D9B25C', marble: '#E8E4DA' };
 
 extendCore({
@@ -220,6 +223,10 @@ export function createHub(c) {
     if (v.gold) out.push({ key: 'gold', n: m.gold, label: t('Gold'), color: '#C58E12', action: 'goldTrade', live: mainTurn && !!l.goldTrade });
     return out;
   }
+  // the bridge button of the Rivers scenario
+  const bridgeButton = (btn, free, l, m) => btn('bridge', t('Bridge'), 'bridge', BRIDGE_COST, free && l.bridges?.length > 0, m.pieces.bridges);
+  // the card text of the Traders & Barbarians scenario for a development card (null: the usual text)
+  const devDesc = (v, type) => (v.hub?.scenario === 'traders' && TB_DESC[type] ? TB_DESC[type] : null);
   function actions(v, m, l, { free, mainTurn, plain }) {
     let h = '';
     const hub = v.hub;
@@ -234,6 +241,7 @@ export function createHub(c) {
   function chips(v, m) {
     const out = [], hub = v.hub;
     const chip = (ic, bg, text, title) => `<span class="stat-chip" title="${esc(title)}"><span class="ic" style="background:${bg}">${glyph(ic, 13)}</span>${text}</span>`;
+    if (v.fish?.boot === v.me) out.push(chip('boot', '#6B4A2A', tx('Old boot'), t('The old boot: you need one more point to win.')));
     if (hub.scenario === 'barbarians') {
       out.push(chip('knight', '#6B4A2A', t('{n} knights left', { n: hub.bb.reserve[v.me] }), t('Knights in your supply')));
       out.push(chip('barbarian', '#9A5A2A', `${hub.bb.prisoners[v.me]}`, t('Prisoners: 2 are worth 1 point')));
@@ -249,6 +257,7 @@ export function createHub(c) {
   function hud(v) {
     const hub = v.hub, bits = [];
     const pill = (ic, text, title) => `<span class="hud-pill" title="${esc(title)}"><svg viewBox="0 0 24 24" width="15" height="15" style="color:#F0E4C8">${GLYPH[ic] || ''}</svg> ${text}</span>`;
+    if (v.fish) bits.push(`<span class="hud-pill" title="${tx('Fish tokens left in the bag')}"><svg viewBox="0 0 24 24" width="15" height="15" style="color:#9FE3F5">${GLYPH.fish}</svg> ${v.fish.left}</span>`);
     if (hub.scenario === 'barbarians') bits.push(pill('barbarian', hub.bb.supply, t('Barbarians still to land')), pill('knight', hub.bb.deck, t('Development cards left')));
     if (hub.scenario === 'caravans') bits.push(pill('wagon', hub.cv.pool, t('Trade wagons left')));
     if (hub.scenario === 'traders') bits.push(pill('wagon', Object.values(hub.tb.stacks).reduce((a, b) => a + b, 0), t('Goods tiles left')));
@@ -258,6 +267,8 @@ export function createHub(c) {
   function playerMeta(v, p, i) {
     const hub = v.hub, out = [];
     const chip = (ic, bg, text, title) => `<span class="mp" title="${esc(title)}"><span class="ic" style="background:${bg}">${glyph(ic, 13)}</span>${text}</span>`;
+    if (v.gold) out.push(chip('gold', '#C58E12', `${p.gold}${p.riverVp ? ` <b style="color:${p.riverVp > 0 ? 'var(--green)' : 'var(--red-d)'}">${p.riverVp > 0 ? '+' : ''}${p.riverVp}</b>` : ''}`, t('Gold')));
+    if (v.fishing) out.push(chip('fish', '#1F7A99', `${p.fishTokens}${v.fish?.boot === i ? ' 🥾' : ''}`, t('Fish tokens')));
     if (hub.scenario === 'barbarians') out.push(chip('barbarian', '#9A5A2A', `${hub.bb.prisoners[i]}`, t('Prisoners')));
     if (hub.scenario === 'traders') out.push(chip('wagon', '#8A6234', `${hub.tb.tab[i].level}·${hub.tb.tab[i].delivered}`, t('Wagon level · deliveries')));
     if (hub.scenario === 'caravans' && p.wagonVp) out.push(chip('wagon', '#8A6234', `+${p.wagonVp}`, t('Buildings between two wagons')));
@@ -287,8 +298,14 @@ export function createHub(c) {
         return true;
       }
       case 'fish': fishDialog(); return true;
+      case 'goldTrade': goldDialog(); return true;
       default: return false;
     }
+  }
+
+  function goldDialog() {
+    const m = c.me();
+    c.choiceDialog(tx('Swap gold for a card'), tx('You have {n} gold. 2 gold buy any resource, up to twice per turn.', { n: m.gold }), c.resChoices(), res => c.send({ type: 'goldTrade', res }));
   }
 
   function fishDialog() {
@@ -333,6 +350,7 @@ export function createHub(c) {
   // ---------------------------------------------------------------- costs dialog
   function costRows(v) {
     const rows = [];
+    if (v.rivers) rows.push([t('Bridge'), BRIDGE_COST, t('Crosses a river; earns 3 gold')]);
     if (v.hub.scenario === 'traders') rows.push([t('Wagon upgrade'), { lumber: 1, wool: 1, ore: 1 }, t('Levels 2 and 3; levels 4 and 5 need 2 lumber')]);
     if (v.hub.damaged && Object.keys(v.hub.damaged).length) rows.push([t('Repair road'), { lumber: 1, brick: 1 }, t('After an earthquake')]);
     return rows;
@@ -368,11 +386,12 @@ export function createHub(c) {
     return `<div class="evcard" title="${esc(term_)}: ${esc(t(EVENT_TEXT[d.card.ev] || ''))}"><span class="evn">${d.total}</span><span class="evt">${esc(term_)}</span></div>${d.red ? `<div class="die red">${d.red}</div>` : ''}`;
   }
 
-  return { status, waiting, targets, boardClick, dialog, tokenList, actions, chips, hud, playerMeta, action, costRows, costsExtra, devRow, awardsText, diceCard, fishDialog };
+  return { status, waiting, targets, boardClick, dialog, tokenList, actions, chips, hud, playerMeta, action, costRows, costsExtra, devRow, awardsText, diceCard, fishDialog, bridgeButton, devDesc };
 }
 
-// ---------------------------------------------------------------- the event card scene (played by fx.js)
-export async function eventCardScene(view, total, nameHtml) {
+// ---------------------------------------------------------------- the event card scene (played by core/fx.js)
+SCENES.eventCard = eventCardScene;
+async function eventCardScene(view, total, nameHtml) {
   const d = view.dice && view.dice.card ? view.dice : null;
   if (!d) return;
   const ev = d.card.ev;
