@@ -17,6 +17,10 @@ const REGISTRATION_CODE = process.env.REGISTRATION_CODE || '';
 const FEEDBACK_URL = process.env.FEEDBACK_URL || 'https://feedback.maidev.dk/';
 const PUBLIC = path.join(__dirname, '..', 'public');
 const SESSION_DAYS = 60;
+// Behind Cloudflare (tunnel or proxy) set TRUST_PROXY=1: the real visitor address comes from CF-Connecting-IP and https from X-Forwarded-Proto.
+// Without it these headers are ignored (anybody could fake them when talking to the server directly).
+const TRUST_PROXY = /^(1|true|yes|cloudflare)$/i.test(process.env.TRUST_PROXY || '');
+const MIN_PASSWORD = 8;
 
 // ------------------------------------------------------------ auth helpers
 const newId = (n = 9) => crypto.randomBytes(n).toString('base64url');
@@ -34,19 +38,45 @@ const meUser = u => u && ({ ...publicUser(u), email: u.email, lang: u.lang || nu
 function cookies(req) {
   return Object.fromEntries((req.headers.cookie || '').split(';').map(c => c.trim().split('=')).filter(x => x[0]).map(([k, ...v]) => [k, decodeURIComponent(v.join('='))]));
 }
-function userFromReq(req) {
+// The cookie holds a random token; only its SHA-256 is stored on disk, so a copy of sessions.json cannot be used to log in.
+const hashToken = tok => crypto.createHash('sha256').update(String(tok)).digest('hex');
+function sessionKey(req) {
   const tok = cookies(req).broch_session;
-  const sess = tok && db.sessions[tok];
+  if (!tok) return null;
+  const key = hashToken(tok);
+  if (db.sessions[key]) return key;
+  if (db.sessions[tok]) { db.sessions[key] = db.sessions[tok]; delete db.sessions[tok]; store.saveSessions(); return key; } // session of an older version: stored hashed from now on
+  return null;
+}
+function userFromReq(req) {
+  const key = sessionKey(req);
+  const sess = key && db.sessions[key];
   if (!sess || sess.exp < Date.now()) return null;
   return db.users.find(u => u.id === sess.userId) || null;
 }
-function startSession(res, user) {
+const clientIp = req => (TRUST_PROXY && (req.headers['cf-connecting-ip'] || String(req.headers['x-forwarded-for'] || '').split(',')[0].trim())) || req.socket.remoteAddress;
+const isHttps = req => TRUST_PROXY && (req.headers['x-forwarded-proto'] === 'https' || /"scheme":"https"/.test(req.headers['cf-visitor'] || ''));
+function startSession(req, res, user) {
   const tok = newId(24);
-  db.sessions[tok] = { userId: user.id, exp: Date.now() + SESSION_DAYS * 864e5 };
+  db.sessions[hashToken(tok)] = { userId: user.id, exp: Date.now() + SESSION_DAYS * 864e5 };
   store.saveSessions();
-  res.setHeader('Set-Cookie', `broch_session=${tok}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_DAYS * 86400}`);
+  res.setHeader('Set-Cookie', `broch_session=${tok}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_DAYS * 86400}${isHttps(req) ? '; Secure' : ''}`);
+}
+function dropSessionsOf(userId, keep) {
+  for (const [k, v] of Object.entries(db.sessions)) if (v.userId === userId && k !== keep) delete db.sessions[k];
+  store.saveSessions();
+}
+function purgeSessions() {
+  let n = 0;
+  for (const [k, v] of Object.entries(db.sessions)) if (!v || v.exp < Date.now()) { delete db.sessions[k]; n++; }
+  if (n) store.saveSessions();
 }
 
+const DUMMY_USER = { ...hashPassword(crypto.randomBytes(8).toString('hex')) }; // a failed login for an unknown email takes as long as one for a known email
+function sameSecret(a, b) {
+  const x = crypto.createHash('sha256').update(String(a || '')).digest(), y = crypto.createHash('sha256').update(String(b)).digest();
+  return crypto.timingSafeEqual(x, y);
+}
 const attempts = new Map();
 function rateLimited(ip) {
   const a = (attempts.get(ip) || []).filter(t => Date.now() - t < 10 * 60e3);
@@ -165,7 +195,7 @@ function getGame(id) {
 async function api(req, res, url) {
   const method = req.method;
   const route = url.pathname.replace(/^\/api/, '');
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const ip = clientIp(req);
   const user = userFromReq(req);
   const need = () => { if (!user) throw new HttpError(401, 'Please log in.'); return user; };
 
@@ -180,30 +210,30 @@ async function api(req, res, url) {
     const pw = String(b.password || '');
     if (!/^\S+@\S+\.\S+$/.test(email)) throw new HttpError(400, 'Enter a valid email.');
     if (!name) throw new HttpError(400, 'Pick a display name.');
-    if (pw.length < 6) throw new HttpError(400, 'Password must be at least 6 characters.');
+    if (pw.length < MIN_PASSWORD) throw new HttpError(400, 'Password must be at least 8 characters.');
     const country = String(b.country || '').toUpperCase();
     if (!/^[A-Z]{2}$/.test(country)) throw new HttpError(400, 'Pick your country.');
-    if (REGISTRATION_CODE && b.code !== REGISTRATION_CODE && db.users.length > 0) { noteFailure(ip); throw new HttpError(403, 'Wrong invite code.'); }
+    if (REGISTRATION_CODE && !sameSecret(b.code, REGISTRATION_CODE) && db.users.length > 0) { noteFailure(ip); throw new HttpError(403, 'Wrong invite code.'); }
     if (db.users.some(u => u.email === email)) throw new HttpError(409, 'That email is already registered.');
     if (db.users.some(u => u.name.toLowerCase() === name.toLowerCase())) throw new HttpError(409, 'That name is taken.');
     const taken = db.users.map(u => u.color);
     const u = { id: newId(), email, name, country, color: COLORS.find(c => !taken.includes(c)) || COLORS[db.users.length % COLORS.length], ...hashPassword(pw), createdAt: Date.now(), admin: db.users.length === 0, colorsV: 2 };
     db.users.push(u); store.saveUsers();
-    startSession(res, u);
+    startSession(req, res, u);
     return send(res, 200, { user: meUser(u) });
   }
   if (route === '/login' && method === 'POST') {
     if (rateLimited(ip)) throw new HttpError(429, 'Too many attempts. Try again in a few minutes.');
     const b = await readBody(req);
     const u = db.users.find(x => x.email === String(b.email || '').trim().toLowerCase());
-    if (!u || !checkPassword(u, String(b.password || ''))) { noteFailure(ip); throw new HttpError(401, 'Wrong email or password.'); }
-    startSession(res, u);
+    if (!u || !checkPassword(u || DUMMY_USER, String(b.password || '')) ) { noteFailure(ip); throw new HttpError(401, 'Wrong email or password.'); }
+    startSession(req, res, u);
     return send(res, 200, { user: meUser(u) });
   }
   if (route === '/logout' && method === 'POST') {
-    const tok = cookies(req).broch_session;
-    if (tok) { delete db.sessions[tok]; store.saveSessions(); }
-    res.setHeader('Set-Cookie', 'broch_session=; Path=/; Max-Age=0');
+    const key = sessionKey(req);
+    if (key) { delete db.sessions[key]; store.saveSessions(); }
+    res.setHeader('Set-Cookie', `broch_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${isHttps(req) ? '; Secure' : ''}`);
     return send(res, 200, { ok: true });
   }
   if (route === '/me' && method === 'GET') return send(res, 200, { user: meUser(user) });
@@ -220,8 +250,9 @@ async function api(req, res, url) {
     if (b.lang != null) { if (!/^[a-z]{2}$/.test(b.lang)) throw new HttpError(400, 'Unknown language.'); u.lang = b.lang; }
     if (b.newPassword) {
       if (!checkPassword(u, String(b.password || ''))) throw new HttpError(401, 'Current password is wrong.');
-      if (String(b.newPassword).length < 6) throw new HttpError(400, 'Password must be at least 6 characters.');
+      if (String(b.newPassword).length < MIN_PASSWORD) throw new HttpError(400, 'Password must be at least 8 characters.');
       Object.assign(u, hashPassword(String(b.newPassword)));
+      dropSessionsOf(u.id, sessionKey(req)); // everybody else who was logged in with the old password is logged out
     }
     store.saveUsers();
     return send(res, 200, { user: meUser(u) });
@@ -358,11 +389,24 @@ async function api(req, res, url) {
     console.warn('[client-error]', user ? user.name : 'anon', String(b.message || '').slice(0, 500), String(b.stack || '').slice(0, 1500));
     return send(res, 200, { ok: true });
   }
-  if (route === '/health') return send(res, 200, { ok: true, games: db.games.size, users: db.users.length });
+  if (route === '/health') return send(res, 200, { ok: true });
   throw new HttpError(404, 'Unknown endpoint');
 }
 
+// Headers on every answer: no framing (clickjacking), no content sniffing, no referrer, and a content security policy that only allows
+// the app's own scripts (plus the Google fonts the page uses).
+const CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' ws: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+function securityHeaders(req, res) {
+  res.setHeader('Content-Security-Policy', CSP);
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  if (isHttps(req)) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
+}
 const server = http.createServer(async (req, res) => {
+  securityHeaders(req, res);
   const url = new URL(req.url, 'http://x');
   if (url.pathname.startsWith('/api/')) {
     try { await api(req, res, url); } catch (e) {
@@ -377,7 +421,13 @@ const server = http.createServer(async (req, res) => {
 
 // ------------------------------------------------------------ websockets
 // compress bigger messages (game states are repetitive JSON); small ones go out as they are
-const wss = new WebSocketServer({ server, path: '/ws', perMessageDeflate: { threshold: 1024, zlibDeflateOptions: { level: 3 }, concurrencyLimit: 4 } });
+// a web page of another site must not be able to open a WebSocket with the visitor's cookie: the Origin has to be this site
+function sameOrigin(req) {
+  const o = req.headers.origin;
+  if (!o) return true; // not a browser
+  try { return new URL(o).host === (req.headers['x-forwarded-host'] && TRUST_PROXY ? req.headers['x-forwarded-host'] : req.headers.host); } catch { return false; }
+}
+const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 64 * 1024, verifyClient: ({ req }) => sameOrigin(req), perMessageDeflate: { threshold: 1024, zlibDeflateOptions: { level: 3 }, concurrencyLimit: 4 } });
 const clients = new Set(); // {ws, user, game}
 
 function sendWs(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)); }
@@ -469,6 +519,10 @@ wss.on('connection', (ws, req) => {
   });
 });
 
+purgeSessions();
+setInterval(purgeSessions, 6 * 3600e3).unref();
+if (!REGISTRATION_CODE) console.warn('WARNING: REGISTRATION_CODE is not set: anybody who finds the address can create an account. Set it before the site is public.');
+if (!TRUST_PROXY) console.log('TRUST_PROXY is off: set TRUST_PROXY=1 when the app runs behind Cloudflare (needed for the Secure cookie and the real visitor address).');
 setInterval(() => {
   wss.clients.forEach(ws => { if (!ws.isAlive) return ws.terminate(); ws.isAlive = false; ws.ping(); });
 }, 30000);

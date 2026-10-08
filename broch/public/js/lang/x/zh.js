@@ -1432,6 +1432,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"石头1：{@p}。石头2：{@q}
 "A free settlement on a free crossing that no road leads to. No yield, and your turn ends.":"在没有道路通往的空交叉点免费放置一座村庄。无产出，你的回合结束。",
 "Random landscape":"随机地形",
 "Shuffle the land fields (variable set-up of the almanac). Starts with the free founding phase.":"打乱陆地地块（年鉴中的可变布局），以自由建村阶段开始。",
+"Password must be at least 8 characters.":"密码至少需要 8 个字符。",
 "Barbarians land on the coast; knights drive them off. 3–6 players.":"野蛮人在海岸登陆，骑士将其驱逐。3–6名玩家。",
 "The die shows {n}: the {#c} paths.":"骰子显示{n}：{#c}小路。",
 "Barbarians land":"野蛮人登陆",

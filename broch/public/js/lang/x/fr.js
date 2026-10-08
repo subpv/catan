@@ -1432,6 +1432,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Pierre 1 : {@p}. Pierre 2 : {@q
 "A free settlement on a free crossing that no road leads to. No yield, and your turn ends.":"Une colonie gratuite sur une intersection libre où aucune route ne mène. Pas de production, et votre tour se termine.",
 "Random landscape":"Paysage aléatoire",
 "Shuffle the land fields (variable set-up of the almanac). Starts with the free founding phase.":"Les champs de terre sont mélangés (mise en place variable de l'almanach). Commence par la phase de fondation libre.",
+"Password must be at least 8 characters.":"Le mot de passe doit contenir au moins 8 caractères.",
 "Barbarians land on the coast; knights drive them off. 3–6 players.":"Des barbares débarquent sur la côte ; les chevaliers les repoussent. 3–6 joueurs.",
 "The die shows {n}: the {#c} paths.":"Le dé montre {n} : chemins {#c}.",
 "Barbarians land":"Les barbares débarquent",

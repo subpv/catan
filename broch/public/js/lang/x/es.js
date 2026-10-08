@@ -1432,6 +1432,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Piedra 1: {@p}. Piedra 2: {@q}.
 "A free settlement on a free crossing that no road leads to. No yield, and your turn ends.":"Una colonia gratis en una intersección libre a la que no llegue ningún camino. Sin producción, y tu turno termina.",
 "Random landscape":"Paisaje aleatorio",
 "Shuffle the land fields (variable set-up of the almanac). Starts with the free founding phase.":"Los campos de tierra se mezclan (preparación variable del almanaque). Empieza con la fase de fundación libre.",
+"Password must be at least 8 characters.":"La contraseña debe tener al menos 8 caracteres.",
 "Barbarians land on the coast; knights drive them off. 3–6 players.":"Los bárbaros desembarcan en la costa; los caballeros los expulsan. 3–6 jugadores.",
 "The die shows {n}: the {#c} paths.":"El dado muestra {n}: caminos de color {#c}.",
 "Barbarians land":"Los bárbaros desembarcan",

@@ -1432,6 +1432,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Камінь 1: {@p}. Камі�
 "A free settlement on a free crossing that no road leads to. No yield, and your turn ends.":"Безкоштовне поселення на вільному перехресті, до якого не веде жодна дорога. Без видобутку, і ваш хід закінчується.",
 "Random landscape":"Випадковий ландшафт",
 "Shuffle the land fields (variable set-up of the almanac). Starts with the free founding phase.":"Сухопутні поля перетасовуються (змінне розташування з альманаху). Починається з вільної фази заснування.",
+"Password must be at least 8 characters.":"Пароль має містити щонайменше 8 символів.",
 "Barbarians land on the coast; knights drive them off. 3–6 players.":"Варвари висаджуються на узбережжі; лицарі їх проганяють. 3–6 гравців.",
 "The die shows {n}: the {#c} paths.":"Кубик показує {n}: стежки кольору {#c}.",
 "Barbarians land":"Варвари висаджуються",

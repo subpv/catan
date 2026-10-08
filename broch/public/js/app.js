@@ -79,7 +79,7 @@ function renderAuth(mode = 'login') {
         ${reg ? `<label class="field"><span>${tx('Display name')}</span><input class="input" name="name" id="f-name" maxlength="24" autocomplete="nickname" required></label>` : ''}
         ${reg ? `<label class="field"><span>${tx('Country')}</span>${countrySelect('f-country', guessCountry())}</label>` : ''}
         <label class="field"><span>${tx('Email')}</span><input class="input" name="email" id="f-email" type="email" autocomplete="email" required></label>
-        <label class="field"><span>${tx('Password')}</span><input class="input" name="password" id="f-pw" type="password" minlength="6" autocomplete="${reg ? 'new-password' : 'current-password'}" required></label>
+        <label class="field"><span>${tx('Password')}</span><input class="input" name="password" id="f-pw" type="password" minlength="8" autocomplete="${reg ? 'new-password' : 'current-password'}" required></label>
         ${reg && session.config.needsCode && !session.config.firstUser ? `<label class="field"><span>${tx('Invite code (ask whoever runs this server)')}</span><input class="input" name="code" id="f-code" required></label>` : ''}
         ${reg && session.config.firstUser ? `<p class="muted" style="font-size:13px">${tx("You're the first player, so this account becomes the admin.")}</p>` : ''}
         <button class="btn primary block" style="margin-top:6px">${reg ? tx('Create account') : tx('Log in')}</button>
@@ -336,7 +336,7 @@ function renderProfile() {
     </div>
     <div class="card"><h3>${tx('Change password')}</h3>
       <label class="field"><span>${tx('Current password')}</span><input class="input" type="password" id="pw0" autocomplete="current-password"></label>
-      <label class="field"><span>${tx('New password')}</span><input class="input" type="password" id="pw1" minlength="6" autocomplete="new-password"></label>
+      <label class="field"><span>${tx('New password')}</span><input class="input" type="password" id="pw1" minlength="8" autocomplete="new-password"></label>
       <button class="btn" id="pwsave">${tx('Change password')}</button>
     </div>
     <div class="card"><div class="row"><div class="spacer">${tx('Done for today?')}</div><button class="btn dark" id="logout">${tx('Log out')}</button></div></div>
