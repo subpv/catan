@@ -256,7 +256,7 @@ function statusInfo() {
         masterMerchant: [t('Take 2 cards from their hand.'), '', t('Choose cards')],
       }[mp.type] || [t('Make your choice.'), ''];
       const rr = mp.type === 'moveRobber' && v.legal?.leaveRobber && v.step === 'main';
-      return { msg: esc(T[0]), sub: esc(rr ? t('If you end your turn now, the robber goes back to the desert.') : T[1]), mine: true, btns: `${T[2] ? `<button class="btn primary" data-do="pendingDialog">${esc(T[2])}</button>` : ''}${mp.type === 'placeFreeKnight' ? `<button class="btn" data-do="skipFreeKnight">${tx('Skip')}</button>` : ''}${rr ? `<button class="btn" data-do="forgetRobber">${tx('End turn')}</button>` : ''}` };
+      return { msg: esc(T[0]), sub: esc(rr ? t('House rule: if you end your turn now, the robber goes back to the desert.') : T[1]), mine: true, btns: `${T[2] ? `<button class="btn primary" data-do="pendingDialog">${esc(T[2])}</button>` : ''}${mp.type === 'placeFreeKnight' ? `<button class="btn" data-do="skipFreeKnight">${tx('Skip')}</button>` : ''}${rr ? `<button class="btn" data-do="forgetRobber">${tx('End turn')}</button>` : ''}` };
     }
     const who = [...new Set(pend.map(p => p.player))].map(pname).join(', ');
     const W = {
@@ -271,15 +271,16 @@ function statusInfo() {
     return p === v.me ? { msg: tx('Special building phase.'), sub: tx('You may build or buy now. No trading.'), mine: true, btns: `<button class="btn primary" data-do="endSbp">${tx('Done')}</button>` }
       : { msg: t('{name} is in the special building phase…', { name: pname(p) }) };
   }
-  if (v.current !== v.me) return { msg: v.step === 'roll' ? t('Waiting for {name} to roll…', { name: pname(v.current) }) : t('{name} is taking their turn.', { name: pname(v.current) }) };
+  if (v.current !== v.me) return { msg: v.step === 'roll' ? t('Waiting for {name} to roll…', { name: pname(v.current) }) : v.flags.stone2 ? t('{name} has stone 2 and is taking their turn.', { name: pname(v.current) }) : t('{name} is taking their turn.', { name: pname(v.current) }) };
   if (v.step === 'roll') {
-    const knightReady = v.mode === 'classic' && me().dev?.some(d => d.type === 'knight' && !d.fresh);
-    return { msg: tx('Your turn. Roll the dice.'), sub: knightReady ? tx('You can play a knight before rolling.') : '', mine: true, btns: `<button class="btn primary roll-btn" data-do="roll">🎲 ${tx('Roll dice')}</button>` };
+    const knightReady = v.mode === 'classic' && me().dev?.some(d => d.type !== 'victoryPoint' && !d.fresh);
+    return { msg: tx('Your turn. Roll the dice.'), sub: knightReady ? tx('You can play a development card before rolling.') : '', mine: true, btns: `<button class="btn primary roll-btn" data-do="roll">🎲 ${tx('Roll dice')}</button>` };
   }
   if (v.free.roads > 0) return { msg: esc(t('Place free roads: {n}.', { n: v.free.roads })), sub: tx('Tap a glowing edge.'), mine: true, btns: `<button class="btn" data-do="skipFree">${tx('Skip')}</button>` };
   const L0 = v.legal || {};
   const shipHint = L0.moveShips && Object.keys(L0.moveShips).length ? tx('Tap one of your pulsing ships to sail it (once per turn).') : '';
-  return { msg: tx('Build, trade or end your turn.'), sub: v.free.promotes ? tx('Free promotions left: {n} (tap a knight).', { n: v.free.promotes }) : shipHint, mine: true, btns: `<button class="btn" data-do="trade">${tx('Trade')}</button><button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button><button class="btn primary" data-do="endTurn">${tx('End turn')}</button>` };
+  const stone2 = v.flags.stone2;
+  return { msg: stone2 ? tx('Your turn with stone 2.') : tx('Build, trade or end your turn.'), sub: v.free.promotes ? tx('Free promotions left: {n} (tap a knight).', { n: v.free.promotes }) : stone2 ? tx('No dice. Trade with the bank only.') : shipHint, mine: true, btns: `${stone2 ? '' : `<button class="btn" data-do="trade">${tx('Trade')}</button>`}<button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button><button class="btn primary" data-do="endTurn">${tx('End turn')}</button>` };
 }
 
 
@@ -493,7 +494,8 @@ function handHtml() {
       const g = groups[ty];
       const vpCard = ty === 'victoryPoint';
       const ready = g.ready > 0 && !vpCard;
-      const playable = ready && canPlayNow && (ty === 'knight' ? v.step === 'roll' || v.step === 'main' : v.step === 'main' && !v.flags.devPlayed);
+      // one development card per turn, before or after rolling (house rule: knights do not count)
+      const playable = ready && canPlayNow && (v.step === 'roll' || v.step === 'main') && !(v.flags.devPlayed && !(ty === 'knight' && v.options.knightsFree));
       const fresh = !vpCard && g.ready === 0;
       return `<button class="dcard ${vpCard ? 'vp' : ''} ${playable ? 'ready' : ''} ${fresh ? 'fresh' : ''}" data-dev="${ty}" title="${esc(cardName(ty))}">
         <span class="dc-ic">${glyph(ty, 17)}</span>${nameSpan(cardName(ty))}${g.n > 1 ? `<span class="n">${g.n}</span>` : ''}${fresh ? `<i class="dc-new">${tx('new')}</i>` : ''}</button>`;
@@ -543,6 +545,12 @@ function playersHtml() {
     if (v.longestRoad.p === i) awards.push(`<span class="award" title="${tx(isSea(v) ? 'Longest Trade Route' : 'Longest Road')} (+2)">${glyph('road', 11)}${v.longestRoad.len}</span>`);
     if (v.largestArmy?.p === i && v.mode === 'classic') awards.push(`<span class="award" title="${tx('Largest Army')} (+2)">${glyph('sword', 11)}${v.largestArmy.count}</span>`);
     if (p.defender) awards.push(`<span class="award def" title="${tx('Defender of Broch')} (+${p.defender})">♛${p.defender > 1 ? ' ' + p.defender : ''}</span>`);
+    // 5–6 players: who holds which stone (stone 1 moves on as soon as its turn is over, stone 2 stays until its own turn is over)
+    if (v.pair) {
+      const one = v.pair.phase === 1 ? v.pair.one : (v.pair.one + 1) % v.players.length;
+      if (i === one) awards.push(`<span class="award stone" title="${tx('Stone 1: rolls the dice, trades with everybody, builds')}">①</span>`);
+      if (i === v.pair.two) awards.push(`<span class="award stone" title="${tx('Stone 2: no dice, trades with the bank only, builds')}">②</span>`);
+    }
     const meta = [];
     const over = p.cards > (p.handLimit || 7);
     meta.push(`<span class="mp ${over ? 'warn' : ''}" title="${tx('Cards: {n}', { n: p.cards })}${over ? ' · ' + tx('More than {n} cards: a 7 costs you half of them.', { n: p.handLimit }) : ''}"><i class="stk res"></i>${p.cards}</span>`);
@@ -961,7 +969,7 @@ function devDialog(type) {
   const v = G.view;
   const ready = me().dev.some(d => d.type === type && !d.fresh);
   const myTurn = v.current === v.me && v.phase === 'play' && v.step !== 'sbp' && !v.pending.length;
-  const limited = type !== 'knight' && v.flags.devPlayed; // knights are unlimited, every other card once per turn
+  const limited = v.flags.devPlayed && !(type === 'knight' && v.options.knightsFree); // one card per turn (house rule: knights are unlimited)
   const can = type !== 'victoryPoint' && ready && myTurn && !limited;
   const why = type === 'victoryPoint' ? t('Counts automatically.') : !myTurn ? t('Play it on your turn.') : limited ? t('You already played a card this turn.') : !ready ? t('Cards bought this turn can be played next turn.') : '';
   modal(`<div class="progress-card dev-card fx-flip"><b>${esc(cardName(type))}</b><small>${tx(DEV_DESC[type])}</small></div>
@@ -1135,10 +1143,14 @@ function costsDialog() {
   const rows = [[t('Road'), COSTS.road, ''], [t('Settlement'), COSTS.settlement, t('1 point')], [t('City'), COSTS.city, t('2 points, double production')]];
   if (isSea(G.view)) rows.push([t('Ship'), COSTS.ship, t('Sails on sea edges; moves once per turn')]);
   if (G.view.rivers) rows.push([t('Bridge'), COSTS.bridge, t('Crosses a river; earns 3 gold')]);
-  if (!knights) rows.push([t('Development card'), COSTS.dev, t('Knight, progress or point')]);
+  if (!knights) rows.push([t('Development card'), COSTS.dev, t('Knight, Road Building, Year of Plenty, Monopoly or a point')]);
   else rows.push([t('Knight'), COSTS.knight, t('Basic knight (inactive)')], [t('Activate knight'), { grain: 1 }, ''], [t('Promote knight'), { wool: 1, ore: 1 }, t('Mighty needs politics 3')], [t('City wall'), COSTS.wall, t('+2 hand limit')]);
+  const o = G.view.options || {};
+  const house = [o.robberReturn && t('House rule: forgotten robber'), o.knightsFree && t('House rule: knights without a limit'), o.startBoth && t('House rule: starting resources for both')].filter(Boolean);
   modal(`<h2>${tx('Building costs')}</h2><button class="btn gold block tut-open" data-tut-mode>▶ ${tx('How to play: {mode}', { mode: modeLabel(G.view) })}</button><div style="margin-top:10px">${rows.map(([n, c, d]) => `<div class="row" style="padding:7px 0;border-top:1px solid var(--line)"><b style="width:140px">${esc(n)}</b><span class="spacer">${cardsHtml(c)}</span><span class="muted" style="font-size:12px;text-align:right">${esc(d)}</span></div>`).join('')}</div>
     ${knights ? `<p class="muted" style="font-size:13px">${tx('Improvements cost 1–5 commodities: cloth for trade, coin for politics, paper for science. Cities on forest, pasture and mountains yield a commodity instead of a second resource.')}</p>` : ''}
+    ${!knights ? `<p class="muted" style="font-size:13px">${tx('Longest Road: 5 or more connected roads, 2 points. Largest Army: 3 or more played knights, 2 points. You may play 1 development card per turn, but not one you bought this turn.')}</p>` : ''}
+    ${house.length ? `<p class="muted" style="font-size:13px"><b>${tx('House rules in this game')}:</b> ${house.map(esc).join(' · ')}</p>` : ''}
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button></div>`, {
     onMount: el => el.querySelector('[data-tut-mode]')?.addEventListener('click', () => { closeModals(); openTutorial(tutorialFor(G.view)); }),
   });

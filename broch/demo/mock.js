@@ -62,7 +62,7 @@ function card(g) {
   const m = g.meta;
   fixColors(m);
   return {
-    id: m.id, name: m.name, mode: m.mode, expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, maxPlayers: m.maxPlayers, vpTarget: m.vpTarget, status: m.status, host: m.host,
+    id: m.id, name: m.name, mode: m.mode, expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, knightsFree: !!m.knightsFree, maxPlayers: m.maxPlayers, vpTarget: m.vpTarget, status: m.status, host: m.host,
     seats: m.seats.map(id => ({ ...pub(users.find(u => u.id === id)), color: m.colors[id] })),
     current: g.state && g.state.phase !== 'over' ? g.state.players[g.state.current].userId : null,
     turn: g.state ? g.state.turn : 0,
@@ -158,7 +158,7 @@ async function api(path, opts = {}) {
     const id = 'demo' + (++seq);
     // bots take the other seats straight away so you can start
     const seats = [u.id, ...users.slice(1, maxPlayers).map(x => x.id)];
-    const g = { meta: { id, name: '', mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, maxPlayers, vpTarget: b.vpTarget || defVp, host: u.id, seats, status: 'open', specialBuild: true }, state: null };
+    const g = { meta: { id, name: '', mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', maxPlayers, vpTarget: b.vpTarget || defVp, host: u.id, seats, status: 'open' }, state: null };
     games.set(id, g);
     emit({ t: 'lobby' });
     return { game: card(g) };
@@ -179,7 +179,7 @@ async function api(path, opts = {}) {
     if (m[2] === 'start') {
       fixColors(g.meta);
       const players = g.meta.seats.map(id => { const u = users.find(x => x.id === id); return { id, name: u.name, color: g.meta.colors[id], country: u.country }; });
-      g.state = engine.createGame({ id: g.meta.id, mode: g.meta.mode, players, options: { vpTarget: g.meta.vpTarget, specialBuild: players.length > 4, expansion: g.meta.expansion, scenario: g.meta.scenario, variants: g.meta.variants, missions: g.meta.missions, robberReturn: !!g.meta.robberReturn, startBoth: !!g.meta.startBoth, big: g.meta.big ?? players.length > 4 } });
+      g.state = engine.createGame({ id: g.meta.id, mode: g.meta.mode, players, options: { vpTarget: g.meta.vpTarget, expansion: g.meta.expansion, scenario: g.meta.scenario, variants: g.meta.variants, missions: g.meta.missions, robberReturn: !!g.meta.robberReturn, startBoth: !!g.meta.startBoth, knightsFree: !!g.meta.knightsFree, big: g.meta.big ?? players.length > 4 } });
       g.meta.status = 'playing';
       emit({ t: 'lobby' });
       botTick(g);
