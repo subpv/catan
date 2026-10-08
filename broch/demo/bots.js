@@ -49,6 +49,32 @@ export function decide(v) {
       case 'aqueduct': return { type: 'aqueduct', res: pick(RES) };
       case 'placeFreeKnight': return { type: 'placeFreeKnight', v: L.freeKnightSpots?.length ? pick(L.freeKnightSpots) : null };
       case 'spy': return { type: 'spyTake', idx: v.reveal?.progress?.length ? 0 : null };
+      // Traders & Barbarians
+      case 'quake': return { type: 'quake', e: pick(L.quakeRoads) };
+      case 'bankPick': { const c = {}; for (let i = 0; i < mine.count; i++) { const k = pick(RES.filter(r => v.bank[r] > 0)); if (k) c[k] = (c[k] || 0) + 1; } return { type: 'bankPick', cards: c }; }
+      case 'helpGive': { const have = RES.filter(r => me.res[r] > 0); return have.length ? { type: 'helpGive', to: pick(L.helpTo), card: pick(have) } : null; }
+      case 'fishSwap': return { type: 'fishSwap', idx: null };
+      case 'wagonCards': return { type: 'wagonCards', wool: Math.min(me.res.wool, 1), grain: 0 };
+      case 'wagonVote': return { type: 'wagonVote', pos: pick(L.wagonPositions) };
+      case 'wagonPlace': return { type: 'wagonPlace', pos: pick(L.wagonPositions) };
+      case 'placeKnight': return { type: 'placeKnight', e: pick(L.knightPlace) };
+      case 'captive': return { type: 'captive', hex: pick(L.barbHexes) };
+      case 'treason': {
+        const nf = Math.min(2, L.barbHexes.length), from = L.barbHexes.slice(0, nf);
+        return { type: 'treason', from, to: L.treasonTargets.filter(h => !from.includes(h)).slice(0, 2) };
+      }
+      case 'moveKnights': {
+        const mv = Object.entries(L.knightMoves || {}).filter(([e]) => (L.knightsOnCastle || []).includes(+e) || Math.random() < 0.4);
+        if (mv.length) { const [e, o] = pick(mv); return { type: 'moveKnight', from: +e, to: pick([...o.near, ...o.far]) }; }
+        return { type: 'knightsDone' };
+      }
+      case 'moveBarb': return { type: 'moveBarb', from: pick(L.barbMoves.from), to: pick(L.barbMoves.to) };
+      case 'moveWagon': {
+        const W = L.wagon;
+        if (W.placing) return { type: 'wagonBarbTo', to: pick(W.barbTargets) };
+        if (W.steps.length && Math.random() < 0.85) return { type: 'wagonStep', to: pick(W.steps).to };
+        return { type: 'wagonDone' };
+      }
       case 'masterMerchant': {
         const r = v.reveal; const tot = [...Object.values(r.res), ...Object.values(r.comm)].reduce((a, b) => a + b, 0);
         return { type: 'takeCards', cards: cardsFrom(r, Math.min(2, tot)) };
@@ -78,7 +104,7 @@ export function decide(v) {
     if (k.chase && Math.random() < 0.5) return { type: 'chaseRobber', v: +kv };
   }
   if (L.canBuyDev && Math.random() < 0.6) return { type: 'buyDev' };
-  const playable = (me.dev || []).find(d => !d.fresh && d.type !== 'victoryPoint');
+  const playable = (me.dev || []).find(d => !d.fresh && d.type !== 'victoryPoint' && d.type !== 'goodTrip');
   if (playable && !v.flags.devPlayed) return { type: 'playDev', card: playable.type, a: pick(RES), b: pick(RES), res: pick(RES) };
   if (L.roads?.length && Math.random() < 0.5) return { type: 'buildRoad', e: pick(L.roads) };
   if (L.ships?.length && Math.random() < 0.6) return { type: 'buildShip', e: pick(L.ships) };
@@ -86,7 +112,9 @@ export function decide(v) {
   if (L.moveShips) { const ms = Object.entries(L.moveShips).filter(([, to]) => to.length); if (ms.length && Math.random() < 0.35) { const [from, to] = pick(ms); return { type: 'moveShip', from: +from, to: pick(to) }; } }
   if (L.deliver) for (const [kind, ok] of Object.entries(L.deliver)) if (ok) return { type: 'deliver', kind };
   if (L.lairs?.length) return { type: 'attackLair', hex: pick(L.lairs) };
-  if (L.goldTrade) return { type: 'goldTrade', res: pick(RES) };
+  if (L.upgrade && Math.random() < 0.6) return { type: 'upgradeWagon' };
+  if (L.repair?.ok) return { type: 'repairRoad', e: pick(L.repair.edges) };
+  if (L.goldTrade && Math.random() < 0.5) return { type: 'goldTrade', res: pick(RES) };
   if (L.fish) for (const w of ['dev', 'road', 'take']) if (L.fish[w] && w !== 'take') return { type: 'useFish', what: w, res: pick(RES), target: pick(v.players.map((_, i) => i).filter(i => i !== v.me)) };
   if (L.ratios) {
     for (const [t, r] of Object.entries(L.ratios)) {

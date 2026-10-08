@@ -1346,7 +1346,7 @@ function legalFor(s, p) {
     const c = countPieces(s, p);
     if (has(pl, C.COSTS.road) && c.roads < C.PIECES.road) L.roads = legalRoads(s, p);
     if (has(pl, C.COSTS.settlement) && c.settlements < C.PIECES.settlement) L.settlements = legalSettlements(s, p);
-    if (has(pl, C.COSTS.city) && c.cities < C.PIECES.city) L.cities = ownSettlements(s, p);
+    if (has(pl, C.COSTS.city) && c.cities < C.PIECES.city) L.cities = ownSettlements(s, p).filter(v => X.cityOk(s, v, p));
     if (!K(s)) L.canBuyDev = has(pl, C.COSTS.dev) && s.devDeck.length > 0;
     if (K(s)) {
       if (has(pl, C.COSTS.knight) && c.knights[1] < 2) L.knightSpots = legalKnightSpots(s, p);

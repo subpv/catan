@@ -704,7 +704,7 @@ module.exports = function make(core) {
       if (s.fishing) {
         const pl = P(s, p);
         L.fish = {};
-        for (const [k, c] of Object.entries(C.FISH_COSTS)) L.fish[k] = fishSum(pl) >= c && !(k === 'robber' && s.robber == null);
+        for (const [k, c] of Object.entries(C.FISH_COSTS)) L.fish[k] = fishSum(pl) >= c && !(k === 'robber' && s.robber == null) && !(k === 'road' && (countPieces(s, p).roads >= C.PIECES.road || hasDamage(s, p)));
         L.fishTokens = pl.fishTok.slice();
         if (s.fish.boot === p && s.turn > s.fish.bootTurn) L.boot = s.players.map((_, q) => q).filter(q => q !== p && core.vp(s, q, false) >= core.vp(s, p, false));
       }
