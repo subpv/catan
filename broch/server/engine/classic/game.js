@@ -1,6 +1,9 @@
 'use strict';
-// Broch rules engine. Pure state machine: createGame() -> state, act(state, seat, action) mutates state.
+// Broch rules engine for the classic game. Pure state machine: createGame() -> state, act(state, seat, action) mutates state.
 // viewFor(state, seat) returns what one player may see, including legal moves.
+// Cities & Knights lives in ../knights/knights.js, Seafarers in ../seafarers and Traders & Barbarians in ../traders-barbarians;
+// expansions.js glues the two expansions in. They all receive the helpers of this file at the bottom (core) and this file
+// calls their hooks (KN.*, X.*) where they change a classic rule.
 
 const C = require('../shared/constants');
 const { generate, shuffle, expand } = require('../shared/board');
@@ -30,7 +33,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
   const variants = expansion === 'traders' ? X.hub.normalize(options.variants, { big, players: players.length, knights }) : {};
   const board = X.makeBoard({ expansion, mode, options: { ...options, big, scenario, variants }, players: players.length, generate });
   // the frame piece with the barbarian track replaces the frame piece with a 3:1 harbor (rulebook, set-up)
-  if (knights && !sea) dropHarbor(board);
+  if (knights && !sea) KN.dropHarbor(board);
   const defaultVp = (knights ? (expansion === 'seafarers' ? X.SCENARIOS[scenario].vp + 2 : 13) : sea ? X.SCENARIOS[scenario].vp : expansion === 'traders' ? X.hub.defaultVp(variants) : 10) + (knights && variants.harbors ? 1 : 0);
   const order = shuffle(players.map((_, i) => i));
   const seats = order.map(i => players[i]);
@@ -50,24 +53,19 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
     },
     board,
     robber: expansion === 'traders' && X.hub.initialRobber(board, variants) !== undefined ? X.hub.initialRobber(board, variants) : board.desert != null ? board.desert : board.hexes.find(h => h.terrain === 'desert').id,
-    merchant: null,
     buildings: {}, roads: {}, knights: {},
     players: seats.map((pl, i) => ({
       userId: pl.id, name: pl.name, color: pl.color || C.COLORS[i], country: pl.country || null,
       res: zero(C.RES), comm: zero(C.COMM),
-      dev: [], devPlayed: 0, knightsPlayed: 0, aqueduct: null,
-      progress: [], vpCards: 0, defender: 0,
-      improvements: { trade: 0, politics: 0, science: 0 },
+      dev: [], devPlayed: 0, knightsPlayed: 0,
+      ...KN.newPlayer(),
     })),
     phase: 'setup', step: null, turn: 0, current: 0,
     setup: { queue: [...[...Array(n).keys()], ...[...Array(n).keys()].reverse(), ...(board.rules && board.rules.thirdSettlement ? [...Array(n).keys()] : [])], idx: 0, need: 'settlement', last: null, payFrom: board.rules && board.rules.thirdSettlement ? 2 * n : n },
     dice: null, pending: [], pgroup: 0,
     bank: zero(C.RES),
     devDeck: knights ? [] : shuffle(expand(def.dev)),
-    progressDecks: knights ? Object.fromEntries(Object.entries(C.PROGRESS).map(([k, v]) => [k, shuffle(expand(v))])) : null,
     longestRoad: { p: null, len: 0 }, largestArmy: { p: null, count: 0 },
-    barbarian: knights ? { pos: 0, attacks: 0 } : null,
-    metropolis: knights ? { trade: null, politics: null, science: null } : null,
     trade: null, tradeSeq: 0,
     flags: {}, free: { roads: 0, promotes: 0 },
     sbp: null, pair: null,
@@ -75,20 +73,13 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
     stats: { rolls: zero([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), gained: seats.map(() => 0), turns: 0 },
     winner: null, startedAt: Date.now(), finishedAt: null, version: 0,
   };
+  KN.initState(s);
   C.RES.forEach(r => { s.bank[r] = def.bank; });
   X.initState(s, { ...options, variants });
   s.current = s.setup.queue[0];
   log(s, 'Game started. {@ps} take their seats.', { ps: seats.map((_, i) => i) });
   log(s, '{@p} places first.', { p: s.current });
   return s;
-}
-
-function dropHarbor(board) {
-  const any = board.ports.filter(pt => pt.type === 'any');
-  if (!any.length) return;
-  const gone = any[Math.floor(Math.random() * any.length)];
-  board.ports = board.ports.filter(pt => pt !== gone);
-  board.edges[gone.edge].v.forEach(v => { if (board.vertices[v].port === 'any') board.vertices[v].port = null; });
 }
 
 // Log entries are English templates plus parameters so every client can translate them.
@@ -135,9 +126,6 @@ function randomCard(pl) {
   for (const k of C.COMM) for (let i = 0; i < pl.comm[k]; i++) cards.push(k);
   return cards.length ? cards[Math.floor(Math.random() * cards.length)] : null;
 }
-function cardList(cards) {
-  return Object.entries(cards).filter(([, n]) => n > 0).map(([k, n]) => `${n} ${k}`).join(', ') || 'nothing';
-}
 function validCards(obj, knights, gold = false) {
   if (!obj || typeof obj !== 'object') return false;
   return Object.entries(obj).every(([k, n]) => (isRes(k) || (knights && isComm(k)) || (gold && k === 'gold')) && Number.isInteger(n) && n >= 0);
@@ -154,7 +142,7 @@ function countPieces(s, p) {
   for (const k of Object.values(s.knights)) if (k.p === p) knights[k.level]++;
   return { settlements, cities, walls, roads, knights };
 }
-function handLimit(s, p) { return 7 + (K(s) ? countPieces(s, p).walls * 2 : 0); }
+function handLimit(s, p) { return 7 + (K(s) ? KN.handLimitBonus(s, p) : 0); }
 
 function occupied(s, v) { return !!(s.buildings[v] || s.knights[v]); }
 function foreignAt(s, v, p) {
@@ -170,29 +158,22 @@ function distanceOk(s, v) { return !s.buildings[v] && V(s, v).adj.every(a => !s.
 function vp(s, p, includeHidden = true) {
   const pl = P(s, p);
   let pts = 0;
-  for (const b of Object.values(s.buildings)) if (b.p === p) {
-    pts += b.type === 'city' ? 2 : 1;
-    if (b.metro) pts += 2;
-  }
+  for (const b of Object.values(s.buildings)) if (b.p === p) pts += b.type === 'city' ? 2 : 1;
   if (s.longestRoad.p === p) pts += 2;
   if (!K(s)) {
     if (s.largestArmy.p === p) pts += 2;
     if (includeHidden) pts += pl.dev.filter(d => d.type === 'victoryPoint').length;
-  } else {
-    pts += pl.defender + pl.vpCards;
-    if (s.merchant && s.merchant.owner === p) pts += 1;
-  }
+  } else pts += KN.points(s, p);
   pts += X.vpExtra(s, p);
   return Math.max(0, pts);
 }
 function vpBreakdown(s, p) {
   const pl = P(s, p), c = countPieces(s, p);
-  const metros = Object.values(s.buildings).filter(b => b.p === p && b.metro).length;
   return {
-    settlements: c.settlements, cities: c.cities, metropolis: metros,
+    settlements: c.settlements, cities: c.cities,
     longestRoad: s.longestRoad.p === p, largestArmy: s.largestArmy.p === p,
-    vpCards: K(s) ? pl.vpCards : pl.dev.filter(d => d.type === 'victoryPoint').length,
-    defender: pl.defender, merchant: !!(s.merchant && s.merchant.owner === p),
+    vpCards: pl.dev.filter(d => d.type === 'victoryPoint').length,
+    ...KN.breakdown(s, p),
     extras: X.vpExtra(s, p),
     total: vp(s, p),
   };
@@ -315,43 +296,9 @@ function legalRoads(s, p) {
     });
   }).map(e => e.id);
 }
-function ownCities(s, p, filter = () => true) {
-  return Object.entries(s.buildings).filter(([, b]) => b.p === p && b.type === 'city' && filter(b)).map(([v]) => +v);
-}
 function ownSettlements(s, p) {
   return Object.entries(s.buildings).filter(([, b]) => b.p === p && b.type === 'settlement').map(([v]) => +v);
 }
-function legalKnightSpots(s, p) {
-  return s.board.vertices.filter(v => !occupied(s, v.id) && X.landVertex(s, v.id) && touchesOwnRoute(s, v.id, p)).map(v => v.id);
-}
-// BFS along the player's roads (and ships, with Seafarers) from vertex `from`; returns {empty:[], knights:[]} reachable
-function roadReach(s, p, from) {
-  const seen = new Set([from]);
-  const q = [from];
-  const empty = [], foreignKnights = [];
-  while (q.length) {
-    const v = q.shift();
-    for (const e of V(s, v).edges) {
-      if (s.roads[e] !== p && !(s.ships && s.ships[e] && s.ships[e].p === p)) continue;
-      const [a, b] = E(s, e).v; const u = a === v ? b : a;
-      if (seen.has(u)) continue;
-      seen.add(u);
-      if (foreignAt(s, u, p)) {
-        if (s.knights[u] && s.knights[u].p !== p) foreignKnights.push(u);
-        continue;
-      }
-      if (!occupied(s, u)) empty.push(u);
-      q.push(u);
-    }
-  }
-  return { empty, foreignKnights };
-}
-function knightCountAt(s, p, level) { return countPieces(s, p).knights[level]; }
-function maxKnightLevel(s, p) { return P(s, p).improvements.politics >= 3 ? 3 : 2; }
-function robberActive(s) { return !K(s) || s.barbarian.attacks > 0; }
-// a knight may chase the robber from one of the three tiles around its corner (with Seafarers also the pirate at sea)
-function nextToRobber(s, v) { const hs = V(s, v).hexes; return hs.includes(s.robber) || (s.sea && s.pirate != null && hs.includes(s.pirate)); }
-
 function bankRatio(s, p, type) {
   let r = 4;
   for (const [v, b] of Object.entries(s.buildings)) {
@@ -362,12 +309,7 @@ function bankRatio(s, p, type) {
     if (port === 'any') r = Math.min(r, 3);
     else if (port && port === type) r = 2;
   }
-  if (K(s)) {
-    if (isComm(type) && P(s, p).improvements.trade >= 3) r = 2;
-    if (s.merchant && s.merchant.owner === p && C.TERRAIN_RES[s.board.hexes[s.merchant.hex].terrain] === type) r = 2;
-    if (s.flags.fleet === type) r = 2;
-  }
-  return r;
+  return K(s) ? KN.bankRatio(s, p, type, r) : r;
 }
 
 function isActor(s, p) {
@@ -384,7 +326,7 @@ function roll(s, forced) {
   const red = rv.red;
   const yellow = rv.yellow;
   const total = rv.total != null ? rv.total : red + yellow;
-  const event = K(s) ? C.EVENT_FACES[Math.floor(Math.random() * 6)] : null;
+  const event = K(s) ? KN.rollEvent() : null;
   s.dice = { red, yellow, total, event, card: rv.card ? { ev: rv.card.ev, n: rv.card.n } : undefined };
   s.stats.rolls[total]++;
   s.flags.rolled = true;
@@ -396,10 +338,7 @@ function roll(s, forced) {
   // Event Cards: the text of the card first, then (Cities & Knights) the event die and the red die, then the Production phase
   if (rv.card) X.runCard(s, rv.card);
   if (rv.card && event) log(s, 'Event die: {#e}.', { e: event === 'ship' ? 'barbarian ship' : `${event} gate` });
-  if (K(s)) {
-    if (event === 'ship') advanceBarbarians(s);
-    else drawProgressForGate(s, event, red);
-  }
+  if (K(s)) KN.afterRoll(s, event, red);
   if (rv.card) {
     if (total !== 7) produce(s, total);
   } else if (total === 7) handleSeven(s);
@@ -421,11 +360,8 @@ function produce(s, total) {
       const w = want[b.p];
       if (b.type === 'settlement') w[res] = (w[res] || 0) + 1;
       else if (s.flags.plague) w[res] = (w[res] || 0) + 1; // plague: a city yields only one resource
-      else if (K(s) && C.TERRAIN_COMM[h.terrain]) {
-        w[res] = (w[res] || 0) + 1;
-        const c = C.TERRAIN_COMM[h.terrain];
-        w[c] = (w[c] || 0) + 1;
-      } else w[res] = (w[res] || 0) + 2;
+      else if (K(s) && KN.cityYield(w, h, res)) { /* knights: a resource and a commodity */ }
+      else w[res] = (w[res] || 0) + 2;
     }
   }
   // bank shortage rule
@@ -446,19 +382,7 @@ function produce(s, total) {
     }
     if (Object.keys(got).length) log(s, '{@p} receives {$c}.', { p, c: got });
   });
-  if (K(s)) {
-    const aq = [];
-    s.players.forEach((pl, p) => {
-      if (gotAny[p] || goldWant[p] || pl.improvements.science < 3) return;
-      // the resource was chosen once; from then on the aqueduct pays it out by itself
-      if (pl.aqueduct && s.bank[pl.aqueduct] > 0) {
-        take(s, pl, pl.aqueduct, 1);
-        s.stats.gained[p] += 1;
-        log(s, "{@p}'s aqueduct provides {$c}.", { p, c: { [pl.aqueduct]: 1 } });
-      } else if (!pl.aqueduct) aq.push({ type: 'aqueduct', player: p });
-    });
-    pushPending(s, aq);
-  }
+  if (K(s)) KN.aqueducts(s, gotAny, goldWant);
   X.afterProduce(s, total, goldWant);
 }
 
@@ -470,132 +394,8 @@ function handleSeven(s) {
   });
   pushPending(s, discards);
   if (X.noRobber(s)) X.hub.sevenWithoutRobber(s);
-  else if (robberActive(s)) pushPending(s, [{ type: 'moveRobber', player: s.current }]);
+  else if (KN.robberActive(s)) pushPending(s, [{ type: 'moveRobber', player: s.current }]);
   else log(s, 'The barbarians have not attacked yet, so the robber stays put.');
-}
-
-// ---------------------------------------------------------------- knights mode: barbarians & progress
-
-function advanceBarbarians(s) {
-  s.barbarian.pos++;
-  if (s.barbarian.pos < C.BARBARIAN_STEPS) {
-    log(s, 'The barbarian ship advances ({n}/{m}).', { n: s.barbarian.pos, m: C.BARBARIAN_STEPS });
-    return;
-  }
-  s.barbarian.pos = 0;
-  s.barbarian.attacks++;
-  const strength = Object.values(s.buildings).filter(b => b.type === 'city').length;
-  const contrib = s.players.map((_, p) => Object.values(s.knights).filter(k => k.p === p && k.active).reduce((a, k) => a + k.level, 0));
-  const defense = contrib.reduce((a, b) => a + b, 0);
-  // k: each player's active knight strength, c: each player's cities (the clients show who saved or lost what)
-  const cities = s.players.map((_, p) => Object.values(s.buildings).filter(b => b.p === p && b.type === 'city').length);
-  log(s, "The barbarians attack! Strength {n} against the knights' {m}.", { n: strength, m: defense, k: contrib, c: cities });
-  if (defense >= strength) {
-    const max = Math.max(...contrib);
-    const top = contrib.map((c, p) => [c, p]).filter(([c]) => c === max && c > 0).map(([, p]) => p);
-    if (top.length === 1) {
-      P(s, top[0]).defender++;
-      log(s, 'The barbarians are repelled. {@p} is named Defender of Broch (+1 VP).', { p: top[0] });
-    } else if (top.length > 1) {
-      log(s, 'The barbarians are repelled. {@ps} share the glory and each draw a progress card.', { ps: top });
-      pushPending(s, top.map(p => ({ type: 'chooseProgress', player: p })));
-    } else log(s, 'The barbarians are repelled.');
-  } else {
-    const eligible = s.players.map((_, p) => p).filter(p => ownCities(s, p, b => !b.metro).length > 0);
-    if (eligible.length) {
-      const min = Math.min(...eligible.map(p => contrib[p]));
-      const losers = eligible.filter(p => contrib[p] === min);
-      log(s, 'The barbarians win! {@ps} each lose a city.', { ps: losers });
-      const items = [];
-      for (const p of losers) {
-        const opts = ownCities(s, p, b => !b.metro);
-        if (opts.length === 1) downgradeCity(s, opts[0]);
-        else items.push({ type: 'loseCity', player: p });
-      }
-      pushPending(s, items);
-    } else log(s, 'The barbarians win, but there are no unprotected cities to pillage.');
-  }
-  Object.values(s.knights).forEach(k => { k.active = false; });
-  updateLongest(s);
-}
-
-function downgradeCity(s, v) {
-  const b = s.buildings[v];
-  b.type = 'settlement'; b.wall = false;
-  log(s, "{@p}'s city is reduced to a settlement.", { p: b.p });
-}
-
-function drawProgressForGate(s, track, red) {
-  const n = s.players.length;
-  for (let i = 0; i < n; i++) {
-    const p = (s.current + i) % n;
-    const lvl = P(s, p).improvements[track];
-    if (lvl >= 1 && red <= lvl + 1) drawProgress(s, p, track);
-  }
-}
-
-function drawProgress(s, p, deck) {
-  const card = s.progressDecks[deck].shift();
-  if (!card) { log(s, 'The {#d} deck is empty.', { d: deck }); return; }
-  const pl = P(s, p);
-  if (C.PROGRESS_VP.includes(card)) {
-    pl.vpCards++;
-    log(s, '{@p} reveals {%c} (+1 VP).', { p, c: card });
-    return;
-  }
-  pl.progress.push({ type: card, deck });
-  log(s, '{@p} draws a progress card ({#d}).', { p, d: deck });
-  checkProgressLimit(s, p, false);
-}
-
-// Nobody may hold more than 4 hidden progress cards. A 5th card on your own turn must be played at once;
-// when it is not your turn you hand any one of your cards back (under its deck).
-function checkProgressLimit(s, p, front) {
-  const pl = P(s, p);
-  if (pl.progress.length <= 4 || s.pending.some(i => i.type === 'discardProgress' && i.player === p)) return;
-  const mustPlay = p === s.current && s.step === 'main' && s.phase === 'play';
-  pushPending(s, [{ type: 'discardProgress', player: p, mustPlay }], front);
-}
-// a coarse check whether a card could do anything at all right now (decides whether a forced play may be skipped)
-function couldPlayNow(s, p, type) {
-  const pl = P(s, p);
-  const others = s.players.map((_, i) => i).filter(i => i !== p);
-  switch (type) {
-    case 'alchemist': return false;
-    case 'engineer': return ownCities(s, p, b => !b.wall).length > 0 && countPieces(s, p).walls < C.PIECES.wall;
-    case 'medicine': return ownSettlements(s, p).length > 0 && countPieces(s, p).cities < C.PIECES.city && has(pl, C.COSTS.medicine);
-    case 'masterMerchant': return others.some(q => vp(s, q, false) > vp(s, p, false) && hand(P(s, q)) > 0);
-    case 'bishop': return robberActive(s);
-    case 'deserter': return others.some(q => Object.values(s.knights).some(k => k.p === q));
-    case 'diplomat': return openRoads(s).length > 0;
-    case 'intrigue': return Object.keys(s.knights).some(v => s.knights[v].p !== p && touchesOwnRoute(s, +v, p));
-    case 'spy': return others.some(q => P(s, q).progress.length > 0);
-    default: return true;
-  }
-}
-
-function title(card) { return card.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()); }
-
-// Level 4 (or level 5, taking it over) of a track brings the metropolis. It sits on one of your cities that has none yet:
-// who has no such city may not build that level (rulebook: with 1 city that already carries a metropolis, only up to level 3).
-function metropolisAt(s, p, track, level) {
-  const holder = s.metropolis[track];
-  if (level === 4 && holder === null) return true;
-  return level === 5 && holder !== null && holder !== p && P(s, holder).improvements[track] < 5;
-}
-function improveBlock(s, p, track) {
-  const lvl = P(s, p).improvements[track];
-  if (lvl >= 5) return 'Already at the top.';
-  if (!ownCities(s, p).length) return 'You need a city first.';
-  if (metropolisAt(s, p, track, lvl + 1) && !ownCities(s, p, b => !b.metro).length) return 'You need a city without a metropolis for this level.';
-  return null;
-}
-
-function awardMetropolis(s, p, track) {
-  const opts = ownCities(s, p, b => !b.metro);
-  s.metropolis[track] = p;
-  if (opts.length === 1) { s.buildings[opts[0]].metro = track; log(s, '{@p} raises a metropolis ({#t}).', { p, t: track }); }
-  else pushPending(s, [{ type: 'placeMetropolis', player: p, track }], true);
 }
 
 // ---------------------------------------------------------------- turn flow
@@ -641,20 +441,18 @@ function nextTurn(s) {
   s.turn++;
   s.stats.turns++;
   if (s.flags.stone2) log(s, '{@p} has stone 2: no dice, trade with the bank only.', { p: s.current });
-  // over-limit progress cards from own turn
   checkWin(s);
 }
 
 function canAffordAnyBuild(s, p) {
   const pl = P(s, p);
   const opts = [C.COSTS.road, C.COSTS.settlement, C.COSTS.city];
-  if (K(s)) opts.push(C.COSTS.knight, C.COSTS.wall, C.COSTS.activate);
+  if (K(s)) opts.push(...KN.buildCosts());
   else opts.push(C.COSTS.dev);
   if (s.sea) opts.push(C.COSTS.ship);
   if (s.rivers) opts.push(C.COSTS.bridge);
   if (opts.some(c => has(pl, c))) return true;
-  if (K(s)) return Object.keys(C.TRACK_COMM).some(t => pl.comm[C.TRACK_COMM[t]] >= pl.improvements[t] + 1);
-  return false;
+  return K(s) && KN.canImprove(s, p);
 }
 
 function endTurn(s) {
@@ -713,7 +511,6 @@ function requireActor(s, p) { if (!isActor(s, p)) fail('It is not your move righ
 function requireMain(s, p) {
   if (s.phase !== 'play' || s.pending.length || s.step !== 'main' || p !== s.current) fail('Not allowed right now.');
 }
-function requireKnights(s) { if (!K(s)) fail('Only in knights mode.'); }
 function requireTurnAny(s, p) {
   // own turn, before or after rolling, no pending
   if (s.phase !== 'play' || s.pending.length || p !== s.current || s.step === 'sbp') fail('Not allowed right now.');
@@ -1046,247 +843,6 @@ const HANDLERS = {
     log(s, '{@p} traded {$g} with the bank for {$w}.', { p, g: { [a.give]: ratio * times }, w: { [a.get]: times } });
   },
 
-  // ---- knights mode
-  buildKnight(s, p, a) {
-    requireKnights(s); requireActor(s, p);
-    const pl = P(s, p);
-    if (!legalKnightSpots(s, p).includes(a.v)) fail('Knights go on an empty corner next to your road.');
-    if (knightCountAt(s, p, 1) >= C.PIECES.knightPerLevel) fail('No basic knights left.');
-    if (!has(pl, C.COSTS.knight)) fail('Not enough resources.');
-    pay(s, pl, C.COSTS.knight);
-    s.knights[a.v] = { p, level: 1, active: false, activatedTurn: null, promotedTurn: null };
-    log(s, '{@p} recruited a knight.', { p });
-    updateLongest(s);
-  },
-  activateKnight(s, p, a) {
-    requireKnights(s); requireActor(s, p);
-    const k = s.knights[a.v];
-    if (!k || k.p !== p || k.active) fail('Pick one of your inactive knights.');
-    if (!has(P(s, p), C.COSTS.activate)) fail('Activating needs 1 grain.');
-    pay(s, P(s, p), C.COSTS.activate);
-    k.active = true; k.activatedTurn = s.turn;
-    log(s, '{@p} activated a knight.', { p });
-  },
-  promoteKnight(s, p, a) {
-    requireKnights(s); requireActor(s, p);
-    const k = s.knights[a.v];
-    if (!k || k.p !== p) fail('Pick one of your knights.');
-    if (k.promotedTurn === s.turn) fail('A knight can only be promoted once per turn.');
-    if (k.level >= maxKnightLevel(s, p)) fail(k.level === 2 ? 'Mighty knights need politics level 3.' : 'Already at the highest level.');
-    if (knightCountAt(s, p, k.level + 1) >= C.PIECES.knightPerLevel) fail('No knights of the next level left.');
-    const free = s.free.promotes > 0 && p === s.current;
-    if (!free) {
-      if (!has(P(s, p), C.COSTS.promote)) fail('Not enough resources.');
-      pay(s, P(s, p), C.COSTS.promote);
-    } else s.free.promotes--;
-    k.level++; k.promotedTurn = s.turn;
-    log(s, '{@p} promoted a knight ({#l}).', { p, l: ['', 'basic', 'strong', 'mighty'][k.level] });
-  },
-  moveKnight(s, p, a) {
-    requireKnights(s); requireMain(s, p);
-    const k = readyKnight(s, p, a.from);
-    if (!roadReach(s, p, a.from).empty.includes(a.to)) fail('The knight cannot reach that corner.');
-    delete s.knights[a.from];
-    k.active = false; s.knights[a.to] = k;
-    log(s, '{@p} moved a knight.', { p });
-    updateLongest(s);
-  },
-  displaceKnight(s, p, a) {
-    requireKnights(s); requireMain(s, p);
-    const k = readyKnight(s, p, a.from);
-    const target = s.knights[a.to];
-    if (!target || !roadReach(s, p, a.from).foreignKnights.includes(a.to)) fail('No reachable opposing knight there.');
-    if (target.level >= k.level) fail('You can only displace a weaker knight.');
-    delete s.knights[a.from];
-    delete s.knights[a.to];
-    k.active = false; s.knights[a.to] = k;
-    log(s, "{@p}'s knight displaces {@q}'s knight.", { p, q: target.p });
-    displaced(s, target, a.to);
-    updateLongest(s);
-  },
-  chaseRobber(s, p, a) {
-    requireKnights(s); requireMain(s, p);
-    if (!robberActive(s)) fail('The robber cannot be moved before the first barbarian attack.');
-    const k = readyKnight(s, p, a.v);
-    if (!nextToRobber(s, a.v)) fail('That knight is not next to the robber.');
-    k.active = false;
-    log(s, "{@p}'s knight chases the robber away.", { p });
-    pushPending(s, [{ type: 'moveRobber', player: p }], true);
-  },
-  relocateKnight(s, p, a) {
-    const it = findPending(s, p, 'relocateKnight');
-    if (!it) fail('No knight to relocate.');
-    if (a.v == null || !it.options.includes(a.v) || occupied(s, a.v)) fail('Pick a highlighted corner.');
-    s.knights[a.v] = it.knight;
-    resolvePending(s, it);
-    log(s, '{@p} relocated a displaced knight.', { p });
-    updateLongest(s);
-  },
-  buildWall(s, p, a) {
-    requireKnights(s); requireActor(s, p);
-    const b = s.buildings[a.v];
-    if (!b || b.p !== p || b.type !== 'city' || b.wall) fail('Walls go around your cities.');
-    if (countPieces(s, p).walls >= C.PIECES.wall) fail('No walls left.');
-    if (!has(P(s, p), C.COSTS.wall)) fail('Not enough resources.');
-    pay(s, P(s, p), C.COSTS.wall);
-    b.wall = true;
-    log(s, '{@p} built a city wall.', { p });
-  },
-  improve(s, p, a) {
-    requireKnights(s); requireActor(s, p);
-    const pl = P(s, p);
-    if (!C.TRACK_COMM[a.track]) fail('Unknown improvement.');
-    const block = improveBlock(s, p, a.track);
-    if (block) fail(block);
-    const lvl = pl.improvements[a.track];
-    const comm = C.TRACK_COMM[a.track];
-    let cost = lvl + 1;
-    if (s.flags.crane && p === s.current) cost = Math.max(0, cost - 1);
-    if (pl.comm[comm] < cost) fail('You need {$c}.', { c: { [comm]: cost } });
-    const nl = lvl + 1;
-    const holder = s.metropolis[a.track];
-    const takes = metropolisAt(s, p, a.track, nl);
-    pl.comm[comm] -= cost;
-    if (s.flags.crane && p === s.current) s.flags.crane = false;
-    pl.improvements[a.track] = nl;
-    log(s, '{@p} improved {#t} to level {n}.', { p, t: a.track, n: nl });
-    if (takes) {
-      if (holder !== null) {
-        for (const b of Object.values(s.buildings)) if (b.metro === a.track) b.metro = null;
-        log(s, '{@p} takes the metropolis ({#t}) from {@q}.', { p, q: holder, t: a.track });
-      }
-      awardMetropolis(s, p, a.track);
-    }
-  },
-  placeMetropolis(s, p, a) {
-    const it = findPending(s, p, 'placeMetropolis');
-    if (!it) fail('No metropolis to place.');
-    const b = s.buildings[a.v];
-    if (!b || b.p !== p || b.type !== 'city' || b.metro) fail('Pick one of your cities.');
-    b.metro = it.track;
-    resolvePending(s, it);
-    log(s, '{@p} raises a metropolis ({#t}).', { p, t: it.track });
-  },
-  loseCity(s, p, a) {
-    const it = findPending(s, p, 'loseCity');
-    if (!it) fail('Nothing to lose.');
-    const b = s.buildings[a.v];
-    if (!b || b.p !== p || b.type !== 'city' || b.metro) fail('Pick one of your unprotected cities.');
-    downgradeCity(s, a.v);
-    resolvePending(s, it);
-  },
-  chooseProgress(s, p, a) {
-    const it = findPending(s, p, 'chooseProgress');
-    if (!it || !C.PROGRESS[a.deck]) fail('Pick a deck.');
-    resolvePending(s, it);
-    drawProgress(s, p, a.deck);
-  },
-  discardProgress(s, p, a) {
-    const it = findPending(s, p, 'discardProgress');
-    if (!it) fail('Nothing to discard.');
-    const pl = P(s, p);
-    if (!pl.progress[a.idx]) fail('Pick a card.');
-    if (it.mustPlay && pl.progress.some(c => couldPlayNow(s, p, c.type))) fail('You must play one of your progress cards now.');
-    const [c] = pl.progress.splice(a.idx, 1);
-    s.progressDecks[c.deck].push(c.type);
-    log(s, '{@p} discarded a progress card.', { p });
-    if (pl.progress.length <= 4) resolvePending(s, it);
-  },
-  aqueduct(s, p, a) {
-    const it = findPending(s, p, 'aqueduct');
-    if (!it || !isRes(a.res)) fail('Pick a resource.');
-    const pl = P(s, p);
-    pl.aqueduct = a.res;
-    if (take(s, pl, a.res, 1)) {
-      s.stats.gained[p] += 1;
-      log(s, "{@p}'s aqueduct provides {$c}.", { p, c: { [a.res]: 1 } });
-    }
-    resolvePending(s, it);
-  },
-  // choose (or change) the resource the aqueduct pays out; allowed any time once science is at level 3
-  setAqueduct(s, p, a) {
-    requireKnights(s);
-    const pl = P(s, p);
-    if (pl.improvements.science < 3) fail('You need the aqueduct first.');
-    if (!isRes(a.res)) fail('Pick a resource.');
-    pl.aqueduct = a.res;
-  },
-  placeFreeKnight(s, p, a) {
-    const it = findPending(s, p, 'placeFreeKnight');
-    if (!it) fail('No knight to place.');
-    if (a.v != null) {
-      if (!legalKnightSpots(s, p).includes(a.v)) fail('Pick an empty corner next to your road.');
-      s.knights[a.v] = { p, level: it.level, active: !!it.active, activatedTurn: null, promotedTurn: null };
-      log(s, '{@p} places the deserting knight.', { p });
-      updateLongest(s);
-    }
-    resolvePending(s, it);
-  },
-  spyTake(s, p, a) {
-    const it = findPending(s, p, 'spy');
-    if (!it) fail('Nothing to take.');
-    const t = P(s, it.target);
-    if (a.idx != null) {
-      if (!t.progress[a.idx]) fail('Pick a card.');
-      const [c] = t.progress.splice(a.idx, 1);
-      P(s, p).progress.push(c);
-      log(s, "{@p}'s spy steals a progress card from {@q}.", { p, q: it.target });
-    }
-    resolvePending(s, it);
-    checkProgressLimit(s, p, true);
-  },
-  harborGive(s, p, a) {
-    const it = findPending(s, p, 'harborGive');
-    if (!it) fail('Nothing to give.');
-    const pl = P(s, p), to = P(s, it.to);
-    if (!isComm(a.comm) || pl.comm[a.comm] < 1) fail('Pick a commodity you hold.');
-    resolvePending(s, it);
-    if (to.res[it.res] < 1) return; // cannot happen: the offered card stays in the hand
-    moveCard(to, pl, it.res, 1);
-    moveCard(pl, to, a.comm, 1);
-    log(s, "{@p} swaps {$g} for {@q}'s {$w}.", { p: it.to, q: p, g: { [it.res]: 1 }, w: { [a.comm]: 1 } });
-  },
-  // Deserter: the player who is hit chooses which of their knights leaves the board
-  deserterPick(s, p, a) {
-    const it = findPending(s, p, 'deserterPick');
-    if (!it) fail('No knight to give up.');
-    const k = s.knights[a.v];
-    if (!k || k.p !== p) fail('Pick one of your knights.');
-    removeDeserter(s, it, a.v);
-  },
-  takeCards(s, p, a) {
-    const it = findPending(s, p, 'masterMerchant');
-    if (!it) fail('Nothing to take.');
-    const t = P(s, it.target);
-    const n = Math.min(2, hand(t));
-    if (!validCards(a.cards, true) || sum(a.cards) !== n || !has(t, a.cards)) fail('Choose {n} of their cards.', { n });
-    for (const [k, m] of Object.entries(a.cards)) moveCard(t, P(s, p), k, m);
-    resolvePending(s, it);
-    log(s, '{@p} takes cards from {@q}: {n}.', { p, q: it.target, n });
-  },
-
-  // ---- progress cards
-  playProgress(s, p, a) {
-    requireKnights(s);
-    // a 5th card on your own turn must be played at once: that lifts the pending decision (put back if the card fails)
-    const forced = findPending(s, p, 'discardProgress');
-    const mustPlay = forced && forced.mustPlay && p === s.current;
-    if (!mustPlay) requireTurnAny(s, p);
-    else if (s.phase !== 'play' || s.step !== 'main') fail('Not allowed right now.');
-    const pl = P(s, p);
-    const card = pl.progress[a.idx];
-    if (!card) fail('Pick a card.');
-    if (card.type === 'alchemist') { if (s.step !== 'roll') fail('Play the Alchemist before rolling.'); }
-    else if (s.step !== 'main') fail('Roll the dice first.');
-    const at = mustPlay ? s.pending.indexOf(forced) : -1;
-    if (mustPlay) resolvePending(s, forced);
-    try { PROGRESS_FX[card.type](s, p, a); } catch (e) { if (mustPlay) s.pending.splice(at, 0, forced); throw e; }
-    // effect succeeded -> back under its deck
-    pl.progress.splice(pl.progress.indexOf(card), 1);
-    s.progressDecks[card.deck].push(card.type);
-    log(s, '{@p} played {%c}.', { p, c: card.type });
-  },
-
   chat(s, p, a) {
     const text = String(a.text || '').slice(0, 300).trim();
     if (!text) return;
@@ -1316,192 +872,6 @@ function startingResources(s, p, v, type) {
   if (Object.keys(got).length) log(s, '{@p} receives {$c}.', { p, c: got });
 }
 
-function readyKnight(s, p, v) {
-  const k = s.knights[v];
-  if (!k || k.p !== p) fail('Pick one of your knights.');
-  if (!k.active) fail('That knight is not active.');
-  if (k.activatedTurn === s.turn) fail('A knight activated this turn must wait until next turn.');
-  return k;
-}
-
-function displaced(s, knight, from) {
-  const q = knight.p;
-  const opts = roadReach(s, q, from).empty.filter(v => v !== from);
-  if (!opts.length) { log(s, "{@p}'s knight has nowhere to go and leaves the board.", { p: q }); return; }
-  pushPending(s, [{ type: 'relocateKnight', player: q, knight, options: opts }], true);
-}
-
-function openRoads(s) {
-  // a road is "open" if one of its ends has no other road and no settlement, city or knight of the owner
-  return Object.entries(s.roads).map(([e, q]) => [+e, q]).filter(([e, q]) => E(s, e).v.some(v => {
-    const b = s.buildings[v], k = s.knights[v];
-    if ((b && b.p === q) || (k && k.p === q)) return false;
-    return V(s, v).edges.filter(x => x !== e && s.roads[x] === q).length === 0;
-  })).map(([e]) => e);
-}
-
-function adjacentHexesOfType(s, p, terrain) {
-  const set = new Set();
-  for (const [v, b] of Object.entries(s.buildings)) if (b.p === p) {
-    V(s, +v).hexes.forEach(h => { if (s.board.hexes[h].terrain === terrain) set.add(h); });
-  }
-  return [...set];
-}
-
-// Deserter: the knight chosen by its owner leaves; the player of the card sets up a knight of the same level (or the
-// highest lower level still in the supply) with the same status, even a mighty one without the Fortress.
-function removeDeserter(s, it, v) {
-  const k = s.knights[v];
-  delete s.knights[v];
-  log(s, "One of {@p}'s knights deserts.", { p: k.p });
-  if (s.pending.includes(it)) resolvePending(s, it);
-  updateLongest(s);
-  let level = k.level;
-  while (level >= 1 && knightCountAt(s, it.to, level) >= C.PIECES.knightPerLevel) level--;
-  if (level >= 1 && legalKnightSpots(s, it.to).length) pushPending(s, [{ type: 'placeFreeKnight', player: it.to, level, active: !!k.active }], true);
-}
-
-const PROGRESS_FX = {
-  alchemist(s, p, a) {
-    const r = a.red | 0, y = a.yellow | 0;
-    if (r < 1 || r > 6 || y < 1 || y > 6) fail('Choose both dice.');
-    roll(s, [r, y]);
-  },
-  inventor(s, p, a) {
-    const A = s.board.hexes[a.a], B = s.board.hexes[a.b];
-    const bad = h => !h || h.number == null || [2, 12, 6, 8].includes(h.number);
-    if (bad(A) || bad(B) || a.a === a.b) fail('Pick two number tiles (not 2, 6, 8 or 12).');
-    [A.number, B.number] = [B.number, A.number];
-  },
-  crane(s) { s.flags.crane = true; },
-  engineer(s, p, a) {
-    const b = s.buildings[a.v];
-    if (!b || b.p !== p || b.type !== 'city' || b.wall) fail('Pick one of your cities without a wall.');
-    if (countPieces(s, p).walls >= C.PIECES.wall) fail('No walls left.');
-    b.wall = true;
-  },
-  irrigation(s, p) {
-    const n = adjacentHexesOfType(s, p, 'fields').length;
-    take(s, P(s, p), 'grain', 2 * n);
-  },
-  mining(s, p) {
-    const n = adjacentHexesOfType(s, p, 'mountains').length;
-    take(s, P(s, p), 'ore', 2 * n);
-  },
-  medicine(s, p, a) {
-    const b = s.buildings[a.v];
-    if (!b || b.p !== p || b.type !== 'settlement') fail('Pick one of your settlements.');
-    if (countPieces(s, p).cities >= C.PIECES.city) fail('No cities left.');
-    if (!has(P(s, p), C.COSTS.medicine)) fail('Medicine needs 1 grain and 2 ore.');
-    pay(s, P(s, p), C.COSTS.medicine);
-    b.type = 'city';
-  },
-  roadBuilding(s, p) { s.free.roads = Math.min(2, C.PIECES.road - countPieces(s, p).roads); },
-  smith(s) { s.free.promotes = 2; },
-  // Commercial Harbor: offer 1 resource card to every other player (a.offers = { seat: resource }, any mix); whoever owns a
-  // commodity must hand over one of their choice. Players without one are skipped, and you cannot offer more cards than you hold.
-  commercialHarbor(s, p, a) {
-    const pl = P(s, p);
-    const offers = a.offers && typeof a.offers === 'object' ? a.offers : {};
-    const n = s.players.length;
-    const spent = {};
-    const items = [];
-    for (let i = 1; i < n; i++) {
-      const q = (p + i) % n;
-      const res = offers[q];
-      if (res == null) continue;
-      if (!isRes(res)) fail('Pick a resource.');
-      const o = P(s, q);
-      if (!C.COMM.some(c => o.comm[c] > 0)) { log(s, '{@q} has no commodity, so there is no swap.', { q }); continue; }
-      if (pl.res[res] - (spent[res] || 0) < 1) continue;
-      spent[res] = (spent[res] || 0) + 1;
-      items.push({ type: 'harborGive', player: q, to: p, res });
-    }
-    pushPending(s, items, true);
-  },
-  masterMerchant(s, p, a) {
-    const t = a.target;
-    if (t === p || !P(s, t) || vp(s, t, false) <= vp(s, p, false)) fail('Pick a player with more points than you.');
-    if (!hand(P(s, t))) fail('They have no cards.');
-    pushPending(s, [{ type: 'masterMerchant', player: p, target: t }], true);
-  },
-  merchant(s, p, a) {
-    const h = s.board.hexes[a.hex];
-    if (!h || h.hidden || !C.TERRAIN_RES[h.terrain]) fail('Pick a land tile.');
-    if (!h.verts.some(v => s.buildings[v] && s.buildings[v].p === p)) fail('The merchant must stand next to your settlement or city.');
-    s.merchant = { hex: a.hex, owner: p };
-  },
-  merchantFleet(s, p, a) {
-    if (!isRes(a.kind) && !isComm(a.kind)) fail('Pick a card type.');
-    s.flags.fleet = a.kind;
-  },
-  resourceMonopoly(s, p, a) {
-    if (!isRes(a.kind)) fail('Pick a resource.');
-    let t = 0;
-    s.players.forEach((o, q) => { if (q !== p) t += moveCard(o, P(s, p), a.kind, 2); });
-    log(s, '{@p} collects {$c}.', { p, c: { [a.kind]: t } });
-  },
-  tradeMonopoly(s, p, a) {
-    if (!isComm(a.kind)) fail('Pick a commodity.');
-    let t = 0;
-    s.players.forEach((o, q) => { if (q !== p) t += moveCard(o, P(s, p), a.kind, 1); });
-    log(s, '{@p} collects {$c}.', { p, c: { [a.kind]: t } });
-  },
-  bishop(s, p) {
-    if (!robberActive(s)) fail('The robber cannot move before the first barbarian attack.');
-    pushPending(s, [{ type: 'moveRobber', player: p, bishop: true }], true);
-  },
-  deserter(s, p, a) {
-    const t = a.target;
-    if (t === p || !P(s, t)) fail('Pick a player who has knights.');
-    const theirs = Object.keys(s.knights).filter(v => s.knights[v].p === t);
-    if (!theirs.length) fail('Pick a player who has knights.');
-    const it = { type: 'deserterPick', player: t, to: p };
-    if (theirs.length === 1) removeDeserter(s, it, +theirs[0]);
-    else pushPending(s, [it], true);
-  },
-  diplomat(s, p, a) {
-    if (!openRoads(s).includes(a.e)) fail('Pick an open road (one with a loose end).');
-    const q = s.roads[a.e];
-    delete s.roads[a.e];
-    if (q === p) s.free.roads++;
-    log(s, '{@p} removed a road of {@q}.', { p, q });
-    updateLongest(s);
-  },
-  intrigue(s, p, a) {
-    const k = s.knights[a.v];
-    if (!k || k.p === p || !touchesOwnRoute(s, a.v, p)) fail('Pick an opposing knight on one of your roads.');
-    delete s.knights[a.v];
-    displaced(s, k, a.v);
-    updateLongest(s);
-  },
-  saboteur(s, p) {
-    const mine = vp(s, p, false);
-    const items = [];
-    s.players.forEach((o, q) => {
-      if (q !== p && vp(s, q, false) >= mine && hand(o) >= 2) items.push({ type: 'discard', player: q, count: Math.floor(hand(o) / 2) });
-    });
-    pushPending(s, items, true);
-  },
-  spy(s, p, a) {
-    const t = a.target;
-    if (t === p || !P(s, t)) fail('Pick an opponent.');
-    if (!P(s, t).progress.length) fail('They have no progress cards.');
-    pushPending(s, [{ type: 'spy', player: p, target: t }], true);
-  },
-  warlord(s, p) {
-    Object.values(s.knights).forEach(k => { if (k.p === p && !k.active) { k.active = true; k.activatedTurn = s.turn; } });
-  },
-  wedding(s, p) {
-    const mine = vp(s, p, false);
-    const items = [];
-    s.players.forEach((o, q) => {
-      if (q !== p && vp(s, q, false) > mine && hand(o) > 0) items.push({ type: 'give', player: q, to: p, count: Math.min(2, hand(o)) });
-    });
-    pushPending(s, items, true);
-  },
-};
-
 // ---------------------------------------------------------------- views
 
 function legalFor(s, p) {
@@ -1517,11 +887,7 @@ function legalFor(s, p) {
     if (it.type === 'moveRobber' && s.options.robberReturn) L.leaveRobber = true;
     if (it.type === 'moveRobber' && s.expansion === 'seafarers' && s.pirate != null && !it.bishop) L.pirateFrame = true;
     if (it.type === 'moveRobber') L.robberHexes = X.robberHexes(s, p, s.board.hexes.filter(h => !h.hidden && (h.terrain === 'sea' ? s.sea && h.id !== s.pirate : h.id !== s.robber)).map(h => h.id));
-    if (it.type === 'relocateKnight') L.relocate = it.options.filter(v => !occupied(s, v));
-    if (it.type === 'placeMetropolis') L.metroCities = ownCities(s, p, b => !b.metro);
-    if (it.type === 'loseCity') L.loseCities = ownCities(s, p, b => !b.metro);
-    if (it.type === 'placeFreeKnight') L.freeKnightSpots = legalKnightSpots(s, p);
-    if (it.type === 'deserterPick') L.giveKnights = Object.keys(s.knights).filter(v => s.knights[v].p === p).map(Number);
+    KN.legalPending(s, p, it, L);
   }
   const freeRoad = s.free.roads > 0 && p === s.current && !s.pending.length && s.step !== 'sbp';
   if (freeRoad) { L.roads = legalRoads(s, p); if (s.sea) L.ships = X.legalShips(s, p); }
@@ -1531,74 +897,31 @@ function legalFor(s, p) {
     if (has(pl, C.COSTS.settlement) && c.settlements < C.PIECES.settlement) L.settlements = legalSettlements(s, p);
     if (has(pl, C.COSTS.city) && c.cities < C.PIECES.city) L.cities = ownSettlements(s, p).filter(v => X.cityOk(s, v, p));
     if (!K(s)) L.canBuyDev = has(pl, C.COSTS.dev) && s.devDeck.length > 0;
-    if (K(s)) {
-      if (has(pl, C.COSTS.knight) && c.knights[1] < 2) L.knightSpots = legalKnightSpots(s, p);
-      if (has(pl, C.COSTS.wall) && c.walls < C.PIECES.wall) L.walls = ownCities(s, p, b => !b.wall);
-      L.improve = {};
-      for (const t of Object.keys(C.TRACK_COMM)) {
-        const lvl = pl.improvements[t];
-        let cost = lvl + 1; if (s.flags.crane && p === s.current) cost = Math.max(0, cost - 1);
-        const block = improveBlock(s, p, t);
-        L.improve[t] = { cost, ok: !block && pl.comm[C.TRACK_COMM[t]] >= cost, block };
-      }
-      L.knights = {};
-      const main = s.step === 'main' && p === s.current;
-      for (const [v, k] of Object.entries(s.knights)) {
-        if (k.p !== p) continue;
-        const ready = main && k.active && k.activatedTurn !== s.turn;
-        const reach = ready ? roadReach(s, p, +v) : { empty: [], foreignKnights: [] };
-        const nextLvl = k.level + 1;
-        L.knights[v] = {
-          activate: !k.active && has(pl, C.COSTS.activate),
-          promote: k.promotedTurn !== s.turn && k.level < maxKnightLevel(s, p) && c.knights[nextLvl] < 2 &&
-            (has(pl, C.COSTS.promote) || (s.free.promotes > 0 && p === s.current)),
-          moves: reach.empty,
-          displace: reach.foreignKnights.filter(u => s.knights[u].level < k.level),
-          chase: ready && robberActive(s) && nextToRobber(s, +v),
-        };
-      }
-    }
+    if (K(s)) KN.legal(s, p, L, c);
   }
   const mainNow = p === s.current && s.phase === 'play' && !s.pending.length && s.step !== 'sbp';
   X.legalExtra(s, p, L, isActor(s, p), mainNow && s.step === 'main');
   if (p === s.current && s.phase === 'play' && !s.pending.length && s.step !== 'sbp') {
     L.ratios = {};
     [...C.RES, ...(K(s) ? C.COMM : [])].forEach(t => { L.ratios[t] = bankRatio(s, p, t); });
-    if (K(s)) {
-      L.openRoads = openRoads(s);
-      L.intrigue = Object.keys(s.knights).map(Number).filter(v => s.knights[v].p !== p && touchesOwnRoute(s, v, p));
-      L.merchantHexes = s.board.hexes.filter(h => !h.hidden && C.TERRAIN_RES[h.terrain] && h.verts.some(v => s.buildings[v] && s.buildings[v].p === p)).map(h => h.id);
-      L.inventorHexes = s.board.hexes.filter(h => h.number != null && ![2, 12, 6, 8].includes(h.number)).map(h => h.id);
-    }
+    if (K(s)) KN.legalTurn(s, p, L);
   }
   return L;
 }
 
 function viewFor(s, me) {
-  const knights = K(s);
   const pending = s.pending.map(it => {
     const o = { type: it.type, player: it.player, group: it.group };
     if (it.count != null) o.count = it.count;
     if (it.to != null) o.to = it.to;
     if (it.options && it.type === 'steal') { o.options = it.options; if (it.cloth) o.cloth = true; }
-    if (it.track) o.track = it.track;
-    if (it.level) o.level = it.level;
-    if (it.target != null) o.target = it.target;
     if (it.bishop) o.bishop = true;
     if (it.res) o.res = it.res;
-    if (it.mustPlay) o.mustPlay = true;
-    if (it.type === 'placeFreeKnight') o.active = !!it.active;
-    if (it.type === 'discardProgress' && it.mustPlay) o.canGiveBack = !P(s, it.player).progress.some(c => couldPlayNow(s, it.player, c.type));
+    KN.pendingView(s, it, o);
     if (it.pub) Object.assign(o, it.pub);
     return o;
   });
   const activeGroup = s.pending.length ? s.pending[0].group : null;
-  let reveal = null;
-  const mine = activePending(s).find(i => i.player === me && (i.type === 'spy' || i.type === 'masterMerchant'));
-  if (mine) {
-    const t = P(s, mine.target);
-    reveal = mine.type === 'spy' ? { target: mine.target, progress: t.progress.map(c => c.type) } : { target: mine.target, res: t.res, comm: t.comm };
-  }
   const view = {
     id: s.id, mode: s.mode, kind: s.kind, expansion: s.expansion, options: s.options, version: s.version,
     phase: s.phase, step: s.step, turn: s.turn, current: s.current, me,
@@ -1608,37 +931,35 @@ function viewFor(s, me) {
       edges: s.board.edges.map(e => ({ id: e.id, v: e.v })),
       ports: s.board.ports,
     }),
-    robber: s.robber, merchant: s.merchant,
-    buildings: s.buildings, roads: s.roads, knights: s.knights,
+    robber: s.robber,
+    buildings: s.buildings, roads: s.roads,
     players: s.players.map((pl, i) => {
       const self = i === me || s.phase === 'over';
       const c = countPieces(s, i);
       return {
         name: pl.name, color: pl.color, country: pl.country || null, userId: pl.userId,
-        cards: hand(pl), devCount: pl.dev.length, progressCount: pl.progress.length,
-        res: self ? pl.res : null, comm: self && knights ? pl.comm : null,
+        cards: hand(pl), devCount: pl.dev.length,
+        res: self ? pl.res : null,
         dev: self ? pl.dev.map(d => ({ type: d.type, fresh: d.turn >= s.turn })) : null,
-        progress: self ? pl.progress.map(c2 => c2.type) : null,
         knightsPlayed: pl.knightsPlayed,
         vp: self ? vp(s, i) : vp(s, i, false),
-        improvements: pl.improvements, aqueduct: self ? pl.aqueduct || null : undefined, defender: pl.defender, vpCards: knights ? pl.vpCards : undefined,
+        ...KN.playerView(s, i, self),
         pieces: {
           roads: C.PIECES.road - c.roads, settlements: C.PIECES.settlement - c.settlements,
-          cities: C.PIECES.city - c.cities, walls: C.PIECES.wall - c.walls,
-          knights: [0, 2 - c.knights[1], 2 - c.knights[2], 2 - c.knights[3]],
+          cities: C.PIECES.city - c.cities,
+          ...KN.pieces(c),
         },
         handLimit: handLimit(s, i),
         breakdown: self ? vpBreakdown(s, i) : null,
       };
     }),
     longestRoad: s.longestRoad, largestArmy: s.largestArmy,
-    dice: s.dice, pending, activeGroup, reveal,
-    trade: s.trade, flags: { devPlayed: !!s.flags.devPlayed, crane: !!s.flags.crane, fleet: s.flags.fleet || null, rolled: !!s.flags.rolled, stone2: !!s.flags.stone2 },
+    dice: s.dice, pending, activeGroup, reveal: KN.reveal(s, me),
+    trade: s.trade, flags: { devPlayed: !!s.flags.devPlayed, ...KN.viewFlags(s), rolled: !!s.flags.rolled, stone2: !!s.flags.stone2 },
     pair: s.pair ? { one: s.pair.one, two: (s.pair.one + STONE2_GAP) % s.players.length, phase: s.pair.phase } : null,
     free: s.free, sbp: s.sbp,
     bank: s.bank, devDeck: s.devDeck.length,
-    progressDecks: s.progressDecks && Object.fromEntries(Object.entries(s.progressDecks).map(([k, v]) => [k, v.length])),
-    barbarian: s.barbarian, metropolis: s.metropolis,
+    ...KN.viewState(s),
     log: s.log.slice(-80), chat: s.chat.slice(-80),
     lastSteal: s.lastSteal && (s.lastSteal.by === me || s.lastSteal.from === me) ? s.lastSteal : null,
     stats: { rolls: s.stats.rolls, gained: s.stats.gained },
@@ -1683,12 +1004,16 @@ function summary(s) {
   };
 }
 
-// expansion rules live in expansions.js and get the helpers they need from here
+// expansion rules live in expansions.js (Seafarers, Traders & Barbarians) and get the helpers they need from here
 const X = require('./expansions')({
   log, pushPending, findPending, resolvePending, P, V, E, fail, has, pay, take, hand, sum, countPieces, randomCard, moveCard, updateLongest, isRes,
   foreignAt, requireActor, requireMain, requireTurnAny, steal, K, activePending, vp, longestFor, handleSeven, finishTurn, nextTurn, checkWin, snapshot, legalRoads,
   legalSettlements, distanceOk, occupied, handLimit, d6, finishSetupRoad,
 });
-Object.assign(HANDLERS, X.handlers);
+const KN = require('../knights/knights')({
+  log, pushPending, findPending, resolvePending, P, V, E, fail, has, pay, take, hand, sum, countPieces, moveCard, updateLongest, isRes, isComm,
+  foreignAt, occupied, touchesOwnRoute, landVertex: (s, v) => X.landVertex(s, v), requireActor, requireMain, requireTurnAny, K, vp, activePending, roll, validCards, ownSettlements,
+});
+Object.assign(HANDLERS, KN.handlers, X.handlers);
 
-module.exports = { createGame, migrate, act, viewFor, summary, GameError, vp, _internal: { legalFor, activePending, hand, longestFor, PROGRESS_FX, HANDLERS } };
+module.exports = { createGame, migrate, act, viewFor, summary, GameError, vp, _internal: { legalFor, activePending, hand, longestFor, PROGRESS_FX: KN.PROGRESS_FX, HANDLERS } };
