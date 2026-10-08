@@ -38,6 +38,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
   const order = shuffle(players.map((_, i) => i));
   const seats = order.map(i => players[i]);
   const n = seats.length;
+  const extraStart = !!options.expExtraStart && expansion !== 'traders' && !(board.rules && board.rules.thirdSettlement);
   const s = {
     id, mode, kind, expansion,
     options: {
@@ -51,6 +52,8 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       knightsFree: !!options.knightsFree && !knights,
       // experiment: building is allowed in every player's turn (after the dice), not only in your own
       expBuildAnytime: !!options.expBuildAnytime,
+      // experiment: a third setup round - classic: 2 settlements + 1 city, Cities & Knights: 1 settlement + 2 cities
+      expExtraStart: extraStart,
       big, scenario: sea ? scenario : null, variable: sea && !!options.variable, variants,
     },
     board,
@@ -63,7 +66,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       ...KN.newPlayer(),
     })),
     phase: 'setup', step: null, turn: 0, current: 0,
-    setup: { queue: [...[...Array(n).keys()], ...[...Array(n).keys()].reverse(), ...(board.rules && board.rules.thirdSettlement ? [...Array(n).keys()] : [])], idx: 0, need: 'settlement', last: null, payFrom: board.rules && board.rules.thirdSettlement ? 2 * n : n },
+    setup: { queue: [...[...Array(n).keys()], ...[...Array(n).keys()].reverse(), ...((board.rules && board.rules.thirdSettlement) || extraStart ? [...Array(n).keys()] : [])], idx: 0, need: 'settlement', last: null, payFrom: board.rules && board.rules.thirdSettlement ? 2 * n : n, ...(extraStart ? { needs: knights ? ['settlement', 'city', 'city'] : ['settlement', 'settlement', 'city'] } : {}) },
     dice: null, pending: [], pgroup: 0,
     bank: zero(C.RES),
     devDeck: knights ? [] : shuffle(expand(def.dev)),
@@ -540,7 +543,7 @@ function finishSetupRoad(s) {
   }
   s.current = s.setup.queue[s.setup.idx];
   // C&K and the Traders & Barbarians city start: the second round places cities (a third Cloth round places settlements)
-  s.setup.need = (K(s) || X.cityStart(s)) && s.setup.idx >= n && s.setup.idx < 2 * n ? 'city' : 'settlement';
+  s.setup.need = s.setup.needs ? s.setup.needs[Math.floor(s.setup.idx / n)] : (K(s) || X.cityStart(s)) && s.setup.idx >= n && s.setup.idx < 2 * n ? 'city' : 'settlement';
   s.setup.last = null;
 }
 

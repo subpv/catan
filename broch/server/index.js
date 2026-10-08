@@ -100,6 +100,13 @@ function readBody(req) {
 class HttpError extends Error { constructor(code, msg) { super(msg); this.code = code; } }
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.webmanifest': 'application/manifest+json' };
 
+// a short id of the server code and the page files on disk (shown in the footer, so you can see which version is running)
+const BUILD_ID = (() => {
+  const h = crypto.createHash('sha1');
+  const walk = d => { try { fs.readdirSync(d, { withFileTypes: true }).sort((a, b) => (a.name < b.name ? -1 : 1)).forEach(e => { const f = path.join(d, e.name); if (e.isDirectory()) walk(f); else h.update(e.name).update(fs.readFileSync(f)); }); } catch { /* unreadable */ } };
+  walk(path.join(__dirname)); walk(path.join(__dirname, '..', 'public'));
+  return h.digest('hex').slice(0, 7);
+})();
 // Static files are kept in memory with an ETag and ready-made gzip/brotli copies, so phones only download
 // what changed (a 304 otherwise) and get it compressed. A changed file on disk is picked up automatically.
 const zlib = require('zlib');
@@ -200,7 +207,7 @@ async function api(req, res, url) {
   const need = () => { if (!user) throw new HttpError(401, 'Please log in.'); return user; };
 
   if (route === '/config' && method === 'GET') {
-    return send(res, 200, { feedbackUrl: FEEDBACK_URL, needsCode: !!REGISTRATION_CODE, colors: COLORS, firstUser: db.users.length === 0 });
+    return send(res, 200, { build: BUILD_ID, feedbackUrl: FEEDBACK_URL, needsCode: !!REGISTRATION_CODE, colors: COLORS, firstUser: db.users.length === 0 });
   }
   if (route === '/register' && method === 'POST') {
     if (rateLimited(ip)) throw new HttpError(429, 'Too many attempts. Try again in a few minutes.');
@@ -274,7 +281,7 @@ async function api(req, res, url) {
     const def = standalone ? engine.defaultVp(mode, scenario) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) + (variants && variants.harbors ? 1 : 0) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'traders' ? tradersVp(variants) : 10;
     const vpTarget = standalone && engine.fixedVp(mode) ? def : Math.max(5, Math.min(20, b.vpTarget | 0 || def));
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
-    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', expBuildAnytime: !!b.expBuildAnytime && (mode === 'classic' || mode === 'knights'), gameOptions: standalone ? cleanOptions(b.gameOptions) : null, maxPlayers, vpTarget, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
+    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', expBuildAnytime: !!b.expBuildAnytime && (mode === 'classic' || mode === 'knights'), expExtraStart: !!b.expExtraStart && (mode === 'classic' || mode === 'knights') && expansion !== 'traders', gameOptions: standalone ? cleanOptions(b.gameOptions) : null, maxPlayers, vpTarget, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
     db.games.set(g.meta.id, g); store.saveGame(g, true);
     broadcastLobby();
     return send(res, 200, { game: gameCard(g) });
@@ -334,7 +341,7 @@ async function api(req, res, url) {
       if (meta.seats.length < engine.minPlayers(meta.mode)) throw new HttpError(400, engine.minPlayers(meta.mode) > 2 ? 'This game needs more players.' : 'Wait for at least one more player.');
       fixSeatColors(meta);
       const players = meta.seats.map(id => { const x = seatUser(g, id); return { id, name: x.name, color: meta.colors[id], country: x.country || null }; });
-      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, variable: !!meta.variable, knightsFree: !!meta.knightsFree, expBuildAnytime: !!meta.expBuildAnytime, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });
+      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, variable: !!meta.variable, knightsFree: !!meta.knightsFree, expBuildAnytime: !!meta.expBuildAnytime, expExtraStart: !!meta.expExtraStart, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });
       meta.status = 'playing'; meta.startedAt = Date.now();
       runner.schedule(g);
     } else if (m[2] === 'resign') {
@@ -412,7 +419,7 @@ async function api(req, res, url) {
     console.warn('[client-error]', user ? user.name : 'anon', String(b.message || '').slice(0, 500), String(b.stack || '').slice(0, 1500));
     return send(res, 200, { ok: true });
   }
-  if (route === '/health') return send(res, 200, { ok: true });
+  if (route === '/health') return send(res, 200, { ok: true, build: BUILD_ID });
   throw new HttpError(404, 'Unknown endpoint');
 }
 

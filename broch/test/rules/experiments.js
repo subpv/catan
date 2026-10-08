@@ -73,3 +73,24 @@ ok('on: Cities & Knights - knights, walls and improvements out of turn', () => {
   assert.ok(s.knights[spots[0]] && s.knights[spots[0]].p === q);
   assert.throws(() => act(s, q, { type: 'moveKnight', from: spots[0], to: spots[0] }), /./, 'moving stays a turn action');
 });
+function setupAll(mode, opts) {
+  const s = engine.createGame({ id: 'e', mode, players: players(3), options: opts });
+  let g = 0;
+  while (s.phase === 'setup' && g++ < 400) {
+    const p = s.current, L = engine.viewFor(s, p).legal || {};
+    if (L.setupSpots) act(s, p, { type: s.setup.need === 'city' ? 'placeCity' : 'placeSettlement', v: L.setupSpots[0] });
+    else if (L.setupRoads) act(s, p, { type: 'placeRoad', e: L.setupRoads[0] });
+    else throw new Error('setup stuck');
+  }
+  return s;
+}
+const count = (s, p, type) => Object.values(s.buildings).filter(b => b.p === p && b.type === type).length;
+ok('bigger start: classic = 2 settlements + 1 city, rulebook start otherwise', () => {
+  const a = setupAll('classic', {}), b = setupAll('classic', { expExtraStart: true });
+  for (let p = 0; p < 3; p++) { assert.deepStrictEqual([count(a, p, 'settlement'), count(a, p, 'city')], [2, 0]); assert.deepStrictEqual([count(b, p, 'settlement'), count(b, p, 'city')], [2, 1]); }
+  assert.strictEqual(b.phase, 'play');
+});
+ok('bigger start: Cities & Knights = 1 settlement + 2 cities', () => {
+  const a = setupAll('knights', {}), b = setupAll('knights', { expExtraStart: true });
+  for (let p = 0; p < 3; p++) { assert.deepStrictEqual([count(a, p, 'settlement'), count(a, p, 'city')], [1, 1]); assert.deepStrictEqual([count(b, p, 'settlement'), count(b, p, 'city')], [1, 2]); }
+});
