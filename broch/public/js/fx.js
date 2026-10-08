@@ -450,7 +450,7 @@ function lootFromLogs(logs) {
   const add = (p, k, n) => { const o = by.get(p) || {}; o[k] = (o[k] || 0) + n; by.set(p, o); };
   for (const e of logs) {
     if (e.k === '{@p} receives {$c}.') for (const [k, n] of Object.entries(e.a.c)) add(e.a.p, k, n);
-    else if (e.k === '{@p} catches {n} fish.') add(e.a.p, 'fish', e.a.n);
+    else if (e.k === '{@p} catches {n} fish tokens.') add(e.a.p, 'fish', e.a.n);
     else if (e.k === '{@p} loads {n} spice.') add(e.a.p, 'spice', e.a.n);
     else if (e.k === '{@p} hauls in a catch of fish.') add(e.a.p, 'fish', 1);
   }

@@ -239,7 +239,7 @@ export function createHub(c) {
     if (hub.scenario === 'traders') {
       const w = hub.tb.tab[v.me];
       out.push(chip('wagon', '#8A6234', t('Wagon {n}/5', { n: w.level }), t('Your wagon tableau')));
-      out.push(chip('gold', '#4A6A3A', w.ware ? `${esc(wareName(w.ware))} → ${esc(t(hub.tb.dest ? hub.tb.dest[w.ware] : ''))}` : t('Pick your first goal'), t('The ware you carry and where it goes')));
+      out.push(chip('gold', '#4A6A3A', w.ware ? `${esc(wareName(w.ware))} → ${esc(t(hub.tb.dest ? hub.tb.dest[w.ware] : ''))}` : t('No order yet'), t('The ware you carry and where it goes')));
     }
     if (hub.harbors) out.push(chip('harbor', '#2C5F7A', `${hub.harborPts[v.me]}`, t('Harbor points: 3 earn the Strongest Harbors plaque (+2 points)')));
     return out;

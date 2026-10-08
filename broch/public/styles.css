@@ -1542,3 +1542,12 @@ svg.board:not(.alive) .in-draw { stroke-dashoffset: 0 !important; animation: non
 .in-rule { margin: 0; font-size: 12.500px; color: var(--muted); line-height: 1.35; }
 .in-body .btn.block { margin-top: 2px; display: inline-flex; gap: 6px; justify-content: center; align-items: center; }
 .in-body > small { font-size: 12px; }
+
+/* ===== Traders & Barbarians (hub): event card dice chip, board hit areas ===== */
+.dice.card { gap: 6px; }
+.dice .evcard { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 52px; height: 38px; padding: 2px 8px; border-radius: 8px; background: linear-gradient(170deg, #FFF8E8, #EFDFB6); border: 2px solid #B9851F; color: var(--ink); line-height: 1; cursor: help; }
+.dice .evcard .evn { font: 800 17px/1 var(--serif); color: #C1272D; }
+.dice .evcard .evt { font-size: 8.5px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; color: #8F6210; max-width: 74px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+.hub-hit { cursor: pointer; }
+.fish-toks .tok { flex: none; }
+@media (max-width: 760px) { .dice .evcard { min-width: 46px; padding: 2px 5px; } .dice .evcard .evt { max-width: 60px; } }
