@@ -460,7 +460,7 @@ function traders() {
         await T.wait(1200);
       },
       async T => {
-        T.say(t('Variants'), t('The friendly robber spares players with 2 points or fewer. Harbors of Catan reward settlements at harbors with a plaque worth 2 points.'));
+        T.say(t('Variants'), t('The friendly robber spares players with 2 points or fewer. Harbors of Catan reward settlements at harbors with a tile worth 2 points.'));
         await T.wait(2400);
         await T.finale();
       },
