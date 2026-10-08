@@ -737,7 +737,7 @@ const HANDLERS = {
   // ---- trading
   offerTrade(s, p, a) {
     requireBuild(s, p);
-    if (!isRoller(s, p)) fail('The second player of a pair trades only with the supply.');
+    if (!isRoller(s, p)) fail('With ship 2 you trade only with the supply, not with the other players.');
     if (!validCards(a.give, HAND) || !validCards(a.get, HAND) || !sum(a.give) || !sum(a.get)) fail('Set up both sides of the trade.');
     if (!has(P(s, p), a.give)) fail('You do not have those cards.');
     s.trade = { id: ++s.tradeSeq, from: p, give: clean(a.give), get: clean(a.get), responses: {} };

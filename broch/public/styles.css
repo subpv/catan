@@ -1576,3 +1576,8 @@ svg.board:not(.alive) .in-draw { stroke-dashoffset: 0 !important; animation: non
 .eup-item { display: block; width: 100%; margin-bottom: 6px; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: #FFF8E6; text-align: left; font-weight: 600; }
 .eup-item.on { border-color: var(--gold); background: #FFEFC2; }
 .ship-hit { cursor: pointer; }
+/* Explorers & Pirates: four buttons (trade, bank, sail, end turn) fit on one row of the status bar */
+.btns:has(> .eup-sail) { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.btns:has(> .eup-sail) .btn { font-size: 14px; padding: 0 4px; }
+.btns:has(> .eup-sail) .btn svg { margin-right: 2px; }
+@media (max-width: 430px) { .btns:has(> .eup-sail) .btn { font-size: 12.5px; padding: 0 2px; } }

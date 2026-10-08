@@ -424,7 +424,7 @@ const plugin = register({
     return v.second ? bank : `<button class="btn" data-do="trade">${tx('Trade')}</button>${bank}`;
   },
   mainButtons(v) {
-    if (v.step === 'main') return `<button class="btn gold" data-do="startMove">${glyph('ship', 15)} ${tx('Move ships')}</button>`;
+    if (v.step === 'main') return `<button class="btn gold eup-sail" data-do="startMove" title="${tx('Move ships')}">${glyph('ship', 15)} ${tx('Sail')}</button>`;
     if (v.step === 'move' && (v.legal || {}).rollFish) return `<button class="btn" data-do="rollFish">${glyph('dice', 15)} ${tx('Roll a fish swarm')}</button>`;
     return '';
   },
