@@ -83,7 +83,8 @@ function geometryFromCenters(centers, flat = false) {
   return { hexes, vertices, edges };
 }
 
-function placePorts(geo, portTypes) {
+// `avoid`: coast edges that must stay free (Fishing on Catan); then null is returned when the harbors do not fit
+function placePorts(geo, portTypes, avoid) {
   const coast = geo.edges.filter(e => e.hexes.length === 1);
   const ang = e => {
     const [a, b] = e.v.map(i => geo.vertices[i]);
@@ -100,7 +101,9 @@ function placePorts(geo, portTypes) {
     let idx = (Math.round(i * step) + offset) % coast.length;
     // avoid sharing a vertex with a previous port
     let tries = 0;
-    while (coast[idx].v.some(v => used.has(v)) && tries < coast.length) { idx = (idx + 1) % coast.length; tries++; }
+    const blocked = x => x.v.some(v => used.has(v)) || (avoid && avoid.has(x.id));
+    while (blocked(coast[idx]) && tries < coast.length) { idx = (idx + 1) % coast.length; tries++; }
+    if (avoid && blocked(coast[idx])) return null;
     const e = coast[idx];
     e.v.forEach(v => used.add(v));
     const [a, b] = e.v.map(v => geo.vertices[v]);

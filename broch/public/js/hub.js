@@ -10,8 +10,8 @@ extendCore({
   names: { gold: 'Gold' },
   colors: { gold: '#C58E12' },
   terms: {
-    raid: 'Robber Raid', plague: 'Plague', quake: 'Earthquake', neighbors: 'Good Neighbors', tournament: 'Knight Tournament', advantage: 'Trade Advantage',
-    calm: 'Calm Sea', help: 'Neighborly Help', conflict: 'Conflict', bounty: 'Bountiful Year', retreat: 'Robber Retreats', fine: 'A Fine Day', newyear: 'New Year',
+    raid: 'Robber Attacks', plague: 'Epidemic', quake: 'Earthquake', neighbors: 'Good Neighbors', tournament: 'Tournament', advantage: 'Trade Advantage',
+    calm: 'Calm Seas', help: 'Helpful Neighbor', conflict: 'Conflict', bounty: 'Plentiful Year', retreat: 'Robber Flees', fine: 'A Beautiful Day', newyear: 'New Year',
     brown: 'brown', green: 'green', purple: 'purple',
     glass: 'glass', tools: 'tools', sand: 'sand', marble: 'marble', castle: 'castle', quarry: 'quarry', glassworks: 'glassworks',
     swamp: 'Swamp', lake: 'Lake', waterhole: 'Watering hole', river: 'River',
@@ -30,7 +30,7 @@ const WARE_ICON = { glass: '◩', tools: '⚒', sand: '⛰', marble: '▣' };
 export const EVENT_TEXT = {
   raid: 'Players with more than 7 cards give up half. Move the robber and steal a card.',
   plague: 'Cities yield only 1 resource this roll.',
-  quake: 'Everybody turns one of their roads sideways. It must be repaired (1 lumber, 1 brick) before you build new roads.',
+  quake: 'Everybody turns one of their roads sideways. Until it is repaired (1 lumber, 1 brick) you build no roads and no settlements next to it.',
   neighbors: 'Everybody gives the player on their left 1 card of their choice.',
   tournament: 'Whoever played the most knights takes a resource of their choice.',
   advantage: 'The holder of the Longest Road draws a card from a player of their choice.',
@@ -38,7 +38,7 @@ export const EVENT_TEXT = {
   help: 'The leaders give 1 card to a player with fewer points.',
   conflict: 'Whoever is alone ahead in knights draws a card from a player of their choice.',
   bounty: 'Everybody takes a resource of their choice.',
-  retreat: 'The robber goes back to his hideout. Nobody is robbed.',
+  retreat: 'The robber flees to a desert, or off the board when there is none. Nobody is robbed.',
   fine: 'Nothing happens. The resources are paid out.',
 };
 
@@ -56,7 +56,7 @@ export function createHub(c) {
   const TEXT = {
     quake: () => [t('Earthquake! Pick one of your roads.'), t('Tap a road to turn it sideways. Repair it with 1 lumber and 1 brick before you build new roads.')],
     bankPick: mp => [t('Take {n} from the bank.', { n: mp.count }), t('Choose any resource the bank has.'), t('Choose cards')],
-    helpGive: () => [t('Neighborly help: give a card.'), t('You lead: give 1 card to a player with fewer points.'), t('Choose')],
+    helpGive: () => [t('Helpful Neighbor: give a card.'), t('You lead: give 1 card to a player with fewer points.'), t('Choose')],
     fishSwap: () => [t('Your hand of fish tokens is full.'), t('Swap one of your tokens for a new one from the stock, or keep them all.'), t('Choose')],
     wagonCards: () => [t('Voting round: where does the trade wagon go?'), t('Bid wool and/or grain: every card is 1 vote, and all your votes go to one place. The cards go back to the bank.'), t('Vote')],
     wagonVote: mp => [t('Vote: where does the wagon go? You have {n} votes.', { n: mp.votes }), t('Tap a glowing path. All your votes go to one place.')],
@@ -146,9 +146,10 @@ export function createHub(c) {
         return true;
       }
       case 'helpGive': {
-        const have = RES.filter(r => c.me().res[r] > 0);
-        c.choiceDialog(tx('Neighborly help'), tx('Who gets your card?'), mp.options.map(p => ({ value: p, html: `${houseIcon(v.players[p].color)} ${esc(v.players[p].name)} · ${tx('Points: {n}', { n: v.players[p].vp })}` })), to => {
-          setTimeout(() => c.choiceDialog(tx('Which card?'), '', have.map(r => ({ value: r, html: `${glyph(r, 18)} ${esc(resName(r))} (${c.me().res[r]})`, style: `background:${CARD_COLOR[r]};color:#fff;border-color:transparent` })), card => c.send({ type: 'helpGive', to, card }), false), 30);
+        const cnt = r => (RES.includes(r) ? c.me().res[r] : c.me().comm[r]) || 0;
+        const have = [...RES, ...(v.mode === 'knights' ? ['paper', 'cloth', 'coin'] : [])].filter(r => cnt(r) > 0); // Cities & Knights: resource or commodity
+        c.choiceDialog(tx('Helpful Neighbor'), tx('Who gets your card?'), mp.options.map(p => ({ value: p, html: `${houseIcon(v.players[p].color)} ${esc(v.players[p].name)} · ${tx('Points: {n}', { n: v.players[p].vp })}` })), to => {
+          setTimeout(() => c.choiceDialog(tx('Which card?'), '', have.map(r => ({ value: r, html: `${glyph(r, 18)} ${esc(resName(r))} (${cnt(r)})`, style: `background:${CARD_COLOR[r]};color:#fff;border-color:transparent` })), card => c.send({ type: 'helpGive', to, card }), false), 30);
           return true;
         }, false);
         return true;
@@ -242,7 +243,7 @@ export function createHub(c) {
       out.push(chip('wagon', '#8A6234', t('Wagon {n}/5', { n: w.level }), t('Your wagon tableau')));
       out.push(chip('gold', '#4A6A3A', w.ware ? `${esc(wareName(w.ware))} → ${esc(t(hub.tb.dest ? hub.tb.dest[w.ware] : ''))}` : t('No order yet'), t('The ware you carry and where it goes')));
     }
-    if (hub.harbors) out.push(chip('harbor', '#2C5F7A', `${hub.harborPts[v.me]}`, t('Harbor points: 3 earn the Strongest Harbors plaque (+2 points)')));
+    if (hub.harbors) out.push(chip('harbor', '#2C5F7A', `${hub.harborPts[v.me]}`, t('Harbor points: 3 earn the Strongest Ports tile (+2 points)')));
     return out;
   }
   function hud(v) {
@@ -251,7 +252,7 @@ export function createHub(c) {
     if (hub.scenario === 'barbarians') bits.push(pill('barbarian', hub.bb.supply, t('Barbarians still to land')), pill('knight', hub.bb.deck, t('Development cards left')));
     if (hub.scenario === 'caravans') bits.push(pill('wagon', hub.cv.pool, t('Trade wagons left')));
     if (hub.scenario === 'traders') bits.push(pill('wagon', Object.values(hub.tb.stacks).reduce((a, b) => a + b, 0), t('Goods tiles left')));
-    if (hub.harbors && hub.harborHolder != null) bits.push(pill('harbor', esc(v.players[hub.harborHolder].name), t('Strongest Harbors plaque')));
+    if (hub.harbors && hub.harborHolder != null) bits.push(pill('harbor', esc(v.players[hub.harborHolder].name), t('Strongest Ports tile')));
     return bits.join('');
   }
   function playerMeta(v, p, i) {

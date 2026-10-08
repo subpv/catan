@@ -58,7 +58,7 @@ function candidates(s, p) {
       case 'fishSwap': out.push({ type: 'fishSwap', idx: Math.random() < 0.5 ? null : 0 }); break;
       case 'bankPick': { const c = {}; for (let i = 0; i < it.count; i++) { const k = pick(C.RES.filter(r => s.bank[r] > 0)); if (k) c[k] = (c[k] || 0) + 1; } out.push({ type: 'bankPick', cards: c }); break; }
       case 'quake': out.push({ type: 'quake', e: pick(L.quakeRoads) }); break;
-      case 'helpGive': { const have = C.RES.filter(r => s.players[p].res[r] > 0); if (have.length) out.push({ type: 'helpGive', to: pick(L.helpTo), card: pick(have) }); break; }
+      case 'helpGive': { const have = [...C.RES.filter(r => s.players[p].res[r] > 0), ...(s.mode === 'knights' ? C.COMM.filter(r => s.players[p].comm[r] > 0) : [])]; if (have.length) out.push({ type: 'helpGive', to: pick(L.helpTo), card: pick(have) }); break; }
       case 'wagonCards': out.push({ type: 'wagonCards', wool: Math.floor(Math.random() * (s.players[p].res.wool + 1)), grain: Math.floor(Math.random() * (s.players[p].res.grain + 1)) }); break;
       case 'wagonVote': out.push({ type: 'wagonVote', pos: pick(L.wagonPositions) }); break;
       case 'wagonPlace': out.push({ type: 'wagonPlace', pos: pick(L.wagonPositions) }); break;
