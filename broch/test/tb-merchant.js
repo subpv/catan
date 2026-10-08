@@ -74,7 +74,6 @@ const throws = f => { try { f(); return false; } catch (e) { if (e instanceof Ga
   let r = null; try { make(6); r = true; } catch (e) { r = false; }
   ok(r, 'Merchant Trains can be created with 6 players');
   ok(throws(() => createGame({ id: 't', mode: 'knights', options: { expansion: 'traders', variants: { caravans: true } }, players: names(3) })), 'not with Cities & Knights');
-  ok(throws(() => make(5, { barbarians: true, caravans: false })) , 'the other big scenarios still refuse 5-6 players');
 }
 
 // ---------------------------------------------------------------- the voting round

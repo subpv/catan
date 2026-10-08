@@ -1031,6 +1031,9 @@ function bankDialog() {
   });
 }
 
+// Traders & Barbarians: the card texts of the English rulebook
+const TB_DESC = { knight: 'Move a barbarian to another path or road. On a road, draw a card from its owner. Counts toward Largest Army.', victoryPoint: 'Worth 1 point. Reveal your Victory Point cards when they bring you to the points needed to win; until then they stay hidden.' };
+
 function devDialog(type) {
   const v = G.view;
   const ready = me().dev.some(d => d.type === type && !d.fresh);
@@ -1038,7 +1041,7 @@ function devDialog(type) {
   const limited = v.flags.devPlayed && !(type === 'knight' && v.options.knightsFree); // one card per turn (house rule: knights are unlimited)
   const can = type !== 'victoryPoint' && type !== 'goodTrip' && ready && myTurn && !limited;
   const why = type === 'goodTrip' ? t('Play it while you move your wagon, after a regular move.') : type === 'victoryPoint' ? t('Counts automatically.') : !myTurn ? t('Play it on your turn.') : limited ? t('You already played a card this turn.') : !ready ? t('Cards bought this turn can be played next turn.') : '';
-  modal(`<div class="progress-card dev-card fx-flip"><b>${esc(cardName(type))}</b><small>${tx(type === 'knight' && v.hub?.scenario === 'traders' ? 'Move a barbarian to another path or road. On a road, draw a card from its owner.' : DEV_DESC[type])}</small></div>
+  modal(`<div class="progress-card dev-card fx-flip"><b>${esc(cardName(type))}</b><small>${tx(v.hub?.scenario === 'traders' && TB_DESC[type] ? TB_DESC[type] : DEV_DESC[type])}</small></div>
     ${why ? `<p class="muted">${esc(why)}</p>` : ''}
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button>${can ? `<button class="btn primary" id="play">${tx('Play card')}</button>` : ''}</div>`, {
     onMount(el, close) {

@@ -140,6 +140,11 @@ export function hubExt(view) {
     // after all tiles: the waterhole's arrows, bridge sites, castle colours, barbarians and conquered tiles
     tiles({ view: v }) {
       let g = '';
+      // the X markers: no road on the sea side of a commodity hex that has only four paths
+      (board.blocked || []).forEach(e => {
+        const [x, y] = mid(e);
+        g += `<g transform="translate(${f(x)},${f(y)})" pointer-events="none"><title>${t('No roads on this side of the commodity hex')}</title><circle r="7.5" fill="#9B1C1C" stroke="#F4E8D0" stroke-width="1.6"/><path d="M-3 -3 L3 3 M3 -3 L-3 3" stroke="#F4E8D0" stroke-width="2" stroke-linecap="round"/></g>`;
+      });
       // the watering holes' arrows: the start locations of the merchant trains (two holes in a 5-6 player game)
       (board.waterholes || (board.waterhole ? [board.waterhole] : [])).forEach(wh0 => {
         const wh = board.hexes[wh0.hex];

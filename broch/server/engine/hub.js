@@ -14,7 +14,7 @@ module.exports = function make(core) {
   const d6 = () => 1 + Math.floor(Math.random() * 6);
   const SCEN = ['fishermen', 'rivers', 'caravans', 'barbarians', 'traders'];
   const BIG3 = ['caravans', 'barbarians', 'traders'];
-  const NO_56 = ['traders']; // big scenarios without a 5-6 player layout (yet)
+  const NO_56 = []; // big scenarios without a 5-6 player layout (yet)
   const api = {};
   const MODS = {};
 
@@ -29,14 +29,12 @@ module.exports = function make(core) {
   const hook = (s, name, ...args) => { const m = mod(s); return m && m[name] ? m[name](s, ...args) : undefined; };
 
   // ------------------------------------------------------------ options
-  // The book plays one scenario at a time. The three big scenarios need the classic rules; two of them a 2-4 player board.
+  // The book plays one scenario at a time. The three big scenarios need the classic rules; each has a 5-6 player layout of its own.
   api.normalize = (v = {}, { big = false, players = 4, knights = false } = {}) => {
     const out = { fishermen: false, rivers: false, caravans: false, barbarians: false, traders: false, events: !!v.events, friendly: !!v.friendly, harbors: !!v.harbors, two: !!v.two };
     const big3 = BIG3.find(k => v[k]);
     if (big3) {
-      // Merchant Trains has a 5-6 player layout (5-6 book p7); the others are still 3-4 player scenarios
       if (knights) fail('This scenario is for the classic rules.');
-      if (NO_56.includes(big3) && (big || players > 4)) fail('This scenario is for the classic rules and 2–4 players.');
       out[big3] = true;
     } else if (v.fishermen) out.fishermen = true;
     else if (v.rivers) out.rivers = true;
@@ -210,8 +208,9 @@ module.exports = function make(core) {
   // ------------------------------------------------------------ event cards
   function newDeck(s) {
     const cards = [];
-    const dropExtremes = !!(s && s.hub && s.hub.mod === 'traders'); // the 2 and 12 are re-rolled in that scenario
-    C.EVENT_CARDS.forEach(([ev, n, count]) => { if (dropExtremes && (n === 2 || n === 12)) return; for (let i = 0; i < count; i++) cards.push({ ev, n }); });
+    // Traders & Barbarians: the English rulebook (p24) changes three events only; the cards with the 2 and 12 stay in the deck
+    // (the German rulebook of 2018 took them out).
+    C.EVENT_CARDS.forEach(([ev, n, count]) => { for (let i = 0; i < count; i++) cards.push({ ev, n }); });
     shuffle(cards);
     // 5 cards under the New Year card, the rest on top
     return [...cards.splice(0, 5), { ev: 'newyear', n: null }, ...cards];
@@ -231,7 +230,8 @@ module.exports = function make(core) {
       if (K(s)) { yellow = null; } else { red = null; yellow = null; }
       return { red, yellow, total: card.n, card };
     }
-    if (s.hub && s.hub.mod === 'traders') while (red + yellow === 2 || red + yellow === 12) { red = d6(); yellow = d6(); }
+    // Traders & Barbarians on the 3-4 player map has no number discs 2 and 12: roll again. With 5-6 players they are on the map and pay.
+    if (s.hub && s.hub.mod === 'traders' && !s.hub.big) while (red + yellow === 2 || red + yellow === 12) { red = d6(); yellow = d6(); }
     return { red, yellow, total: red + yellow, card };
   };
 
@@ -306,7 +306,7 @@ module.exports = function make(core) {
       case 'conflict': {
         let who = null;
         const m = mod(s);
-        if (!K(s) && s.largestArmy.p != null && !m) who = s.largestArmy.p;
+        if (!K(s) && s.largestArmy.p != null && (!m || m.largestArmy)) who = s.largestArmy.p;
         else {
           const sc = s.players.map((_, q) => knightScore(s, q));
           const max = Math.max(...sc);
@@ -769,6 +769,7 @@ module.exports = function make(core) {
     return v;
   };
 
+  api.armyCounts = s => { const m = mod(s); return !!(m && m.largestArmy); }; // does the scenario keep the Largest Army tile?
   api.knightCard = (s, p) => { const m = mod(s); if (m && m.knightCard) m.knightCard(s, p); };
   api.sevenWithoutRobber = s => { const m = mod(s); if (m && m.seven) m.seven(s); };
   // a game saved before the rules were redone: bring it up to date

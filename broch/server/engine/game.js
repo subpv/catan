@@ -851,11 +851,14 @@ const HANDLERS = {
       case 'knight':
         pl.knightsPlayed++;
         log(s, '{@p} played {%c}.', { p, c: 'knight' });
+        // Barbarian Attack leaves the Largest Army in the box; in Traders & Barbarians the tile stays and its knight moves a barbarian
+        if (!X.noRobber(s) || X.hub.armyCounts(s)) {
+          if (pl.knightsPlayed >= 3 && pl.knightsPlayed > s.largestArmy.count && s.largestArmy.p !== p) {
+            s.largestArmy = { p, count: pl.knightsPlayed };
+            log(s, '{@p} now has the Largest Army.', { p });
+          } else if (s.largestArmy.p === p) s.largestArmy.count = pl.knightsPlayed;
+        }
         if (X.noRobber(s)) { X.hub.knightCard(s, p); break; } // Traders & Barbarians: the knight moves a barbarian
-        if (pl.knightsPlayed >= 3 && pl.knightsPlayed > s.largestArmy.count && s.largestArmy.p !== p) {
-          s.largestArmy = { p, count: pl.knightsPlayed };
-          log(s, '{@p} now has the Largest Army.', { p });
-        } else if (s.largestArmy.p === p) s.largestArmy.count = pl.knightsPlayed;
         pushPending(s, [{ type: 'moveRobber', player: p }], true);
         break;
       case 'goodTrip':

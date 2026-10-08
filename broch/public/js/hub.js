@@ -16,7 +16,7 @@ extendCore({
     glass: 'glass', tools: 'tools', sand: 'sand', marble: 'marble', castle: 'castle', quarry: 'quarry', glassworks: 'glassworks',
     swamp: 'Swamp', lake: 'Lake', waterhole: 'Watering hole', river: 'River',
   },
-  cards: { consecration: 'Knight Consecration', strong: 'Strong Knight', treason: 'Treason', captive: 'Captive', goodTrip: 'Good Journey' },
+  cards: { consecration: 'Knight Consecration', strong: 'Strong Knight', treason: 'Treason', captive: 'Captive', goodTrip: 'Swift Journey' },
   glyphs: {
     wagon: '<path d="M3 8h14v8H3z M17 11h3l1 3v2h-4 M7 19a2 2 0 1 0 .01 0 M15 19a2 2 0 1 0 .01 0 M3 8c0-3 14-3 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
     barbarian: '<path d="M6 21l1-8h10l1 8z M8 13a4 4 0 1 1 8 0 M4 6l3 3 M20 6l-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>',
@@ -83,8 +83,8 @@ export function createHub(c) {
       const btns = [];
       if (W.placing) return { msg: esc(t('The barbarian is driven away. Place him somewhere else.')), sub: tx('Tap a glowing path or road.'), mine: true, btns: '' };
       if (W.expel?.length) btns.push(`<button class="btn" data-do="wagonExpel">${tx('Drive the barbarian away')}</button>`);
-      if (W.grain) btns.push(`<button class="btn" data-do="wagonGrain">${tx('Feed the oxen (1 grain)')}</button>`);
-      if (W.trip) btns.push(`<button class="btn" data-do="wagonTrip">${tx('Good journey')}</button>`);
+      if (W.grain) btns.push(`<button class="btn" data-do="wagonGrain">${tx('Spend 1 grain: +2 movement points')}</button>`);
+      if (W.trip) btns.push(`<button class="btn" data-do="wagonTrip">${tx('Swift Journey')}</button>`);
       btns.push(`<button class="btn primary" data-do="wagonDone">${tx('Done')}</button>`);
       return { msg: esc(t('Move your wagon: {n} movement points left.', { n: W.mp })), sub: tx('Path 2 points, your road 1, another road 1 and 1 gold to its owner, a barbarian 2 more. Tap a glowing corner.'), mine: true, btns: btns.join('') };
     }

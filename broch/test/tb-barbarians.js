@@ -411,9 +411,8 @@ test('5-6 players (paired): player 2 has no dice, trades only with the supply, m
   assert.strictEqual(s.current, 1); assert.strictEqual(s.pair.phase, 1);
 });
 
-test('the Barbarian Attack is for the classic rules: not with Cities & Knights, 5-6 allowed, other big scenarios still 2-4', () => {
+test('the Barbarian Attack is for the classic rules: not with Cities & Knights, 5-6 allowed', () => {
   fails(() => createGame({ id: 't', mode: 'knights', options: { expansion: 'traders', variants: { barbarians: true } }, players: [{ id: 'a', name: 'a' }, { id: 'b', name: 'b' }, { id: 'c', name: 'c' }] }));
-  fails(() => createGame({ id: 't', mode: 'classic', options: { expansion: 'traders', variants: { caravans: true }, big: true }, players: [1, 2, 3, 4, 5].map(i => ({ id: 'u' + i, name: 'u' + i })) }));
   const six = createGame({ id: 't', mode: 'classic', options: { expansion: 'traders', variants: { barbarians: true } }, players: [1, 2, 3, 4, 5, 6].map(i => ({ id: 'u' + i, name: 'u' + i })) });
   assert.strictEqual(six.board.kind, 'extended');
 });

@@ -238,6 +238,8 @@ const CONFIGS = {
   'tb-traders': ['classic', { expansion: 'traders', variants: { traders: true } }],
   'tb-traders-all': ['classic', { expansion: 'traders', variants: { traders: true, events: true, harbors: true } }],
   'tb-barb-56': ['classic', { expansion: 'traders', variants: { barbarians: true }, big: true }],
+  'tb-traders-56': ['classic', { expansion: 'traders', variants: { traders: true } }], // the 5-6 player map, paired turns
+  'tb-traders-56-all': ['classic', { expansion: 'traders', variants: { traders: true, events: true, harbors: true, friendly: true } }],
   'tb-barb-all': ['classic', { expansion: 'traders', variants: { barbarians: true, events: true, harbors: true } }],
   'tb-events': ['classic', { expansion: 'traders', variants: { events: true } }],
   'tb-friendly': ['classic', { expansion: 'traders', variants: { friendly: true } }],
