@@ -568,6 +568,7 @@ function tradeDialog() {
 }
 function bankDialog() {
   const v = G.view, L = v.legal || {}, P = plugin();
+  if (P.bankDialog) return P.bankDialog(G.A); // a game with other trading rules brings its own dialog
   const ratios = L.ratios || {};
   const types = Object.keys(ratios).filter(k => ratios[k]);
   const buys = P.bankBuys || v.cards;

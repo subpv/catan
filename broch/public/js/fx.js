@@ -12,6 +12,8 @@ let muted = (() => { try { return localStorage.getItem('broch_muted') === '1'; }
 export const LOOT_TERRAIN = { lumber: 'forest', brick: 'hills', wool: 'pasture', grain: 'fields', ore: 'mountains', paper: 'forest', cloth: 'pasture', coin: 'mountains' };
 // standalone games say which tile each of their resources comes from
 export const LOOT_BY_MODE = {};
+// standalone games with other advantage cards say how the award scene reads: { road: [title, subtitle], army: [title, subtitle] }
+export const AWARDS_BY_MODE = {};
 export const isMuted = () => muted;
 export function setMuted(m) {
   muted = m;
@@ -277,7 +279,10 @@ export function play(events, view, nameHtml) {
   const vps = events.filter(e => e.type === 'vp');
   if (vps.length) setTimeout(() => vps.forEach(e => vpFx(view, e.p, e.d)), 450);
   for (const ev of events) {
-    if (ev.type === 'award') enqueue(() => awardScene(view, ev.p, ev.what === 'road' ? t('Longest Road') : t('Largest Army'), `${nameHtml(ev.p)} · ${esc(t('+2 victory points'))}`));
+    if (ev.type === 'award') {
+      const own = AWARDS_BY_MODE[view.mode];
+      enqueue(() => awardScene(view, ev.p, own ? t(own[ev.what][0]) : ev.what === 'road' ? t('Longest Road') : t('Largest Army'), `${nameHtml(ev.p)} · ${esc(t(own ? own[ev.what][1] : '+2 victory points'))}`));
+    }
     if (ev.type === 'yourTurn') enqueue(() => yourTurnScene(view));
   }
 }
