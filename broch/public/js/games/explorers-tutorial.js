@@ -39,17 +39,23 @@ function explorers() {
     view: v, vpTarget: 12,
     steps: [
       async T => {
-        T.say(t('Explorers & Pirates'), t('Sail into the unknown. Discover land, found settlements and win the missions. The first to the point goal wins.'));
+        T.say(t('Explorers & Pirates'), t('Sail into the unknown. Discover land, found settlements and win the missions. The point goal depends on the scenario, from 8 to 17.'));
         T.vp(3);
         await T.wait(2600);
       },
       async T => {
-        T.say(t('You start with ships.'), t('A harbor settlement (2 points), a settlement and a ship with an explorer. There are no cities, no robber and no harbors for trading.'));
+        T.say(t('You start with ships.'), t('A harbor settlement (2 points), a settlement and a ship with an explorer. There are no cities, development cards or robber, and no harbors for trading.'));
         T.glow([hAt(B, 0, 0), hAt(B, 0, 1)]);
         await T.wait(3200);
       },
       async T => {
-        T.say(t('Ships move 4 spaces a turn.'), t('Tap the glowing sea path. A ship sails from path to path along the coast and between the fields.'));
+        T.say(t('A turn has three phases.'), t('Income (roll the dice), then trade and build, then the movement phase for your ships. Once you start to sail, you cannot trade or build any more.'));
+        track(T, `${t('Income')} › ${t('Trade and build')} › ${t('Movement phase')}`);
+        await T.wait(3600);
+        track(T, '');
+      },
+      async T => {
+        T.say(t('Ships move 4 spaces a turn.'), t('Tap the glowing sea path. A ship sails from path to path along the coast and between the fields. For 1 wool it gets 2 more moves, once per turn.'));
         track(T, `4 ${t('moves')}`);
         await T.tap({ edges: [e2] });
         ship(sh => { sh.e = e2; sh.mp = 3; })(T);
@@ -67,7 +73,7 @@ function explorers() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('An explorer founds a settlement.'), t('The ship points at a corner of the new land: ship and explorer go back to the box and a settlement stands there. Roads cannot cross the sea.'));
+        T.say(t('An explorer founds a settlement.'), t('The ship points at a corner of the new land: ship and explorer go back to the supply and a settlement stands there for free. Roads cannot cross the sea.'));
         await T.tap({ vertices: [tip] });
         T.set(x => { delete x.exp.ships[1]; x.buildings[tip] = { p: 0, type: 'settlement' }; }, { verts: [tip] });
         sfx.place();
@@ -75,7 +81,7 @@ function explorers() {
         await T.wait(1000);
       },
       async T => {
-        T.say(t('Harbor settlements hold a basin.'), t('Upgrade a coastal settlement for 2 grain and 2 ore: 2 points instead of 1. New explorers and units wait in its basin for a ship.'));
+        T.say(t('Harbor settlements hold a basin.'), t('Upgrade a coastal settlement for 2 grain and 2 ore: 2 points instead of 1, still 1 card per tile. Ships are built next to a harbor settlement; new explorers and units wait in its basin for a ship.'));
         await T.give({ grain: 2, ore: 1 });
         await T.pay({ grain: 2, ore: 2 }, T.vertPt(tip));
         T.set(x => { x.buildings[tip] = { p: 0, type: 'harbor', cargo: [{ t: 'U' }] }; }, { verts: [tip] });
@@ -83,7 +89,7 @@ function explorers() {
         await T.wait(1200);
       },
       async T => {
-        T.say(t('No income? You get gold.'), t('If a roll gives you no resources, you get 1 gold. 3 identical resources buy 1 resource or 1 gold; 2 gold buy a resource.'));
+        T.say(t('No income? You get gold.'), t('If a roll (not a 7) gives you no resources, you get 1 gold. 3 identical resources buy 1 resource or 1 gold; 2 gold buy a resource, twice per turn.'));
         await T.roll(2, 3);
         T.hit(5);
         await T.gain(T.pt(0, -1.2), 'gold', 1, 0);
@@ -92,7 +98,7 @@ function explorers() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('The Pirate Lairs'), t('Gold rivers hide pirate lairs. Land 3 units on a lair to conquer it: everybody who helped gets 2 gold and a step on the track.'));
+        T.say(t('The Pirate Lairs'), t('Gold rivers hide pirate lairs. Ships land units on a lair; with 3 units it falls: everybody who helped gets 2 gold and a step on the track, the best fighter one more.'));
         T.set(x => { const h = x.board.hexes[goldHex]; h.terrain = 'goldriver'; h.number = null; h.lair = { number: 8, units: { 0: 2 }, conquered: false }; x.exp.tracks = { lairs: { pos: [0, 0, 0], at: [0, 0, 0], holder: null, values: [0, 1, 1, 2, 2, 2, 3, 3] } }; }, { hexes: [goldHex] });
         sfx.reveal();
         await T.wait(1400);
@@ -107,7 +113,7 @@ function explorers() {
         await T.wait(1100);
       },
       async T => {
-        T.say(t('Fish for Broch'), t('Roll a die: if it shows the number of a fishing ground, a swarm appears there. A ship catches it and brings it to a harbor of the council.'));
+        T.say(t('Fish for Broch'), t('Once per turn, in the movement phase, roll a die: if it shows the number of a fishing ground, a swarm appears there. A ship catches it and brings it to a harbor of the council for a step on the track.'));
         T.set(x => { const h = x.board.hexes[fishHex]; h.terrain = 'sea'; h.fish = true; h.die = 3; h.swarm = false; });
         sfx.reveal();
         await T.wait(1000);
@@ -128,7 +134,7 @@ function explorers() {
         await T.wait(1000);
       },
       async T => {
-        T.say(t('Spices for Broch'), t('A unit stays in a spice village: you become friends, get a bag of spice and the village’s advantage, for example 1 more move for every ship.'));
+        T.say(t('Spices for Broch'), t('A unit stays in a spice village: you become friends, get a bag of spice and the village’s advantage, for example 1 more move for every ship. Bring the spice to a harbor of the council.'));
         T.set(x => { const h = x.board.hexes[spiceHex]; h.terrain = 'spice'; h.village = { kind: 'fast', bags: 3, friends: [] }; });
         sfx.reveal();
         await T.wait(1200);
@@ -143,14 +149,18 @@ function explorers() {
         await T.wait(1100);
       },
       async T => {
-        T.say(t('Pirates ask for tribute.'), t('On a 7 the roller sets a pirate ship and takes a card from a ship next to it. Foreign pirates ask 1 gold per ship and turn; a ship that has not moved can chase them with a 6.'));
+        T.say(t('Pirates ask for tribute.'), t('On a 7, players with more than 7 cards discard half; then the roller sets a pirate ship and takes a card from a ship next to it. Foreign pirates ask 1 gold per ship and turn; a ship that has not moved can chase them with a 6.'));
         await T.roll(3, 4);
         T.set(x => { x.exp.pirate = { hex: hAt(B, 1, 1), owner: 1 }; });
         sfx.pirate();
         await T.wait(2400);
       },
       async T => {
-        T.say(t('Reach the goal!'), t('Settlements 1 point, harbor settlements 2, every mission track its points, and the furthest marker of a mission gets a special point.'));
+        T.say(t('5–6 player expansion'), t('5–6 players: ship 1 rolls and trades, ship 2 only builds and moves. Both tokens pass to the left.'));
+        await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Reach the goal!'), t('Settlements 1 point, harbor settlements 2, every mission track its points, and the furthest marker of a mission gets a special point. The first to the goal on their own turn wins.'));
         await T.countVp(12);
         await T.finale();
       },

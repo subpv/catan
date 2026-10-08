@@ -111,6 +111,11 @@ function classic() {
         await T.wait(1200);
       },
       async T => {
+        T.say(t('Start with two settlements and two roads.'), t('The second settlement pays 1 card for each tile around it. Later settlements must connect to your roads.'));
+        T.glow([C, NW, NE]);
+        await T.wait(3400);
+      },
+      async T => {
         T.say(t('Roll the dice every turn.'), t('Tap the dice.'));
         await T.tap({ dice: true });
         await T.roll(3, 5);
@@ -160,21 +165,29 @@ function classic() {
         await T.wait(1100);
       },
       async T => {
-        T.say(t('Trade with players or the bank.'), t('Players only trade with whoever’s turn it is. The bank swaps 4 of a kind for 1, harbors make it 3:1 or 2:1.'));
+        T.say(t('Trade with players.'), t('On your turn offer cards. Others can accept, decline or answer with a counter-offer, and you pick the deal you like. Players trade only with whoever’s turn it is.'));
+        await T.give({ wool: 1 });
+        await T.wait(1400);
+        await T.pay({ wool: 1 }, T.vertPt(foe));
+        await T.gain(T.vertPt(foe), 'brick', 1, 0);
+        await T.wait(1400);
+      },
+      async T => {
+        T.say(t('Trade with the bank.'), t('The bank swaps 4 cards of one kind for 1 card of your choice. A 3:1 harbor asks 3, a 2:1 harbor 2 of its resource.'));
         await T.give({ wool: 4 });
         await T.bankTrade({ wool: 4 }, 'brick');
         await T.wait(1200);
       },
       async T => {
-        T.say(t('Development cards'), t('Knight, Road Building, Year of Plenty, Monopoly or a hidden point. One per turn, not on the turn you buy it.'));
+        T.say(t('Development cards'), t('Knight, Road Building, Year of Plenty, Monopoly or a hidden point. One per turn, not on the turn you buy it. The lobby house rule “knights without a limit” allows any number of knights.'));
         await T.bigCard({ title: t('Knight'), color: '#5B3A6E', icon: 'knight' });
-        T.say(t('3 knights played: Largest Army, +2 points.'), t('Its holder flies war banners on the board.'));
+        T.say(t('3 knights played: Largest Army, +2 points.'), t('Whoever plays more knights takes it away. Its holder flies war banners on the board.'));
         T.set(v2 => { v2.largestArmy = { p: 0, count: 3 }; });
         T.vp(4);
         await T.wait(1800);
       },
       async T => {
-        T.say(t('5 roads in a row: Longest Road, +2 points.'), t('Branches do not count, and a foreign settlement breaks the road.'));
+        T.say(t('5 roads in a row: Longest Road, +2 points.'), t('Branches do not count, a foreign settlement breaks the road, and a longer road takes the title away.'));
         for (const e of trail.slice(1)) { T.road(e, 0); await T.wait(380); }
         T.set(v2 => { v2.longestRoad = { p: 0, len: 5, edges: trail.slice() }; });
         sfx.award();
@@ -182,7 +195,7 @@ function classic() {
         await T.wait(1900);
       },
       async T => {
-        T.say(t('Reach 10 points to win!'), t('Settlement 1 · City 2 · Longest Road 2 · Largest Army 2 · Victory point card 1'));
+        T.say(t('Reach 10 points to win!'), t('Settlement 1 · City 2 · Longest Road 2 · Largest Army 2 · Victory point card 1. You win on your own turn.'));
         await T.countVp(10);
         await T.finale();
       },
@@ -204,7 +217,7 @@ function knights() {
     view: v, vpTarget: 13,
     steps: [
       async T => {
-        T.say(t('Cities & Knights'), t('Everything from Classic, plus commodities, knights and barbarians. 13 points win.'));
+        T.say(t('Cities & Knights'), t('Like Classic, but with commodities, knights and barbarians instead of development cards and Largest Army. You start with a settlement and a city. 13 points win.'));
         T.vp(4);
         await T.wait(2800);
       },
@@ -216,17 +229,17 @@ function knights() {
         await T.wait(1200);
       },
       async T => {
-        T.say(t('Commodities buy city improvements.'), t('Trade costs cloth, politics coin, science paper: level 1 costs 1, level 2 costs 2, and so on. Tap +.'));
+        T.say(t('Commodities buy city improvements.'), t('Trade costs cloth, politics coin, science paper: level 1 costs 1, level 2 costs 2, and so on. You need a city. Tap +.'));
         T.imp({ trade: 0, politics: 0, science: 0 });
         await T.give({ paper: 3 });
         await T.tap({ el: '.tut-imp [data-tr="science"]' });
         await T.impUp('science');
         await T.impUp('science');
-        T.say(t('Level 3 unlocks a special power.'), t('Science: take a resource when you get nothing. Trade: 2:1 for commodities. Politics: stronger knights.'));
+        T.say(t('Level 3 unlocks a special power.'), t('Science (aqueduct): you choose a resource once and get it whenever a roll (not a 7) gives you nothing. Trade: commodities 2:1 at the bank. Politics: mighty knights.'));
         await T.give({ paper: 3 });
         await T.impUp('science');
         await T.wait(1300);
-        T.say(t('First to level 4 raises a Metropolis.'), t('It is worth 2 points and sits on one of your cities. Only a player who reaches level 5 first can take it from you.'));
+        T.say(t('First to level 4 raises a Metropolis.'), t('It is worth 2 points, sits on one of your cities that has none and is safe from the barbarians. A player who reaches level 5 before you can take it; at level 5 it is yours for good.'));
         await T.give({ paper: 4 });
         await T.impUp('science');
         T.set(v2 => { v2.buildings[home].metro = 'science'; }, { verts: [home] });
@@ -236,13 +249,13 @@ function knights() {
         T.imp(null);
       },
       async T => {
-        T.say(t('Knights defend Broch.'), t('Recruit one for wool and ore. Tap the glowing corner.'));
+        T.say(t('Knights defend Broch.'), t('Recruit one for wool and ore. Tap a free corner next to your road.'));
         await T.give({ wool: 1, ore: 1 });
         await T.tap({ vertices: [kSpot] });
         await T.pay({ wool: 1, ore: 1 }, T.vertPt(kSpot));
         T.knight(kSpot, 0, 1, false);
         await T.wait(700);
-        T.say(t('Activate it with grain.'), t('Only active knights fight. Promote them to make them stronger.'));
+        T.say(t('Activate it with grain.'), t('Only active knights fight. Promote them for wool and ore to make them stronger; mighty ones need politics level 3.'));
         await T.give({ grain: 1 });
         await T.pay({ grain: 1 }, T.vertPt(kSpot));
         T.knight(kSpot, 0, 1, true);
@@ -253,35 +266,42 @@ function knights() {
         await T.wait(1000);
       },
       async T => {
+        T.say(t('Knights at work.'), t('An active knight can move along your roads, chase away a weaker enemy knight or drive off the robber, and is inactive afterwards. A knight activated this turn must wait for the next.'));
+        await T.wait(2600);
+        T.knight(kSpot, 0, 2, false);
+        await T.wait(1200);
+        T.knight(kSpot, 0, 2, true);
+      },
+      async T => {
         T.say(t('A ship on the event die moves the barbarians.'), t('Each ship brings them one step closer to Broch. Until they have landed once, a 7 cannot move the robber.'));
         T.barb(3);
         for (const [a, b] of [[2, 5], [6, 1], [4, 4]]) { await T.roll(a, b, { event: 'ship' }); T.barb(T.s.barb + 1); await T.wait(600); }
         await T.wait(500);
       },
       async T => {
-        T.say(t('The barbarians attack!'), t('Their strength: all cities on the board. Your defense: all active knights. Afterwards every knight is inactive again.'));
+        T.say(t('The barbarians attack!'), t('Their strength: the number of cities on the board. Your defense: the levels of all active knights (basic 1, strong 2, mighty 3). Afterwards every knight is inactive again.'));
         await T.roll(1, 2, { event: 'ship' });
         T.barb(7);
         await T.battle(2, 2);
-        T.say(t('Repelled!'), t('The strongest defender earns a point. If the barbarians win, whoever defended least loses a city (metropolises are safe).'));
+        T.say(t('Repelled!'), t('The strongest defender earns a point; with a tie each draws a progress card. If the barbarians win, whoever defended least loses a city (cities with a metropolis are safe).'));
         T.vp(7);
         T.barb(0);
         await T.wait(2000);
       },
       async T => {
-        T.say(t('Progress cards'), t('A coloured gate on the event die gives a card to players whose red die is low enough for their improvements. You may hold 4 cards.'));
+        T.say(t('Progress cards'), t('A coloured gate on the event die gives a progress card to players with that improvement if their red die is low enough: level 1 needs 1–2, level 2 needs 1–3, and so on. You may hold 4 cards; play them on your turn after rolling.'));
         await T.roll(2, 4, { event: 'science' });
         await T.bigCard({ title: t('Alchemist'), color: TRACK.science, icon: 'science' });
         await T.wait(600);
       },
       async T => {
-        T.say(t('City walls'), t('Each wall lets you keep 2 more cards when a 7 is rolled.'));
+        T.say(t('City walls'), t('A wall costs 2 brick and goes around one of your cities. Each wall lets you keep 2 more cards when a 7 is rolled.'));
         T.set(v2 => { v2.buildings[home].wall = true; }, { verts: [home] });
         sfx.place();
         await T.wait(2000);
       },
       async T => {
-        T.say(t('Reach 13 points to win!'), t('Settlement 1 · City 2 · Metropolis 2 · Defender 1 · Longest Road 2'));
+        T.say(t('Reach 13 points to win!'), t('Settlement 1 · City 2 · Metropolis 2 · Defender 1 · Longest Road 2 · Progress point card 1 · Merchant 1'));
         await T.countVp(13);
         await T.finale();
       },
@@ -307,7 +327,7 @@ function seafarers() {
     view: v, vpTarget: 14,
     steps: [
       async T => {
-        T.say(t('Seafarers'), t('The land is split into islands. Ships cross the sea.'));
+        T.say(t('Seafarers'), t('The land is split into islands. Ships cross the sea. In the founding phase a coastal settlement may take a ship instead of a road.'));
         T.vp(2);
         await T.wait(2600);
       },
@@ -325,7 +345,7 @@ function seafarers() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('Sail next to the fog to reveal it.'), t('Discovering land pays you a resource.'));
+        T.say(t('Sail next to the fog to reveal it.'), t('Discovering land pays you a resource of its kind. In the Fog Islands scenario a ship or road next to a face-down tile turns it over.'));
         T.reveal(fog, 'pasture', 3);
         sfx.reveal();
         await T.wait(800);
@@ -333,7 +353,7 @@ function seafarers() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('Settle a new island: +2 points!'), t('Tap the glowing corner. Your first settlement on each foreign island earns the bonus.'));
+        T.say(t('Settle a new island: +2 points!'), t('Tap the glowing corner. Your first settlement on each foreign island earns bonus points (2 in most scenarios).'));
         await T.tap({ vertices: [land] });
         T.build(land, 'settlement', 0);
         T.set(v2 => { v2.islandBonus = { 1: [0] }; });
@@ -350,10 +370,14 @@ function seafarers() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('The pirate'), t('Ships next to his tile are blocked, and he steals. On a 7 or with a knight you move either the robber or the pirate.'));
+        T.say(t('The pirate'), t('No ship may be built or moved next to his tile, and he steals a card from a player with a ship there. On a 7 or with a knight you move either the robber or the pirate.'));
         T.movePirate(sea1);
         sfx.pirate();
         await T.wait(2400);
+      },
+      async T => {
+        T.say(t('Longest Trade Route'), t('Roads and ships count together, but they only join at your own settlements and cities. 5 or more in a row earn 2 points.'));
+        await T.wait(3200);
       },
       async T => {
         T.say(t('Win with 10 to 14 points.'), t('Pick one of the scenarios from the rulebook, or the free game, when you create the game.'));
@@ -518,7 +542,7 @@ function big() {
         await T.wait(2600);
       },
       async T => {
-        T.say(t('Two players share every turn'), t('Stone 1 rolls the dice, trades with everybody and builds.'));
+        T.say(t('Two players share every turn'), t('Stone 1 rolls the dice for everybody, trades with everybody, builds and may play 1 development card.'));
         T.turnChip(0);
         await T.wait(2400);
       },
@@ -539,7 +563,7 @@ function big() {
         await T.wait(600);
       },
       async T => {
-        T.say(t('So nobody waits long.'), t('Turns stay short, even at a full table.'));
+        T.say(t('So nobody waits long.'), t('Turns stay short, even at a full table. Both players of a turn can win it; if both reach the goal, stone 1 wins.'));
         await T.wait(1800);
         await T.finale();
       },

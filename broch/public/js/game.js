@@ -238,7 +238,8 @@ function statusInfo() {
   if (v.phase === 'setup') {
     if (mine) {
       const msg = v.setup.need === 'road' ? (v.legal?.setupShips?.length ? t('Place a road or a ship next to it.') : t('Place a road next to it.')) : v.setup.need === 'city' ? t('Place your city.') : v.setup.round === 1 ? t('Place your first settlement.') : v.setup.round === 2 ? t('Place your second settlement.') : t('Place your third settlement.');
-      return { msg: esc(msg), sub: v.setup.need === 'road' ? tx('Tap a glowing edge.') : tx('Tap a glowing corner. Buildings need at least one empty corner between them.'), mine };
+      const pays = v.setup.need !== 'road' && (v.options.startBoth || v.setup.need === 'city' || v.setup.pays);
+      return { msg: esc(msg), sub: v.setup.need === 'road' ? tx('Tap a glowing edge.') : tx(pays ? 'Tap a glowing corner. Buildings need at least one empty corner between them. This one pays 1 card for each tile around it.' : 'Tap a glowing corner. Buildings need at least one empty corner between them.'), mine };
     }
     return { msg: v.setup.need === 'road' ? t('{name} is placing a road…', { name: pname(v.current) }) : t('{name} is placing a building…', { name: pname(v.current) }) };
   }
@@ -966,7 +967,7 @@ function tradeDialog(counter) {
   const v = G.view;
   const types = [...RES, ...(v.mode === 'knights' ? COMM : []), ...(v.gold ? ['gold'] : [])];
   const give = counter ? { ...counter.get } : {}, get = counter ? { ...counter.give } : {}; // a counter starts from the offer, turned around
-  modal(`<h2>${counter ? tx('Make a counter-offer') : tx('Offer a trade')}</h2><p class="muted" style="margin:0">${counter ? tx('Propose other terms. The active player decides whether to take them.') : tx('Everyone sees the offer and can accept. You pick who to trade with.')}</p>
+  modal(`<h2>${counter ? tx('Make a counter-offer') : tx('Offer a trade')}</h2><p class="muted" style="margin:0">${counter ? tx('Propose other terms. The active player decides whether to take them.') : tx('Everyone sees the offer and can accept, decline or answer with a counter-offer. You pick who to trade with.')}</p>
     <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg"></div>
     <div class="section-label" style="color:var(--muted)">${tx('You want')}</div><div class="picker" id="tw"></div>
     <div class="foot"><button class="btn" data-close>${tx('Cancel')}</button>${counter ? '' : `<button class="btn" id="tbank">${tx('Bank instead')}</button>`}<button class="btn primary" id="tok">${counter ? tx('Send counter-offer') : tx('Offer')}</button></div>`, {
@@ -1041,7 +1042,7 @@ function devDialog(type) {
   const limited = v.flags.devPlayed && !(type === 'knight' && v.options.knightsFree); // one card per turn (house rule: knights are unlimited)
   const can = type !== 'victoryPoint' && type !== 'goodTrip' && ready && myTurn && !limited;
   const why = type === 'goodTrip' ? t('Play it while you move your wagon, after a regular move.') : type === 'victoryPoint' ? t('Counts automatically.') : !myTurn ? t('Play it on your turn.') : limited ? t('You already played a card this turn.') : !ready ? t('Cards bought this turn can be played next turn.') : '';
-  modal(`<div class="progress-card dev-card fx-flip"><b>${esc(cardName(type))}</b><small>${tx(v.hub?.scenario === 'traders' && TB_DESC[type] ? TB_DESC[type] : DEV_DESC[type])}</small></div>
+  modal(`<div class="progress-card dev-card fx-flip"><b>${esc(cardName(type))}</b><small>${tx(v.hub?.scenario === 'traders' && TB_DESC[type] ? TB_DESC[type] : v.expansion === 'seafarers' && type === 'roadBuilding' ? 'Build 2 roads or ships for free (or 1 of each).' : DEV_DESC[type])}</small></div>
     ${why ? `<p class="muted">${esc(why)}</p>` : ''}
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button>${can ? `<button class="btn primary" id="play">${tx('Play card')}</button>` : ''}</div>`, {
     onMount(el, close) {
@@ -1245,10 +1246,23 @@ function wondersDialog() {
   });
 }
 
+// the rules sentences of the building-costs dialog (classic family and Cities & Knights)
+function classicRules() {
+  const v = G.view, o = v.options || {};
+  const parts = [];
+  if (v.board?.scenario !== 'cloth' || v.expansion !== 'seafarers') parts.push(isSea(v) ? tx('Longest Trade Route: 5 or more connected roads and ships, 2 points. Roads and ships join only at your settlements.') : tx('Longest Road: 5 or more connected roads, 2 points.'));
+  parts.push(tx('Largest Army: 3 or more played knights, 2 points.'));
+  parts.push(o.knightsFree ? tx('You may play 1 development card per turn (knights are not limited in this game), but not one you bought this turn.') : tx('You may play 1 development card per turn, but not one you bought this turn.'));
+  return parts.join(' ');
+}
+function knightsRules() {
+  return `<p class="muted" style="font-size:13px">${tx('The barbarian ship lands after 7 steps: their strength is the number of cities, your defense the levels of all active knights. Hold at most 4 progress cards and play them after rolling. The robber moves only after the first attack.')}</p>`;
+}
+
 function costsDialog() {
   const knights = G.view.mode === 'knights';
   const rows = [[t('Road'), COSTS.road, ''], [t('Settlement'), COSTS.settlement, t('1 point')], [t('City'), COSTS.city, t('2 points, double production')]];
-  if (isSea(G.view)) rows.push([t('Ship'), COSTS.ship, t('Sails on sea edges; moves once per turn')]);
+  if (isSea(G.view)) rows.push([t('Ship'), COSTS.ship, t('Goes on a sea path; one open ship may sail per turn')]);
   if (G.view.rivers) rows.push([t('Bridge'), COSTS.bridge, t('Crosses a river; earns 3 gold')]);
   if (isHub(G.view)) rows.push(...hub().costRows(G.view));
   if (!knights) rows.push([t('Development card'), COSTS.dev, t('Knight, Road Building, Year of Plenty, Monopoly or a point')]);
@@ -1259,7 +1273,8 @@ function costsDialog() {
     ${isHub(G.view) ? hub().costsExtra(G.view).map(x => `<p class="muted" style="font-size:13px">${esc(x)}</p>`).join('') : ''}
     ${G.view.expansion === 'seafarers' && SCEN[G.view.options?.scenario] ? `<h3 style="margin:12px 0 4px">${tx(SCEN[G.view.options.scenario].label)}</h3><ul class="muted" style="font-size:13px;margin:0;padding-left:18px">${SCEN[G.view.options.scenario].rules.map(r => `<li>${tx(r)}</li>`).join('')}</ul><p class="muted" style="font-size:13px;margin:6px 0 0">${tx('Win with {n} points.', { n: G.view.vpTarget ?? G.view.options.vpTarget })}</p>` : ''}
     ${knights ? `<p class="muted" style="font-size:13px">${tx('Improvements cost 1–5 commodities: cloth for trade, coin for politics, paper for science. Cities on forest, pasture and mountains yield a commodity instead of a second resource.')}</p>` : ''}
-    ${!knights ? `<p class="muted" style="font-size:13px">${tx('Longest Road: 5 or more connected roads, 2 points. Largest Army: 3 or more played knights, 2 points. You may play 1 development card per turn, but not one you bought this turn.')}</p>` : ''}
+    ${!knights ? `<p class="muted" style="font-size:13px">${isHub(G.view) ? tx('Longest Road: 5 or more connected roads, 2 points. Largest Army: 3 or more played knights, 2 points. You may play 1 development card per turn, but not one you bought this turn.') : classicRules()}</p>` : knightsRules()}
+    ${G.view.pair ? `<p class="muted" style="font-size:13px">${tx('Five or six players: stone 1 rolls, trades and builds; stone 2 follows without dice and trades only with the bank. If both reach the goal in one turn, stone 1 wins.')}</p>` : ''}
     ${house.length ? `<p class="muted" style="font-size:13px"><b>${tx('House rules in this game')}:</b> ${house.map(esc).join(' · ')}</p>` : ''}
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button></div>`, {
     onMount: el => el.querySelector('[data-tut-mode]')?.addEventListener('click', () => { closeModals(); openTutorial(tutorialFor(G.view)); }),
