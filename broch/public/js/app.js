@@ -7,6 +7,7 @@ import './games/energies.js';
 import './games/energies-tutorial.js';
 import './games/humankind.js';
 import './games/humankind-tutorial.js';
+import './games/threats.js';
 import './games/inkas.js';
 import './games/inkas-tutorial.js';
 import { mountStats } from './stats.js';

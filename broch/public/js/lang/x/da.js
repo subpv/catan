@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"Vælg en kraftværkstype.",
 "Inca":"Inca",
 "The first tribe. Every tile pays as usual.":"Den første stamme. Hvert felt giver som sædvanligt.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"Fiskerierne betaler sig: Lejre ved kysten får 1 ekstra fisk.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Terrasserne betaler sig: Landsbyer i højlandet får 1 ekstra koka. Stier koster kun 1 koka."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Terrasserne betaler sig: Landsbyer i højlandet får 1 ekstra koka. Stier koster kun 1 koka.",
+"The Smilodon prowls!":"Sabeltigeren luskes rundt!",
+"The Smilodon is on the move.":"Sabeltigeren flyttes.",
+"The environmental inspector arrives!":"Miljøinspektøren kommer!",
+"The inspector is on the move.":"Inspektøren flyttes."};

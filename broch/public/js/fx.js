@@ -515,17 +515,20 @@ const ROBBER_SVG = `<svg viewBox="-60 -80 120 170" class="fx-robber-fig"><defs><
   <circle cy="-34" r="27" fill="url(#rg)" stroke="#000" stroke-width="2"/>
   <path d="M-22 -40 Q0 -50 22 -40 L20 -32 Q0 -40 -20 -32 Z" fill="#000" opacity=".9"/>
   <circle cx="-9" cy="-36" r="3.2" fill="#F0C24A"/><circle cx="9" cy="-36" r="3.2" fill="#F0C24A"/></svg>`;
+// the games that have no robber name their own threat here: { title, moves, svg, sound } (see games/threats.js)
+export const THREAT_BY_MODE = {};
 async function robberScene(view) {
-  sfx.robber();
+  const th = THREAT_BY_MODE[view.mode];
+  (sfx[th && th.sound] || sfx.robber)();
   shake();
   const discards = view.pending.filter(p => p.type === 'discard');
   const robberMoves = view.barbarian ? view.barbarian.attacks > 0 : true;
   const sub = [
     discards.length ? t('Players holding too many cards must discard half.') : t('Nobody has to discard.'),
-    robberMoves ? t('The robber is on the move.') : t('The barbarians have not attacked yet, so the robber stays put.'),
+    th ? t(th.moves) : robberMoves ? t('The robber is on the move.') : t('The barbarians have not attacked yet, so the robber stays put.'),
   ].join(' ');
-  const sc = layer('fx-robber', `<div class="fx-vignette"></div><div class="fx-robber-stage">${ROBBER_SVG}</div>
-    <div class="fx-robber-text"><div class="fx-seven">7</div><h1>${esc(t('The robber strikes!'))}</h1><p>${esc(sub)}</p></div>`);
+  const sc = layer('fx-robber', `<div class="fx-vignette"></div><div class="fx-robber-stage">${th && th.svg ? th.svg : ROBBER_SVG}</div>
+    <div class="fx-robber-text"><div class="fx-seven">7</div><h1>${esc(t(th ? th.title : 'The robber strikes!'))}</h1><p>${esc(sub)}</p></div>`);
   await hold(sc, 2300);
 }
 

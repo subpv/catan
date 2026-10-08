@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"Kies een soort centrale.",
 "Inca":"Inca",
 "The first tribe. Every tile pays as usual.":"De eerste stam. Elke tegel betaalt zoals gewoonlijk.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"De visserijen lonen: kampen aan de kust krijgen 1 extra vis.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"De terrassen lonen: dorpen in het hoogland krijgen 1 extra coca. Paden kosten maar 1 coca."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"De terrassen lonen: dorpen in het hoogland krijgen 1 extra coca. Paden kosten maar 1 coca.",
+"The Smilodon prowls!":"De sabeltandtijger sluipt rond!",
+"The Smilodon is on the move.":"De sabeltandtijger wordt verplaatst.",
+"The environmental inspector arrives!":"De milieu-inspecteur komt eraan!",
+"The inspector is on the move.":"De inspecteur wordt verplaatst."};

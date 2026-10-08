@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"発電所の種類を選んでください
 "Inca":"インカ",
 "The first tribe. Every tile pays as usual.":"最初の部族。どのタイルもいつもどおり産出します。",
 "The fisheries pay: camps on the coast get 1 extra fish.":"漁業が報われます：海岸のキャンプは魚を1つ多くもらえます。",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"段々畑が報われます：高地の村はコカを1つ多くもらえます。小道のコストはコカ1のみです。"};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"段々畑が報われます：高地の村はコカを1つ多くもらえます。小道のコストはコカ1のみです。",
+"The Smilodon prowls!":"スミロドンがうろつく！",
+"The Smilodon is on the move.":"スミロドンが移動する。",
+"The environmental inspector arrives!":"環境監督官がやって来る！",
+"The inspector is on the move.":"監督官が移動する。"};

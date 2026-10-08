@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"Оберіть тип електроста
 "Inca":"Інка",
 "The first tribe. Every tile pays as usual.":"Перше плем’я. Кожна плитка платить як завжди.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"Рибальство окупається: табори на узбережжі отримують додаткову рибу.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Тераси окупаються: села на високогір’ї отримують додаткову коку. Стежки коштують лише 1 коку."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Тераси окупаються: села на високогір’ї отримують додаткову коку. Стежки коштують лише 1 коку.",
+"The Smilodon prowls!":"Смілодон нишпорить!",
+"The Smilodon is on the move.":"Смілодон переходить на нове місце.",
+"The environmental inspector arrives!":"Приходить еколог-інспектор!",
+"The inspector is on the move.":"Інспектор переходить на нове місце."};

@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"Escolha um tipo de central.",
 "Inca":"Inca",
 "The first tribe. Every tile pays as usual.":"A primeira tribo. Cada hexágono paga como de costume.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"A pesca compensa: acampamentos na costa recebem 1 peixe extra.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Os terraços compensam: aldeias nas terras altas recebem 1 coca extra. As trilhas custam só 1 coca."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Os terraços compensam: aldeias nas terras altas recebem 1 coca extra. As trilhas custam só 1 coca.",
+"The Smilodon prowls!":"O smilodon anda à espreita!",
+"The Smilodon is on the move.":"O smilodon muda de lugar.",
+"The environmental inspector arrives!":"O inspetor ambiental chegou!",
+"The inspector is on the move.":"O inspetor muda de lugar."};

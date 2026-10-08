@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"Scegli un tipo di centrale.",
 "Inca":"Inca",
 "The first tribe. Every tile pays as usual.":"La prima tribù. Ogni tessera rende come al solito.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"La pesca rende: gli accampamenti sulla costa ricevono 1 pesce in più.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"I terrazzamenti rendono: i villaggi sugli altopiani ricevono 1 coca in più. I sentieri costano solo 1 coca."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"I terrazzamenti rendono: i villaggi sugli altopiani ricevono 1 coca in più. I sentieri costano solo 1 coca.",
+"The Smilodon prowls!":"Lo smilodonte si aggira!",
+"The Smilodon is on the move.":"Lo smilodonte si sposta.",
+"The environmental inspector arrives!":"Arriva l’ispettore ambientale!",
+"The inspector is on the move.":"L’ispettore si sposta."};

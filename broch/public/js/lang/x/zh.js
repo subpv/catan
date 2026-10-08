@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"请选择发电厂类型。",
 "Inca":"印加",
 "The first tribe. Every tile pays as usual.":"第一个部落。每个地块照常产出。",
 "The fisheries pay: camps on the coast get 1 extra fish.":"渔业有回报：海岸的营地额外获得1条鱼。",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"梯田有回报：高地的村庄额外获得1份古柯。小径只需1份古柯。"};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"梯田有回报：高地的村庄额外获得1份古柯。小径只需1份古柯。",
+"The Smilodon prowls!":"剑齿虎在四处游荡！",
+"The Smilodon is on the move.":"剑齿虎要移动了。",
+"The environmental inspector arrives!":"环境检查员来了！",
+"The inspector is on the move.":"检查员要移动了。"};

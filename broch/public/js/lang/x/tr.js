@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"Bir santral türü seç.",
 "Inca":"Inca",
 "The first tribe. Every tile pays as usual.":"İlk kabile. Her karo her zamanki gibi üretir.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"Balıkçılık kazandırır: kıyıdaki kamplar fazladan 1 balık alır.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Teraslar kazandırır: yaylalardaki köyler fazladan 1 koka alır. Patikalar yalnızca 1 kokaya mal olur."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Teraslar kazandırır: yaylalardaki köyler fazladan 1 koka alır. Patikalar yalnızca 1 kokaya mal olur.",
+"The Smilodon prowls!":"Kılıçdişli kaplan dolaşıyor!",
+"The Smilodon is on the move.":"Kılıçdişli kaplan yer değiştiriyor.",
+"The environmental inspector arrives!":"Çevre müfettişi geliyor!",
+"The inspector is on the move.":"Müfettiş yer değiştiriyor."};

@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"발전소 종류를 고르세요.",
 "Inca":"잉카",
 "The first tribe. Every tile pays as usual.":"첫 번째 부족. 모든 타일이 평소처럼 생산합니다.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"어업이 보상을 줍니다: 해안의 야영지는 물고기를 1개 더 받습니다.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"계단식 밭이 보상을 줍니다: 고지대의 마을은 코카를 1개 더 받습니다. 오솔길은 코카 1개만 듭니다."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"계단식 밭이 보상을 줍니다: 고지대의 마을은 코카를 1개 더 받습니다. 오솔길은 코카 1개만 듭니다.",
+"The Smilodon prowls!":"스밀로돈이 어슬렁거립니다!",
+"The Smilodon is on the move.":"스밀로돈이 이동합니다.",
+"The environmental inspector arrives!":"환경 감독관이 도착했습니다!",
+"The inspector is on the move.":"감독관이 이동합니다."};

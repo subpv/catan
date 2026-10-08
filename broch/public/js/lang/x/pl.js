@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"Wybierz typ elektrowni.",
 "Inca":"Inca",
 "The first tribe. Every tile pays as usual.":"Pierwsze plemię. Każde pole płaci jak zwykle.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"Rybołówstwo się opłaca: obozy na wybrzeżu dostają dodatkową rybę.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Tarasy się opłacają: wioski na wyżynach dostają dodatkową kokę. Szlaki kosztują tylko 1 kokę."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Tarasy się opłacają: wioski na wyżynach dostają dodatkową kokę. Szlaki kosztują tylko 1 kokę.",
+"The Smilodon prowls!":"Smilodon krąży w pobliżu!",
+"The Smilodon is on the move.":"Smilodon się przemieszcza.",
+"The environmental inspector arrives!":"Przybywa inspektor ochrony środowiska!",
+"The inspector is on the move.":"Inspektor się przemieszcza."};

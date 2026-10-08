@@ -323,4 +323,8 @@ export default {"Pick a plant type.":"Wähle eine Kraftwerksart.",
 "Inca":"Inca",
 "The first tribe. Every tile pays as usual.":"Der erste Stamm. Jedes Feld zahlt wie gewohnt.",
 "The fisheries pay: camps on the coast get 1 extra fish.":"Die Fischerei zahlt sich aus: Lager an der Küste bekommen 1 Fisch extra.",
-"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Die Terrassen zahlen sich aus: Dörfer im Hochland bekommen 1 Koka extra. Pfade kosten nur 1 Koka."};
+"The terraces pay: villages in the highlands get 1 extra coca. Trails cost only 1 coca.":"Die Terrassen zahlen sich aus: Dörfer im Hochland bekommen 1 Koka extra. Pfade kosten nur 1 Koka.",
+"The Smilodon prowls!":"Der Säbelzahntiger schleicht umher!",
+"The Smilodon is on the move.":"Der Säbelzahntiger wird versetzt.",
+"The environmental inspector arrives!":"Der Umweltinspektor kommt!",
+"The inspector is on the move.":"Der Umweltinspektor wird versetzt."};
