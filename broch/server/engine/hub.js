@@ -59,30 +59,42 @@ module.exports = function make(core) {
     return ring;
   }
 
-  // fishing grounds: every ground covers 3 corners along the coast; some corners are harbour corners as well
+  // Fishing grounds sit at fixed places (book p9, 5-6 book p5): each one lies in a "V" of the frame between two coastal tiles and
+  // pays the three coast corners it touches. [row, index, row, index] of the two tiles that meet at the V.
+  const GROUND_SPOTS = {
+    standard: [[0, 0, 0, 1], [1, 3, 2, 4], [2, 4, 3, 3], [4, 0, 4, 1], [3, 0, 4, 0], [0, 0, 1, 0]],
+    extended: [[0, 1, 0, 2], [0, 2, 1, 3], [2, 4, 3, 5], [4, 4, 5, 3], [6, 0, 6, 1], [5, 0, 6, 0], [3, 0, 4, 0], [2, 0, 3, 0]],
+  };
+  const groundSpots = board => {
+    const rows = rowsOf(board);
+    return (GROUND_SPOTS[rows.length === 7 ? 'extended' : 'standard']).map(([r1, i1, r2, i2]) => {
+      const e = edgeBetween(board, rows[r1][i1], rows[r2][i2]);
+      const v = e.v.find(x => board.vertices[x].hexes.length === 2);
+      const near = board.vertices[v].edges.filter(x => board.edges[x].hexes.length === 1).map(x => { const [p, q] = board.edges[x].v; return p === v ? q : p; });
+      return { verts: [near[0], v, near[1]], edges: board.vertices[v].edges.filter(x => board.edges[x].hexes.length === 1) };
+    });
+  };
   function placeGrounds(board, nums) {
-    const ring = coastRing(board), n = ring.length, k = nums.length;
-    const portEdges = new Set(board.ports.map(p => p.edge));
-    const between = (i, j) => (board.edges.find(e => e.v.includes(ring[i % n]) && e.v.includes(ring[j % n])) || {}).id;
-    const okCenter = c => !portEdges.has(between(c - 1 + n, c)) && !portEdges.has(between(c, c + 1));
-    let centers = null;
-    for (let attempt = 0; attempt < 600 && !centers; attempt++) {
-      const off = Math.floor(Math.random() * n), jit = attempt > 300 ? 2 : 1;
-      const cs = [];
-      for (let i = 0; i < k; i++) cs.push((off + Math.round(i * n / k) + Math.floor(Math.random() * (2 * jit + 1)) - jit + n) % n);
-      const sorted = cs.slice().sort((a, b) => a - b);
-      let ok = sorted.every((c, i) => { const nx = i + 1 < k ? sorted[i + 1] : sorted[0] + n; return nx - c >= 3; });
-      if (ok && attempt < 500) ok = cs.every(okCenter);
-      if (ok) centers = cs;
-    }
-    if (!centers) centers = Array.from({ length: k }, (_, i) => Math.round(i * n / k) % n);
     const mean = v => { const hs = board.vertices[v].hexes.map(i => board.hexes[i]); return { x: hs.reduce((a, h) => a + h.x, 0) / hs.length, y: hs.reduce((a, h) => a + h.y, 0) / hs.length }; };
     const numbers = shuffle(nums.slice());
-    return centers.map((c, i) => {
-      const v = board.vertices[ring[c]], m = mean(ring[c]);
+    return groundSpots(board).map((g, i) => {
+      const mid = g.verts[1], v = board.vertices[mid], m = mean(mid);
       const dx = v.x - m.x, dy = v.y - m.y, d = Math.hypot(dx, dy) || 1;
-      return { id: i, number: numbers[i], verts: [ring[(c - 1 + n) % n], ring[c], ring[(c + 1) % n]], x: +(v.x + dx / d * 0.7).toFixed(3), y: +(v.y + dy / d * 0.7).toFixed(3) };
+      return { id: i, number: numbers[i], verts: g.verts, x: +(v.x + dx / d * 0.7).toFixed(3), y: +(v.y + dy / d * 0.7).toFixed(3) };
     });
+  }
+  // the harbors of the frame never lie on the two coast edges of a fishing ground
+  function replacePorts(board) {
+    const avoid = new Set(groundSpots(board).flatMap(g => g.edges));
+    const types = board.ports.map(p => p.type);
+    for (let attempt = 0; attempt < 400; attempt++) {
+      const ports = placePorts(board, types, avoid);
+      if (!ports) continue;
+      board.vertices.forEach(v => { delete v.port; });
+      board.ports = ports;
+      ports.forEach(p => board.edges[p.edge].v.forEach(v => { board.vertices[v].port = p.type; }));
+      return;
+    }
   }
 
   function interiorBoard(generate, kind, deserts) {
@@ -107,9 +119,14 @@ module.exports = function make(core) {
 
   function addRivers(board, big) {
     const rows = rowsOf(board);
+    // as printed (book p11, 5-6 book p6): [row, index] of every river hex, the swamp (or the sea end) first
+    const at = (r, i) => rows[r][i];
     const strips = big
-      ? [{ ids: rows[1], t: ['swamp', 'pasture', 'hills', 'mountains'], end: true }, { ids: rows[5].slice(0, 3), t: ['swamp', 'hills', 'mountains'], end: true }, { ids: [rows[2][2], rows[3][3], rows[4][3]], t: ['pasture', 'pasture', 'mountains'], end: false }]
-      : [{ ids: rows[1], t: ['swamp', 'pasture', 'hills', 'mountains'], end: true }, { ids: rows[3].slice(0, 3), t: ['swamp', 'hills', 'mountains'], end: true }];
+      ? [{ ids: [at(0, 1), at(1, 1), at(2, 1)], t: ['swamp', 'hills', 'mountains'], end: true },
+        { ids: [at(6, 1), at(5, 1), at(4, 1), at(3, 1)], t: ['swamp', 'pasture', 'hills', 'mountains'], end: true },
+        { ids: [at(3, 5), at(3, 4), at(3, 3)], t: ['pasture', 'pasture', 'mountains'], end: true }]
+      : [{ ids: [at(4, 1), at(3, 1), at(2, 1), at(1, 0)], t: ['swamp', 'pasture', 'hills', 'mountains'], end: true },
+        { ids: [at(3, 3), at(2, 3), at(1, 2)], t: ['swamp', 'hills', 'mountains'], end: true }];
     const used = new Set();
     const sites = [];
     strips.forEach(st => {
@@ -141,6 +158,7 @@ module.exports = function make(core) {
     deserts.forEach((h, i) => { h.terrain = 'lake'; h.lake = i === 0 ? C.LAKE_NUMBERS.slice() : C.LAKE2_NUMBERS.slice(); });
     board.lakes = deserts.map(h => h.id);
     board.fishing = placeGrounds(board, big ? [...C.FISH_NUMBERS, ...C.FISH_NUMBERS_EXTRA] : C.FISH_NUMBERS);
+    replacePorts(board);
   }
 
   api.makeBoard = ({ options, generate }) => {
@@ -156,7 +174,7 @@ module.exports = function make(core) {
   };
   api.initialRobber = (board, v) => {
     if (v.fishermen || v.caravans || v.barbarians || v.traders) return null; // off the board until the first 7 or knight
-    if (v.rivers) return board.swamps[0];
+    if (v.rivers) return board.swamps[Math.floor(Math.random() * board.swamps.length)]; // on either swamp
     return undefined;
   };
 
@@ -271,7 +289,7 @@ module.exports = function make(core) {
         break;
       }
       case 'help': {
-        const pts = s.players.map((_, q) => core.vp(s, q));
+        const pts = s.players.map((_, q) => core.vp(s, q, false)); // hidden victory point cards do not count
         const max = Math.max(...pts);
         const items = [];
         s.players.forEach((pl, q) => {
@@ -301,9 +319,9 @@ module.exports = function make(core) {
         break;
       case 'retreat': {
         if (api.noRobber(s)) { log(s, 'There is no robber in this scenario.'); break; }
-        const home = robberHome(s);
-        s.robber = home;
-        log(s, 'The robber returns to his hideout.');
+        const desert = s.board.hexes.find(h => h.terrain === 'desert');
+        s.robber = desert ? desert.id : null; // to a desert hex, or off the board when there is none (fishing, rivers)
+        log(s, desert ? 'The robber flees to the desert.' : 'The robber flees off the board.');
         break;
       }
       default: break; // a fine day: nothing happens
@@ -379,11 +397,11 @@ module.exports = function make(core) {
       if (best < 3) return;
       const top = pts.map((x, p) => [x, p]).filter(([x]) => x === best).map(([, p]) => p);
       h.p = top.includes(s.current) ? s.current : top[0];
-      log(s, '{@p} takes the Strongest Harbors plaque (+2 points).', { p: h.p });
+      log(s, '{@p} takes the Strongest Ports tile (+2 points).', { p: h.p });
     } else if (best > pts[h.p]) {
       const top = pts.map((x, p) => [x, p]).filter(([x]) => x === best).map(([, p]) => p);
       const q = top.includes(s.current) ? s.current : top[0];
-      log(s, '{@p} takes the Strongest Harbors plaque from {@q} (+2 points).', { p: q, q: h.p });
+      log(s, '{@p} takes the Strongest Ports tile from {@q} (+2 points).', { p: q, q: h.p });
       h.p = q;
     }
   }
@@ -437,10 +455,10 @@ module.exports = function make(core) {
     return out;
   };
   function friendlyBlocked(s, p, id) {
-    return H(s, id).verts.some(v => { const b = s.buildings[v]; return b && b.p !== p && core.vp(s, b.p) <= 2; });
+    return H(s, id).verts.some(v => { const b = s.buildings[v]; return b && b.p !== p && core.vp(s, b.p, false) <= 2; });
   }
   // players the robber may still steal from
-  api.victimOk = (s, p, q) => !s.friendly || core.vp(s, q) > 2;
+  api.victimOk = (s, p, q) => !s.friendly || core.vp(s, q, false) > 2;
 
   // ------------------------------------------------------------ after something was built
   api.built = (s, p, kind, where) => {
@@ -597,7 +615,6 @@ module.exports = function make(core) {
       if (!s.fishing) fail('There are no fishermen in this game.');
       requireMain(s, p);
       if (s.fish.boot !== p) fail('You do not have the old boot.');
-      if (s.turn <= s.fish.bootTurn) fail('You can pass the old boot on from your next turn.');
       const q = a.to;
       if (q === p || !P(s, q)) fail('Pick a player.');
       if (core.vp(s, q, false) < core.vp(s, p, false)) fail('The boot goes to a player with at least as many points as you.');
@@ -680,7 +697,13 @@ module.exports = function make(core) {
     resolvePending(s, it);
     const home = robberHome(s);
     if (home !== undefined && home !== s.robber) s.robber = home;
-    log(s, 'No tile is open to the robber, so he stays away.');
+    if (s.friendly && !api.noRobber(s) && s.robber != null) {
+      log(s, 'No tile is open to the robber, so he goes to the desert.');
+      // the book: steal from a player with a building there who has more than 2 VPs
+      const victims = [...new Set(H(s, s.robber).verts.map(v => s.buildings[v]).filter(b => b && b.p !== it.player).map(b => b.p))].filter(q => hand(P(s, q)) > 0 && api.victimOk(s, it.player, q));
+      if (victims.length === 1) steal(s, it.player, victims[0]);
+      else if (victims.length > 1) pushPending(s, [{ type: 'steal', player: it.player, options: victims }], true);
+    } else log(s, 'No tile is open to the robber, so he stays away.');
   }
 
   // end of turn: scenarios may need a few more steps first
@@ -706,7 +729,7 @@ module.exports = function make(core) {
         L.fish = {};
         for (const [k, c] of Object.entries(C.FISH_COSTS)) L.fish[k] = fishSum(pl) >= c && !(k === 'robber' && s.robber == null) && !(k === 'road' && (countPieces(s, p).roads >= C.PIECES.road || hasDamage(s, p)));
         L.fishTokens = pl.fishTok.slice();
-        if (s.fish.boot === p && s.turn > s.fish.bootTurn) L.boot = s.players.map((_, q) => q).filter(q => q !== p && core.vp(s, q, false) >= core.vp(s, p, false));
+        if (s.fish.boot === p) L.boot = s.players.map((_, q) => q).filter(q => q !== p && core.vp(s, q, false) >= core.vp(s, p, false));
       }
       if (s.gold) L.goldTrade = P(s, p).gold >= 2 && (s.flags.goldTrades || 0) < 2;
       if (s.damaged) { const mine = Object.keys(s.damaged).filter(e => s.roads[e] === p).map(Number); if (mine.length) L.repair = { edges: mine, ok: has(P(s, p), { lumber: 1, brick: 1 }) }; }
@@ -725,7 +748,7 @@ module.exports = function make(core) {
     v.rivers = s.rivers; v.fishing = s.fishing; v.eventCards = s.eventCards; v.gold = s.gold;
     v.hub = { scenario: s.hub.scenario, friendly: s.friendly, harbors: s.harbors, events: s.eventCards, harborHolder: s.hub.harbor.p, damaged: s.damaged || {} };
     if (s.harbors) v.hub.harborPts = s.players.map((_, p) => harborPoints(s, p));
-    if (s.fish) v.fish = { left: s.fish.bag.length, boot: s.fish.boot, used: s.fish.discard.length, bootFree: s.fish.boot != null && s.turn > s.fish.bootTurn };
+    if (s.fish) v.fish = { left: s.fish.bag.length, boot: s.fish.boot, used: s.fish.discard.length, bootFree: s.fish.boot != null };
     if (s.deck) v.deckLeft = deckLeft(s);
     v.players.forEach((pv, i) => {
       const pl = s.players[i];

@@ -393,12 +393,14 @@ function roll(s, forced) {
   else if (event) log(s, '{@p} rolled {n} ({#e}).', { p: s.current, n: total, e: event === 'ship' ? 'barbarian ship' : `${event} gate` });
   else log(s, '{@p} rolled {n}.', { p: s.current, n: total });
 
+  // Event Cards: the text of the card first, then (Cities & Knights) the event die and the red die, then the Production phase
+  if (rv.card) X.runCard(s, rv.card);
+  if (rv.card && event) log(s, 'Event die: {#e}.', { e: event === 'ship' ? 'barbarian ship' : `${event} gate` });
   if (K(s)) {
     if (event === 'ship') advanceBarbarians(s);
     else drawProgressForGate(s, event, red);
   }
   if (rv.card) {
-    X.runCard(s, rv.card);                 // the event first, the yields after it
     if (total !== 7) produce(s, total);
   } else if (total === 7) handleSeven(s);
   else produce(s, total);

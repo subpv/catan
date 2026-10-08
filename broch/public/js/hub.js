@@ -146,9 +146,10 @@ export function createHub(c) {
         return true;
       }
       case 'helpGive': {
-        const have = RES.filter(r => c.me().res[r] > 0);
+        const cnt = r => (RES.includes(r) ? c.me().res[r] : c.me().comm[r]) || 0;
+        const have = [...RES, ...(v.mode === 'knights' ? ['paper', 'cloth', 'coin'] : [])].filter(r => cnt(r) > 0); // Cities & Knights: resource or commodity
         c.choiceDialog(tx('Neighborly help'), tx('Who gets your card?'), mp.options.map(p => ({ value: p, html: `${houseIcon(v.players[p].color)} ${esc(v.players[p].name)} · ${tx('Points: {n}', { n: v.players[p].vp })}` })), to => {
-          setTimeout(() => c.choiceDialog(tx('Which card?'), '', have.map(r => ({ value: r, html: `${glyph(r, 18)} ${esc(resName(r))} (${c.me().res[r]})`, style: `background:${CARD_COLOR[r]};color:#fff;border-color:transparent` })), card => c.send({ type: 'helpGive', to, card }), false), 30);
+          setTimeout(() => c.choiceDialog(tx('Which card?'), '', have.map(r => ({ value: r, html: `${glyph(r, 18)} ${esc(resName(r))} (${cnt(r)})`, style: `background:${CARD_COLOR[r]};color:#fff;border-color:transparent` })), card => c.send({ type: 'helpGive', to, card }), false), 30);
           return true;
         }, false);
         return true;
