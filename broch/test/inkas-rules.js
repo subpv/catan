@@ -111,7 +111,7 @@ function K(s, p) { return Object.values(s.players[p].res).reduce((a, b) => a + b
   } else assert.ok(far != null);
 }
 
-// ---- Longest Trade Road needs 3 connected roads; the advantage trade works once per turn
+// ---- Longest Trade Route needs 3 connected roads; the advantage trade works once per turn
 {
   const s = fresh(3);
   const p = s.current;
@@ -124,7 +124,7 @@ function K(s, p) { return Object.values(s.players[p].res).reduce((a, b) => a + b
   s.players[p].res.timber = 2; assert.throws(() => act(s, p, { type: "bankTrade", give: "timber", get: "stone" }), /Not enough/); // 3 equal resources are needed
 }
 
-// ---- the robber never goes to a field that makes trade goods; a 7 and Combat Skill both move it
+// ---- the robber never goes to a field that makes trade goods; a 7 and Combat Arts both move it
 {
   const s = fresh(3);
   const p = s.current;
@@ -135,6 +135,29 @@ function K(s, p) { return Object.values(s.players[p].res).reduce((a, b) => a + b
   assert.strictEqual(s.pending[0].type, 'robber');
   assert.strictEqual(s.players[p].played, 1);
   assert.strictEqual(I.spec.handLimit(s, p), 8);
+}
+
+// ---- the almanac: supply, development stacks, goods trade, founding without a free crossing
+{
+  const s = fresh(3);
+  const total = k => s.bank[k] + s.players.reduce((a, pl) => a + pl.res[k], 0); // supply plus hands
+  I.RAW.forEach(k => assert.strictEqual(total(k), 20));
+  I.GOODS.forEach(k => assert.strictEqual(total(k), 12));
+  const cnt = d => { const o = {}; d.forEach(c => { o[c] = (o[c] || 0) + 1; }); return o; };
+  assert.deepStrictEqual(cnt(s.devDeck), { combat: 7, roadBuilding: 1, invention: 1, inMonopoly: 1 });
+  assert.deepStrictEqual(cnt(s.devDeck2), { combat: 7, roadBuilding: 1, invention: 1, inMonopoly: 1 });
+  // 3 different trade goods give 2 raw materials, never trade goods
+  const p = s.current;
+  s.step = 'main'; s.players[p].res.catch = 1; s.players[p].res.coca = 1; s.players[p].res.feathers = 1;
+  assert.throws(() => act(s, p, { type: 'goodsTrade', get: { catch: 2 } }));
+  act(s, p, { type: 'goodsTrade', get: { stone: 1, metal: 1 } });
+  // no free crossing without a road leading to it: an own building in decline makes room
+  const t = fresh(3);
+  for (const e of t.board.edges) if (t.roads[e.id] === undefined) t.roads[e.id] = 1;
+  const own = Object.keys(t.buildings).filter(v => t.buildings[v].p === 0);
+  own.forEach(v => { t.buildings[v].decline = true; });
+  assert.strictEqual(I.foundSpots(t, 0).length, 0);
+  assert.deepStrictEqual(I.foundingSpots(t, 0).map(String).sort(), own.map(String).sort());
 }
 
 console.log('inkas rules: ok');

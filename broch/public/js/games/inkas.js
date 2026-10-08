@@ -1,6 +1,6 @@
 // Rise of the Inkas (Der Aufstieg der Inka): the plugin for the standalone game. Andean board art (inkas-art.js), the tribe
 // tablet with its three tribes, thickets over buildings in decline, the robber on the frame, development cards and the
-// two advantage cards (Longest Trade Road, Greatest Combat Skill).
+// two advantage cards (Longest Trade Route, Mightiest Combat Arts).
 import { register } from './registry.js';
 import { extendCore, glyph, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, GLYPH, resName, cardName, term, houseIcon, modal } from '../core.js';
 import { enqueue, layer, hold, sfx, LOOT_BY_MODE, AWARDS_BY_MODE } from '../fx.js';
@@ -17,7 +17,7 @@ extendCore({
     tribe1: 'first tribe', tribe2: 'second tribe', thicket: 'Thicket', robber: 'Robber', coast: 'Coastal waters', plantation: 'Jungle plantation', jungle: 'Jungle', frame: 'Frame piece with jungle',
     forest: 'Forest', hills: 'Quarry', pasture: 'Pasture', mountains: 'Mountains', fields: 'Fields',
   },
-  cards: { combat: 'Combat Skill', invention: 'Invention', inMonopoly: 'Monopoly' },
+  cards: { combat: 'Combat Arts', invention: 'Invention', inMonopoly: 'Monopoly' },
   glyphs: {
     timber: '<rect x="3" y="4.500" width="17" height="6.500" rx="3.200" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6.300" cy="7.750" r="1.200" fill="currentColor"/><rect x="5" y="13" width="17" height="6.500" rx="3.200" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.300" cy="16.250" r="1.200" fill="currentColor"/>',
     stone: '<path d="M4 8l8-4 8 4v8l-8 4-8-4z M4 8l8 4 8-4 M12 12v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
@@ -38,8 +38,8 @@ extendCore({
   },
 });
 LOOT_BY_MODE.inkas = { timber: 'forest', stone: 'hills', fleece: 'pasture', metal: 'mountains', potato: 'fields', catch: 'coast', coca: 'plantation', feathers: 'jungle' };
-AWARDS_BY_MODE.inkas = { road: ['Longest Trade Road', 'Advantage card'], army: ['Greatest Combat Skill', 'Advantage card'] };
-DEV_DESC.combat = 'Move the robber and take a card from a player next to it. Each open Combat Skill card protects 1 more hand card on a 7.';
+AWARDS_BY_MODE.inkas = { road: ['Longest Trade Route', 'Advantage card'], army: ['Mightiest Combat Arts', 'Advantage card'] };
+DEV_DESC.combat = 'Move the robber and take a card from a player next to it. Each open Combat Arts card protects 1 more hand card on a 7.';
 DEV_DESC.invention = 'Take any 2 resource or trade good cards from the supply.';
 DEV_DESC.inMonopoly = 'Name a resource or trade good. Every other player gives you up to 2 of that card.';
 
@@ -76,7 +76,7 @@ const GOAL_HTML = [
   `<span class="in-goal">${pieceIcons(['s', 's', 's', 's'])}</span><i>${'or'}</i><span class="in-goal">${pieceIcons(['s', 's', 'city'])}</span>`,
   `<span class="in-goal">${pieceIcons(['s', 's', 's'])}</span><i>${'or'}</i><span class="in-goal">${pieceIcons(['s', 'city'])}</span>`,
 ];
-// the tribe tablet of one player: three tribes with 4 + 4 + 3 steps, filled from the bottom up
+// the culture board of one player: three tribes with 4 + 4 + 3 steps, filled from the bottom up
 function tablet(v, i) {
   const p = v.players[i];
   const cols = TRIBES.map((tr, k) => {
@@ -97,9 +97,9 @@ function tabletPanel(v, A) {
   const who = v.me >= 0 ? v.me : v.current;
   const pl = v.players[who];
   const others = v.players.map((_, i) => i).filter(i => i !== who);
-  return `<div class="panel in-tablet"><div class="panel-h">${tx('Tribe tablet')}<span class="spacer"></span><span class="muted" style="font-weight:600">${esc(pl.name)} · ${pl.markers}/11</span></div>
+  return `<div class="panel in-tablet"><div class="panel-h">${tx('Culture board')}<span class="spacer"></span><span class="muted" style="font-weight:600">${esc(pl.name)} · ${pl.markers}/11</span></div>
     ${tablet(v, who)}
-    <p class="in-rule">${esc(t(['Every settlement and every city upgrade adds a development marker. At 4 markers the tribe declines: roads go back, buildings get thickets, and you found the next tribe for free.', 'Second tribe: 4 more markers. When it falls, the buildings of the first tribe are cleared away.', 'Third tribe: 3 markers win the game (11 in all).'][pl.tribe] || ''))}</p>
+    <p class="in-rule">${esc(t(['Every settlement and every city upgrade adds a culture marker. At 4 markers the tribe declines: roads go back, buildings get thickets, and you found the next tribe for free.', 'Second tribe: 4 more markers. When it falls, the buildings of the first tribe are cleared away.', 'Third tribe: 3 markers win the game (11 in all).'][pl.tribe] || ''))}</p>
     ${others.length ? `<div class="in-rows">${others.map(i => progressRow(v, i)).join('')}</div>` : ''}</div>`;
 }
 function advantagePanel(v, A) {
@@ -108,11 +108,11 @@ function advantagePanel(v, A) {
   const rob = v.board.hexes[v.robber];
   const where = rob && rob.frame ? t('on the jungle frame') : rob ? `${t(term(rob.terrain))} ${rob.number}` : '';
   return `<div class="panel in-adv"><div class="panel-h">${tx('Advantage cards')}</div>
-    <div class="in-ac"><span class="in-aci" style="--c:#C9971B">${glyph('road', 16)}</span><div><b>${tx('Longest Trade Road')}</b> ${lr.p != null ? `<small>(${lr.len})</small>` : ''}<div>${holder(lr.p)}</div>
+    <div class="in-ac"><span class="in-aci" style="--c:#C9971B">${glyph('road', 16)}</span><div><b>${tx('Longest Trade Route')}</b> ${lr.p != null ? `<small>(${lr.len})</small>` : ''}<div>${holder(lr.p)}</div>
       <small class="muted">${tx('3 connected roads. Once per turn: trade 2 cards for 1 with the supply.')}</small></div>
       ${mine && lr.p === v.me ? `<button class="btn small ${L.roadTrade ? 'gold' : ''}" data-in-roadtrade ${L.roadTrade ? '' : 'disabled'}>${tx('Trade 2 for 1')}</button>` : ''}</div>
-    <div class="in-ac"><span class="in-aci" style="--c:#B23A2A">${glyph('combat', 16)}</span><div><b>${tx('Greatest Combat Skill')}</b> ${ik.army.p != null ? `<small>(${ik.army.count})</small>` : ''}<div>${holder(ik.army.p)}</div>
-      <small class="muted">${tx('2 open Combat Skill cards. Once per turn: move the robber from a field next to your building onto the frame and take 1 resource of that field.')}</small></div>
+    <div class="in-ac"><span class="in-aci" style="--c:#B23A2A">${glyph('combat', 16)}</span><div><b>${tx('Mightiest Combat Arts')}</b> ${ik.army.p != null ? `<small>(${ik.army.count})</small>` : ''}<div>${holder(ik.army.p)}</div>
+      <small class="muted">${tx('2 open Combat Arts cards. Once per turn: move the robber from a field next to your building onto the frame and take 1 resource of that field.')}</small></div>
       ${mine && ik.army.p === v.me ? `<button class="btn small ${L.army && L.army.length ? 'gold' : ''}" data-in-army ${L.army && L.army.length ? '' : 'disabled'}>${tx('Move robber')}</button>` : ''}</div>
     <div class="in-ac"><span class="in-aci" style="--c:#3A2A1C">${glyph('robber', 16)}</span><div><b>${tx('Robber')}</b><div class="muted" style="font-size:13px">${esc(where)}</div></div></div></div>`;
 }
@@ -137,7 +137,7 @@ const plugin = register({
   id: 'inkas', name: 'Rise of the Inkas', vp: 11, fixedVp: true, minPlayers: 3, maxPlayers: 4, tutorial: 'inkas', lifeIcon: 'sun',
   tagline: 'Lead three tribes to success, one after the other.',
   blurb: 'A landscape of Peru between the Pacific and the jungle. Build settlements and cities to lead your early, middle and late tribe to success; every tribe then declines under thickets and the next one begins. Whoever completes the third tribe first, with 11 development points, wins. For 3 or 4 players.',
-  lobbyOptions: [{ key: 'freeStart', label: 'Free founding phase', hint: 'Place the start settlements yourselves instead of the beginner layout.' }],
+  lobbyOptions: [{ key: 'freeStart', label: 'Free founding phase', hint: 'Place the start settlements yourselves instead of the beginner layout.' }, { key: 'variableLand', label: 'Random landscape', hint: 'Shuffle the land fields (variable set-up of the almanac). Starts with the free founding phase.' }],
   tokenKeys: GOODS, limited: RES, bankBuys: RES, tradeKeys: RES,
   bankText: 'Trade with the supply: 3 equal resources, 2 equal trade goods or 3 different trade goods.',
   ext, boardKey: v => JSON.stringify([v.robber, v.inkas && v.inkas.army.p]),
@@ -159,12 +159,12 @@ const plugin = register({
   playerMeta(v, p) {
     const tr = TRIBES[p.tribe];
     return `<span class="mp" title="${tx('Development points')}" style="color:#B8860B">${glyph('temple', 12)}${p.markers}</span><span class="mp" title="${esc(t(tr.name))}" style="color:${tr.color}">${tr.num}</span>`
-      + `${p.devCount ? `<span class="mp" title="${tx('Development cards')}"><i class="stk dev"></i>${p.devCount}</span>` : ''}${p.played ? `<span class="mp" title="${tx('Open Combat Skill cards')}">${glyph('combat', 12)}${p.played}</span>` : ''}`;
+      + `${p.devCount ? `<span class="mp" title="${tx('Development cards')}"><i class="stk dev"></i>${p.devCount}</span>` : ''}${p.played ? `<span class="mp" title="${tx('Open Combat Arts cards')}">${glyph('combat', 12)}${p.played}</span>` : ''}`;
   },
   awards(v, i) {
     let out = '';
-    if (v.longestRoad.p === i) out += `<span class="award" title="${tx('Longest Trade Road')}">${glyph('road', 11)}${v.longestRoad.len}</span>`;
-    if (v.inkas.army.p === i) out += `<span class="award red" title="${tx('Greatest Combat Skill')}">${glyph('combat', 11)}${v.inkas.army.count}</span>`;
+    if (v.longestRoad.p === i) out += `<span class="award" title="${tx('Longest Trade Route')}">${glyph('road', 11)}${v.longestRoad.len}</span>`;
+    if (v.inkas.army.p === i) out += `<span class="award red" title="${tx('Mightiest Combat Arts')}">${glyph('combat', 11)}${v.inkas.army.count}</span>`;
     return out;
   },
   rollStatus() { return { sub: t('A 7 moves the robber. You may play a development card first.') }; },
@@ -172,7 +172,7 @@ const plugin = register({
   pendingText(mp, v) {
     if (mp.type === 'discard') return [t('Discard {n} cards.', { n: mp.count }), t('The robber is near: you hold more than your hand limit.'), t('Choose cards')];
     if (mp.type === 'robber') return [t('Move the robber.'), t('Tap a land field or a jungle frame piece. You take a card from a player next to it.'), t('Choose field')];
-    if (mp.type === 'found') return [t('Found your next tribe.'), t('Place a free settlement. No road, no yield: your turn ends.'), t('Choose crossing')];
+    if (mp.type === 'found') return [t('Found your next tribe.'), t('Place a free settlement on a crossing that no road leads to. No yield: your turn ends.'), t('Choose crossing')];
     if (mp.type === 'freeroad') return [t('Build your free roads.'), t('Roads left: {n}', { n: mp.left }), t('Choose road')];
     return null;
   },
@@ -187,7 +187,7 @@ const plugin = register({
         return true;
       }, { key: 'robber' });
     } else if (mp.type === 'found') {
-      A.pick('vertices', L.found, t('Tap a crossing for the first settlement of your next tribe.'), v => A.send({ type: 'foundTribe', v }), { key: 'found' });
+      A.pick('vertices', L.found, t('Tap a crossing for the first settlement of your next tribe (if none is left, one of your buildings in decline makes room).'), v => A.send({ type: 'foundTribe', v }), { key: 'found' });
     } else if (mp.type === 'freeroad') {
       A.pick('edges', L.roads, t('Tap where to build a free road.'), e => A.send({ type: 'placeFreeRoad', e }), { key: 'road' });
     }
@@ -238,10 +238,10 @@ const plugin = register({
     const row = (name, cost, note) => `<div class="row" style="padding:7px 0;border-top:1px solid var(--line)"><b style="min-width:112px">${esc(name)}</b><span class="cd">${costRow(cost)}</span><span class="muted spacer" style="font-size:13px;text-align:right">${esc(note || '')}</span></div>`;
     const p = s => `<p class="muted" style="font-size:13px;margin:10px 0 4px">${tx(s)}</p>`;
     return `${row(t('Road'), COSTS.road, t('7 roads'))}${row(t('Settlement'), COSTS.settlement, t('1 point · makes 1 card'))}${row(t('City'), COSTS.city, t('1 point more · makes 2 cards · one per tribe'))}${row(t('Development card'), COSTS.dev, '')}
-      ${p('Trade with the supply: 3 equal resources, or 2 equal trade goods (fish, coca, feathers), for any other card. 3 different trade goods give any 2 cards.')}
-      ${p('Every settlement and every city upgrade adds a development marker to your tribe tablet. The first and second tribe need 4 markers (4 settlements, or 2 settlements and a city), the third needs 3. 11 markers win.')}
+      ${p('Trade with the supply: 3 equal resources, or 2 equal trade goods (fish, coca, feathers), for any other card. 3 different trade goods give any 2 resource cards.')}
+      ${p('Every settlement and every city upgrade adds a culture marker to your culture board. The first and second tribe need 4 markers (4 settlements, or 2 settlements and a city), the third needs 3. 11 markers win.')}
       ${p('A tribe that reaches its goal declines: take back all your roads, cover each of its buildings with a thicket and found the first settlement of the next tribe for free. That ends your turn. Buildings in decline still pay and the robber still robs there, but they cannot be expanded and no road may be built from them. Anyone may build over them with a road and the cost of a settlement.')}
-      ${p('A 7: everyone with more than 7 cards discards half (each open Combat Skill card protects 1 more card). Move the robber to another land field or a jungle frame piece and take a card from a player next to it. The robber never stands on a field with trade goods.')}`;
+      ${p('A 7: everyone with more than 7 cards discards half (each open Combat Arts card protects 1 more card). Move the robber to another land field or a jungle frame piece and take a card from a player next to it. The robber never stands on a field with trade goods.')}`;
   },
 
   afterState(view, prev, A) {
@@ -258,8 +258,8 @@ const plugin = register({
   victoryChips(view, w, chip, ico) {
     const b = w.breakdown, out = [];
     if (b.markers) out.push(chip(glyph('temple', 16), b.markers, `${b.markers} × ${t('Development points')}`));
-    if (b.longestRoad) out.push(chip(ico('road', 16, '#F6CF57'), '', t('Longest Trade Road')));
-    if (b.army) out.push(chip(ico('combat', 16, '#E8856F'), '', t('Greatest Combat Skill')));
+    if (b.longestRoad) out.push(chip(ico('road', 16, '#F6CF57'), '', t('Longest Trade Route')));
+    if (b.army) out.push(chip(ico('combat', 16, '#E8856F'), '', t('Mightiest Combat Arts')));
     return out;
   },
 });
@@ -292,7 +292,7 @@ function bankDialog(A, start = 'same') {
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button><button class="btn primary" id="bok" disabled>${tx('Trade')}</button></div>`, {
     onMount(el) {
       const ok = el.querySelector('#bok'), body = el.querySelector('#bk');
-      const tabs = [['same', t('Equal cards')], ['three', t('3 trade goods')], ['road', t('Longest Trade Road')]];
+      const tabs = [['same', t('Equal cards')], ['three', t('3 trade goods')], ['road', t('Longest Trade Route')]];
       const draw = () => {
         el.querySelector('#bkt').innerHTML = tabs.map(([k, n]) => `<button class="chip ${tab === k ? 'on' : ''}" data-t="${k}" ${k === 'road' && !L.roadTrade ? 'disabled' : ''}>${esc(n)}</button>`).join('');
         let html = '', label = t('Trade'), can = false;
@@ -304,7 +304,7 @@ function bankDialog(A, start = 'same') {
         } else if (tab === 'three') {
           const ready = !!L.goodsTrade;
           html = `<div class="section-label" style="color:var(--muted)">${tx('Give 1 of each trade good')}</div><div class="picker">${GOODS.map(k => cardBtn(k, 'disabled', 'on', `<span class="have">${tx('have {n}', { n: have(k) })}</span>`)).join('')}</div>
-            <div class="section-label" style="color:var(--muted)">${tx('Get any 2 cards')}</div><div class="picker">${RES.map(k => `<div class="pick ${g3[k] ? 'on' : ''}"><div class="rcard ${GOODS.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div><span class="have">${esc(resName(k))}</span><div class="ctr"><button data-c="${k}" data-d="-1">−</button><b>${g3[k] || 0}</b><button data-c="${k}" data-d="1">+</button></div></div>`).join('')}</div>`;
+            <div class="section-label" style="color:var(--muted)">${tx('Get any 2 resource cards')}</div><div class="picker">${RES.filter(k => !GOODS.includes(k)).map(k => `<div class="pick ${g3[k] ? 'on' : ''}"><div class="rcard ${GOODS.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div><span class="have">${esc(resName(k))}</span><div class="ctr"><button data-c="${k}" data-d="-1">−</button><b>${g3[k] || 0}</b><button data-c="${k}" data-d="1">+</button></div></div>`).join('')}</div>`;
           can = ready && sum(g3) === 2;
           if (!ready) html += `<p class="muted">${tx('You need 3 different trade goods.')}</p>`;
         } else {

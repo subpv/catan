@@ -6,12 +6,13 @@
 // between them. Pointy sides left and right: the hexes are flat-top, columns run from west (S) to east (E).
 //
 // Every player leads three tribes one after the other. Each building (settlement or city upgrade) puts one development
-// marker on the tribe tablet: 4 for the first tribe, 4 for the second, 3 for the third. When a tribe's goal is reached it
+// marker on the culture board: 4 for the first tribe, 4 for the second, 3 for the third. When a tribe's goal is reached it
 // declines: its roads are taken back, its buildings are covered with thickets (still paying, but they may be built over),
 // and the player founds the first settlement of the next tribe for free, which ends the turn. 11 markers win the game.
 //
-// Not in the rulebook that is available (the almanac is missing), so this project fills the gaps: the contents of the two
-// development card decks, the 19 cards of every kind in the supply, and the shortage rule for the supply (as in Catan).
+// The almanac (English edition 2018) settles the details the rulebook leaves out: 20 cards of every raw material and 12 of
+// every trade good in the supply, two development card stacks of 7 combat arts and 3 progress cards each (no victory
+// points), 7 roads, 8 settlements and 2 cities per colour, 4 thicket pieces per player, and the ways to found a new tribe.
 
 const { geometryFromCenters, shuffle } = require('./board');
 const { createKit, fail, log, sum, clean } = require('./kit');
@@ -23,7 +24,7 @@ const RES = [...RAW, ...GOODS];
 const TERRAIN_RES = { forest: 'timber', hills: 'stone', pasture: 'fleece', mountains: 'metal', fields: 'potato', coast: 'catch', plantation: 'coca', jungle: 'feathers' };
 const LAND = ['forest', 'hills', 'pasture', 'mountains', 'fields']; // the five landscapes that make raw materials
 const UNIT = 'inkas';
-const GOAL = [4, 8, 11]; // development markers when tribe 1, 2 and 3 are done
+const GOAL = [4, 8, 11]; // culture markers when tribe 1, 2 and 3 are done
 const TOTAL = 11;
 const PIECES = { road: 7, settlement: 8, city: 2, thicket: 4 };
 const COSTS = {
@@ -32,14 +33,14 @@ const COSTS = {
   city: { potato: 2, metal: 3 },
   dev: { potato: 1, fleece: 1, metal: 1 },
 };
-const MIN_ROAD = 3; // Longest Trade Road: 3 connected roads
-const ARMY_MIN = 2; // Greatest Combat Skill: 2 played combat skill cards
-const SUPPLY = 19;
+const MIN_ROAD = 3; // Longest Trade Route: 3 connected roads
+const ARMY_MIN = 2; // Mightiest Combat Arts: 2 played combat arts cards
+const SUPPLY = { raw: 20, goods: 12 }; // cards in the supply per kind (almanac)
 const DEV = ['combat', 'roadBuilding', 'invention', 'inMonopoly'];
-// the rulebook does not list the decks (they are in the almanac): deck "1" is in play from the start, deck "2" joins when
-// every player has led their first tribe to success
-const DECK1 = { combat: 6, roadBuilding: 2, invention: 2, inMonopoly: 2 };
-const DECK2 = { combat: 5, roadBuilding: 2, invention: 2, inMonopoly: 2 };
+// the almanac: two identical stacks of 10 cards, 7 combat arts and one each of Road Building, Invention and Monopoly; stack "1"
+// is in play from the start, stack "2" joins when every player has founded the second tribe
+const DECK1 = { combat: 7, roadBuilding: 1, invention: 1, inMonopoly: 1 };
+const DECK2 = { combat: 7, roadBuilding: 1, invention: 1, inMonopoly: 1 };
 
 // ---------------------------------------------------------------- the board (beginner layout of the rulebook, pages 2-3)
 // [column, u, landscape, number]: columns 0..4 run west to east, u counts half hex heights from the top
@@ -95,7 +96,7 @@ const frameSpots = s => s.board.hexes.filter(h => h.frame).map(h => h.id);
 // ---------------------------------------------------------------- the kit
 const spec = {
   hand: RES, limited: RES, tradeKeys: RES, vpTarget: TOTAL, noLongestRoad: true,
-  supply: () => Object.fromEntries(RES.map(k => [k, SUPPLY])),
+  supply: () => Object.fromEntries(RES.map(k => [k, GOODS.includes(k) ? SUPPLY.goods : SUPPLY.raw])),
   costs: COSTS, pieces: PIECES,
   terrainCard: t => TERRAIN_RES[t] || null,
   vp: (s, p) => s.markers[p],
@@ -106,7 +107,7 @@ const spec = {
   bankBuys: RES,
   // 3 equal raw materials for any other card; 2 equal trade goods for any other card
   bankRate: (s, p, give) => (GOODS.includes(give) ? 2 : 3),
-  handLimit: (s, p) => 7 + s.players[p].played, // every open combat skill card protects one more hand card on a 7
+  handLimit: (s, p) => 7 + s.players[p].played, // every open combat arts card protects one more hand card on a 7
   settleSpotOk: (s, v) => vertexLand(s, v),
   roadEdgeOk: (s, e) => edgeExists(s, e),
   afterSetupSettlement(s, p, v) { s.buildings[v].tribe = 0; s.markers[p]++; },
@@ -120,13 +121,18 @@ function createGame({ id, players, options = {} }) {
   const s = K.baseState({ id, mode: UNIT, players, options });
   s.options.vpTarget = TOTAL;
   s.board = buildBoard();
+  s.variableLand = !!s.options.variableLand;
+  if (s.variableLand) { // variable set-up of the almanac: the 18 land hexes are shuffled, the number tokens stay where they are printed
+    const land = s.board.hexes.filter(h => LAND.includes(h.terrain)), kinds = shuffle(land.map(h => h.terrain));
+    land.forEach((h, i) => { h.terrain = kinds[i]; });
+  }
   s.robber = frameSpots(s)[ROBBER_START];
   s.markers = s.players.map(() => 0);
   s.tribe = s.players.map(() => 0); // the active tribe: 0, 1 or 2
   s.players.forEach(pl => { pl.dev = Object.fromEntries(DEV.map(c => [c, 0])); pl.played = 0; });
   const deck = (counts) => shuffle(Object.entries(counts).flatMap(([c, n]) => Array(n).fill(c)));
   s.devDeck = deck(DECK1); s.devDeck2 = deck(DECK2); s.deck2In = false;
-  s.freeStart = !!(s.options.freeStart);
+  s.freeStart = !!(s.options.freeStart || s.options.variableLand); // a shuffled landscape needs the free founding phase
   s.declines = []; s.declineSeq = 0; // the last tribes that fell into decline, for the scene
   if (s.freeStart) K.start(s);
   else beginnerStart(s);
@@ -212,8 +218,8 @@ function updateLongest(s) {
   }
   s.longestRoad.edges = s.longestRoad.p !== null ? K.longestFor(s, s.longestRoad.p, true).edges : [];
   if (s.longestRoad.p !== prev) {
-    if (s.longestRoad.p !== null) log(s, '{@p} now holds the Longest Trade Road ({n}).', { p: s.longestRoad.p, n: s.longestRoad.len });
-    else log(s, 'Nobody holds the Longest Trade Road any more.');
+    if (s.longestRoad.p !== null) log(s, '{@p} now holds the Longest Trade Route ({n}).', { p: s.longestRoad.p, n: s.longestRoad.len });
+    else log(s, 'Nobody holds the Longest Trade Route any more.');
   }
 }
 function updateArmy(s, who) {
@@ -223,7 +229,7 @@ function updateArmy(s, who) {
   const p = h !== null || counts[who] === max ? who : counts.indexOf(max);
   if (counts[p] !== max) return;
   s.largestArmy = { p, count: max };
-  log(s, '{@p} now holds the Greatest Combat Skill.', { p });
+  log(s, '{@p} now holds the Mightiest Combat Arts.', { p });
 }
 
 // legal ways: an own road or building at one end, but never through a building under thicket or a foreign building
@@ -257,6 +263,11 @@ function foundSpots(s, p, strict = true) {
     return true;
   }).map(x => x.id);
 }
+// the free settlement of a new tribe; when no such crossing is left, an own building in decline is removed and replaced
+function foundingSpots(s, p) {
+  const free = foundSpots(s, p);
+  return free.length ? free : K.ownBuildings(s, p).filter(v => s.buildings[v].decline);
+}
 function legalCities(s, p) {
   if (cityCount(s, p) >= PIECES.city) return [];
   if (K.ownBuildings(s, p, 'city').some(v => !s.buildings[v].decline)) return []; // one city per tribe
@@ -264,7 +275,7 @@ function legalCities(s, p) {
 }
 
 // ---------------------------------------------------------------- tribes
-// every settlement or city that goes up puts one development marker on the tablet
+// every settlement or city that goes up puts one culture marker on the tablet
 function placeMarker(s, p) {
   s.markers[p]++;
   const t = s.tribe[p];
@@ -397,7 +408,7 @@ const HANDLERS = {
     if (!it) fail('Nothing to place.');
     K.resolvePending(s, it);
   },
-  // a 7 or a combat skill card: move the robber and take one hand card from a player next to the field
+  // a 7 or a combat arts card: move the robber and take one hand card from a player next to the field
   moveRobber(s, p, a) {
     const it = K.findPending(s, p, 'robber');
     if (!it) fail('Nothing to move.');
@@ -414,7 +425,7 @@ const HANDLERS = {
       if (k) { K.moveCard(K.P(s, q), K.P(s, p), k, 1); log(s, '{@p} stole a card from {@q}.', { p, q }); }
     }
   },
-  // the Greatest Combat Skill: once a turn, even before the roll, the robber leaves a field next to your building for the frame
+  // the Mightiest Combat Arts: once a turn, even before the roll, the robber leaves a field next to your building for the frame
   armyMove(s, p, a) {
     needTurn(s, p, ['roll', 'main']);
     if (s.largestArmy.p !== p) fail('You do not hold that card.');
@@ -429,7 +440,7 @@ const HANDLERS = {
     log(s, '{@p} moved the robber.', { p, h: a.h });
     if (got) { s.stats.gained[p] += 1; log(s, '{@p} receives {$c}.', { p, c: { [k]: 1 } }); }
   },
-  // the Longest Trade Road: once per turn, 2 cards for 1 other card from the supply
+  // the Longest Trade Route: once per turn, 2 cards for 1 other card from the supply
   roadTrade(s, p, a) {
     K.requireMain(s, p);
     if (s.longestRoad.p !== p) fail('You do not hold that card.');
@@ -448,7 +459,7 @@ const HANDLERS = {
   goodsTrade(s, p, a) {
     K.requireMain(s, p);
     const pl = K.P(s, p), give = Object.fromEntries(GOODS.map(g => [g, 1]));
-    if (!K.validCards(a.get, RES) || sum(a.get) !== 2) fail('Take exactly 2 cards.');
+    if (!K.validCards(a.get, RAW) || sum(a.get) !== 2) fail('Take exactly 2 cards.'); // two raw materials, never trade goods
     if (!K.has(pl, give)) fail('You need 3 different trade goods.');
     for (const [k, n] of Object.entries(a.get)) if (s.bank[k] + (give[k] || 0) < n) fail('The supply does not have that.');
     K.pay(s, pl, give);
@@ -459,10 +470,10 @@ const HANDLERS = {
   foundTribe(s, p, a) {
     const it = K.findPending(s, p, 'found');
     if (!it) fail('Nothing to place.');
-    let spots = foundSpots(s, p);
-    if (!spots.length) spots = foundSpots(s, p, false);
+    const spots = foundingSpots(s, p);
     if (!spots.includes(a.v)) fail('You cannot found a settlement there.');
     K.resolvePending(s, it);
+    if (s.buildings[a.v]) log(s, '{@p} builds over a building of the tribe in decline.', { p }); // no free spot: one of the own buildings in decline makes room
     s.buildings[a.v] = { p, type: 'settlement', tribe: s.tribe[p] };
     log(s, '{@p} founded a new settlement for free.', { p });
     updateLongest(s);
@@ -484,7 +495,7 @@ function legalFor(s, me) {
   if (pend) {
     L.pending = pend.type;
     if (pend.type === 'robber') L.robber = robberTargets(s, me);
-    if (pend.type === 'found') { const sp = foundSpots(s, me); L.found = sp.length ? sp : foundSpots(s, me, false); }
+    if (pend.type === 'found') L.found = foundingSpots(s, me);
     if (pend.type === 'freeroad') { L.roads = legalRoads(s, me); L.left = pend.left; }
     return L;
   }
@@ -543,6 +554,6 @@ module.exports = {
   createGame, act: (s, p, a) => K.act(s, p, a, HANDLERS), viewFor, summary: s => K.summary(s), migrate,
   _internal: {
     K, spec, HANDLERS, PIECES, COSTS, GOAL, RES, RAW, GOODS, LAND, DEV, TERRAIN_RES, START, FIELDS, FRAME,
-    produce, legalRoads, legalSettlements, legalCities, foundSpots, robberTargets, updateLongest, minPlayers: 3, fixedVp: true,
+    produce, legalRoads, legalSettlements, legalCities, foundSpots, foundingSpots, SUPPLY, DECK1, DECK2, robberTargets, updateLongest, minPlayers: 3, fixedVp: true,
   },
 };

@@ -1,6 +1,6 @@
 // How to play Rise of the Inkas: a short interactive chapter for the tutorial player (tutorial.js). It plays on a small
 // piece of the real board (flat-top hexes, sea in the west, jungle in the east) and teaches the rules of the rulebook:
-// landscapes and trade goods, the roll, trading with the supply, building, the tribe tablet, the decline of a tribe with
+// landscapes and trade goods, the roll, trading with the supply, building, the culture board, the decline of a tribe with
 // its thickets, building over thickets, the robber, the advantage and development cards, and the win at 11 points.
 import { addChapter, addHandKeys, baseView, eAt } from '../tutorial.js';
 import { t, esc, glyph } from '../core.js';
@@ -92,7 +92,7 @@ function inkas() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('Trade goods are worth more.'), t('Trade with the supply: 3 equal resources, or only 2 equal trade goods, for any other card. 3 different trade goods give any 2 cards.'));
+        T.say(t('Trade goods are worth more.'), t('Trade with the supply: 3 equal resources, or only 2 equal trade goods, for any other card. 3 different trade goods give any 2 resource cards.'));
         await T.give({ coca: 1 });
         await T.wait(1200);
         await T.bankTrade({ coca: 2 }, 'timber');
@@ -112,7 +112,7 @@ function inkas() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('Every settlement is a development point.'), t('It fills a step on your tribe tablet. 4 points complete the first tribe.'));
+        T.say(t('Every settlement is a development point.'), t('It fills a step on your culture board. 4 points complete the first tribe.'));
         T.extra(env({ points: 3 }) + pill('sun', t('4 settlements or 2 settlements and a city')));
         await T.wait(3000);
       },
@@ -133,7 +133,7 @@ function inkas() {
         sfx.leaf?.();
         T.extra(env({ points: 4, thickets: 3 }));
         await T.banner(t('Early culture'), 'red');
-        T.say(t('Found the next tribe.'), t('A free settlement on any free crossing. No road, no yield, and your turn ends.'));
+        T.say(t('Found the next tribe.'), t('A free settlement on a free crossing that no road leads to. No yield, and your turn ends.'));
         await T.tap({ vertices: [found] });
         T.build(found, 'settlement', 0);
         T.vp(5); T.extra(env({ tribe: 'II', points: 5, thickets: 3 }));
@@ -160,9 +160,9 @@ function inkas() {
       },
       async T => {
         T.say(t('Development cards.'), t('Potatoes, wool and ore buy one. Play one per turn, but not the turn you bought it.'));
-        await T.bigCard({ title: t('Combat Skill'), color: '#B23A2A', icon: 'combat' });
-        T.say(t('Advantage cards.'), t('3 connected roads: Longest Trade Road. 2 played Combat Skill cards: Greatest Combat Skill.'));
-        await T.bigCard({ title: t('Longest Trade Road'), color: '#C9971B', icon: 'road' });
+        await T.bigCard({ title: t('Combat Arts'), color: '#B23A2A', icon: 'combat' });
+        T.say(t('Advantage cards.'), t('3 connected roads: Longest Trade Route. 2 played Combat Arts cards: Mightiest Combat Arts.'));
+        await T.bigCard({ title: t('Longest Trade Route'), color: '#C9971B', icon: 'road' });
         await T.wait(500);
       },
       async T => {
