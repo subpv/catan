@@ -1,11 +1,12 @@
 'use strict';
-// Rules for the expansions: Seafarers (ships, pirate, gold, islands, fog), Traders & Barbarians
-// (fishermen, rivers, event cards) and Explorers & Pirates (missions on a fog map).
+// Rules for the expansions: Seafarers (ships, pirate, gold, islands, fog) and Explorers & Pirates (missions on a fog map).
+// Traders & Barbarians lives in hub.js (and hub-*.js); the functions below hand over to it.
 // game.js passes in its helpers, so this file never needs to import it.
 
 const C = require('./constants');
 const { shuffle } = require('./board');
 const { build: buildSea, SCENARIOS } = require('./sea');
+const makeHub = require('./hub');
 
 module.exports = function make(core) {
   const { log, pushPending, findPending, resolvePending, P, V, E, fail, has, pay, take, hand, countPieces, randomCard, moveCard, updateLongest, isRes } = core;
@@ -14,6 +15,7 @@ module.exports = function make(core) {
   const isLandHex = h => h.terrain !== 'sea' && !h.hidden;
   const waterHex = h => h.terrain === 'sea' || h.hidden;
   const own = (s, v, p) => s.buildings[v] && s.buildings[v].p === p;
+  const HB = makeHub(core);
 
   // ------------------------------------------------------------ board setup
   function makeBoard({ expansion, mode, options, players, generate }) {
@@ -23,64 +25,8 @@ module.exports = function make(core) {
       if (explorers) addMissionMarkers(board, options);
       return board;
     }
-    const board = generate(options.big ? 'extended' : 'standard');
-    if (expansion === 'traders') {
-      const v = options.variants || {};
-      if (v.rivers) addRivers(board);
-      if (v.fishermen) addFishing(board);
-    }
-    return board;
-  }
-
-  function hexPath(board, len, banned) {
-    const hexes = board.hexes;
-    for (let attempt = 0; attempt < 200; attempt++) {
-      const start = hexes[Math.floor(Math.random() * hexes.length)];
-      if (banned(start)) continue;
-      const path = [start.id];
-      while (path.length < len) {
-        const last = hexes[path[path.length - 1]];
-        const next = shuffle(last.neighbors.filter(n => !path.includes(n) && !banned(hexes[n])));
-        if (!next.length) break;
-        path.push(next[0]);
-      }
-      if (path.length === len) return path;
-    }
-    return [];
-  }
-
-  function addRivers(board) {
-    const len = board.kind === 'extended' ? 5 : 4;
-    const path = hexPath(board, len, h => h.terrain === 'desert');
-    path.forEach(id => { const h = board.hexes[id]; h.terrain = 'river'; h.number = null; h.river = true; });
-    board.rivers = path;
-  }
-
-  function coastEdgesOf(board) {
-    return board.edges.filter(e => {
-      const lands = e.hexes.filter(i => board.hexes[i].terrain !== 'sea' && !board.hexes[i].hidden);
-      return lands.length === 1 && (e.hexes.length === 1 || e.hexes.every(i => !board.hexes[i].hidden));
-    });
-  }
-
-  function addFishing(board) {
-    const taken = new Set();
-    board.ports.forEach(p => board.edges[p.edge].v.forEach(v => taken.add(v)));
-    const coast = shuffle(coastEdgesOf(board).filter(e => e.v.every(v => !taken.has(v))));
-    const grounds = [];
-    const nums = shuffle(C.FISH_NUMBERS.slice());
-    for (const e of coast) {
-      if (grounds.length >= nums.length) break;
-      if (e.v.some(v => taken.has(v))) continue;
-      const [a, b] = e.v.map(i => board.vertices[i]);
-      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-      const lh = board.hexes[e.hexes.find(i => board.hexes[i].terrain !== 'sea' && !board.hexes[i].hidden)];
-      const dx = mx - lh.x, dy = my - lh.y, d = Math.hypot(dx, dy);
-      if (grounds.some(g => (g.x - mx) ** 2 + (g.y - my) ** 2 < 4.5)) continue;
-      grounds.push({ id: grounds.length, edge: e.id, verts: e.v.slice(), number: nums[grounds.length], x: +(mx + dx / d * 0.62).toFixed(3), y: +(my + dy / d * 0.62).toFixed(3) });
-      e.v.forEach(v => taken.add(v));
-    }
-    board.fishing = grounds;
+    if (expansion === 'traders') return HB.makeBoard({ options, generate });
+    return generate(options.big ? 'extended' : 'standard');
   }
 
   function addMissionMarkers(board, options) {
@@ -110,31 +56,18 @@ module.exports = function make(core) {
     s.bridges = {};
     s.pirate = s.sea ? s.board.pirateStart : null;
     s.islandBonus = {};
-    const v = options.variants || {};
-    s.rivers = exp === 'traders' && !!v.rivers;
-    s.fishing = exp === 'traders' && !!v.fishermen;
-    s.eventCards = exp === 'traders' && !!v.events;
-    s.fish = s.fishing ? { bag: shuffle(['boot', ...Object.entries(C.FISH_BAG).flatMap(([val, n]) => Array.from({ length: n }, () => +val))]), boot: null } : null;
-    s.deck = s.eventCards ? newEventDeck() : null;
+    s.rivers = false; s.fishing = false; s.eventCards = false; s.fish = null; s.deck = null; s.gold = false;
+    s.hub = { mod: null, scenario: null, harbor: { p: null } };
     if (exp === 'explorers') {
       s.missions = (options.missions || C.MISSIONS).slice();
       s.lairs = (s.board.lairs || []).map(l => ({ ...l, hits: {} }));
       s.lairOwners = {};
     }
     s.players.forEach(pl => {
-      pl.gold = 0; pl.fish = 0; pl.cargo = { fish: 0, spice: 0 }; pl.delivered = { fish: 0, spice: 0 };
+      pl.gold = 0; pl.fish = 0; pl.cargo = { fish: 0, spice: 0 }; pl.delivered = { fish: 0, spice: 0 }; pl.fishTok = [];
     });
     s.flags = {};
-  }
-
-  function newEventDeck() {
-    const d = [];
-    for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) d.push([a, b]);
-    return shuffle(d);
-  }
-  function drawEvent(s) {
-    if (!s.deck || s.deck.length <= 5) { s.deck = newEventDeck(); log(s, 'The event cards are reshuffled.'); }
-    return s.deck.pop();
+    if (exp === 'traders') HB.init(s, options);
   }
 
   // ------------------------------------------------------------ geometry rules
@@ -143,13 +76,11 @@ module.exports = function make(core) {
     for (const i of V(s, v).hexes) { const h = H(s, i); if (isLandHex(h)) return h.island; }
     return null;
   }
-  function roadEdgeOk(s, e) {
+  function roadEdgeOk(s, e, p) {
     const ed = E(s, e);
     if (s.sea && !ed.hexes.some(i => isLandHex(H(s, i)))) return false;
-    if (s.rivers && ed.hexes.length === 2 && ed.hexes.every(i => H(s, i).terrain === 'river')) return false;
-    return true;
+    return s.expansion !== 'traders' || HB.roadEdgeOk(s, e, p);
   }
-  const isCrossing = (s, e) => s.rivers && E(s, e).hexes.length === 2 && E(s, e).hexes.every(i => H(s, i).terrain === 'river');
   function shipEdgeOk(s, e) {
     if (!s.sea) return false;
     const ed = E(s, e);
@@ -160,6 +91,7 @@ module.exports = function make(core) {
 
   function setupSpotOk(s, v) {
     if (!landVertex(s, v)) return false;
+    if (s.expansion === 'traders') return HB.settlementOk(s, v, s.current) && HB.setupSpotOk(s, v);
     if (!s.sea) return true;
     return s.board.homeIslands.includes(vertexIsland(s, v));
   }
@@ -192,15 +124,6 @@ module.exports = function make(core) {
     }
     return out;
   }
-  function legalBridges(s, p) {
-    if (!s.rivers) return [];
-    return s.board.edges.filter(e => isCrossing(s, e.id) && s.roads[e.id] === undefined && e.v.some(v => {
-      if (own(s, v, p)) return true;
-      if (core.foreignAt(s, v, p)) return false;
-      return V(s, v).edges.some(x => s.roads[x] === p);
-    })).map(e => e.id);
-  }
-
   // ------------------------------------------------------------ fog of war
   function reveal(s, p, verts) {
     const found = [];
@@ -235,32 +158,9 @@ module.exports = function make(core) {
       if (count) { items.push({ type: 'goldPick', player: p, count }); log(s, '{@p} strikes gold and may choose {n} resources.', { p, n: count }); }
     });
     if (items.length) pushPending(s, items);
-    if (s.fishing) fishProduce(s, total);
+    if (s.expansion === 'traders') HB.afterProduce(s, total);
     if (s.board.spices) spiceProduce(s, total);
     if (s.board.shoals) shoalProduce(s, total);
-  }
-
-  // ------------------------------------------------------------ fishermen
-  function drawFish(s, p, tokens) {
-    let got = 0, boot = false;
-    for (let i = 0; i < tokens; i++) {
-      const t = s.fish.bag.pop();
-      if (t === undefined) break;
-      if (t === 'boot') { s.fish.boot = p; boot = true; } else { P(s, p).fish += t; got += t; }
-    }
-    if (got) log(s, '{@p} catches {n} fish.', { p, n: got });
-    if (boot) log(s, '{@p} pulls up the old boot and now needs one more point to win.', { p });
-  }
-  function fishProduce(s, total) {
-    const want = s.players.map(() => 0);
-    const addAround = verts => verts.forEach(v => { const b = s.buildings[v]; if (b) want[b.p] += b.type === 'city' ? 2 : 1; });
-    for (const g of s.board.fishing) if (g.number === total) addAround(g.verts);
-    if (C.LAKE_NUMBERS.includes(total)) {
-      const lake = s.board.hexes.find(h => h.terrain === 'desert');
-      if (lake && s.robber !== lake.id) addAround(lake.verts);
-    }
-    const n = s.players.length;
-    for (let i = 0; i < n; i++) { const p = (s.current + i) % n; if (want[p]) drawFish(s, p, want[p]); }
   }
 
   // ------------------------------------------------------------ explorers & pirates
@@ -301,30 +201,10 @@ module.exports = function make(core) {
     let pts = 0;
     for (const o of Object.values(s.islandBonus)) if (o === p) pts += 1;
     pts += missionVp(s, p);
-    if (s.rivers) pts += riverVp(s, p);
+    if (s.expansion === 'traders') pts += HB.vpExtra(s, p);
     return pts;
   }
-  function riverVp(s, p) {
-    const golds = s.players.map(pl => pl.gold);
-    const max = Math.max(...golds), min = Math.min(...golds);
-    let v = 0;
-    if (max > 0 && golds[p] === max && golds.filter(g => g === max).length === 1) v += 1;
-    if (max > min && golds[p] === min) v -= 2;
-    return v;
-  }
-  const vpTarget = (s, p) => s.options.vpTarget + (s.fish && s.fish.boot === p ? 1 : 0);
-
-  // river gold for building next to the river
-  function giveGold(s, p, n) {
-    if (!s.rivers || !n) return;
-    P(s, p).gold += n;
-    log(s, '{@p} earns {n} gold.', { p, n });
-  }
-  function riverBuilt(s, p, kind, where) {
-    if (!s.rivers) return;
-    if (kind === 'road') { if (E(s, where).hexes.some(i => H(s, i).terrain === 'river')) giveGold(s, p, 1); }
-    else if (V(s, where).hexes.some(i => H(s, i).terrain === 'river')) giveGold(s, p, 1);
-  }
+  const vpTarget = (s, p) => (s.expansion === 'traders' ? HB.vpTarget(s, p) : s.options.vpTarget);
 
   function islandBonus(s, p, v) {
     if (!s.sea) return;
@@ -373,78 +253,6 @@ module.exports = function make(core) {
       log(s, '{@p} takes {$c} from the gold field.', { p, c: cards });
       resolvePending(s, it);
     },
-    // ---- rivers
-    buildBridge(s, p, a) {
-      if (!s.rivers) fail('There are no rivers in this game.');
-      requireActor(s, p);
-      if (Object.keys(s.bridges).filter(e => s.roads[e] === p).length >= C.PIECES.bridge) fail('No bridges left.');
-      if (!legalBridges(s, p).includes(a.e)) fail('You cannot build a bridge there.');
-      if (!has(P(s, p), C.COSTS.bridge)) fail('Not enough resources.');
-      pay(s, P(s, p), C.COSTS.bridge);
-      s.roads[a.e] = p; s.bridges[a.e] = true;
-      log(s, '{@p} built a bridge.', { p });
-      giveGold(s, p, 3);
-      updateLongest(s);
-    },
-    goldTrade(s, p, a) {
-      if (!s.rivers) fail('There are no rivers in this game.');
-      core.requireMain(s, p);
-      if (!isRes(a.res)) fail('Pick a resource.');
-      if ((s.flags.goldTrades || 0) >= 2) fail('You can swap gold only twice per turn.');
-      const pl = P(s, p);
-      if (pl.gold < 2) fail('You need 2 gold.');
-      if (s.bank[a.res] < 1) fail('The bank is out of that.');
-      pl.gold -= 2; s.flags.goldTrades = (s.flags.goldTrades || 0) + 1;
-      take(s, pl, a.res, 1);
-      log(s, '{@p} swaps 2 gold for {$c}.', { p, c: { [a.res]: 1 } });
-    },
-    // ---- fishermen
-    useFish(s, p, a) {
-      if (!s.fishing) fail('There are no fishermen in this game.');
-      core.requireMain(s, p);
-      const cost = C.FISH_COSTS[a.what];
-      if (!cost) fail('Unknown fish trade.');
-      const pl = P(s, p);
-      if (pl.fish < cost) fail('You need {n} fish.', { n: cost });
-      switch (a.what) {
-        case 'robber':
-          pl.fish -= cost;
-          log(s, '{@p} pays {n} fish to chase the robber away.', { p, n: cost });
-          pushPending(s, [{ type: 'moveRobber', player: p }], true);
-          break;
-        case 'steal': {
-          const q = a.target;
-          if (q === p || !P(s, q) || !hand(P(s, q))) fail('Pick a player with cards.');
-          pl.fish -= cost;
-          core.steal(s, p, q);
-          break;
-        }
-        case 'take':
-          if (!isRes(a.res) || s.bank[a.res] < 1) fail('Pick a resource the bank has.');
-          pl.fish -= cost;
-          take(s, pl, a.res, 1);
-          log(s, '{@p} trades {n} fish for {$c}.', { p, n: cost, c: { [a.res]: 1 } });
-          break;
-        case 'road':
-          if (countPieces(s, p).roads >= C.PIECES.road) fail('No roads left.');
-          pl.fish -= cost;
-          s.free.roads++;
-          log(s, '{@p} trades {n} fish for a free road.', { p, n: cost });
-          break;
-        case 'dev':
-          if (core.K(s)) {
-            pl.fish -= cost;
-            log(s, '{@p} trades {n} fish for a progress card.', { p, n: cost });
-            pushPending(s, [{ type: 'chooseProgress', player: p }], true);
-          } else {
-            if (!s.devDeck.length) fail('The development deck is empty.');
-            pl.fish -= cost;
-            pl.dev.push({ type: s.devDeck.pop(), turn: s.turn });
-            log(s, '{@p} trades {n} fish for a development card.', { p, n: cost });
-          }
-          break;
-      }
-    },
     // ---- explorers & pirates
     deliver(s, p, a) {
       if (s.expansion !== 'explorers') fail('There are no missions in this game.');
@@ -483,6 +291,7 @@ module.exports = function make(core) {
   // ------------------------------------------------------------ legal moves for the client
   function legalExtra(s, p, L, actor, main) {
     if (s.phase !== 'play') return;
+    if (s.expansion === 'traders') HB.legalExtra(s, p, L, actor, main);
     for (const it of core.activePending(s).filter(i => i.player === p)) {
       if (it.type === 'goldPick') L.goldPick = { count: it.count };
     }
@@ -490,15 +299,9 @@ module.exports = function make(core) {
       if (s.sea) {
         if (countShips(s, p) < C.PIECES.ship && has(P(s, p), C.COSTS.ship)) L.ships = legalShips(s, p);
       }
-      if (s.rivers && has(P(s, p), C.COSTS.bridge) && Object.keys(s.bridges).filter(e => s.roads[e] === p).length < C.PIECES.bridge) L.bridges = legalBridges(s, p);
     }
     if (main) {
       if (s.sea) L.moveShips = movableShips(s, p);
-      if (s.fishing) {
-        L.fish = {};
-        for (const [k, c] of Object.entries(C.FISH_COSTS)) L.fish[k] = P(s, p).fish >= c;
-      }
-      if (s.rivers) L.goldTrade = P(s, p).gold >= 2 && (s.flags.goldTrades || 0) < 2;
       if (s.expansion === 'explorers') {
         L.deliver = { fish: P(s, p).cargo.fish > 0 && s.missions.includes('fish'), spice: P(s, p).cargo.spice > 0 && s.missions.includes('spice') };
         L.lairs = s.lairs.filter(l => l.hp > 0 && !H(s, l.hex).hidden && H(s, l.hex).edges.some(e => s.ships[e] && s.ships[e].p === p)).map(l => l.hex);
@@ -511,9 +314,8 @@ module.exports = function make(core) {
     const b = s.board;
     vb.hexes = b.hexes.map(h => h.hidden
       ? { id: h.id, x: h.x, y: h.y, terrain: 'fog', number: null, verts: h.verts, hidden: true }
-      : { id: h.id, x: h.x, y: h.y, terrain: h.terrain, number: h.number, verts: h.verts, island: h.island ?? undefined, river: h.river || undefined });
-    if (b.fishing) vb.fishing = b.fishing;
-    if (b.rivers) vb.rivers = b.rivers;
+      : { id: h.id, x: h.x, y: h.y, terrain: h.terrain, number: h.number, verts: h.verts, island: h.island ?? undefined, river: h.river || undefined, number2: h.number2 || undefined, lake: h.lake || undefined });
+    if (s.expansion === 'traders') HB.viewBoard(s, b, vb);
     if (b.desert != null) vb.desert = b.desert;
     if (b.homeIslands) vb.homeIslands = b.homeIslands;
     if (s.expansion === 'explorers') {
@@ -531,9 +333,7 @@ module.exports = function make(core) {
     v.pirate = s.pirate;
     v.bridges = s.bridges;
     v.islandBonus = s.islandBonus;
-    v.rivers = s.rivers; v.fishing = s.fishing; v.eventCards = s.eventCards;
-    if (s.fish) v.fish = { left: s.fish.bag.length, boot: s.fish.boot };
-    if (s.deck) v.deckLeft = s.deck.length;
+    v.rivers = false; v.fishing = false; v.eventCards = false; v.gold = false;
     if (s.expansion === 'explorers') {
       v.missions = s.missions;
       v.lairs = s.lairs.filter(l => !H(s, l.hex).hidden).map(l => ({ id: l.id, hex: l.hex, hp: l.hp, owner: s.lairOwners[l.id] ?? null }));
@@ -543,16 +343,35 @@ module.exports = function make(core) {
       pv.gold = pl.gold; pv.fish = pl.fish;
       pv.cargo = pl.cargo; pv.delivered = pl.delivered;
       pv.pieces.ships = C.PIECES.ship - countShips(s, i);
-      pv.pieces.bridges = C.PIECES.bridge - Object.keys(s.bridges).filter(e => s.roads[e] === i).length;
+      pv.pieces.bridges = C.PIECES.bridge;
       pv.vpTarget = vpTarget(s, i);
-      if (s.rivers) { pv.riverVp = riverVp(s, i); }
     });
+    if (s.expansion === 'traders') HB.viewExtra(s, me, v);
     return v;
   }
 
+  // Traders & Barbarians: everything the engine asks the scenario about goes through here
   return {
-    makeBoard, initState, drawEvent, landVertex, vertexIsland, roadEdgeOk, shipEdgeOk, legalShips, legalBridges, movableShips, setupSpotOk,
-    reveal, afterProduce, vpExtra, vpTarget, riverBuilt, giveGold, islandBonus, handlers, legalExtra, viewBoard, viewExtra, countShips,
-    SCENARIOS, isCrossing, pirateBlocks, ownShipAt, missionVp, riverVp,
+    makeBoard, initState, landVertex, vertexIsland, roadEdgeOk, shipEdgeOk, legalShips, movableShips, setupSpotOk,
+    reveal, afterProduce, vpExtra, vpTarget, islandBonus, handlers: Object.assign(handlers, HB.handlers), legalExtra, viewBoard, viewExtra, countShips,
+    SCENARIOS, pirateBlocks, ownShipAt, missionVp,
+    hub: HB,
+    rollValues: s => (s.expansion === 'traders' ? HB.rollValues(s) : null),
+    runCard: (s, card) => HB.runCard(s, card),
+    hexPays: (s, h, total) => (s.expansion === 'traders' ? HB.hexPays(s, h, total) : h.number === total),
+    settlementOk: (s, v, p) => s.expansion !== 'traders' || HB.settlementOk(s, v, p),
+    cityOk: (s, v, p) => s.expansion !== 'traders' || HB.cityOk(s, v, p),
+    built: (s, p, kind, where) => { if (s.expansion === 'traders') HB.built(s, p, kind, where); },
+    robberHexes: (s, p, list) => (s.expansion === 'traders' ? HB.robberHexes(s, p, list) : list),
+    victimOk: (s, p, q) => s.expansion !== 'traders' || HB.victimOk(s, p, q),
+    robberHome: s => (s.expansion === 'traders' ? HB.robberHome(s) : undefined),
+    noRobber: s => s.expansion === 'traders' && HB.noRobber(s),
+    afterAct: s => { if (s.expansion === 'traders') HB.afterAct(s); },
+    beginEnd: (s, p) => s.expansion === 'traders' && HB.beginEnd(s, p),
+    buyDev: (s, p) => s.expansion === 'traders' && HB.buyDev(s, p),
+    portUsable: (s, v) => s.expansion !== 'traders' || HB.portUsable(s, v),
+    cityStart: s => s.expansion === 'traders' && HB.cityStart(s),
+    roadWeight: (s, e) => (s.expansion === 'traders' ? HB.roadWeight(s, e) : 1),
+    noLongest: s => s.expansion === 'traders' && HB.noLongest(s),
   };
 };

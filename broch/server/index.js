@@ -7,7 +7,7 @@ const { WebSocketServer } = require('ws');
 const store = require('./store');
 const { db } = store;
 const engine = require('./engine');
-const { COLORS } = require('./engine/constants');
+const { COLORS, tradersVp } = require('./engine/constants');
 
 const PORT = +process.env.PORT || 8080;
 const REGISTRATION_CODE = process.env.REGISTRATION_CODE || '';
@@ -233,9 +233,10 @@ async function api(req, res, url) {
     const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
     const scenario = expansion === 'seafarers' ? (['shores', 'islands', 'fog'].includes(b.scenario) ? b.scenario : 'shores') : null;
     const bv = b.variants || {};
-    const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, events: !!bv.events } : null;
+    const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, caravans: !!bv.caravans, barbarians: !!bv.barbarians, traders: !!bv.traders, events: !!bv.events, friendly: !!bv.friendly, harbors: !!bv.harbors } : null;
+    if (variants && (variants.caravans || variants.barbarians || variants.traders) && (mode === 'knights' || maxPlayers > 4 || b.big === true)) throw new HttpError(400, 'This scenario is for the classic rules and 2–4 players.');
     const missions = expansion === 'explorers' ? (Array.isArray(b.missions) ? b.missions.filter(x => ['fish', 'spice', 'lairs'].includes(x)) : ['fish', 'spice', 'lairs']) : null;
-    const def = standalone ? engine.defaultVp(mode) : mode === 'knights' ? (expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] + 2 : 13) : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : 10;
+    const def = standalone ? engine.defaultVp(mode) : mode === 'knights' ? (expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] + 2 : 13) + (variants && variants.harbors ? 1 : 0) : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
     const vpTarget = standalone && engine.fixedVp(mode) ? def : Math.max(5, Math.min(20, b.vpTarget | 0 || def));
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
     const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone ? cleanOptions(b.gameOptions) : null, maxPlayers, vpTarget, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };

@@ -1,6 +1,7 @@
 // In-browser stand-in for the Broch server, used only by the demo build.
 // Runs the real rules engine locally; the other seats are played by simple bots.
 import engine from '../server/engine/index.js';
+import { tradersVp } from '../server/engine/constants.js';
 import { decide as decideClassic } from './bots.js';
 import { decide as decideStandalone } from './bots-standalone.js';
 const decide = v => (engine.isStandalone(v.mode) ? decideStandalone(v) : decideClassic(v));
@@ -151,10 +152,10 @@ async function api(path, opts = {}) {
     const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
     const scenario = expansion === 'seafarers' ? (['shores', 'islands', 'fog'].includes(b.scenario) ? b.scenario : 'shores') : null;
     const bv = b.variants || {};
-    const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, events: !!bv.events } : null;
+    const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, caravans: !!bv.caravans, barbarians: !!bv.barbarians, traders: !!bv.traders, events: !!bv.events, friendly: !!bv.friendly, harbors: !!bv.harbors } : null;
     const missions = expansion === 'explorers' ? (Array.isArray(b.missions) ? b.missions.filter(x => ['fish', 'spice', 'lairs'].includes(x)) : ['fish', 'spice', 'lairs']) : null;
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
-    const defVp = standalone ? engine.defaultVp(mode) : mode === 'knights' ? 13 : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : 10;
+    const defVp = standalone ? engine.defaultVp(mode) : mode === 'knights' ? 13 : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
     const id = 'demo' + (++seq);
     // bots take the other seats straight away so you can start
     const seats = [u.id, ...users.slice(1, maxPlayers).map(x => x.id)];

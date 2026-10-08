@@ -1,6 +1,8 @@
 import { esc, toast, modal, closeModals, wsWatch, wsAct, onWs, reportProblem, houseIcon, glyph, GLYPH, PCOLOR, PCOLOR_DARK, RES, COMM, CARD_COLOR, resName, cardName, term, tf, t, isLightColor, dieHtml } from './core.js';
 import { lang } from './i18n.js';
 import { renderBoard, boardBounds, BOARD_S } from './board.js';
+import { hubExt } from './hub-art.js';
+import { createHub } from './hub.js';
 import { topbar } from './app.js';
 import { diff, play, sfx } from './fx.js';
 import { victoryScene, closeVictory } from './victory.js';
@@ -217,7 +219,11 @@ function pname(p) {
   return `<span class="pn" style="color:${isLightColor(pl.color) ? '#8A6A2E' : PCOLOR[pl.color]}">${esc(pl.name)}</span>`;
 }
 const myPending = () => G.view.pending.filter(p => p.group === G.view.activeGroup && p.player === G.view.me);
-const has = cost => { const m = me(); return m && Object.entries(cost).every(([k, n]) => ((m.res && m.res[k]) ?? (m.comm && m.comm[k]) ?? 0) >= n); };
+const has = cost => { const m = me(); return m && Object.entries(cost).every(([k, n]) => (k === 'gold' ? m.gold : (m.res && m.res[k]) ?? (m.comm && m.comm[k]) ?? 0) >= n); };
+// Traders & Barbarians: the questions, dialogs and chips of its scenarios live in hub.js
+let HUB = null;
+const hub = () => HUB || (HUB = createHub({ get G() { return G; }, send, startPick, render, me, pname, cardPicker, choiceDialog, resChoices, toast }));
+const isHub = v => v.expansion === 'traders';
 const costHtml = cost => Object.entries(cost).map(([k, n]) => Array.from({ length: n }, () => `<i class="cost-dot" style="background:${CARD_COLOR[k]}" title="${esc(resName(k))}"></i>`).join('')).join('');
 const cardsHtml = cards => Object.entries(cards).filter(([, n]) => n > 0).map(([k, n]) => `<span class="mini" style="background:${CARD_COLOR[k]}">${n} ${esc(resName(k))}</span>`).join(' ');
 const tx = (k, p) => esc(t(k, p));
@@ -239,6 +245,8 @@ function statusInfo() {
   if (pend.length) {
     const mp = myPending()[0];
     if (mp) {
+      const hs = isHub(v) ? hub().status(mp) : null;
+      if (hs) return hs;
       const T = {
         discard: [t('Discard {n} cards.', { n: mp.count }), t('You hold more than your hand limit.'), t('Choose cards')],
         give: [t('Give {name} {n} cards.', { name: v.players[mp.to]?.name, n: mp.count }), t('Wedding gift: you choose which cards.'), t('Choose cards')],
@@ -268,7 +276,7 @@ function statusInfo() {
       relocateKnight: 'Waiting for {names} to relocate a knight…', give: 'Waiting for {names} to give cards…', loseCity: 'Waiting for {names} to pick a city to lose…',
       chooseProgress: 'Waiting for {names} to draw progress cards…', goldPick: 'Waiting for {names} to choose from the gold field…',
       deserterPick: 'Waiting for {names} to pick a deserting knight…', harborGive: 'Waiting for {names} to trade a commodity…', discardProgress: 'Waiting for {names} to play or give back a progress card…',
-    }[pend[0].type] || 'Waiting for {names} to decide…';
+    }[pend[0].type] || (isHub(v) && hub().waiting(pend[0].type)) || 'Waiting for {names} to decide…';
     return { msg: t(W, { names: who }) };
   }
   if (v.step === 'sbp') {
@@ -293,6 +301,7 @@ function diceHtml() {
   const d = G.view.dice;
   if (!d) return '';
   const evName = d.event ? (d.event === 'ship' ? t('Barbarian ship') : t('{track} gate', { track: term(d.event) })) : '';
+  if (d.card) return `<div class="dice card">${hub().diceCard(d)}${d.event ? `<div class="die event" style="background:${EVENT_COLOR[d.event]};color:#fff;border-color:${EVENT_COLOR[d.event]}" title="${esc(evName)}">${EVENT_ICON[d.event]}</div>` : ''}<b class="dsum ${d.total === 7 ? 'seven' : ''}">${d.total}</b></div>`;
   return `<div class="dice" title="${esc(t('Rolled {n}', { n: d.total }))}">
     ${dieHtml(d.red, 'red')}${dieHtml(d.yellow, 'yellow')}
     ${d.event ? `<div class="die event" style="background:${EVENT_COLOR[d.event]};color:#fff;border-color:${EVENT_COLOR[d.event]}" title="${esc(evName)}">${EVENT_ICON[d.event]}</div>` : ''}
@@ -304,7 +313,8 @@ function diceHtml() {
 function targets() {
   const v = G.view, L = v.legal || {};
   if (v.phase === 'over' || !isMine()) return {};
-  if (G.pick) return { [G.pick.kind]: G.pick.options, picked: G.pick.picked };
+  if (G.pick) return { [G.pick.kind]: G.pick.options, picked: G.pick.picked, pickedKnight: G.pick.pickedKnight };
+  if (isHub(v)) { const ht = hub().targets(); if (ht) return ht; }
   if (L.setupSpots) return { vertices: L.setupSpots };
   if (L.setupRoads) return { edges: L.setupRoads };
   if (L.robberHexes) return { hexes: L.robberHexes };
@@ -321,11 +331,12 @@ function targets() {
 }
 
 function onBoardClick(e) {
-  const el = e.target.closest('[data-v],[data-e],[data-h],[data-k],[data-s]');
+  const el = e.target.closest('[data-v],[data-e],[data-h],[data-k],[data-s],[data-hub]');
   if (!el) return;
   const v = G.view, L = v.legal || {};
   const id = +(el.dataset.v ?? el.dataset.e ?? el.dataset.h ?? el.dataset.k ?? el.dataset.s);
   if (G.pick) { G.pick.onPick(id); return; }
+  if (isHub(v) && hub().boardClick(el, id)) return;
   if (L.giveKnights && el.dataset.k != null) return send({ type: 'deserterPick', v: id });
   if (el.dataset.k != null) return knightMenu(id);
   if (el.dataset.s != null) return shipMenu(id);
@@ -414,7 +425,7 @@ function renderStatus() {
 function boardKey(tg) {
   const v = G.view;
   if (v.board !== G.boardRef) { G.boardRef = v.board; const sig = JSON.stringify(v.board.hexes); if (sig !== G.boardSig) { G.boardSig = sig; G.boardGen = (G.boardGen || 0) + 1; } }
-  return JSON.stringify([G.boardGen, v.buildings, v.roads, v.knights, v.ships, v.bridges, v.robber, v.pirate, v.merchant, v.lairs, v.islandBonus, v.longestRoad, v.mode === 'knights' ? null : v.largestArmy && v.largestArmy.p, v.fish && v.fish.boot, v.players.map(p => p.color), tg, lang(), G.life]);
+  return JSON.stringify([G.boardGen, v.buildings, v.roads, v.knights, v.ships, v.bridges, v.robber, v.pirate, v.merchant, v.lairs, v.islandBonus, v.longestRoad, v.mode === 'knights' ? null : v.largestArmy && v.largestArmy.p, v.fish && v.fish.boot, v.hub, v.players.map(p => p.color), tg, lang(), G.life]);
 }
 function renderBoardPart() {
   const host = G.app.querySelector('.board-host');
@@ -424,7 +435,7 @@ function renderBoardPart() {
   const freshAny = fr && (fr.verts.size || fr.edges.size || fr.knights.size || fr.ships.size || fr.hexes.size || fr.robber || fr.pirate || fr.merchant);
   if (key === G.boardKey && !freshAny) return;
   G.boardKey = key;
-  host.innerHTML = renderBoard(G.view, tg, G.fresh, G.zoom, G.life, true);
+  host.innerHTML = renderBoard(G.view, tg, G.fresh, G.zoom, G.life, true, hubExt(G.view));
   G.zoomer.apply();
   syncLoops(host);
   if (freshAny) {
@@ -443,8 +454,9 @@ function hudHtml() {
     const defense = Object.values(v.knights).filter(k => k.active).reduce((a, k) => a + k.level, 0);
     bits.push(`<span class="hud-pill barb-pill" title="${tx('Barbarian ship: attacks when it reaches the end')}">⛵ <span class="barb-track">${track}</span></span>`);
     bits.push(`<span class="hud-pill" title="${tx('Barbarian strength (cities) vs active knights')}">⚔ ${strength} : ${defense}</span>`);
-  } else if (v.mode !== 'knights') bits.push(`<span class="hud-pill devdeck" title="${tx('Development cards left: {n}', { n: v.devDeck })}"><i class="stk dev"></i>${v.devDeck}</span>`);
+  } else if (v.mode !== 'knights' && v.hub?.scenario !== 'barbarians') bits.push(`<span class="hud-pill devdeck" title="${tx('Development cards left: {n}', { n: v.devDeck })}"><i class="stk dev"></i>${v.devDeck}</span>`);
   if (v.fish) bits.push(`<span class="hud-pill" title="${tx('Fish tokens left in the bag')}"><svg viewBox="0 0 24 24" width="15" height="15" style="color:#9FE3F5">${GLYPH.fish}</svg> ${v.fish.left}</span>`);
+  if (isHub(v)) bits.push(hub().hud(v));
   if (v.deckLeft != null) bits.push(`<span class="hud-pill" title="${tx('Event cards left before the deck is reshuffled')}">🂠 ${v.deckLeft}</span>`);
   return `<div class="board-hud">${bits.join('')}</div>`;
 }
@@ -452,7 +464,7 @@ function hudHtml() {
 const chipIcon = (name, bg) => `<span class="ic" style="background:${bg}">${glyph(name, 13)}</span>`;
 
 // ------------------------------------------------------------ your hand
-const DEV_ORDER = ['knight', 'roadBuilding', 'yearOfPlenty', 'monopoly', 'victoryPoint'];
+const DEV_ORDER = ['knight', 'roadBuilding', 'yearOfPlenty', 'monopoly', 'goodTrip', 'victoryPoint'];
 // font size for a card name in a tile (~110px for text): long single words get smaller instead of breaking mid-word
 const nameSize = name => { const w = Math.max(...String(name).split(/[\s-]+/).map(x => x.length)); return w <= 12 ? 11.5 : w <= 15 ? 10.5 : w <= 18 ? 9.3 : 8.3; };
 const nameSpan = name => `<span class="dc-nm" style="font-size:${nameSize(name)}px">${esc(name)}</span>`;
@@ -469,8 +481,7 @@ function handHtml() {
   // tokens that are not cards: fish, gold, cargo
   const tok = (key, n, label, color, action, live) => `<button class="tcard ${n ? '' : 'zero'} ${live ? 'live' : ''}" ${action ? `data-do="${action}"` : 'disabled'} data-card="${key}" style="--c:${color}" title="${esc(label)}: ${n}"><span class="coin">${glyph(key, 20)}</span><span class="nm">${esc(label)}</span>${n ? `<span class="n">${n}</span>` : ''}</button>`;
   const tokens = [];
-  if (v.fishing) tokens.push(tok('fish', m.fish, t('Fish'), '#1F7A99', 'fish', mainTurn && m.fish >= 2));
-  if (v.rivers) tokens.push(tok('gold', m.gold, t('Gold'), '#C58E12', 'goldTrade', mainTurn && !!L.goldTrade));
+  if (isHub(v)) hub().tokenList(v, m, mainTurn, L).forEach(x => tokens.push(tok(x.key, x.n, x.label, x.color, x.action, x.live)));
   if (v.expansion === 'explorers') {
     if (v.missions.includes('fish')) tokens.push(tok('fish', m.cargo.fish, t('Fish'), '#1F7A99', 'missions', mainTurn && !!L.deliver?.fish));
     if (v.missions.includes('spice')) tokens.push(tok('spice', m.cargo.spice, t('spice'), '#B53A2A', 'missions', mainTurn && !!L.deliver?.spice));
@@ -489,6 +500,7 @@ function handHtml() {
     acts += btn('wall', t('City wall'), 'wall', COSTS.wall, free && L.walls?.length > 0, m.pieces.walls);
   }
   acts += plain('bank', t('Bank trade'), 'bank', t('4:1 or better'), mainTurn);
+  if (isHub(v)) acts += hub().actions(v, m, L, { free, mainTurn, plain });
   if (v.expansion === 'explorers') acts += plain('missions', t('Missions'), 'flag', t('Deliver, attack'), mainTurn);
 
   // development / progress cards as real little cards
@@ -527,6 +539,7 @@ function handHtml() {
     if (v.missions.includes('fish')) chips.push(`<span class="stat-chip btnish" data-do="missions" title="${tx('Fish on board · delivered')}">${chipIcon('fish', '#1F7A99')}${m.cargo.fish} · ${m.delivered.fish}</span>`);
     if (v.missions.includes('spice')) chips.push(`<span class="stat-chip btnish" data-do="missions" title="${tx('Spice on board · delivered')}">${chipIcon('spice', '#B53A2A')}${m.cargo.spice} · ${m.delivered.spice}</span>`);
   }
+  if (isHub(v)) chips.push(...hub().chips(v, m));
   if (isSea(v)) chips.push(`<span class="stat-chip" title="${tx('Pieces left')}">${chipIcon('ship', '#2C5F7A')}${tx('{n} left', { n: m.pieces.ships })}</span>`);
   const over = m.cards > m.handLimit;
   return `<div class="hand">
@@ -571,8 +584,9 @@ function playersHtml() {
       const imp = p.improvements;
       meta.push(`<span class="mp hb" title="${tx('Improvements: trade / politics / science')}">${hexBadge('trade', imp.trade)}${hexBadge('politics', imp.politics)}${hexBadge('science', imp.science)}</span>`);
     }
-    if (v.rivers) meta.push(`<span class="mp" title="${tx('Gold')}">${chipIcon('gold', '#C58E12')}${p.gold}${p.riverVp ? ` <b style="color:${p.riverVp > 0 ? 'var(--green)' : 'var(--red-d)'}">${p.riverVp > 0 ? '+' : ''}${p.riverVp}</b>` : ''}</span>`);
-    if (v.fishing) meta.push(`<span class="mp" title="${tx('Fish')}">${chipIcon('fish', '#1F7A99')}${p.fish}${v.fish?.boot === i ? ' 🥾' : ''}</span>`);
+    if (v.gold) meta.push(`<span class="mp" title="${tx('Gold')}">${chipIcon('gold', '#C58E12')}${p.gold}${p.riverVp ? ` <b style="color:${p.riverVp > 0 ? 'var(--green)' : 'var(--red-d)'}">${p.riverVp > 0 ? '+' : ''}${p.riverVp}</b>` : ''}</span>`);
+    if (v.fishing) meta.push(`<span class="mp" title="${tx('Fish tokens')}">${chipIcon('fish', '#1F7A99')}${p.fishTokens}${v.fish?.boot === i ? ' 🥾' : ''}</span>`);
+    if (isHub(v)) meta.push(hub().playerMeta(v, p, i));
     if (v.expansion === 'explorers') meta.push(`<span class="mp" title="${tx('Delivered fish · spice')}">${chipIcon('fish', '#1F7A99')}${p.delivered.fish}${chipIcon('spice', '#B53A2A')}${p.delivered.spice}</span>`);
     return `<div class="player ${i === v.current && v.phase !== 'over' ? 'cur' : ''} ${i === v.me ? 'me' : ''}" data-seat="${i}">
       ${houseIcon(p.color, 22)}
@@ -796,9 +810,10 @@ function doAction(what) {
     case 'wall': return togglePick('wall', 'vertices', L.walls, t('Tap the city to wall in.'), x => send({ type: 'buildWall', v: x }));
     case 'ship': return togglePick('ship', 'edges', L.ships, t('Tap the sea edge where your ship should go.'), e => send({ type: 'buildShip', e }));
     case 'bridge': return togglePick('bridge', 'edges', L.bridges, t('Tap the river crossing for your bridge.'), e => send({ type: 'buildBridge', e }));
-    case 'fish': return fishDialog();
+    case 'fish': return hub().fishDialog();
     case 'goldTrade': return goldDialog();
     case 'missions': return missionsDialog();
+    default: if (isHub(v)) hub().action(what);
   }
 }
 function togglePick(key, kind, options, label, fn) {
@@ -879,11 +894,12 @@ function autoDialogs(force = false) {
   // let the full-screen moment (robber, barbarians) finish first
   if (window.BROCH_FX_BUSY && !force) { setTimeout(() => { if (G && G.view === v) autoDialogs(); }, 400); return; }
   G.opened.add(key);
+  if (isHub(v) && hub().dialog(mp)) return;
   switch (mp.type) {
     case 'discard':
       return cardPicker({ heading: tx('Discard {n} cards', { n: mp.count }), text: tx('A 7 was rolled and you hold more than {n} cards.', { n: me().handLimit }), pool: handPool(), count: mp.count, confirm: cards => send({ type: 'discard', cards }) });
     case 'give':
-      return cardPicker({ heading: tx('Wedding gift for {name}', { name: v.players[mp.to].name }), text: tx('Choose {n} cards to give.', { n: mp.count }), pool: handPool(), count: mp.count, confirm: cards => send({ type: 'give', cards }) });
+      return cardPicker({ heading: mp.good ? tx('Good neighbors: a gift for {name}', { name: v.players[mp.to].name }) : tx('Wedding gift for {name}', { name: v.players[mp.to].name }), text: tx('Choose {n} cards to give.', { n: mp.count }), pool: handPool(), count: mp.count, confirm: cards => send({ type: 'give', cards }) });
     case 'goldPick': {
       const pool = Object.fromEntries(RES.filter(r => v.bank[r] > 0).map(r => [r, v.bank[r]]));
       return cardPicker({ heading: tx('Gold!'), text: tx('Choose {n} resources from the bank.', { n: mp.count }), pool, count: mp.count, haveText: 'bank {n}', confirm: cards => send({ type: 'pickGold', cards }) });
@@ -925,7 +941,7 @@ function autoDialogs(force = false) {
 
 function tradeDialog() {
   const v = G.view;
-  const types = [...RES, ...(v.mode === 'knights' ? COMM : [])];
+  const types = [...RES, ...(v.mode === 'knights' ? COMM : []), ...(v.gold ? ['gold'] : [])];
   const give = {}, get = {};
   modal(`<h2>${tx('Offer a trade')}</h2><p class="muted" style="margin:0">${tx('Everyone sees the offer and can accept. You pick who to trade with.')}</p>
     <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg"></div>
@@ -936,11 +952,11 @@ function tradeDialog() {
       const draw = () => {
         const cell = (sel, k, have) => `<div class="pick ${sel[k] ? 'on' : ''}"><div class="rcard ${COMM.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div>
           <div class="have">${have != null ? tx('have {n}', { n: have }) : esc(resName(k))}</div><div class="ctr"><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="-1">−</button><b>${sel[k] || 0}</b><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="1">+</button></div></div>`;
-        el.querySelector('#tg').innerHTML = types.map(k => cell(give, k, (RES.includes(k) ? m.res[k] : m.comm[k]) || 0)).join('');
+        el.querySelector('#tg').innerHTML = types.map(k => cell(give, k, (k === 'gold' ? m.gold : RES.includes(k) ? m.res[k] : m.comm[k]) || 0)).join('');
         el.querySelector('#tw').innerHTML = types.map(k => cell(get, k, null)).join('');
         el.querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
           const sel = b.dataset.s === 'g' ? give : get, k = b.dataset.k, d = +b.dataset.d;
-          const have = (RES.includes(k) ? m.res[k] : m.comm[k]) || 0;
+          const have = (k === 'gold' ? m.gold : RES.includes(k) ? m.res[k] : m.comm[k]) || 0;
           const nv = Math.max(0, (sel[k] || 0) + d);
           if (sel === give && nv > have) return;
           if (nv > 9) return;
@@ -976,7 +992,7 @@ function bankDialog() {
       const draw = () => {
         el.querySelector('#bg').innerHTML = types.map(k => `<button class="pick ${give === k ? 'on' : ''}" data-g="${k}" ${have(k) < ratios[k] ? 'disabled style="opacity:.4"' : ''}>
           <div class="rcard ${COMM.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div><b>${ratios[k]}:1</b><span class="have">${tx('have {n}', { n: have(k) })}</span></button>`).join('');
-        el.querySelector('#bw').innerHTML = [...RES, ...(v.mode === 'knights' ? COMM : [])].map(k => `<button class="pick ${get === k ? 'on' : ''}" data-w="${k}" ${k === give || (RES.includes(k) && !G.view.bank[k]) ? 'disabled style="opacity:.4"' : ''}>
+        el.querySelector('#bw').innerHTML = [...RES, ...(v.mode === 'knights' ? COMM : []), ...(v.gold ? ['gold'] : [])].map(k => `<button class="pick ${get === k ? 'on' : ''}" data-w="${k}" ${k === give || (RES.includes(k) && !G.view.bank[k]) ? 'disabled style="opacity:.4"' : ''}>
           <div class="rcard ${COMM.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div><span class="have">${esc(resName(k))}</span></button>`).join('');
         el.querySelectorAll('[data-g]').forEach(b => b.onclick = () => { give = b.dataset.g; if (get === give) get = null; sfx.click(); draw(); });
         el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { get = b.dataset.w; sfx.click(); draw(); });
@@ -997,9 +1013,9 @@ function devDialog(type) {
   const ready = me().dev.some(d => d.type === type && !d.fresh);
   const myTurn = v.current === v.me && v.phase === 'play' && v.step !== 'sbp' && !v.pending.length;
   const limited = v.flags.devPlayed && !(type === 'knight' && v.options.knightsFree); // one card per turn (house rule: knights are unlimited)
-  const can = type !== 'victoryPoint' && ready && myTurn && !limited;
-  const why = type === 'victoryPoint' ? t('Counts automatically.') : !myTurn ? t('Play it on your turn.') : limited ? t('You already played a card this turn.') : !ready ? t('Cards bought this turn can be played next turn.') : '';
-  modal(`<div class="progress-card dev-card fx-flip"><b>${esc(cardName(type))}</b><small>${tx(DEV_DESC[type])}</small></div>
+  const can = type !== 'victoryPoint' && type !== 'goodTrip' && ready && myTurn && !limited;
+  const why = type === 'goodTrip' ? t('Play it while you move your wagon, after a regular move.') : type === 'victoryPoint' ? t('Counts automatically.') : !myTurn ? t('Play it on your turn.') : limited ? t('You already played a card this turn.') : !ready ? t('Cards bought this turn can be played next turn.') : '';
+  modal(`<div class="progress-card dev-card fx-flip"><b>${esc(cardName(type))}</b><small>${tx(type === 'knight' && v.hub?.scenario === 'traders' ? 'Move a barbarian to another path or road. On a road, draw a card from its owner.' : DEV_DESC[type])}</small></div>
     ${why ? `<p class="muted">${esc(why)}</p>` : ''}
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button>${can ? `<button class="btn primary" id="play">${tx('Play card')}</button>` : ''}</div>`, {
     onMount(el, close) {
@@ -1190,11 +1206,13 @@ function costsDialog() {
   const rows = [[t('Road'), COSTS.road, ''], [t('Settlement'), COSTS.settlement, t('1 point')], [t('City'), COSTS.city, t('2 points, double production')]];
   if (isSea(G.view)) rows.push([t('Ship'), COSTS.ship, t('Sails on sea edges; moves once per turn')]);
   if (G.view.rivers) rows.push([t('Bridge'), COSTS.bridge, t('Crosses a river; earns 3 gold')]);
+  if (isHub(G.view)) rows.push(...hub().costRows(G.view));
   if (!knights) rows.push([t('Development card'), COSTS.dev, t('Knight, Road Building, Year of Plenty, Monopoly or a point')]);
   else rows.push([t('Knight'), COSTS.knight, t('Basic knight (inactive)')], [t('Activate knight'), { grain: 1 }, ''], [t('Promote knight'), { wool: 1, ore: 1 }, t('Mighty needs politics 3')], [t('City wall'), COSTS.wall, t('+2 hand limit')]);
   const o = G.view.options || {};
   const house = [o.robberReturn && t('House rule: forgotten robber'), o.knightsFree && t('House rule: knights without a limit'), o.startBoth && t('House rule: starting resources for both')].filter(Boolean);
   modal(`<h2>${tx('Building costs')}</h2><button class="btn gold block tut-open" data-tut-mode>▶ ${tx('How to play: {mode}', { mode: modeLabel(G.view) })}</button><div style="margin-top:10px">${rows.map(([n, c, d]) => `<div class="row" style="padding:7px 0;border-top:1px solid var(--line)"><b style="width:140px">${esc(n)}</b><span class="spacer">${cardsHtml(c)}</span><span class="muted" style="font-size:12px;text-align:right">${esc(d)}</span></div>`).join('')}</div>
+    ${isHub(G.view) ? hub().costsExtra(G.view).map(x => `<p class="muted" style="font-size:13px">${esc(x)}</p>`).join('') : ''}
     ${knights ? `<p class="muted" style="font-size:13px">${tx('Improvements cost 1–5 commodities: cloth for trade, coin for politics, paper for science. Cities on forest, pasture and mountains yield a commodity instead of a second resource.')}</p>` : ''}
     ${!knights ? `<p class="muted" style="font-size:13px">${tx('Longest Road: 5 or more connected roads, 2 points. Largest Army: 3 or more played knights, 2 points. You may play 1 development card per turn, but not one you bought this turn.')}</p>` : ''}
     ${house.length ? `<p class="muted" style="font-size:13px"><b>${tx('House rules in this game')}:</b> ${house.map(esc).join(' · ')}</p>` : ''}

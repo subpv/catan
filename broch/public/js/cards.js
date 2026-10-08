@@ -7,6 +7,7 @@ export const DEV_DESC = {
   roadBuilding: 'Build 2 roads for free.',
   yearOfPlenty: 'Take any 2 resources from the bank.',
   monopoly: 'Name a resource. Everyone gives you all of theirs.',
+  goodTrip: 'After a regular move, your wagon gets a whole second move.',
 };
 export const PROGRESS_INFO = {
   alchemist: ['Choose both production dice before you roll.', 'dice'],

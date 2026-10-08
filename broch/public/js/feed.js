@@ -22,7 +22,7 @@ export function chatHtml(v, pname) {
 
 // ------------------------------------------------------------ history: one card per turn
 const GAIN_C = new Set(['{@p} receives {$c}.', '{@p} collects {$c}.', "{@p}'s aqueduct provides {$c}.", '{@p} takes {$c} from the gold field.']);
-const GAIN_N = { '{@p} catches {n} fish.': 'fish', '{@p} earns {n} gold.': 'gold', '{@p} loads {n} spice.': 'spice' };
+const GAIN_N = { '{@p} catches {n} fish tokens.': 'fish', '{@p} earns {n} gold.': 'gold', '{@p} loads {n} spice.': 'spice' };
 const BUILD = {
   '{@p} built a road.': ['road', 'Road'], '{@p} built a settlement.': ['settlement', 'Settlement'], '{@p} built a city.': ['city', 'City'],
   '{@p} placed a settlement.': ['settlement', 'Settlement'], '{@p} placed a city.': ['city', 'City'],

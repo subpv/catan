@@ -2,6 +2,7 @@
 import { t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, glyph, cardName, inkOn, tf, houseIcon, pipsHtml, term } from './core.js';
 import { cardDesc, deckOf } from './cards.js';
 import { findJob, jobAge, buildersBusyFor } from './builder.js';
+import { eventCardScene } from './hub.js';
 
 const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -241,13 +242,15 @@ export function diff(prev, next) {
 // ------------------------------------------------------------ playing events
 export function play(events, view, nameHtml) {
   if (!events.length) return;
-  const rolled = events.find(e => e.type === 'log' && (e.k === '{@p} rolled {n}.' || e.k === '{@p} rolled {n} ({#e}).'));
+  const dealt = events.find(e => e.type === 'log' && e.k === '{@p} turned over an event card ({n}).');
+  const rolled = events.find(e => e.type === 'log' && (e.k === '{@p} rolled {n}.' || e.k === '{@p} rolled {n} ({#e}).')) || dealt;
   for (const ev of events) {
     if (ev.type === 'build') buildFx(ev.fresh, view);
     if (ev.type === 'robberMoved') { sfx.place(); }
     if (ev.type === 'pirateMoved') sfx.pirate();
   }
-  if (rolled) enqueue(() => diceScene(view, rolled.a.n));
+  if (dealt) enqueue(() => eventCardScene(view, dealt.a.n, nameHtml));
+  else if (rolled) enqueue(() => diceScene(view, rolled.a.n));
   const logs = events.filter(e => e.type === 'log');
   const attack = logs.find(e => e.k.startsWith('The barbarians attack!'));
   if (attack) {
@@ -454,7 +457,7 @@ function lootFromLogs(logs) {
   const add = (p, k, n) => { const o = by.get(p) || {}; o[k] = (o[k] || 0) + n; by.set(p, o); };
   for (const e of logs) {
     if (e.k === '{@p} receives {$c}.') for (const [k, n] of Object.entries(e.a.c)) add(e.a.p, k, n);
-    else if (e.k === '{@p} catches {n} fish.') add(e.a.p, 'fish', e.a.n);
+    else if (e.k === '{@p} catches {n} fish tokens.') add(e.a.p, 'fish', e.a.n);
     else if (e.k === '{@p} loads {n} spice.') add(e.a.p, 'spice', e.a.n);
     else if (e.k === '{@p} hauls in a catch of fish.') add(e.a.p, 'fish', 1);
   }

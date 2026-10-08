@@ -1630,3 +1630,12 @@ svg.board:not(.alive) .en-cog { animation: none !important; }
 .en-devic { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: #5B3A6E; }
 .tut-extra .en-dots { gap: 3px; } .tut-extra .en-dots i { width: 10px; height: 10px; border-color: rgba(255,243,220,.55); }
 .tut-extra .en-dots i.b { background: #C99A6E; border-color: #5E3A22; } .tut-extra .en-dots i.g { background: #5FCB66; border-color: #1F6A2C; }
+
+/* ===== Traders & Barbarians (hub): event card dice chip, board hit areas ===== */
+.dice.card { gap: 6px; }
+.dice .evcard { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 52px; height: 38px; padding: 2px 8px; border-radius: 8px; background: linear-gradient(170deg, #FFF8E8, #EFDFB6); border: 2px solid #B9851F; color: var(--ink); line-height: 1; cursor: help; }
+.dice .evcard .evn { font: 800 17px/1 var(--serif); color: #C1272D; }
+.dice .evcard .evt { font-size: 8.5px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; color: #8F6210; max-width: 74px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+.hub-hit { cursor: pointer; }
+.fish-toks .tok { flex: none; }
+@media (max-width: 760px) { .dice .evcard { min-width: 46px; padding: 2px 5px; } .dice .evcard .evt { max-width: 60px; } }

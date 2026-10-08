@@ -137,4 +137,4 @@ function generate(kind) {
   return { kind, hexes: geo.hexes, vertices: geo.vertices, edges: geo.edges, ports };
 }
 
-module.exports = { generate, shuffle, expand, geometry, geometryFromCenters, rowCenters, SQ3 };
+module.exports = { generate, shuffle, expand, geometry, geometryFromCenters, rowCenters, placePorts, SQ3 };

@@ -382,7 +382,7 @@ function traders() {
     view: v, vpTarget: 10,
     steps: [
       async T => {
-        T.say(t('Traders & Barbarians'), t('Three variants you can mix: Fishermen, Rivers and Event cards.'));
+        T.say(t('Traders & Barbarians'), t('Pick one scenario: Fishermen, Rivers, Caravans, Barbarian Attack or Traders & Barbarians. Variants mix in.'));
         T.vp(1);
         await T.wait(2600);
       },
@@ -393,19 +393,19 @@ function traders() {
         await T.wait(2400);
       },
       async T => {
-        T.say(t('Roll a fishing ground’s number to catch fish.'), t('The lake pays on 2, 3, 11 and 12.'));
+        T.say(t('Roll a fishing ground’s number to catch fish.'), t('A settlement gets 1 token, a city 2. The lake pays on 2, 3, 11 and 12.'));
         await T.roll(1, 4);
         T.hit(5);
         await T.gain(T.pt(g1.x, g1.y), 'fish', 2, 0, top);
         await T.wait(1100);
       },
       async T => {
-        T.say(t('Pay with fish'), t('2 chase the robber · 3 steal · 4 take a resource · 5 a road · 7 a development card'));
+        T.say(t('Pay with fish'), t('2 take the robber off the board · 3 steal · 4 take a resource · 5 a road · 7 a development card. At most 7 tokens.'));
         await T.fishMenu();
         await T.wait(1200);
       },
       async T => {
-        T.say(t('The old boot'), t('Whoever fishes it up needs one more point to win, and may hand it on to a leader.'));
+        T.say(t('The old boot'), t('Whoever fishes it up needs one more point to win, and may hand it on to a player with as many points or more.'));
         T.set(v2 => { v2.fish = { boot: 0 }; });
         await T.wait(1600);
         T.set(v2 => { v2.fish = { boot: 1 }; });
@@ -433,16 +433,35 @@ function traders() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('Gold'), t('Swap 2 gold for any resource. The richest player gets +1 point, the poorest −2.'));
+        T.say(t('Gold'), t('Swap 2 gold for any resource, twice per turn. The richest player gets +1 point, the poorest −2.'));
         await T.bankTrade({ gold: 2 }, 'ore');
         T.float(T.vertPt(riverHome), '+1', '#F6CF57');
         await T.wait(1500);
       },
       async T => {
-        T.say(t('Event cards'), t('A deck of all 36 dice results replaces the dice, so every number comes up as often as it should.'));
-        await T.eventCard(3, 5);
+        T.say(t('Event cards'), t('A deck of 37 cards replaces the dice. Every number comes up as often as it should, and some cards bring an event.'));
+        await T.eventCard(8, t('Plague'));
         T.hit(8);
         await T.wait(1400);
+      },
+      async T => {
+        T.say(t('The Caravans'), t('Nomads send wagons out from the waterhole. After you build, vote with wool and grain where the next wagon goes. 12 points.'));
+        await T.banner(t('Caravans'));
+        await T.wait(1200);
+      },
+      async T => {
+        T.say(t('Barbarian Attack'), t('Barbarians land on the coast after every settlement or city. Knights from the castle drive them off, and 2 prisoners are worth 1 point. 12 points.'));
+        await T.banner(t('Barbarians'));
+        await T.wait(1200);
+      },
+      async T => {
+        T.say(t('Traders & Barbarians'), t('Haul glass, marble, sand and tools with your wagon for points and gold. 13 points.'));
+        await T.banner(t('Wagons'));
+        await T.wait(1200);
+      },
+      async T => {
+        T.say(t('Variants'), t('The friendly robber spares players with 2 points or fewer. Harbors of Catan reward settlements at harbors with a plaque worth 2 points.'));
+        await T.wait(2400);
         await T.finale();
       },
     ],
@@ -1014,11 +1033,12 @@ class Player {
         P.renderDice();
         if (!fast) { P.hud.querySelector('.tut-dice')?.classList.add('land'); sfx.thud(); await wait(420); }
       },
-      async eventCard(a, b) {
+      async eventCard(n, title) {
+        const a = Math.ceil(n / 2), b = Math.floor(n / 2);
         alive();
         if (!fast) {
           sfx.card();
-          const el = spawn(`<div class="tut-evcard"><small>${tx('Event card')}</small><div>${dieHtml(a, 'red')}${dieHtml(b, 'yellow')}</div><b>${a + b}</b></div>`, { x: P.stage.clientWidth / 2, y: P.stage.clientHeight * 0.45 }, 'still');
+          const el = spawn(`<div class="tut-evcard"><small>${tx('Event card')}</small><div>${esc(title || '')}</div><b>${n}</b></div>`, { x: P.stage.clientWidth / 2, y: P.stage.clientHeight * 0.45 }, 'still');
           await anim(el, [{ transform: 'translate(-50%,-50%) rotateY(90deg) scale(.6)', opacity: 0 }, { transform: 'translate(-50%,-50%) rotateY(0) scale(1.08)', opacity: 1, offset: 0.25 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: 0.8 }, { transform: 'translate(-50%,-50%) scale(.9)', opacity: 0 }], { duration: 2000 });
         }
         P.s.dice = { a, b, event: null };
