@@ -105,7 +105,7 @@ function renderAuth(mode = 'login') {
 const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, caravans: false, barbarians: false, traders: false, events: false, friendly: false, harbors: false }, missions: ['fish', 'spice', 'lairs'], escen: 2, big: false, variable: false, robberReturn: false, startBoth: false, knightsFree: true, gameOptions: {}, maxPlayers: 4, vpTarget: 10, vpTouched: false };
 const minPlayersOf = mode => (isStandalone(mode) && GAMES[mode].minPlayers) || 2;
 const BIG3 = ['caravans', 'barbarians', 'traders'];
-const NO56 = ['barbarians', 'traders']; // the big scenarios without a 5–6 player layout (Merchant Trains has one)
+const NO56 = ['traders']; // the big scenarios without a 5–6 player layout (Merchant Trains has one)
 const big3On = () => newGame.expansion === 'traders' && BIG3.some(k => newGame.variants[k]);
 const bigScenario = () => newGame.expansion === 'traders' && NO56.some(k => newGame.variants[k]);
 const tradersVp = v => (v.traders ? 13 : v.caravans || v.barbarians ? 12 : 10) + (v.harbors ? 1 : 0);
@@ -143,7 +143,7 @@ async function renderLobby() {
     if (newGame.expansion === 'seafarers') { const sc = SCEN[newGame.scenario]; return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${SCEN_KEYS.map(k => chip(newGame.scenario === k, `data-scen="${k}"`, SCEN[k].label)).join('')}</div><div class="muted" style="font-size:13px;margin-top:8px">${tx(sc.blurb)} ${tx('Win with {n} points.', { n: sc.vp })}</div>${sc.variable ? `<div class="chips" style="margin-top:8px">${chip(newGame.variable, 'data-vsetup', 'Variable setup', 'Deal the tiles, numbers and harbours again inside the printed outlines, as the rulebook allows.')}</div>` : ''}`; }
     if (newGame.expansion === 'traders') {
       const V = newGame.variants;
-      const scen = [['fishermen', 'Fishermen of Catan', 'Fishing grounds, fish tokens and the old boot.'], ['rivers', 'Rivers of Catan', 'Bridges, gold, and the richest and poorest player.'], ['caravans', 'Merchant Trains', 'Nomads send trade wagons out; vote with wool and grain. 3–6 players.'], ['barbarians', 'Barbarian Attack', 'Barbarians land on the coast; knights drive them off. 3–4 players.'], ['traders', 'Traders & Barbarians', 'Haul glass, marble, sand and tools with your wagon. 3–4 players.']];
+      const scen = [['fishermen', 'Fishermen of Catan', 'Fishing grounds, fish tokens and the old boot.'], ['rivers', 'Rivers of Catan', 'Bridges, gold, and the richest and poorest player.'], ['caravans', 'Merchant Trains', 'Nomads send trade wagons out; vote with wool and grain. 3–6 players.'], ['barbarians', 'Barbarian Attack', 'Barbarians land on the coast; knights drive them off. 3–6 players.'], ['traders', 'Traders & Barbarians', 'Haul glass, marble, sand and tools with your wagon. 3–4 players.']];
       return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${scen.map(([k, l, h]) => chip(V[k], `data-scn="${k}"`, l, h)).join('')}</div>
         <div class="muted sub-h">${tx('Variants')}</div><div class="chips">${chip(V.events, 'data-var="events"', 'Event cards', 'A deck of event cards replaces the dice.')}${chip(V.friendly, 'data-var="friendly"', 'Friendly robber', 'The robber spares players with 2 points or fewer.')}${chip(V.harbors, 'data-var="harbors"', 'Harbors of Catan', 'Settlements and cities at harbors earn harbor points; the Strongest Harbors plaque is worth 2 points.')}</div>`;
     }

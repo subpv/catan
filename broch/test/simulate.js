@@ -237,6 +237,7 @@ const CONFIGS = {
   'tb-barb': ['classic', { expansion: 'traders', variants: { barbarians: true } }],
   'tb-traders': ['classic', { expansion: 'traders', variants: { traders: true } }],
   'tb-traders-all': ['classic', { expansion: 'traders', variants: { traders: true, events: true, harbors: true } }],
+  'tb-barb-56': ['classic', { expansion: 'traders', variants: { barbarians: true }, big: true }],
   'tb-barb-all': ['classic', { expansion: 'traders', variants: { barbarians: true, events: true, harbors: true } }],
   'tb-events': ['classic', { expansion: 'traders', variants: { events: true } }],
   'tb-friendly': ['classic', { expansion: 'traders', variants: { friendly: true } }],
@@ -258,7 +259,7 @@ const res = Object.fromEntries(only.map(k => [k, []]));
 for (let i = 0; i < runs; i++) {
   for (const k of only) {
     const [mode, opts] = CONFIGS[k];
-    const n = k === 'classic-56' || k === 'tb-caravans-56' ? 5 + (i % 2) : k === 'tb-caravans-two' ? 2 : 2 + (i % (opts.variants && (opts.variants.caravans || opts.variants.barbarians || opts.variants.traders) ? 3 : 5));
+    const n = k.endsWith('-56') ? 5 + (i % 2) : k === 'tb-caravans-two' ? 2 : 2 + (i % (opts.variants && (opts.variants.caravans || opts.variants.barbarians || opts.variants.traders) ? 3 : 5));
     const o = { ...opts };
     if (opts.expansion && opts.expansion !== 'none' && opts.big === undefined && n > 4) o.big = true;
     res[k].push(play(mode, n, o));

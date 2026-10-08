@@ -463,6 +463,18 @@ function traders() {
         await T.wait(1200);
       },
       async T => {
+        T.say(t('Barbarians land'), t('After each house you build, roll the dice up to 3 times, each time a new number that is not a 7. Every number puts 1 barbarian on the coast tile with that number. 3 barbarians conquer a tile: no yield, no building there, and houses that touch only conquered tiles give no points and no harbor.'));
+        await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Knights drive them off'), t('At the end of your turn move each knight up to 3 paths, or 5 for 1 grain. Where there are more knights than barbarians, the tile is free and the barbarians become prisoners; a die then decides which of the knights there are lost (3 gold each).'));
+        await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Barbarian Attack for 5–6 players'), t('The board has two castles, and the numbers 5 and 9 each sit on two coast tiles, so both get a barbarian. The second player of the pair builds, trades with the bank and drives the barbarians off as well.'));
+        await T.wait(3200);
+      },
+      async T => {
         T.say(t('Traders & Barbarians'), t('Haul glass, marble, sand and tools with your wagon for points and gold. 13 points.'));
         await T.banner(t('Wagons'));
         await T.wait(1200);

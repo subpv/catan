@@ -14,7 +14,7 @@ module.exports = function make(core) {
   const d6 = () => 1 + Math.floor(Math.random() * 6);
   const SCEN = ['fishermen', 'rivers', 'caravans', 'barbarians', 'traders'];
   const BIG3 = ['caravans', 'barbarians', 'traders'];
-  const NO_56 = ['barbarians', 'traders']; // big scenarios without a 5-6 player layout (yet)
+  const NO_56 = ['traders']; // big scenarios without a 5-6 player layout (yet)
   const api = {};
   const MODS = {};
 
@@ -250,7 +250,7 @@ module.exports = function make(core) {
         break;
       }
       case 'tournament': {
-        const sc = s.players.map((_, q) => knightScore(s, q));
+        const sc = s.players.map((_, q) => (mod(s) && mod(s).cardKnights ? mod(s).cardKnights(s, q) : knightScore(s, q)));
         const max = Math.max(...sc);
         if (max <= 0) { log(s, 'Nobody has played a knight yet.'); break; }
         const win = sc.map((x, q) => [x, q]).filter(([x]) => x === max).map(([, q]) => q);
