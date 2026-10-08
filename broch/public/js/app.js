@@ -183,7 +183,7 @@ async function renderLobby() {
               ${Object.values(GAMES).map(g => `<button class="mode-tile ${newGame.mode === g.id ? 'on' : ''}" data-game="${g.id}" aria-pressed="${newGame.mode === g.id}"><b>${tx(g.name)}</b><small>${tx(g.tagline)}</small>${help(g.tutorial, g.name)}</button>`).join('')}
             </div>
           </div>
-          <div class="sub-opts">${subOpts()}</div>
+          <div class="sub-opts ${isStandalone(newGame.mode) && (GAMES[newGame.mode].lobbyOptions || []).length ? 'tall' : ''}">${subOpts()}</div>
           ${isStandalone(newGame.mode) ? '' : `${sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx('Larger board and the special building phase. Works with any number of players.'))}
           <div class="muted house-h">${tx('House rules')}</div>
           ${sw('robberReturn', tx('House rule: forgotten robber'), tx('If a player ends their turn without moving the robber, it goes back to the desert.'))}

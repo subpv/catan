@@ -1552,3 +1552,4 @@ svg.board:not(.alive) .in-draw { stroke-dashoffset: 0 !important; animation: non
 .award.red { background: #F4D6CF; color: #8C1F1A; }
 .hud-pill small { opacity: .75; font-weight: 500; }
 .in-thicket { pointer-events: none; }
+.sub-opts.tall { height: auto; min-height: 96px; }
