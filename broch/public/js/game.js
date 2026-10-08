@@ -991,7 +991,8 @@ function progressDialog(idx) {
   const card = me().progress[idx];
   const [desc, param] = PROGRESS_INFO[card] || ['', null];
   const deck = PROGRESS_DECK[card];
-  const myTurn = v.current === v.me && v.phase === 'play' && v.step !== 'sbp' && !v.pending.length;
+  const forced = myPending().some(p => p.type === 'discardProgress' && p.mustPlay);
+  const myTurn = v.current === v.me && v.phase === 'play' && v.step !== 'sbp' && (!v.pending.length || forced);
   const timing = card === 'alchemist' ? v.step === 'roll' : v.step === 'main';
   const why = !myTurn ? t('Play it on your turn.') : !timing ? (card === 'alchemist' ? t('The Alchemist is played before rolling.') : t('Roll the dice first.')) : '';
   modal(`<div class="progress-card ${deck} fx-flip"><b>${esc(cardName(card))}</b><small>${tx(desc)}</small></div>
