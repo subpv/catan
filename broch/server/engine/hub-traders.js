@@ -286,7 +286,7 @@ module.exports = function make(core, HB) {
     v.hub.tb = {
       barb: t.barb, wagons: t.wagons, stacks: Object.fromEntries(Object.entries(t.stacks).map(([k, st]) => [k, st.length])),
       tab: t.tab,
-      targets: TARGETS, move: t.move ? { p: t.move.p, mp: t.move.mp } : null, move_info: { move: MOVE, expel: EXPEL, reward: REWARD, upgrade: UPGRADE },
+      dest: DEST, targets: TARGETS, move: t.move ? { p: t.move.p, mp: t.move.mp } : null, move_info: { move: MOVE, expel: EXPEL, reward: REWARD, upgrade: UPGRADE },
     };
     v.players.forEach((pv, i) => { pv.wagon = t.tab[i]; });
   };

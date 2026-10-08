@@ -38,8 +38,8 @@ function hexPoints(board, h, scale = 1) {
 
 const SETTLE_D = 'M-10 11 V-3 L0 -13 L10 -3 V11 Z';
 const CITY_D = 'M-15 12 V-3 L-6 -13 L3 -3 V0 H15 V12 Z';
-const settlementPath = c => `<path d="${SETTLE_D}" fill="${PCOLOR[c]}" stroke="${PCOLOR_DARK[c]}" stroke-width="2.2" stroke-linejoin="round"/><path d="M-3 11 V4 H3 V11" fill="${PCOLOR_DARK[c]}" opacity=".35"/>`;
-const cityPath = c => `<path d="${CITY_D}" fill="${PCOLOR[c]}" stroke="${PCOLOR_DARK[c]}" stroke-width="2.2" stroke-linejoin="round"/><rect x="6" y="3" width="4" height="4" fill="${PCOLOR_DARK[c]}" opacity=".35"/><rect x="-9" y="1" width="4" height="4" fill="${PCOLOR_DARK[c]}" opacity=".35"/>`;
+export const settlementPath = c => `<path d="${SETTLE_D}" fill="${PCOLOR[c]}" stroke="${PCOLOR_DARK[c]}" stroke-width="2.2" stroke-linejoin="round"/><path d="M-3 11 V4 H3 V11" fill="${PCOLOR_DARK[c]}" opacity=".35"/>`;
+export const cityPath = c => `<path d="${CITY_D}" fill="${PCOLOR[c]}" stroke="${PCOLOR_DARK[c]}" stroke-width="2.2" stroke-linejoin="round"/><rect x="6" y="3" width="4" height="4" fill="${PCOLOR_DARK[c]}" opacity=".35"/><rect x="-9" y="1" width="4" height="4" fill="${PCOLOR_DARK[c]}" opacity=".35"/>`;
 // soft offset copy in black: looks like a drop shadow, costs nothing to repaint
 const shade = (d, extra = '') => `<path d="${d}" transform="translate(1.8,2.8)" fill="rgba(0,0,0,.34)" stroke="rgba(0,0,0,.18)" stroke-width="3" stroke-linejoin="round" ${extra}/>`;
 
@@ -411,16 +411,18 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
       <polygon class="tile-glow" points="${hexPoints(board, h, 0.9)}" fill="none" stroke="#FFF6DA" stroke-width="5"/>
       <polygon points="${hexPoints(board, h, 0.84)}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/></g>`);
     if (h.terrain === 'river') out.push(riverArt(h));
+    if (ext && ext.art) out.push(ext.art(h, cx, cy));
     const g = ext && ext.glyph ? ext.glyph(h) : TERRAIN_GLYPH[h.terrain];
     if (g) out.push(`<g transform="translate(${cx - 13},${cy - 44}) scale(1.08)" style="color:rgba(255,255,255,${h.terrain === 'gold' ? .9 : .55})">${GLYPH[g]}</g>`);
     if (life) {
       if (view.robber === h.id) out.push(`<polygon class="lf-dim" points="${hexPoints(board, h, 0.97)}" fill="rgba(24,10,4,.38)"/>`);
-      else if (!(h.terrain === 'desert' && view.fishing)) out.push(`<g class="life">${ext && ext.life ? ext.life(h, cx, cy, rankOf[h.id], seedOf(view.id)) : lifeFor(h, cx, cy, rankOf[h.id], seedOf(view.id))}</g>`);
+      else if (!(h.terrain === 'lake' || (h.terrain === 'desert' && view.fishing))) out.push(`<g class="life">${ext && ext.life ? ext.life(h, cx, cy, rankOf[h.id], seedOf(view.id)) : lifeFor(h, cx, cy, rankOf[h.id], seedOf(view.id))}</g>`);
     }
     if (h.terrain === 'gold') out.push(`<g class="sparkle" style="color:#FFF6C8"><circle cx="${f(cx - 30)}" cy="${f(cy - 18)}" r="2.4" fill="currentColor"/><circle cx="${f(cx + 32)}" cy="${f(cy - 8)}" r="1.8" fill="currentColor"/><circle cx="${f(cx + 20)}" cy="${f(cy + 34)}" r="2.2" fill="currentColor"/></g>`);
-    if (h.terrain === 'desert' && view.fishing) {
+    if (h.terrain === 'lake' || (h.terrain === 'desert' && view.fishing)) {
+      const nums = (h.lake || [2, 3, 11, 12]).slice().sort((a, b) => a - b).join('·');
       out.push(`<ellipse cx="${f(cx)}" cy="${f(cy + 2)}" rx="40" ry="26" fill="#3C9CB9" stroke="#FFFFFF" stroke-width="2.4"/><path d="M${f(cx - 18)} ${f(cy - 5)} q4.5 -5 9 0 t9 0 t9 0 t9 0" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="2.2" stroke-linecap="round"/>
-        ${g24('fish', cx - 26, cy + 8, 12, '#FFFFFF')}<text x="${f(cx + 6)}" y="${f(cy + 13)}" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Inter" letter-spacing="-.2">2·3·11·12</text>`);
+        ${g24('fish', cx - 26, cy + 8, 12, '#FFFFFF')}<text x="${f(cx + 6)}" y="${f(cy + 13)}" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Inter" letter-spacing="-.2">${nums}</text>`);
     }
     if (h.number) {
       const red = h.number === 6 || h.number === 8;
@@ -429,6 +431,8 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
       for (let i = 0; i < pips; i++) dots += `<circle cx="${(i - (pips - 1) / 2) * 4.4}" cy="9" r="1.6" fill="${red ? '#C1272D' : '#2B1E12'}"/>`;
       out.push(`<g transform="translate(${cx},${cy + 4})"><g class="ntok" data-n="${h.number}">${discShade(17)}<circle r="17" fill="url(#tok)" stroke="#C9AE7C" stroke-width="1.5"/>
         <text y="4" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="${red ? 19 : 17}" fill="${red ? '#C1272D' : '#2B1E12'}">${h.number}</text>${dots}</g></g>`);
+      // Rivers of Catan: the extra chip (a 2) lies on the tile with the 12
+      if (h.number2) out.push(`<g transform="translate(${cx + 21},${cy - 12})"><g class="ntok" data-n="${h.number2}">${discShade(11)}<circle r="11" fill="url(#tok)" stroke="#C9AE7C" stroke-width="1.3"/><text y="4.6" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="12" fill="#2B1E12">${h.number2}</text></g></g>`);
     }
     if (board.spices && board.spices.includes(h.id)) out.push(`<g transform="translate(${cx + 30},${cy - 26})">${discShade(11, 2)}<circle r="11" fill="#B53A2A" stroke="#fff" stroke-width="2"/>${g24('spice', 0, 0, 14, '#fff')}</g>`);
     if (view.merchant && view.merchant.hex === h.id) {

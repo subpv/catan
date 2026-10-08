@@ -39,7 +39,7 @@ module.exports = function make(core) {
     else if (v.rivers) out.rivers = true;
     return out;
   };
-  api.defaultVp = v => (v.traders ? 13 : v.caravans || v.barbarians ? 12 : 10) + (v.harbors ? 1 : 0);
+  api.defaultVp = v => C.tradersVp(v);
   api.scenarioOf = v => SCEN.find(k => v && v[k]) || null;
 
   // ------------------------------------------------------------ boards
@@ -242,7 +242,7 @@ module.exports = function make(core) {
       }
       case 'neighbors': {
         const items = [];
-        s.players.forEach((pl, q) => { if (hand(pl) > 0 && n > 1) items.push({ type: 'give', player: q, to: left(s, q), count: 1, any: true }); });
+        s.players.forEach((pl, q) => { if (hand(pl) > 0 && n > 1) items.push({ type: 'give', player: q, to: left(s, q), count: 1, pub: { good: true } }); });
         pushPending(s, items);
         break;
       }
@@ -782,9 +782,9 @@ module.exports = function make(core) {
   api.noLongest = s => { const m = mod(s); return !!(m && m.noLongest); };
 
   // the big scenarios register themselves
-  ['caravans', 'barbarians', 'traders'].forEach(name => {
-    try { MODS[name] = require(`./hub-${name}`)(core, api); } catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e; }
-    if (MODS[name] && MODS[name].handlers) Object.assign(api.handlers, MODS[name].handlers);
-  });
+  MODS.caravans = require('./hub-caravans')(core, api);
+  MODS.barbarians = require('./hub-barbarians')(core, api);
+  MODS.traders = require('./hub-traders')(core, api);
+  Object.values(MODS).forEach(m => { if (m.handlers) Object.assign(api.handlers, m.handlers); });
   return api;
 };

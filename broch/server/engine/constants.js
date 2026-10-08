@@ -75,6 +75,8 @@ const EVENT_CARDS = [
   ['calm', 9, 1], ['calm', 12, 1], ['help', 10, 1], ['help', 11, 1], ['conflict', 3, 1], ['bounty', 2, 1], ['retreat', 4, 2],
   ['fine', 3, 1], ['fine', 4, 1], ['fine', 5, 2], ['fine', 6, 2], ['fine', 8, 4], ['fine', 9, 3], ['fine', 10, 2], ['fine', 11, 1],
 ];
+// points to win: Fishermen and Rivers 10, Caravans and Barbarian Attack 12, Traders & Barbarians 13, one more with Harbours of Catan
+const tradersVp = v => ((v && v.traders) ? 13 : (v && (v.caravans || v.barbarians)) ? 12 : 10) + ((v && v.harbors) ? 1 : 0);
 // Explorers & Pirates missions
 const MISSIONS = ['fish', 'spice', 'lairs'];
 const MISSION_VP_CAP = 3;
@@ -85,5 +87,5 @@ const COLORS = ['red', 'blue', 'orange', 'white', 'teal', 'purple', 'black', 'pi
 module.exports = {
   RES, COMM, TERRAIN_RES, TERRAIN_COMM, COSTS, PIECES, BOARDS, PROGRESS, PROGRESS_VP,
   TRACK_COMM, EVENT_FACES, BARBARIAN_STEPS, COLORS,
-  EXPANSIONS, FISH_COSTS, FISH_BAG, FISH_BAG_EXTRA, FISH_NUMBERS, FISH_NUMBERS_EXTRA, LAKE_NUMBERS, LAKE2_NUMBERS, FISH_MAX, EVENT_CARDS, MISSIONS, MISSION_VP_CAP,
+  EXPANSIONS, tradersVp, FISH_COSTS, FISH_BAG, FISH_BAG_EXTRA, FISH_NUMBERS, FISH_NUMBERS_EXTRA, LAKE_NUMBERS, LAKE2_NUMBERS, FISH_MAX, EVENT_CARDS, MISSIONS, MISSION_VP_CAP,
 };

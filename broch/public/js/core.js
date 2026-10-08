@@ -14,7 +14,7 @@ export const inkOn = c => (isLightColor(c) ? '#2B1E12' : '#FFFFFF');
 export const RES = ['lumber', 'brick', 'wool', 'grain', 'ore'];
 export const COMM = ['paper', 'cloth', 'coin'];
 export const CARD_COLOR = { lumber: '#2E6B45', brick: '#B4482A', wool: '#7FA65A', grain: '#D99A22', ore: '#6E7F8D', paper: '#2E6B45', cloth: '#E0A32E', coin: '#2C6E9B' }; // commodities share the colour of their improvement track
-export const TERRAIN_COLOR = { forest: '#2E6B45', hills: '#B4482A', pasture: '#93B86A', fields: '#E8B23A', mountains: '#7C8A96', desert: '#E3CF9E', gold: '#CF7F1B', river: '#4FA3BD', sea: '#2C5F7A', fog: '#8FA3B3' };
+export const TERRAIN_COLOR = { forest: '#2E6B45', hills: '#B4482A', pasture: '#93B86A', fields: '#E8B23A', mountains: '#7C8A96', desert: '#E3CF9E', gold: '#CF7F1B', river: '#4FA3BD', sea: '#2C5F7A', fog: '#8FA3B3', lake: '#E3CF9E', swamp: '#7C8A5A', waterhole: '#A9CC8E', castle: '#8FC06A', quarry: '#C97A3C', glassworks: '#6FA25A' };
 const RES_EN = { lumber: 'Lumber', brick: 'Brick', wool: 'Wool', grain: 'Grain', ore: 'Ore', paper: 'Paper', cloth: 'Cloth', coin: 'Coin' };
 export const resName = k => t(RES_EN[k] || k);
 // the standalone games add their own cards, colours, glyphs and game terms here (see games/*.js)
