@@ -1,8 +1,8 @@
 // In-browser stand-in for the Broch server, used only by the demo build.
 // Runs the real rules engine locally; the other seats are played by simple bots.
 import engine from '../server/engine/index.js';
-import { tradersVp } from '../server/engine/constants.js';
-import { SCENARIOS as SEA_SCENARIOS } from '../server/engine/scenarios.js';
+import { tradersVp } from '../server/engine/shared/constants.js';
+import { SCENARIOS as SEA_SCENARIOS } from '../server/engine/seafarers/scenarios.js';
 import { decide as decideClassic } from '../server/bots/classic.js';
 import { decide as decideStandalone } from '../server/bots/standalone.js';
 import { botName } from '../server/bots/names.js';

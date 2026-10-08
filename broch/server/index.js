@@ -7,8 +7,8 @@ const { WebSocketServer } = require('ws');
 const store = require('./store');
 const { db } = store;
 const engine = require('./engine');
-const { COLORS, tradersVp } = require('./engine/constants');
-const { SCENARIOS: SEA_SCENARIOS } = require('./engine/scenarios');
+const { COLORS, tradersVp } = require('./engine/shared/constants');
+const { SCENARIOS: SEA_SCENARIOS } = require('./engine/seafarers/scenarios');
 const { createRunner, isBotId } = require('./bots/runner');
 const { botName } = require('./bots/names');
 

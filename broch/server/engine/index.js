@@ -1,13 +1,13 @@
 'use strict';
 // One entry point for every game Broch can run. The classic game, Cities & Knights and their expansions live in
 // game.js; each standalone game is its own engine behind the same five calls (create, act, view, summary, migrate).
-const base = require('./game');
+const base = require('./classic/game');
 
 const STANDALONE = {
-  energies: require('./energies'),
-  humankind: require('./humankind'),
-  inkas: require('./inkas'),
-  explorers: require('./explorers'), // Explorers & Pirates: its own engine, shown in the lobby as an expansion
+  energies: require('./energies/energies'),
+  humankind: require('./humankind/humankind'),
+  inkas: require('./inkas/inkas'),
+  explorers: require('./explorers-pirates/explorers'), // Explorers & Pirates: its own engine, shown in the lobby as an expansion
 };
 const engineOf = mode => STANDALONE[mode] || base;
 const MODES = ['classic', 'knights', ...Object.keys(STANDALONE)];
