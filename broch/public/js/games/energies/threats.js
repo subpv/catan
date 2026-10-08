@@ -1,4 +1,4 @@
-// The standalone games that have no robber show their own threat on a 7 (the full-screen scene in fx.js).
+// The standalone games that have no robber show their own threat on a 7 (the full-screen scene in core/fx.js).
 import { THREAT_BY_MODE } from '../../core/fx.js';
 
 // New Energies: the environmental inspector

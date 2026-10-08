@@ -440,7 +440,6 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
       // Rivers of Catan: the extra chip (a 2) lies on the tile with the 12
       if (h.number2) out.push(`<g transform="translate(${cx + 21},${cy - 12})"><g class="ntok" data-n="${h.number2}">${discShade(11)}<circle r="11" fill="url(#tok)" stroke="#C9AE7C" stroke-width="1.3"/><text y="4.6" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="12" fill="#2B1E12">${h.number2}</text></g></g>`);
     }
-    if (board.spices && board.spices.includes(h.id)) out.push(`<g transform="translate(${cx + 30},${cy - 26})">${discShade(11, 2)}<circle r="11" fill="#B53A2A" stroke="#fff" stroke-width="2"/>${g24('spice', 0, 0, 14, '#fff')}</g>`);
     if (view.merchant && view.merchant.hex === h.id) {
       const mc = colorOf(view.merchant.owner);
       out.push(`<g transform="translate(${cx + 24},${cy + 22})"><ellipse cy="9" rx="8" ry="2.6" fill="rgba(0,0,0,.35)"/><g class="${fr.merchant ? 'fx-drop' : ''}"><path d="M-7 9 L0 -9 L7 9 Z" fill="${PCOLOR[mc]}" stroke="#2B1E12" stroke-width="1.6"/><circle cy="-10" r="4.5" fill="${PCOLOR[mc]}" stroke="#2B1E12" stroke-width="1.6"/></g></g>`);
@@ -455,18 +454,6 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
 
   // standalone games draw their own things on the tiles (power plants, camps, ...)
   if (ext && ext.tiles) out.push(ext.tiles({ view, board, S, life, fr, targets }));
-
-  // sea markers: fish shoals and pirate lairs
-  (board.shoals || []).forEach(sh => {
-    const h = board.hexes[sh.hex];
-    out.push(`<g transform="translate(${f(h.x * S)},${f(h.y * S)})">${discShade(17)}<title>${t('Fish shoal')}</title><circle r="17" fill="#1F7A99" stroke="#fff" stroke-width="2.4"/>${g24('fish', 0, -5, 15, '#fff')}<text y="12" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="12.5" fill="#fff">${sh.number}</text></g>`);
-  });
-  (view.lairs || []).forEach(l => {
-    const h = board.hexes[l.hex];
-    let pips = '';
-    for (let i = 0; i < 3; i++) pips += `<circle cx="${(i - 1) * 9}" cy="21" r="3.2" fill="${i < l.hp ? '#D2352A' : 'rgba(255,255,255,.25)'}" stroke="#000" stroke-width=".8"/>`;
-    out.push(`<g class="lair ${l.hp <= 0 ? 'dead' : ''}" transform="translate(${f(h.x * S)},${f(h.y * S)})">${discShade(18)}<title>${t('Pirate lair')}</title>${l.hp > 0 ? `<circle r="19" fill="#1B1511" stroke="#C9AE7C" stroke-width="2.4"/>${g24('skull', 0, -2, 22, '#F4EFE2')}${pips}` : `<circle r="16" fill="#3A3328" stroke="#8A7A5E" stroke-width="2" opacity=".7"/>${g24('skull', 0, 0, 18, '#8A7A5E')}${l.owner != null ? `<circle cx="14" cy="-14" r="9" fill="${PCOLOR[colorOf(l.owner)]}" stroke="#fff" stroke-width="2"/>${g24('star', 14, -14, 10, inkOn(colorOf(l.owner)))}` : ''}`}</g>`);
-  });
 
   // Seafarers scenarios: gifts of the forgotten tribe, villages with cloth, wonder chips
   const landAt = (a, b) => board.hexes.find(h => isLand(h) && h.verts.includes(a) && h.verts.includes(b));

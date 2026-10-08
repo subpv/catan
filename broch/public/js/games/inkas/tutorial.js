@@ -1,4 +1,4 @@
-// How to play Rise of the Inkas: a short interactive chapter for the tutorial player (tutorial.js). It plays on a small
+// How to play Rise of the Inkas: a short interactive chapter for the tutorial player (core/tutorial.js). It plays on a small
 // piece of the real board (flat-top hexes, sea in the west, jungle in the east) and teaches the rules of the rulebook:
 // landscapes and trade goods, the roll, trading with the supply, building, the culture board, the decline of a tribe with
 // its thickets, building over thickets, the robber, the advantage and development cards, and the win at 11 points.

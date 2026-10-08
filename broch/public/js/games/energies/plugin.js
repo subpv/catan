@@ -1,5 +1,5 @@
 // New Energies (Energien): the plugin for the standalone game, following the official rulebook. Board art for power
-// plants, environmental damages and the Environmental inspector (energies-art.js), the environment panel (global
+// plants, environmental damages and the Environmental inspector (art.js), the environment panel (global
 // pollution bar, event overview, bag), your personal tableau with the environmental balance, the event-chip scene,
 // the development-card and energy-token dialogs and the answers to the events.
 import { register } from '../registry.js';

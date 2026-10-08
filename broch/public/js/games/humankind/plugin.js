@@ -1,5 +1,5 @@
 // Dawn of Humankind (CATAN - Aufbruch der Menschheit): the plugin for the standalone game. The world map with its
-// stone-age art (humankind-board.js / humankind-art.js), explorers that walk to discovery fields and camp sites, the
+// stone-age art (board.js / art.js), explorers that walk to discovery fields and camp sites, the
 // four progress tracks and the two threats that replace the robber.
 import { register } from '../registry.js';
 import { extendCore, glyph, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, term, houseIcon } from '../../core/core.js';

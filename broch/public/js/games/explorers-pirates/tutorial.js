@@ -1,4 +1,4 @@
-// How to play Explorers & Pirates: a short interactive chapter for the tutorial player (tutorial.js).
+// How to play Explorers & Pirates: a short interactive chapter for the tutorial player (core/tutorial.js).
 // A small sea with a start island, the council's base and a few undiscovered fields plays the book's ideas one by one.
 import { addChapter, hAt, vAt, eAt, baseView, geometry } from '../../core/tutorial.js';
 import { t } from '../../core/core.js';

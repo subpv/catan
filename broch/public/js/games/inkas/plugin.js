@@ -1,4 +1,4 @@
-// Rise of the Inkas (Der Aufstieg der Inka): the plugin for the standalone game. Andean board art (inkas-art.js), the tribe
+// Rise of the Inkas (Der Aufstieg der Inka): the plugin for the standalone game. Andean board art (games/inkas/art.js), the tribe
 // tablet with its three tribes, thickets over buildings in decline, the robber on the frame, development cards and the
 // two advantage cards (Longest Trade Route, Mightiest Combat Arts).
 import { register } from '../registry.js';

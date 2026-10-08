@@ -2,7 +2,6 @@
 import { t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, glyph, cardName, inkOn, tf, houseIcon, pipsHtml, term } from './core.js';
 import { cardDesc, deckOf } from './cards.js';
 import { findJob, jobAge, buildersBusyFor } from './builder.js';
-import { eventCardScene } from '../games/traders-barbarians/hub.js';
 
 const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -19,6 +18,8 @@ export const THREAT_BY_MODE = {};
 export const AWARDS_BY_MODE = {};
 // a game without a robber says what a 7 does instead: { title, text(view) }
 export const SEVEN_BY_MODE = {};
+// full-screen scenes a game provides itself: eventCard(view, total, nameHtml) is the event card of Traders & Barbarians
+export const SCENES = {};
 export const isMuted = () => muted;
 export function setMuted(m) {
   muted = m;
@@ -251,7 +252,7 @@ export function play(events, view, nameHtml) {
     if (ev.type === 'robberMoved') { sfx.place(); }
     if (ev.type === 'pirateMoved') sfx.pirate();
   }
-  if (dealt) enqueue(() => eventCardScene(view, dealt.a.n, nameHtml));
+  if (dealt) enqueue(() => SCENES.eventCard(view, dealt.a.n, nameHtml));
   else if (rolled) enqueue(() => diceScene(view, rolled.a.n));
   const logs = events.filter(e => e.type === 'log');
   const attack = logs.find(e => e.k.startsWith('The barbarians attack!'));
@@ -460,8 +461,6 @@ function lootFromLogs(logs) {
   for (const e of logs) {
     if (e.k === '{@p} receives {$c}.') for (const [k, n] of Object.entries(e.a.c)) add(e.a.p, k, n);
     else if (e.k === '{@p} catches {n} fish tokens.') add(e.a.p, 'fish', e.a.n);
-    else if (e.k === '{@p} loads {n} spice.') add(e.a.p, 'spice', e.a.n);
-    else if (e.k === '{@p} hauls in a catch of fish.') add(e.a.p, 'fish', 1);
   }
   return [...by.entries()].map(([p, items]) => ({ p, items }));
 }

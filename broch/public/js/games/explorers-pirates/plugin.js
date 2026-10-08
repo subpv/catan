@@ -1,4 +1,4 @@
-// Explorers & Pirates (Entdecker & Piraten): the plugin for the game screen (sgame.js). The board is the book's: a start
+// Explorers & Pirates (Entdecker & Piraten): the plugin for the game screen (games/sgame.js). The board is the book's: a start
 // island, a sea with the council's base, and two undiscovered regions (parrots in the north, geese in the south). Ships carry
 // explorers, units, fish swarms and spice bags; harbor settlements hold a basin; three missions with their tracks.
 import { register } from '../registry.js';

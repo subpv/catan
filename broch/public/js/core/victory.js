@@ -147,7 +147,7 @@ function breakdownChips(view, w) {
   if (b.settlements) chip(houseIcon(col, 16), b.settlements, `${b.settlements} × ${t('Settlements')}`);
   if (b.cities) chip(`<svg viewBox="-16 -14 32 28" width="20" height="18"><path d="M-15 12 V-3 L-6 -13 L3 -3 V0 H15 V12 Z" fill="${PCOLOR[col]}" stroke="${PCOLOR_DARK[col]}" stroke-width="2.4" stroke-linejoin="round"/></svg>`, b.cities * 2, `${b.cities} × ${t('Cities')}`);
   if (b.metropolis) chip(`<svg viewBox="-17 -38 34 38" width="20" height="22">${metroTowerInner()}</svg>`, b.metropolis * 2, t('Metropolis'));
-  if (b.longestRoad) chip(ico('road', 16, '#F6CF57'), 2, t(view.expansion === 'seafarers' || view.expansion === 'explorers' ? 'Longest Trade Route' : 'Longest Road'));
+  if (b.longestRoad) chip(ico('road', 16, '#F6CF57'), 2, t(view.expansion === 'seafarers' ? 'Longest Trade Route' : 'Longest Road'));
   if (b.largestArmy) chip(ico('sword', 16, '#F6CF57'), 2, t('Largest Army'));
   if (b.defender) chip('<span style="color:#8FC1E6;font-size:15px">♛</span>', b.defender, t('Defender of Broch'));
   if (b.vpCards) chip(ico('card', 16, '#F6CF57'), b.vpCards, t('Victory point cards'));
@@ -206,7 +206,7 @@ function factsHtml(view) {
     const best = Object.entries(r).sort((a, b) => b[1] - a[1])[0];
     if (best && best[1] > 0) facts.push([ico('dice', 18, '#F6CF57'), t('Most rolled number'), `${best[0]} · ${t('{n}×', { n: best[1] })}`]);
   }
-  if (view.longestRoad && view.longestRoad.p != null) facts.push([ico('road', 18, '#F6CF57'), t(view.expansion === 'seafarers' || view.expansion === 'explorers' ? 'Longest Trade Route' : 'Longest Road'), `${name(view.longestRoad.p)} · ${view.longestRoad.len}`]);
+  if (view.longestRoad && view.longestRoad.p != null) facts.push([ico('road', 18, '#F6CF57'), t(view.expansion === 'seafarers' ? 'Longest Trade Route' : 'Longest Road'), `${name(view.longestRoad.p)} · ${view.longestRoad.len}`]);
   if (view.mode !== 'knights' && view.largestArmy && view.largestArmy.p != null) facts.push([ico('sword', 18, '#F6CF57'), t('Largest Army'), `${name(view.largestArmy.p)} · ${view.largestArmy.count}`]);
   facts.push([ico('flag', 18, '#F6CF57'), t('Game length'), t('{n} turns', { n: view.turn })]);
   return `<div class="vic-panel vic-facts" style="animation-delay:3s"><h3>${tx('Highlights')}</h3><div class="vic-fgrid">${facts.slice(0, 4).map(([i, a, b], k) => `<div class="vic-fact" style="animation-delay:${(3.1 + k * 0.1).toFixed(2)}s"><i>${i}</i><span><small>${esc(a)}</small><b>${b}</b></span></div>`).join('')}</div></div>`;
