@@ -452,7 +452,7 @@ function handHtml() {
     const n = (RES.includes(k) ? m.res[k] : m.comm[k]) || 0;
     return `<div class="rcard ${n ? '' : 'zero'} ${COMM.includes(k) ? 'comm' : ''}" data-card="${k}" style="--c:${CARD_COLOR[k]}" title="${esc(resName(k))}: ${n}">${glyph(k, 26)}<span class="nm">${esc(resName(k))}</span>${n ? `<span class="n">${n}</span>` : ''}</div>`;
   };
-  const actor = (v.step === 'main' && v.current === v.me) || (v.step === 'sbp' && v.sbp?.queue[0] === v.me);
+  const actor = (v.step === 'main' && (v.current === v.me || (v.options.expBuildAnytime && v.me >= 0))) || (v.step === 'sbp' && v.sbp?.queue[0] === v.me);
   const free = !v.pending.length && v.phase === 'play' && actor;
   const mainTurn = free && v.step === 'main' && v.current === v.me;
   // tokens that are not cards: fish, gold, cargo

@@ -5,7 +5,7 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node test/rules/knights.js && node test/rules/energies-rules.js && node test/rules/inkas-rules.js && node test/rules/eup-rules.js && node test/rules/migrate-explorers.js && node test/rules/counter-offers.js && node test/rules/seafarers.js && node test/rules/scenario-maps.js && node test/rules/tb-merchant.js && node test/rules/tb-traders.js && node test/rules/tb-barbarians.js && node test/rules/tb-variants.js && node test/fuzz/simulate.js 30 && node test/fuzz/simulate-games.js 5",
+    "test": "node test/rules/knights.js && node test/rules/energies-rules.js && node test/rules/inkas-rules.js && node test/rules/eup-rules.js && node test/rules/migrate-explorers.js && node test/rules/counter-offers.js && node test/rules/experiments.js && node test/rules/seafarers.js && node test/rules/scenario-maps.js && node test/rules/tb-merchant.js && node test/rules/tb-traders.js && node test/rules/tb-barbarians.js && node test/rules/tb-variants.js && node test/fuzz/simulate.js 30 && node test/fuzz/simulate-games.js 5",
     "test:bots": "node test/e2e/bots-server.js",
     "test:security": "node test/e2e/security.js",
     "test:resign": "node test/e2e/resign.js",

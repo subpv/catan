@@ -128,7 +128,10 @@ function statTiles(v, rolls, total) {
   const hot = nums.length ? nums[0][0] : '–';
   const sevens = rolls[7] || 0;
   const tile = (label, value) => `<div class="tile-s"><small>${esc(label)}</small><b>${esc(String(value))}</b></div>`;
-  return `<div class="tiles">${tile(t('Rolls'), total)}${tile(t('Most rolled'), hot)}${tile(t('Sevens'), sevens)}</div>`;
+  const robbed = v.stats?.robbed;
+  const rob = robbed && robbed.some(n => n > 0)
+    ? `<div class="tiles">${v.players.map((p, i) => ({ p, n: robbed[i] || 0 })).sort((a, b) => b.n - a.n).map(x => tile(t('Robber at {name}', { name: x.p.name }), `${x.n}×`)).join('')}</div>` : '';
+  return `<div class="tiles">${tile(t('Rolls'), total)}${tile(t('Most rolled'), hot)}${tile(t('Sevens'), sevens)}</div>${rob}`;
 }
 
 function legend(v) {

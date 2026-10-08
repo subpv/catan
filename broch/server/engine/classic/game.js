@@ -49,6 +49,8 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       robberReturn: !!options.robberReturn,
       startBoth: !!options.startBoth,
       knightsFree: !!options.knightsFree && !knights,
+      // experiment: building is allowed in every player's turn (after the dice), not only in your own
+      expBuildAnytime: !!options.expBuildAnytime && !knights,
       big, scenario: sea ? scenario : null, variable: sea && !!options.variable, variants,
     },
     board,
@@ -70,7 +72,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
     flags: {}, free: { roads: 0, promotes: 0 },
     sbp: null, pair: null,
     log: [], chat: [],
-    stats: { rolls: zero([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), gained: seats.map(() => 0), turns: 0 },
+    stats: { rolls: zero([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]), gained: seats.map(() => 0), robbed: seats.map(() => 0), turns: 0 },
     winner: null, startedAt: Date.now(), finishedAt: null, version: 0,
   };
   KN.initState(s);
@@ -507,7 +509,9 @@ function act(s, p, a) {
   if (s.phase === 'play' && !s.pending.length) checkWin(s);
 }
 
-function requireActor(s, p) { if (!isActor(s, p)) fail('It is not your move right now.'); }
+// Experiment "build anytime": once the dice are down, everybody may build, not only the player whose turn it is
+const anytimeBuilder = (s, p) => !!s.options.expBuildAnytime && s.phase === 'play' && !s.pending.length && s.step === 'main' && p >= 0 && p < s.players.length;
+function requireActor(s, p) { if (!isActor(s, p) && !anytimeBuilder(s, p)) fail('It is not your move right now.'); }
 function requireMain(s, p) {
   if (s.phase !== 'play' || s.pending.length || s.step !== 'main' || p !== s.current) fail('Not allowed right now.');
 }
@@ -742,6 +746,9 @@ const HANDLERS = {
     s.robber = a.hex;
     resolvePending(s, it);
     log(s, '{@p} moved the robber.', { p, h: a.hex });
+    // statistics: who had the robber on their land (once per move, whatever the hand)
+    if (!s.stats.robbed) s.stats.robbed = s.players.map(() => 0);
+    new Set(h.verts.map(v => s.buildings[v]).filter(b => b && b.p !== p).map(b => b.p)).forEach(q => { s.stats.robbed[q]++; });
     const victims = [...new Set(h.verts.map(v => s.buildings[v]).filter(b => b && b.p !== p).map(b => b.p))]
       .filter(q => hand(P(s, q)) > 0 && X.victimOk(s, p, q));
     if (it.bishop) {
@@ -891,7 +898,7 @@ function legalFor(s, p) {
   }
   const freeRoad = s.free.roads > 0 && p === s.current && !s.pending.length && s.step !== 'sbp';
   if (freeRoad) { L.roads = legalRoads(s, p); if (s.sea) L.ships = X.legalShips(s, p); }
-  if (isActor(s, p)) {
+  if (isActor(s, p) || anytimeBuilder(s, p)) {
     const c = countPieces(s, p);
     if (has(pl, C.COSTS.road) && c.roads < C.PIECES.road) L.roads = legalRoads(s, p);
     if (has(pl, C.COSTS.settlement) && c.settlements < C.PIECES.settlement) L.settlements = legalSettlements(s, p);
@@ -962,7 +969,7 @@ function viewFor(s, me) {
     ...KN.viewState(s),
     log: s.log.slice(-80), chat: s.chat.slice(-80),
     lastSteal: s.lastSteal && (s.lastSteal.by === me || s.lastSteal.from === me) ? s.lastSteal : null,
-    stats: { rolls: s.stats.rolls, gained: s.stats.gained },
+    stats: { rolls: s.stats.rolls, gained: s.stats.gained, robbed: s.stats.robbed },
     track: s.track || [],
     winner: s.winner,
     legal: legalFor(s, me),
@@ -998,7 +1005,7 @@ function summary(s) {
     winner: s.winner === null ? null : s.players[s.winner].userId,
     players: s.players.map((pl, i) => ({
       userId: pl.userId, name: pl.name, color: pl.color, country: pl.country || null, vp: vp(s, i),
-      breakdown: vpBreakdown(s, i), gained: s.stats.gained[i], knightsPlayed: pl.knightsPlayed,
+      breakdown: vpBreakdown(s, i), gained: s.stats.gained[i], robbed: (s.stats.robbed || [])[i] || 0, knightsPlayed: pl.knightsPlayed,
     })),
     rolls: s.stats.rolls,
   };

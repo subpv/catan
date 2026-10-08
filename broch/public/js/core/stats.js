@@ -157,6 +157,7 @@ function draw(app) {
 
     ${recordsHtml(games, nameOf)}
     ${diceHtml(games)}
+    ${robberHtml(games, nameOf)}
 
     <div class="section-label">${tx('Log a game played at the table')}</div>
     <div class="card">${manualForm(users)}</div>
@@ -245,6 +246,16 @@ function recordsHtml(games, nameOf) {
   const longest = online.filter(g => g.startedAt).sort((a, b) => (b.finishedAt - b.startedAt) - (a.finishedAt - a.startedAt))[0];
   if (longest) recs.push([t('Longest game'), t('{n} min', { n: Math.round((longest.finishedAt - longest.startedAt) / 60000) }), fmtDateLocal(longest.finishedAt)]);
   return `<div class="section-label">${tx('Records')}</div><div class="card"><div class="records">${recs.map(([l, v, w]) => `<div class="record"><small>${esc(l)}</small><b>${esc(v)}</b><span>${esc(w)}</span></div>`).join('')}</div></div>`;
+}
+
+// how often the robber sat on each person's land, over all games
+function robberHtml(games, nameOf) {
+  const by = new Map();
+  games.filter(g => !g.manual).forEach(g => g.players.forEach(p => { if (p.robbed && p.userId) by.set(p.userId, { n: (by.get(p.userId)?.n || 0) + p.robbed, name: p.name }); }));
+  if (!by.size) return '';
+  const rows = [...by.entries()].sort((a, b) => b[1].n - a[1].n);
+  return `<div class="section-label">${tx('Robber')}</div><div class="card"><p class="muted" style="font-size:12px;margin:0 0 6px">${tx('How often the robber was moved onto land of each person.')}</p>
+    <div class="records">${rows.map(([id, x]) => `<div class="record"><small>${esc(nameOf(id, x.name))}</small><b>${x.n}×</b></div>`).join('')}</div></div>`;
 }
 
 function diceHtml(games) {

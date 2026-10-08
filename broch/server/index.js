@@ -274,7 +274,7 @@ async function api(req, res, url) {
     const def = standalone ? engine.defaultVp(mode, scenario) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) + (variants && variants.harbors ? 1 : 0) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'traders' ? tradersVp(variants) : 10;
     const vpTarget = standalone && engine.fixedVp(mode) ? def : Math.max(5, Math.min(20, b.vpTarget | 0 || def));
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
-    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone ? cleanOptions(b.gameOptions) : null, maxPlayers, vpTarget, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
+    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', expBuildAnytime: !!b.expBuildAnytime && mode === 'classic', gameOptions: standalone ? cleanOptions(b.gameOptions) : null, maxPlayers, vpTarget, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
     db.games.set(g.meta.id, g); store.saveGame(g, true);
     broadcastLobby();
     return send(res, 200, { game: gameCard(g) });
@@ -334,7 +334,7 @@ async function api(req, res, url) {
       if (meta.seats.length < engine.minPlayers(meta.mode)) throw new HttpError(400, engine.minPlayers(meta.mode) > 2 ? 'This game needs more players.' : 'Wait for at least one more player.');
       fixSeatColors(meta);
       const players = meta.seats.map(id => { const x = seatUser(g, id); return { id, name: x.name, color: meta.colors[id], country: x.country || null }; });
-      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, variable: !!meta.variable, knightsFree: !!meta.knightsFree, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });
+      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, variable: !!meta.variable, knightsFree: !!meta.knightsFree, expBuildAnytime: !!meta.expBuildAnytime, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });
       meta.status = 'playing'; meta.startedAt = Date.now();
       runner.schedule(g);
     } else if (m[2] === 'resign') {
