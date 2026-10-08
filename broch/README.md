@@ -11,10 +11,10 @@ An online settlers-style board game for you and your friends, self-hosted on Tru
 - **Standalone games** (own rules, own tile row in the lobby, 2–4 players (New Energies 3–4), with the same board animations, a tutorial and all 16 languages; rules rebuilt from research, not copies of the printed ones):
   - *New Energies* (Energien, 3-4 players, after the official rulebook): the standard island with its frame, 10 points. Everybody starts with a village and a research city and gets the first yields (1 card per tile + 1 research card). Villages make 1 resource, research cities 1 resource + 1 research card. Brown power plants (1 research card, +1 pollution) and green ones (3 research cards, -1 pollution, their green event chip enters the bag) stand next to villages (1) and research cities (up to 3) and make energy tokens (max 5) when their tile's number is rolled; one plant per build phase. The global pollution bar (3 players start on 9, 4 players on 12; the sum of all + symbols minus the - symbols of the personal tableaus) decides how many of the 43 brown + (growing) green event chips are drawn each turn (0-5: 2, 6-18: 1, 19-23: 2, 24-28: 3). Chips lie on the slots of their event; when the last slot is filled it happens: Environmental disaster, Heavy rain and flooding, Air pollution, Production boost, Climate conference, Sustainable production, State funding. Damages block number chips, villages and research cities until their number is rolled, or you pay 1 energy token / play Environmental protection. A 7 brings the Environmental inspector (replaces the robber: blocks a tile, steals a card). Energy tokens: 2 swap for any card, 2 buy the warehouse (hand limit 10), 1 removes a damage, 1 tears down a brown plant. Development cards (Victory point, Funding, Road building, Performance boost, Environmental protection) and the specials Longest Trade Route and Most active environmentalist. 10 points in your own turn wins; when the bag cannot supply the chips the game ends and only a player with more green than brown plants wins (largest difference), otherwise everybody loses.
   - *Dawn of Humankind* (Aufbruch der Menschheit, 3–4 players): follows the official rulebook. The world map (49 landscape fields in Africa, Europe, Asia, Australia and North/South America, glacier and sea around it) is built from the pictures of the book, with the printed start for 3 and 4 players and the variable "free founding" as a lobby switch. Each player starts with 3 camps and 1 explorer in Africa. Camps (not explorers) harvest: forest fur, wasteland bone, grassland meat, mountains flint. Explorers walk along paths (1 fur or meat for 1–3 crossings, +1 per level of *Food*; the African border blocks the strait), place for 1 fur + 1 meat (max. 2 on the board), and turn into camps on a camp site with a tile (1 fur + 1 bone + 1 flint, +1 point per tile; with 6 camps out one from Africa is taken back). Discovery fields need levels of *Clothing* and *Construction*; the first explorer to cross one takes its tile: hunting luck (the region's hunting marker, +1), desertification (a number chip of a landscape is removed in Africa) or a threat. A 7 gives no yield: hands over 7 cards are halved, then the roller moves the Neanderthal (Europe/Asia) or the Saber-toothed tiger (America/Australia) and steals a card; threats block the yield of their field. Four progress tracks (levels cost flint / bone / bone + flint / meat + bone + flint; first to level 4 takes the track marker, *Hunting* moves a threat), Most Successful Hunter (+1), Fastest Collector (+2) and Collector (+1). Trading with the supply is 3:1, with players only on the turn player's turn. Camps on the board are worth nothing; the first to 10 points wins at once. Deliberate guesses are listed under "Rule notes".
-  - *Rise of the Inkas* (Der Aufstieg der Inka, for 3-4 players): follows the official rulebook. A 27-field landscape of Peru in its frame (Pacific in the west, jungle in the east) with eight landscapes: forest (wood), quarry (stone), pasture (wool), mountains (ore), fields (potatoes) and the trade goods fish (coastal waters, which are fields with number chips too), coca (jungle plantation) and feathers (jungle). The beginner layout of the book is played (the free founding phase is a lobby switch). Everybody leads three tribes one after the other: every settlement and every city upgrade puts a culture marker on the culture board (4 + 4 + 3 = 11). When a tribe is done (4 settlements, or 2 settlements and a city) it declines: roads go back, buildings get thickets (they still pay, can be built over, cannot be expanded or used for roads), and the next tribe is founded for free, which ends the turn. 11 markers win. Costs, 3:1 / 2:1 / 3-different-goods trading with the supply, the robber (a 7, Combat Arts cards, only on land fields and jungle frame pieces), development cards "1" and "2", the Longest Trade Route and the Mightiest Combat Arts follow the book. Details from the almanac: 20 cards of every raw material and 12 of every trade good, two development stacks of 7 combat arts cards plus Road Building, Invention and Monopoly (no victory point cards), 3 different trade goods buy 2 raw materials, the new tribe's free settlement needs a crossing that no road leads to (if none is left, one of your own buildings in decline makes room), and the optional random landscape (variable set-up). The 2 plain ocean hexes of the real board (no yield, no ways) are not drawn. Llamas, fishermen in reed boats, macaws, stone masons, miners and potato farmers live on the tiles. `node test/inkas-rules.js` checks the rules.
-- **Trading between players (all games):** besides accepting or declining an offer, the other players can make a counter-offer ("Counter-offer" next to Accept/Decline; the window starts with the offer turned around). The player whose turn it is sees all answers and takes the one he likes; trades happen only with the active player, never among the others. `node test/counter-offers.js` checks it.
-- **Progress file:** `PROGRESS.md` (also the "Fortschritt" button in `demo/broch-demo.html`) lists every mode with its status, what to test and what is still missing; regenerate with `node demo/progress.js`.
-- **Computer players:** the host of an open game adds or removes bots in the lobby (gamer-tag names, any number of free seats, or none); the runner is `server/bots/runner.js`, `node test/bots-server.js` plays whole games with bots on a real server.
+  - *Rise of the Inkas* (Der Aufstieg der Inka, for 3-4 players): follows the official rulebook. A 27-field landscape of Peru in its frame (Pacific in the west, jungle in the east) with eight landscapes: forest (wood), quarry (stone), pasture (wool), mountains (ore), fields (potatoes) and the trade goods fish (coastal waters, which are fields with number chips too), coca (jungle plantation) and feathers (jungle). The beginner layout of the book is played (the free founding phase is a lobby switch). Everybody leads three tribes one after the other: every settlement and every city upgrade puts a culture marker on the culture board (4 + 4 + 3 = 11). When a tribe is done (4 settlements, or 2 settlements and a city) it declines: roads go back, buildings get thickets (they still pay, can be built over, cannot be expanded or used for roads), and the next tribe is founded for free, which ends the turn. 11 markers win. Costs, 3:1 / 2:1 / 3-different-goods trading with the supply, the robber (a 7, Combat Arts cards, only on land fields and jungle frame pieces), development cards "1" and "2", the Longest Trade Route and the Mightiest Combat Arts follow the book. Details from the almanac: 20 cards of every raw material and 12 of every trade good, two development stacks of 7 combat arts cards plus Road Building, Invention and Monopoly (no victory point cards), 3 different trade goods buy 2 raw materials, the new tribe's free settlement needs a crossing that no road leads to (if none is left, one of your own buildings in decline makes room), and the optional random landscape (variable set-up). The 2 plain ocean hexes of the real board (no yield, no ways) are not drawn. Llamas, fishermen in reed boats, macaws, stone masons, miners and potato farmers live on the tiles. `node test/rules/inkas-rules.js` checks the rules.
+- **Trading between players (all games):** besides accepting or declining an offer, the other players can make a counter-offer ("Counter-offer" next to Accept/Decline; the window starts with the offer turned around). The player whose turn it is sees all answers and takes the one he likes; trades happen only with the active player, never among the others. `node test/rules/counter-offers.js` checks it.
+- **Progress file:** `PROGRESS.md` (also the "Fortschritt" button in `dist/broch-demo.html`) lists every mode with its status, what to test and what is still missing; regenerate with `node demo/progress.js`.
+- **Computer players:** the host of an open game adds or removes bots in the lobby (gamer-tag names, any number of free seats, or none); the runner is `server/bots/runner.js`, `node test/e2e/bots-server.js` plays whole games with bots on a real server.
 - **Beta marker:** the modes where books, cards or pictures are still incomplete carry a "Beta" badge in the lobby, in the game list and in the game title: Seafarers, Traders & Barbarians (12 extra 5-6 cards, Catan for Two), Explorers & Pirates (lair numbers) and Dawn of Humankind (board read from pictures). The classic game, Cities & Knights, New Energies and Rise of the Inkas (rulebook and almanac complete) have none.
 - **5–6 player expansion:** a switch in the lobby: the larger board (30 tiles, 28 number tokens, 11 harbors, 24 cards per resource, 34 development cards) can also be used by fewer players, and is always used from 5 players on. Five or six players share every turn as in the 5–6 rulebook: the player with stone 1 rolls, trades with everybody, builds and plays a development card; then the player three seats to the left (stone 2) takes an adapted turn without dice (bank trades only, building, 1 development card); then both stones move one seat to the left. If both reach the target in the same turn, stone 1 wins. (The old special building phase is no longer used for new games.)
 - **Accounts:** email and password; the first account becomes the admin
@@ -31,61 +31,17 @@ An online settlers-style board game for you and your friends, self-hosted on Tru
 - **How to play, for every mode:** a 1-minute interactive tutorial per mode (Classic, Cities & Knights, Seafarers, Traders & Barbarians, Explorers & Pirates, 5–6 players). A small living board plays the rules out like a video with one short caption at a time; at the glowing spots you tap yourself (or the hand taps for you). Open it with "How to play" or the "?" on a mode tile in the lobby, from the costs button in a game, or from the offer shown in your first game of a mode.
 - **Victory:** a flash, fireworks and confetti cannons, a fanfare, the winner's house stamped onto a golden laurel and crowned, the name popping in letter by letter, the points counting up with what earned them, how the race went, the final standings and a few highlights. "Celebrate" in the status bar plays it again.
 
-## Run it on TrueNAS SCALE (24.10 or newer)
+## Run it on TrueNAS SCALE
 
-### 1. Create two datasets
+The step-by-step guide (datasets, which file goes where, Cloudflare Tunnel, security, backups) is in `../deploy/ANLEITUNG-TrueNAS.md` (German); the YAML to paste into Apps → Custom App is `../deploy/truenas-compose.yml`. In short: upload `dist/broch-app.zip` (the program with its dependencies) into a dataset, keep accounts and games in a second dataset, set `REGISTRATION_CODE` and `TRUST_PROXY=1`, and let a Cloudflare Tunnel point at the app. Environment variables: `PORT` (8080), `DATA_DIR` (where accounts, games and history are stored), `REGISTRATION_CODE` (invite code for new accounts; the first account never needs it and becomes the admin), `TRUST_PROXY` (set to 1 behind Cloudflare: real visitor address, `Secure` cookies, HSTS), `FEEDBACK_URL`.
 
-In **Datasets**, create (adjust `tank` to your pool name):
+### Security notes
 
-- `tank/apps/broch/src`: holds the code
-- `tank/apps/broch/data`: holds accounts, games and stats
-
-Give the **apps** user (uid 568) read/write access to `tank/apps/broch/data` (Edit permissions → owner `apps`).
-
-### 2. Copy the code to the NAS
-
-Unzip `broch.zip` into `/mnt/tank/apps/broch/src` (for example through an SMB share, or with `scp`), so that the `Dockerfile` sits directly in that folder.
-
-### 3. Build the image
-
-Open **System → Shell** (or SSH in) and run:
-
-```sh
-cd /mnt/tank/apps/broch/src
-sudo docker build -t broch:latest .
-```
-
-### 4. Install it as a custom app
-
-**Apps → Discover Apps → ⋮ → Install via YAML**, name it `broch`, and paste:
-
-```yaml
-services:
-  broch:
-    image: broch:latest
-    pull_policy: never
-    restart: unless-stopped
-    user: "568:568"
-    ports:
-      - "8080:8080"
-    environment:
-      REGISTRATION_CODE: ""        # set a code to stop strangers from signing up
-      FEEDBACK_URL: "https://feedback.maidev.dk/"
-    volumes:
-      - /mnt/tank/apps/broch/data:/data
-```
-
-Open `http://<your-nas-ip>:8080` and create your account first, so you become the admin. Then send the link to your friends.
-
-If port 8080 is taken, change the left side, for example `"8095:8080"`.
-
-### Updating
-
-Copy the new code over `src`, run the `docker build` command again, then stop and start the app in the Apps screen. Your data stays in the `data` dataset.
-
-### Backups
-
-Everything lives in the `data` dataset as plain JSON files (`users.json`, `history.json`, `games/*.json`). Snapshots of that dataset are your backup.
+- Passwords are stored as scrypt hashes with a salt; session tokens are stored only as SHA-256 hashes; `users.json` and `sessions.json` are written with mode 600.
+- Nobody but you gets your email address: the user list, lobby, statistics and game views contain names, colours and countries only.
+- Wrong passwords are limited per visitor address; passwords need 8 characters; changing a password logs out the other devices.
+- Cookies are `HttpOnly`, `SameSite=Lax` and `Secure` behind https; every answer carries a content security policy, `X-Frame-Options: DENY`, `nosniff` and `no-referrer`; the WebSocket only accepts connections from the site itself.
+- `node test/e2e/security.js` checks all of this against a real server.
 
 ## Playing outside your home network
 
@@ -120,7 +76,7 @@ It reports missing lines and any translation that dropped a placeholder like `{n
 
 ## Try it without a server
 
-`demo/broch-demo.html` is a self-contained copy of the app that runs entirely in the browser: you play one seat, bots play the others, and nothing is saved. Rebuild it after changes with `npm i -D esbuild && node demo/build.js`.
+`../dist/broch-demo.html` is a self-contained copy of the app that runs entirely in the browser: you play one seat, bots play the others, and nothing is saved. Rebuild it (and `dist/broch-app.zip`, `PROGRESS.md`) after changes with `npm i --no-save esbuild && node scripts/make-dist.js`.
 
 ## Rule notes
 
@@ -138,7 +94,7 @@ The expansions are compact versions that fit Broch's engine, not line-by-line co
   - *Barbarian Attack* (3-6 players): each building lets barbarians land: dice are rolled until three different numbers other than 7 have come up and each puts 1 barbarian on the coast hex with that number (on the 5-6 board 5 and 9 sit on two hexes each, both get one). Three barbarians conquer a hex (no yield, no building; houses touching only conquered hexes give no points and no harbour). At the end of the turn knights move up to 3 paths, or 5 for 1 grain, then the hexes are checked clockwise from the 4 hex next to the castle (5 hex with 5-6 players): more knights than barbarians frees the hex, the barbarians become prisoners (2 = 1 VP, shared as in the book, 3 gold for players left out), and a die decides which of the knights on that hex's edges are lost (1/6 purple, 2/5 green, 3/4 brown edges, 3 gold each). Deck: 14 Knighthood, 4 Swift Knight, 4 Treason, 4 Capture. The 5-6 board has two castles and two deserts, 12 extra barbarians and paired turns. 12 VP.
   - *Traders & Barbarians (wagon scenario):* 3-4 players play on the 19-tile map with 3 commodity hexes and 9 X markers; 5-6 players on the 37-tile island of the 5-6 book (7 commodity hexes, 5 of them with six open paths, 2 deserts, the number discs 2 and 12 in use, 18 tokens per stack, paired turns where player 2 trades only with the supply and also moves a wagon). The Largest Army stays in the game; Knight cards move a barbarian and count as knights. Deck of 25: 16 Knight, 3 Road Building, 3 Swift Journey, 3 Victory Point. Wagon upgrades 1 wood + 1 wool + 1 ore (twice), then 2 wood + 1 wool + 1 ore (twice), movement 4/5/6/7/7, barbarians are driven off on 6 / 5-6 / 4-6 / 3-6. Swift Journey repeats the whole "Move your wagon" action; the grain bonus (+2 MP) and each drive-off attempt stay limited to once per turn. A delivery that brings the 13th point wins at once.
   - *Not in:* **Catan for Two** (neutral players, trade tokens; the engine already supports the two-wagon round of Merchant Trains for it). **Open data:** the composition of the 12 extra development cards of the 5-6 Traders & Barbarians box is not printed in the books, so a placeholder is used (8 Knight, 2 Road Building, 1 Swift Journey, 1 Victory Point, constant `DEV_EXTRA_56` in `hub-traders.js`); the exact bridge-site edges on the 5-6 river art and the positions of the 5-6 fishing grounds are read from the book's pictures.
-- **Explorers & Pirates** has its own engine (`server/engine/explorers.js`, boards in `eup-board.js`) and follows the printed rulebooks: the five scenarios (Land in Sight, The Pirate Lairs, Fish for Broch, Spices for Broch, Explorers & Pirates) with the book's boards, start positions and goals (8, 12, 15, 15, 17 points), 3-4 players plus the 5-6 player boards with the paired turns (ship 1 and ship 2). Ships (4 moves, 2 more for 1 wool), cargo, explorers, units, harbor settlements with basins, gold, the 3:1 trade, the pirate ships with tribute and chasing, lairs with the hero duel, fish swarms, spice villages with their advantages and the mission tracks with the special point tiles are all in. Where the book is open or its text and pictures differ, Broch chose: the numbers on the back of the pirate lairs are not printed in the books: the two lairs of the 5-6 player box carry 9 and 10 (the owner's information), the six of the base box are assumed to be 4, 5, 6, 8, 9, 10, the island has 4 pasture fields (the printed list says 3, the picture and the chip count say 4), a ship that points at a corner with two undiscovered fields uncovers both, a player can do things with two ships in any order (the book asks to finish one ship's move first) and the fish die may be rolled at any time of the movement phase. Games of the older simplified Explorers & Pirates that were saved before keep running on the old rules.
+- **Explorers & Pirates** has its own engine (`server/engine/explorers-pirates/explorers.js`, boards in `explorers-pirates/eup-board.js`) and follows the printed rulebooks: the five scenarios (Land in Sight, The Pirate Lairs, Fish for Broch, Spices for Broch, Explorers & Pirates) with the book's boards, start positions and goals (8, 12, 15, 15, 17 points), 3-4 players plus the 5-6 player boards with the paired turns (ship 1 and ship 2). Ships (4 moves, 2 more for 1 wool), cargo, explorers, units, harbor settlements with basins, gold, the 3:1 trade, the pirate ships with tribute and chasing, lairs with the hero duel, fish swarms, spice villages with their advantages and the mission tracks with the special point tiles are all in. Where the book is open or its text and pictures differ, Broch chose: the numbers on the back of the pirate lairs are not printed in the books: the two lairs of the 5-6 player box carry 9 and 10 (the owner's information), the six of the base box are assumed to be 4, 5, 6, 8, 9, 10, the island has 4 pasture fields (the printed list says 3, the picture and the chip count say 4), a ship that points at a corner with two undiscovered fields uncovers both, a player can do things with two ships in any order (the book asks to finish one ship's move first) and the fish die may be rolled at any time of the movement phase. Games of the older simplified Explorers & Pirates that were saved before keep running on the old rules.
 
 Dawn of Humankind (follows the book; what the book leaves open or the pictures do not show exactly):
 
@@ -169,10 +125,17 @@ Cities & Knights follows the printed rules (Städte & Ritter, 2025 edition), wit
 ## Project layout
 
 ```
-server/engine/   rules: board generation, game state machines (index.js picks the engine, kit.js is shared by the standalone games)
-server/index.js  HTTP API, accounts, lobby, WebSocket play, stats
-server/store.js  JSON file storage
-public/          the web app (no build step); js/sgame.js + js/games/ the standalone games; js/zoom.js zoom & pan, js/feed.js chat, history and graphs,
-                 js/tutorial.js the interactive tutorials, js/victory.js the victory scene
-test/            random-play rules tester (node test/simulate-games.js [games] [mode] for the standalone games)
+server/index.js          HTTP API, accounts, lobby, WebSocket play, stats; server/store.js JSON file storage
+server/bots/             computer players (runner, names, per-mode brains and fallbacks)
+server/engine/index.js   picks the engine for a game
+server/engine/shared/    board generation, constants, the kit shared by the stand-alone games
+server/engine/classic/   classic rules (game.js) and the glue for the expansions (expansions.js)
+server/engine/knights/   Cities & Knights          server/engine/seafarers/         Seafarers (rules, sea maps, scenarios)
+server/engine/traders-barbarians/  Traders & Barbarians (hub.js + merchant-trains, barbarian-attack, wagon-scenario)
+server/engine/explorers-pirates/   Explorers & Pirates   energies/  humankind/  inkas/   the stand-alone games
+public/js/app.js         lobby and entry;  public/js/core/  shared client code (i18n, effects, board, zoom, feed, stats, victory, tutorial engine)
+public/js/games/<game>/  the screen, art and tutorial of each game (classic, knights, seafarers, traders-barbarians, explorers-pirates, energies, humankind, inkas)
+public/js/lang/          translations (lang/games/*.tsv are the sources of the generated lang/x/*.js)
+test/rules/              rule tests per game;  test/fuzz/  random-play simulators;  test/e2e/  bots and security tests on a real server
+demo/                    in-browser demo build;  scripts/make-dist.js builds the demo, PROGRESS.md and the server zip into ../dist
 ```

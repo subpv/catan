@@ -79,7 +79,7 @@ async function playMode(label, create, humans = 1, bots = 3) {
   const only = process.argv.slice(2);
   try {
     for (let i = 0; i < 40 && !/listening/.test(out); i++) await sleep(150);
-    await call('POST', '/register', { email: 'a@b.cd', name: 'Human', password: 'secret1', country: 'DE' });
+    await call('POST', '/register', { email: 'a@b.cd', name: 'Human', password: 'secret-password', country: 'DE' });
     const modes = {
       classic: { mode: 'classic', maxPlayers: 4 },
       knights: { mode: 'knights', maxPlayers: 4 },
