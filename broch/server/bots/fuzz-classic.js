@@ -1,8 +1,8 @@
 'use strict';
 // Every move worth trying for one seat of a classic-family game (classic, Cities & Knights, Seafarers, Traders & Barbarians).
-// The fuzzer in test/simulate.js picks one at random; the server bots use it as the fallback when their own choice is refused.
-const { viewFor, _internal } = require('../engine/game');
-const C = require('../engine/constants');
+// The fuzzer in test/fuzz/simulate.js picks one at random; the server bots use it as the fallback when their own choice is refused.
+const { viewFor, _internal } = require('../engine/classic/game');
+const C = require('../engine/shared/constants');
 
 const pick = a => a[Math.floor(Math.random() * a.length)];
 
@@ -130,8 +130,6 @@ function candidates(s, p) {
       if (L.repair && L.repair.ok) out.push({ type: 'repairRoad', e: pick(L.repair.edges) });
       if (L.boot && L.boot.length) out.push({ type: 'giveBoot', to: pick(L.boot) });
       if (L.fish) for (const [what, ok] of Object.entries(L.fish)) if (ok) out.push({ type: 'useFish', what, target: pick(s.players.map((_, i) => i).filter(i => i !== p)), res: pick(C.RES) });
-      if (L.deliver) for (const [kind, ok] of Object.entries(L.deliver)) if (ok) out.push({ type: 'deliver', kind });
-      if (L.lairs && L.lairs.length) out.push({ type: 'attackLair', hex: pick(L.lairs) });
       const me = s.players[p];
       for (const d of me.dev) out.push({ type: 'playDev', card: d.type, a: pick(C.RES), b: pick(C.RES), res: pick(C.RES) });
       me.progress.forEach((c, idx) => out.push(progressArgs(s, p, L, c, idx)));
