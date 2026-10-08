@@ -1,4 +1,5 @@
 // Bots for the standalone games in the demo build: one decision per call.
+import EUP_BOT from '../test/bots/explorers.js';
 const PIPS = { 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3, 11: 2, 12: 1 };
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const RES = ['lumber', 'brick', 'wool', 'grain', 'ore'];
@@ -149,6 +150,12 @@ BOTS.inkas = function inkas(v) {
   if (L.cards && L.cards.combat && me.dev && me.dev.combat && Math.random() < 0.7) return { type: 'playCard', card: 'combat' };
   for (const k of IK) { const r = L.ratios && L.ratios[k]; if (r && res[k] >= r + 1 && Math.random() < 0.6) return { type: 'bankTrade', give: k, get: pick(['timber', 'stone', 'potato', 'fleece', 'metal']) }; }
   return { type: 'endTurn' };
+};
+
+// Explorers & Pirates: the fuzzer's bot proposes moves, one of them is played
+BOTS.explorers = function explorers(v) {
+  const c = EUP_BOT(v, v.me).filter(Boolean);
+  return c.length ? pick(c) : null;
 };
 
 export function decide(v) {

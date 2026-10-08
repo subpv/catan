@@ -212,6 +212,8 @@ function statusInfo() {
   if (v.phase === 'setup') {
     const s = P.setupText?.(v, A);
     if (mine) {
+      // a game with several kinds of setup steps (harbors, roads, ships) words every step itself: setupText returns always: true
+      if (s && s.always) return { msg: esc(s.msg), sub: esc(s.sub || ''), mine };
       const msg = v.setup.need === 'road' ? t('Place a road next to it.') : (s && s.msg) || (v.setup.round === 1 ? t('Place your first settlement.') : t('Place your second settlement.'));
       return { msg: esc(msg), sub: v.setup.need === 'road' ? tx('Tap a glowing edge.') : esc((s && s.sub) || t('Tap a glowing corner. Buildings need at least one empty corner between them.')), mine };
     }
@@ -236,7 +238,8 @@ function statusInfo() {
   const x = P.mainStatus?.(v, A) || {};
   return {
     msg: esc(x.msg || t('Build, trade or end your turn.')), sub: esc(x.sub || ''), mine: true,
-    btns: `<button class="btn" data-do="trade">${tx('Trade')}</button><button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button>${P.mainButtons ? P.mainButtons(v, A) : ''}<button class="btn primary" data-do="endTurn">${tx('End turn')}</button>`,
+    // a game may decide which trade buttons are open (Explorers & Pirates: none while ships move, only the bank for ship 2)
+    btns: `${P.tradeButtons ? P.tradeButtons(v, A) : `<button class="btn" data-do="trade">${tx('Trade')}</button><button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button>`}${P.mainButtons ? P.mainButtons(v, A) : ''}<button class="btn primary" data-do="endTurn">${tx('End turn')}</button>`,
   };
 }
 function diceHtml() {

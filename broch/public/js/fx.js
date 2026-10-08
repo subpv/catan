@@ -17,6 +17,8 @@ export const LOOT_BY_MODE = {};
 export const THREAT_BY_MODE = {};
 // standalone games with other advantage cards say how the award scene reads: { road: [title, subtitle], army: [title, subtitle] }
 export const AWARDS_BY_MODE = {};
+// a game without a robber says what a 7 does instead: { title, text(view) }
+export const SEVEN_BY_MODE = {};
 export const isMuted = () => muted;
 export function setMuted(m) {
   muted = m;
@@ -531,12 +533,13 @@ async function robberScene(view) {
   shake();
   const discards = view.pending.filter(p => p.type === 'discard');
   const robberMoves = view.barbarian ? view.barbarian.attacks > 0 : true;
+  const own = SEVEN_BY_MODE[view.mode];
   const sub = th && th.sub ? th.sub(view, discards.length) : [
     discards.length ? t('Players holding too many cards must discard half.') : t('Nobody has to discard.'),
-    th ? t(th.moves) : robberMoves ? t('The robber is on the move.') : t('The barbarians have not attacked yet, so the robber stays put.'),
+    th ? t(th.moves) : own ? t(own.text(view)) : robberMoves ? t('The robber is on the move.') : t('The barbarians have not attacked yet, so the robber stays put.'),
   ].join(' ');
   const sc = layer('fx-robber', `<div class="fx-vignette"></div><div class="fx-robber-stage">${th && th.svg ? th.svg : ROBBER_SVG}</div>
-    <div class="fx-robber-text"><div class="fx-seven">7</div><h1>${esc(t(th ? th.title : 'The robber strikes!'))}</h1><p>${esc(sub)}</p></div>`);
+    <div class="fx-robber-text"><div class="fx-seven">7</div><h1>${esc(t(th ? th.title : own ? own.title : 'The robber strikes!'))}</h1><p>${esc(sub)}</p></div>`);
   await hold(sc, 2300);
 }
 
