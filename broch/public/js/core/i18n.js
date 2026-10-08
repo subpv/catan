@@ -43,7 +43,8 @@ export async function setLang(code) {
   if (!LANGS.some(l => l[0] === code)) code = 'en';
   dict = code === 'en' ? {} : (await LOADERS[code]()).default;
   // the standalone games keep their texts in lang/x/<code>.js (built from lang/games/*.tsv)
-  if (code !== 'en') { try { dict = { ...dict, ...(await import(`../lang/x/${code}.js?v=${document.querySelector('meta[name=broch-build]')?.content || ''}`)).default }; } catch { /* no texts for this language yet: English */ } }
+  const bust = document.querySelector('meta[name=broch-build]')?.content || ''; // the server stamps the page with its build id; the demo has none (its texts are bundled)
+  if (code !== 'en') { try { dict = { ...dict, ...(await (bust ? import(`../lang/x/${code}.js?v=${bust}`) : import(`../lang/x/${code}.js`))).default }; } catch { /* no texts for this language yet: English */ } }
   current = code;
   document.documentElement.lang = code;
   try { localStorage.setItem('broch_lang', code); } catch { /* storage blocked */ }
