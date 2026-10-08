@@ -313,6 +313,17 @@ function freeRoadsLeft(s, p, n) { return Math.min(n, PIECES.road - K.countRoads(
 
 const HANDLERS = {
   ...K.HANDLERS,
+  // the almanac: no gifts and no swapping a card for the same kind of card
+  offerTrade(s, p, a) {
+    const g = a.give || {}, w = a.get || {};
+    if (Object.keys(g).some(k => g[k] > 0 && w[k] > 0)) fail('You may not swap a card for the same kind of card.');
+    K.HANDLERS.offerTrade(s, p, a);
+  },
+  counterTrade(s, p, a) {
+    const g = a.give || {}, w = a.get || {};
+    if (Object.keys(g).some(k => g[k] > 0 && w[k] > 0)) fail('You may not swap a card for the same kind of card.');
+    K.HANDLERS.counterTrade(s, p, a);
+  },
   buildRoad(s, p, a) {
     K.requireActor(s, p);
     if (!legalRoads(s, p).includes(a.e)) fail('You cannot build a road there.');

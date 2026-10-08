@@ -160,4 +160,11 @@ function K(s, p) { return Object.values(s.players[p].res).reduce((a, b) => a + b
   assert.deepStrictEqual(I.foundingSpots(t, 0).map(String).sort(), own.map(String).sort());
 }
 
+{
+  const s = fresh(3); const p = s.current;
+  s.step = 'main'; s.players[p].res.timber = 2;
+  assert.throws(() => act(s, p, { type: 'offerTrade', give: { timber: 1 }, get: { timber: 1 } }), /same kind/);
+  act(s, p, { type: 'offerTrade', give: { timber: 1 }, get: { stone: 1 } });
+}
+
 console.log('inkas rules: ok');
