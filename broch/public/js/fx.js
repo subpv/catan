@@ -12,6 +12,8 @@ let muted = (() => { try { return localStorage.getItem('broch_muted') === '1'; }
 export const LOOT_TERRAIN = { lumber: 'forest', brick: 'hills', wool: 'pasture', grain: 'fields', ore: 'mountains', paper: 'forest', cloth: 'pasture', coin: 'mountains' };
 // standalone games say which tile each of their resources comes from
 export const LOOT_BY_MODE = {};
+// a game without a robber says what a 7 does instead: { title, text(view) }
+export const SEVEN_BY_MODE = {};
 export const isMuted = () => muted;
 export function setMuted(m) {
   muted = m;
@@ -520,12 +522,13 @@ async function robberScene(view) {
   shake();
   const discards = view.pending.filter(p => p.type === 'discard');
   const robberMoves = view.barbarian ? view.barbarian.attacks > 0 : true;
+  const own = SEVEN_BY_MODE[view.mode];
   const sub = [
     discards.length ? t('Players holding too many cards must discard half.') : t('Nobody has to discard.'),
-    robberMoves ? t('The robber is on the move.') : t('The barbarians have not attacked yet, so the robber stays put.'),
+    own ? t(own.text(view)) : robberMoves ? t('The robber is on the move.') : t('The barbarians have not attacked yet, so the robber stays put.'),
   ].join(' ');
   const sc = layer('fx-robber', `<div class="fx-vignette"></div><div class="fx-robber-stage">${ROBBER_SVG}</div>
-    <div class="fx-robber-text"><div class="fx-seven">7</div><h1>${esc(t('The robber strikes!'))}</h1><p>${esc(sub)}</p></div>`);
+    <div class="fx-robber-text"><div class="fx-seven">7</div><h1>${esc(t(own ? own.title : 'The robber strikes!'))}</h1><p>${esc(sub)}</p></div>`);
   await hold(sc, 2300);
 }
 

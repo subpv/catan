@@ -10,9 +10,11 @@ const modes = only ? [only] : engine.STANDALONE;
 const BOTS = {};
 modes.forEach(m => { BOTS[m] = require(`./bots/${m}.js`); });
 
-function play(mode, n) {
-  const players = Array.from({ length: n }, (_, i) => ({ id: 'u' + i, name: 'P' + i, color: ['red', 'blue', 'orange', 'white'][i], country: 'DE' }));
-  const s = engine.createGame({ id: 'g' + Math.random(), mode, players, options: {} });
+function play(mode, n, g = 0) {
+  const players = Array.from({ length: n }, (_, i) => ({ id: 'u' + i, name: 'P' + i, color: ['red', 'blue', 'orange', 'white', 'teal', 'purple'][i], country: 'DE' }));
+  // Explorers & Pirates: every scenario, and the 5-6 player boards too
+  const options = mode === 'explorers' ? { scenario: 1 + (g % 5) } : {};
+  const s = engine.createGame({ id: 'g' + Math.random(), mode, players, options });
   let guard = 0;
   while (s.phase !== 'over' && guard++ < 40000) {
     const seats = s.players.map((_, i) => i).sort(() => Math.random() - 0.5);
@@ -34,7 +36,7 @@ let bad = 0;
 for (const mode of modes) {
   let done = 0, lost = 0, turns = 0, wins = 0;
   for (let g = 0; g < GAMES; g++) {
-    const r = play(mode, 2 + (g % 3));
+    const r = play(mode, mode === 'explorers' ? [2, 3, 4, 5, 6][Math.floor(g / 5) % 5] : 2 + (g % 3), g);
     if (r.over) { done++; turns += r.s.stats.turns; if (r.s.winner === null) lost++; else wins++; } else bad++;
     if (r.over) {
       // invariants: points never negative, summary works, view works for everyone

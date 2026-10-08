@@ -1542,3 +1542,37 @@ svg.board:not(.alive) .in-draw { stroke-dashoffset: 0 !important; animation: non
 .in-rule { margin: 0; font-size: 12.500px; color: var(--muted); line-height: 1.35; }
 .in-body .btn.block { margin-top: 2px; display: inline-flex; gap: 6px; justify-content: center; align-items: center; }
 .in-body > small { font-size: 12px; }
+
+/* Explorers & Pirates: mission tracks, the fleet and the loading dialog */
+.eup-lanes { padding: 8px 10px 4px; display: flex; flex-direction: column; gap: 8px; }
+.eup-lane { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 6px; align-items: center; }
+.eup-lh { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; font-size: 12px; position: relative; }
+.eup-lh b { font-size: 12px; line-height: 1.15; max-width: 100%; }
+.eup-tile { position: absolute; right: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--pc); color: #fff; box-shadow: 0 0 0 2px #fff, 0 0 0 3.500px var(--gold); }
+.eup-tile.none { background: transparent; color: rgba(0,0,0,.28); box-shadow: 0 0 0 2px rgba(0,0,0,.16); }
+.eup-cells { display: grid; gap: 3px; }
+.eup-cell { min-height: 56px; border-radius: 10px; background: rgba(0,0,0,.08); box-shadow: inset 0 2px 3px rgba(0,0,0,.12); display: flex; flex-direction: column; align-items: center; padding: 3px 1px; gap: 2px; transition: background .3s; }
+.eup-cell b { font: 800 13px var(--serif); color: rgba(43,30,18,.55); }
+.eup-cell small { font-size: 11px; color: rgba(43,30,18,.45); }
+.eup-cell.lit { background: color-mix(in srgb, var(--c) 28%, transparent); }
+.eup-cell.lit b { color: var(--c); }
+.eup-toks { display: flex; flex-wrap: wrap; justify-content: center; gap: 1px; }
+.eup-toks .tok { position: static; transform: none; margin: 0; width: 16px; height: 17px; }
+.eup-toks .tok.me::after { display: none; }
+.eup-pairs { padding: 2px 14px 6px; font-size: 12.500px; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.eup-fleet { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+.eup-fleet .lbl { font-size: 12.500px; margin-right: 4px; }
+.eup-ship { display: inline-flex; gap: 6px; align-items: center; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: #FFF8E6; font-size: 12.500px; cursor: pointer; }
+.eup-ship:not(:disabled):hover { background: #FFEFC2; }
+.eup-ship:disabled { opacity: .6; cursor: default; }
+.eup-ship .ico { width: 20px; height: 20px; border-radius: 50%; background: #2C5F7A; display: grid; place-items: center; }
+.eup-ship .cg { display: inline-flex; gap: 3px; align-items: center; }
+.eup-ship .cg i { font-style: normal; display: inline-grid; place-items: center; min-width: 18px; height: 18px; border-radius: 9px; background: rgba(0,0,0,.08); font-size: 12px; }
+.eup-ship .cg svg { color: #2B1E12 !important; }
+.eup-friends { display: inline-flex; gap: 4px; margin-left: 4px; }
+.eup-friends .stat-chip svg { color: #2B1E12 !important; }
+.eup-swap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
+.eup-swap h4 { margin: 0 0 6px; font-size: 13px; color: var(--muted); }
+.eup-item { display: block; width: 100%; margin-bottom: 6px; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: #FFF8E6; text-align: left; font-weight: 600; }
+.eup-item.on { border-color: var(--gold); background: #FFEFC2; }
+.ship-hit { cursor: pointer; }

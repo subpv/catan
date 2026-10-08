@@ -6,7 +6,7 @@ import { flag } from './countries.js';
 
 const tx = (k, p) => esc(t(k, p));
 const EXP_NAMES = { seafarers: 'Seafarers', traders: 'Traders & Barbarians', explorers: 'Explorers & Pirates' };
-const STANDALONE = { energies: 'New Energies', humankind: 'Dawn of Humankind', inkas: 'Rise of the Inkas' };
+const STANDALONE = { energies: 'New Energies', humankind: 'Dawn of Humankind', inkas: 'Rise of the Inkas', explorers: 'Explorers & Pirates' };
 const modeLabel = m => (STANDALONE[m] ? t(STANDALONE[m]) : m === 'knights' ? t('Cities & Knights') : t('Classic'));
 const gameLabel = g => [modeLabel(g.mode), g.expansion && EXP_NAMES[g.expansion] ? t(EXP_NAMES[g.expansion]) : null, g.big ? t('5–6') : null].filter(Boolean).join(' + ');
 const hexPip = (color, i) => `<i class="pip" style="--c:${PCOLOR[color] || '#999'};--d:${PCOLOR_DARK[color] || '#555'};animation-delay:${Math.min(i, 14) * 45}ms"></i>`;

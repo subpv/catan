@@ -212,6 +212,8 @@ function statusInfo() {
   if (v.phase === 'setup') {
     const s = P.setupText?.(v, A);
     if (mine) {
+      // a game with several kinds of setup steps (harbors, roads, ships) words every step itself: setupText returns always: true
+      if (s && s.always) return { msg: esc(s.msg), sub: esc(s.sub || ''), mine };
       const msg = v.setup.need === 'road' ? t('Place a road next to it.') : (s && s.msg) || (v.setup.round === 1 ? t('Place your first settlement.') : t('Place your second settlement.'));
       return { msg: esc(msg), sub: v.setup.need === 'road' ? tx('Tap a glowing edge.') : esc((s && s.sub) || t('Tap a glowing corner. Buildings need at least one empty corner between them.')), mine };
     }
