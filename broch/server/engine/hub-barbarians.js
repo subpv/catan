@@ -10,8 +10,8 @@ module.exports = function make(core, HB) {
   const { log, pushPending, findPending, resolvePending, P, V, E, fail, has, pay, hand, countPieces } = core;
   const hex = (s, id) => s.board.hexes[id];
   const BARBARIANS = 36, KNIGHTS = 6;
-  // the 26 development cards (the book does not print how many of each: this is the usual mix)
-  const DECK = { consecration: 12, strong: 6, treason: 4, captive: 4 };
+  // the 26 development cards: 14 Knighthood, 4 Swift Knight, 4 Treason, 4 Capture (card list of the English rulebook, 6th edition)
+  const DECK = { consecration: 14, strong: 4, treason: 4, captive: 4 };
   const d6 = () => 1 + Math.floor(Math.random() * 6);
   const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 

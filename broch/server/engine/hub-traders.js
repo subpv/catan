@@ -23,7 +23,7 @@ module.exports = function make(core, HB) {
   // what each tile of the book shows and where it has to go
   const FACES = { castle: ['tools', 'sand'], quarry: ['marble', 'sand'], glassworks: ['glass', 'tools'] };
   const DEST = { glass: 'castle', marble: 'castle', tools: 'quarry', sand: 'glassworks' };
-  const DEV = { knight: 14, victoryPoint: 5, roadBuilding: 2, goodTrip: 4 };
+  const DEV = { knight: 16, victoryPoint: 3, roadBuilding: 3, goodTrip: 3 }; // the 25 cards of the English rulebook: 16 Knight, 3 Road Building, 3 Swift Journey, 3 Victory Point
 
   function makeBoard({ kind, geometry, placePorts, shuffle: sh, numberLand }) {
     const { BOARDS } = C;
