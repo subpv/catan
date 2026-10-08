@@ -314,7 +314,7 @@ async function api(req, res, url) {
     broadcastLobby();
     return send(res, 200, { game: gameCard(g) });
   }
-  m = route.match(/^\/games\/([\w-]+)\/(join|leave|start|abandon)$/);
+  m = route.match(/^\/games\/([\w-]+)\/(join|leave|start|abandon|resign)$/);
   if (m && method === 'POST') {
     const u = need(); const g = getGame(m[1]); const meta = g.meta;
     if (m[2] === 'join') {
@@ -337,6 +337,29 @@ async function api(req, res, url) {
       g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, variable: !!meta.variable, knightsFree: !!meta.knightsFree, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });
       meta.status = 'playing'; meta.startedAt = Date.now();
       runner.schedule(g);
+    } else if (m[2] === 'resign') {
+      // leaving a running game: a bot takes the seat (the game then counts for no statistics); the last human closes it
+      if (meta.status !== 'playing' || !g.state) throw new HttpError(400, 'The game is not running.');
+      if (!meta.seats.includes(u.id)) throw new HttpError(403, 'You are not in this game.');
+      if (g.state.phase === 'over') throw new HttpError(400, 'The game is over.');
+      if (!meta.seats.some(x => x !== u.id && !isBotId(x))) {
+        runner.cancel(meta.id); store.deleteGame(meta.id); broadcastGame(g, { t: 'abandoned' }); broadcastLobby();
+        return send(res, 200, { ok: true });
+      }
+      meta.bots = meta.bots || {};
+      const id = 'bot_' + newId(5);
+      const taken = [...db.users.map(x => x.name), ...Object.values(meta.bots).map(x => x.name)];
+      const name = botName(taken);
+      meta.bots[id] = { name };
+      meta.seats = meta.seats.map(x => (x === u.id ? id : x));
+      if (meta.colors && meta.colors[u.id]) { meta.colors[id] = meta.colors[u.id]; delete meta.colors[u.id]; }
+      if (meta.host === u.id) meta.host = meta.seats.find(x => !isBotId(x));
+      const pl = g.state.players.find(p => p.userId === u.id);
+      if (pl) { pl.userId = id; pl.name = name; }
+      store.saveGame(g, true);
+      broadcastLobby(); broadcastState(g);
+      runner.schedule(g);
+      return send(res, 200, { ok: true });
     } else if (m[2] === 'abandon') {
       if (meta.host !== u.id && !u.admin) throw new HttpError(403, 'Only the host can abandon the game.');
       runner.cancel(meta.id);

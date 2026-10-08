@@ -38,6 +38,7 @@ function topbar(active) {
       <a href="#/" class="${active === 'play' ? 'on' : ''}">${tx('Play')}</a>
       <a href="#/stats" class="${active === 'stats' ? 'on' : ''}">${tx('Stats')}</a>
       <a href="#/profile" class="${active === 'profile' ? 'on' : ''}">${esc(session.user?.name || t('Profile'))}</a>
+      ${location.hash.startsWith('#/game/') ? `<button class="iconbtn" data-leavegame title="${tx('Leave this game')}" aria-label="${tx('Leave this game')}">⎋</button>` : ''}
       <button class="iconbtn" data-lang-pick title="${tx('Language')}" aria-label="${tx('Language')}">${lang().toUpperCase()}</button>
       <button class="iconbtn" data-mute title="${isMuted() ? tx('Sound off') : tx('Sound on')}" aria-label="${isMuted() ? tx('Sound off') : tx('Sound on')}">${SPEAKER(!isMuted())}</button>
     </nav>
@@ -49,9 +50,23 @@ export { topbar, footer };
 // topbar buttons work on every page
 document.addEventListener('click', e => {
   if (e.target.closest('[data-lang-pick]')) return langDialog();
+  if (e.target.closest('[data-leavegame]')) return leaveDialog(location.hash.split('/')[2]);
   const m = e.target.closest('[data-mute]');
   if (m) { setMuted(!isMuted()); m.innerHTML = SPEAKER(!isMuted()); m.title = isMuted() ? t('Sound off') : t('Sound on'); if (!isMuted()) sfx.turn(); }
 });
+
+function leaveDialog(id) {
+  modal(`<h2>${tx('Leave this game')}</h2><p class="muted">${tx('Resign: a bot takes over your seat and the game goes on without statistics.')}</p>
+    <div class="foot"><button class="btn" data-close>${tx('Keep playing')}</button><button class="btn" data-do="resign">${tx('Resign')}</button><button class="btn danger" data-do="abandon" title="${tx('Close the game for everyone (host only)')}">${tx('Close game')}</button></div>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">${tx('Close the game for everyone (host only)')}</p>`, {
+    onMount(el, close) {
+      el.querySelectorAll('[data-do]').forEach(b => { b.onclick = async () => {
+        b.disabled = true;
+        try { await api(`/games/${id}/${b.dataset.do}`, { body: {} }); close(); if (b.dataset.do === 'resign') toast(t('You left the game. A bot plays on for you.')); location.hash = '#/'; } catch (err) { toast(err.message, 'warn'); b.disabled = false; }
+      }; });
+    },
+  });
+}
 
 function langDialog() {
   modal(`<h2>${tx('Language')}</h2><div class="lang-grid">${LANGS.map(([c, n]) => `<button class="chip ${c === lang() ? 'on' : ''}" data-l="${c}">${esc(n)}</button>`).join('')}</div>

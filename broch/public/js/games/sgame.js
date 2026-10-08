@@ -4,7 +4,7 @@ import { esc, toast, modal, closeModals, wsWatch, wsAct, onWs, reportProblem, ho
 import { lang } from '../core/i18n.js';
 import { renderBoard } from '../core/board.js';
 import { topbar } from '../app.js';
-import { diff, play, sfx } from '../core/fx.js';
+import { diff, play, sfx, afterFx } from '../core/fx.js';
 import { victoryScene, closeVictory } from '../core/victory.js';
 import { openTutorial, closeTutorial, tutorialSeen } from '../core/tutorial.js';
 import { flag } from '../core/countries.js';
@@ -70,6 +70,7 @@ export function mountSGame(app, id, mode) {
       render();
       G.fresh = null;
       play(d.events, G.view, pname);
+      if (release) afterFx(release);
     }
   });
   wsWatch(id);
@@ -166,6 +167,14 @@ function onNewState(prev) {
   if (G.tab === 'chat' && feedVisible()) G.chatSeenAt = lastAt;
   if (G.pick && G.pick.version !== undefined && G.pick.version !== v.version) G.pick = null;
   if (needsMe(v) && document.hidden) document.title = `● ${t('Your move')} · Broch`;
+  // a beep whenever the move passes to me (not only at the dice), and when someone answers my trade with a counter-offer
+  if (prev && prev.phase !== 'over' && !needsMe(prev) && needsMe(v)) sfx.turn();
+  const tr = v.trade, ptr = prev && prev.trade;
+  if (tr && tr.from === v.me && tr.responses) {
+    const was = ptr && ptr.id === tr.id ? ptr.responses : {};
+    const who = Object.keys(tr.responses).filter(i => tr.responses[i] === 'counter' && was[i] !== 'counter');
+    if (who.length) { sfx.trade(); toast(t('{name} made a counter-offer. See the trade window.', { name: v.players[who[0]].name }), 'warn'); G.counterFlash = tr.id; }
+  }
   if (v.phase === 'over' && !G.celebrated) {
     G.celebrated = true;
     if (prev && prev.phase !== 'over') setTimeout(celebrateWhenCalm, 700);
@@ -178,6 +187,15 @@ function feedVisible() {
   const r = el.getBoundingClientRect();
   return r.bottom > 40 && r.top < innerHeight - 40;
 }
+// the dice statistics stay at the old numbers until the dice scene is over
+function holdRolls(prev, events) {
+  const g = G, v = g.view;
+  if (!prev || !v.stats || !events.some(e => e.type === 'log' && (/^\{@p\} rolled \{n\}/.test(e.k) || e.k === '{@p} turned over an event card ({n}).'))) return null;
+  const real = v.stats.rolls;
+  v.stats = { ...v.stats, rolls: prev.stats?.rolls || real };
+  return () => { if (G !== g || g.view !== v) return; v.stats = { ...v.stats, rolls: real }; g.html.feed = null; renderFeed(); };
+}
+
 function needsMe(v) {
   if (v.phase === 'setup') return v.current === v.me;
   if (v.phase !== 'play') return false;
@@ -404,7 +422,7 @@ function tradeHtml() {
   const mineOffer = tr.from === v.me;
   let body = `<div class="trade-line">${t('{name} gives', { name: pname(tr.from) })} ${cardsHtml(tr.give)}</div><div class="trade-line" style="margin-top:4px">${tx('and wants')} ${cardsHtml(tr.get)}</div>`;
   if (mineOffer) {
-    const rows = v.players.map((p, i) => i === v.me ? '' : `<div class="row" style="margin-top:6px"><span class="spacer">${pname(i)}</span>${tr.responses[i] === 'accept' ? `<button class="btn small gold" data-confirm="${i}">${tx('Trade with {name}', { name: p.name })}</button>` : tr.responses[i] === 'counter' && tr.counters && tr.counters[i] ? `<div style="flex:1 1 100%"><div class="trade-line">${tx('Counter-offer: you give')} ${cardsHtml(tr.counters[i].give)}</div><div class="trade-line" style="margin-top:4px">${tx('and get')} ${cardsHtml(tr.counters[i].get)}</div><button class="btn small gold" style="margin-top:6px" data-confirm="${i}">${tx('Accept the counter-offer of {name}', { name: p.name })}</button></div>` : `<span class="muted" style="font-size:13px">${tr.responses[i] === 'reject' ? tx('Declined') : tx('Thinking…')}</span>`}</div>`).join('');
+    const rows = v.players.map((p, i) => i === v.me ? '' : `<div class="row" style="margin-top:6px"><span class="spacer">${pname(i)}</span>${tr.responses[i] === 'accept' ? `<button class="btn small gold" data-confirm="${i}">${tx('Trade with {name}', { name: p.name })}</button>` : tr.responses[i] === 'counter' && tr.counters && tr.counters[i] ? `<div class="trade-counter" style="flex:1 1 100%"><div class="trade-line">${tx('Counter-offer: you give')} ${cardsHtml(tr.counters[i].give)}</div><div class="trade-line" style="margin-top:4px">${tx('and get')} ${cardsHtml(tr.counters[i].get)}</div><button class="btn small gold" style="margin-top:6px" data-confirm="${i}">${tx('Accept the counter-offer of {name}', { name: p.name })}</button></div>` : `<span class="muted" style="font-size:13px">${tr.responses[i] === 'reject' ? tx('Declined') : tx('Thinking…')}</span>`}</div>`).join('');
     body += rows + `<div class="row" style="margin-top:10px"><button class="btn small" data-do="cancelTrade">${tx('Withdraw offer')}</button></div>`;
   } else if (isMine()) {
     const r = tr.responses[v.me];

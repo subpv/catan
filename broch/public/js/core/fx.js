@@ -110,6 +110,8 @@ export const sfx = {
 let queue = Promise.resolve();
 let busy = 0;
 export const fxBusy = () => busy > 0;
+// runs cb once every queued scene (dice, loot, …) has finished; the statistics wait for it
+export const afterFx = cb => { queue = queue.then(() => { try { cb(); } catch { /* the screen is gone */ } }); };
 function enqueue(fn) {
   busy++;
   window.BROCH_FX_BUSY = true;
@@ -605,7 +607,6 @@ async function banner(html, cls = '', ms = 1400) {
   el.remove();
 }
 async function yourTurnScene(view) {
-  sfx.turn();
   const c = view.players[view.me].color;
   await banner(`<span style="background:${PCOLOR[c]};color:${inkOn(c)}">${esc(t('Your turn'))}</span>`, 'turn', 1300);
 }
