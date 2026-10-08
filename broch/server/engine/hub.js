@@ -33,7 +33,8 @@ module.exports = function make(core) {
     const out = { fishermen: false, rivers: false, caravans: false, barbarians: false, traders: false, events: !!v.events, friendly: !!v.friendly, harbors: !!v.harbors };
     const big3 = BIG3.find(k => v[k]);
     if (big3) {
-      if (big || players > 4 || knights) fail('This scenario is for the classic rules and 2–4 players.');
+      // the Barbarian Attack has a 5-6 player layout (5-6 book p. 8); the others are for 2-4 players
+      if (knights || ((big || players > 4) && big3 !== 'barbarians')) fail('This scenario is for the classic rules and 2–4 players.');
       out[big3] = true;
     } else if (v.fishermen) out.fishermen = true;
     else if (v.rivers) out.rivers = true;
@@ -247,7 +248,7 @@ module.exports = function make(core) {
         break;
       }
       case 'tournament': {
-        const sc = s.players.map((_, q) => knightScore(s, q));
+        const sc = s.players.map((_, q) => (mod(s) && mod(s).cardKnights ? mod(s).cardKnights(s, q) : knightScore(s, q)));
         const max = Math.max(...sc);
         if (max <= 0) { log(s, 'Nobody has played a knight yet.'); break; }
         const win = sc.map((x, q) => [x, q]).filter(([x]) => x === max).map(([, q]) => q);
