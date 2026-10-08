@@ -94,6 +94,7 @@ function createKit(spec) {
   const landVertex = (s, v) => V(s, v).hexes.some(h => s.board.hexes[h].terrain !== 'sea');
   const touchesOwnRoad = (s, v, p) => V(s, v).edges.some(e => s.roads[e] === p);
   const foreignAt = (s, v, p) => !!(s.buildings[v] && s.buildings[v].p !== p);
+  const costOf = (s, p, type) => (typeof spec.costs === 'function' ? spec.costs(s, p) : spec.costs)[type];
   const edgeOk = (s, e) => spec.roadEdgeOk ? spec.roadEdgeOk(s, e) : true;
   const vertexOk = (s, v) => (spec.settleSpotOk ? spec.settleSpotOk(s, v) : true) && landVertex(s, v);
 
@@ -236,6 +237,7 @@ function createKit(spec) {
       if (s.phase !== 'setup' || p !== s.current || s.setup.need !== 'road') fail('Not your placement.');
       if (!legalSetupRoads(s).includes(a.e)) fail('The road must touch your new building.');
       s.roads[a.e] = p;
+      if (spec.afterSetupRoad) spec.afterSetupRoad(s, p, a.e);
       s.setup.idx++;
       const n = s.players.length;
       // the second building pays one card per neighbouring tile
@@ -264,18 +266,19 @@ function createKit(spec) {
       requireActor(s, p);
       if (!legalRoads(s, p).includes(a.e)) fail('You cannot build a road there.');
       if (countRoads(s, p) >= spec.pieces.road) fail('No roads left.');
-      const pl = P(s, p), cost = spec.costs.road;
+      const pl = P(s, p), cost = costOf(s, p, 'road');
       if (!has(pl, cost)) fail('Not enough resources.');
       pay(s, pl, cost);
       s.roads[a.e] = p;
       log(s, '{@p} built a road.', { p });
       updateLongest(s);
+      if (spec.afterRoad) spec.afterRoad(s, p, a.e);
     },
     buildSettlement(s, p, a) {
       requireActor(s, p);
       if (!legalSettlements(s, p).includes(a.v)) fail('You cannot build a settlement there.');
       if (count(s, p, 'settlement') >= spec.pieces.settlement) fail('No settlements left.');
-      const pl = P(s, p), cost = spec.costs.settlement;
+      const pl = P(s, p), cost = costOf(s, p, 'settlement');
       if (!has(pl, cost)) fail('Not enough resources.');
       pay(s, pl, cost);
       s.buildings[a.v] = { p, type: 'settlement' };
@@ -288,7 +291,7 @@ function createKit(spec) {
       const b = s.buildings[a.v];
       if (!b || b.p !== p || b.type !== 'settlement') fail('Pick one of your settlements.');
       if (count(s, p, 'city') >= spec.pieces.city) fail('No cities left.');
-      const pl = P(s, p), cost = spec.costs.city;
+      const pl = P(s, p), cost = costOf(s, p, 'city');
       if (!has(pl, cost)) fail('Not enough resources.');
       pay(s, pl, cost);
       b.type = 'city';
@@ -447,7 +450,7 @@ function createKit(spec) {
     baseState, start, distanceOk, landVertex, touchesOwnRoad, foreignAt,
     legalSetupSettlements, legalSetupRoads, legalRoads, legalSettlements, ownBuildings, countRoads, count,
     longestFor, updateLongest, pushPending, activePending, findPending, resolvePending,
-    snapshot, finish, checkWin, nextTurn, isActor, requireActor, requireMain, rollDice, setupPay, sevenDiscards,
+    costOf, snapshot, finish, checkWin, nextTurn, isActor, requireActor, requireMain, rollDice, setupPay, sevenDiscards,
     HANDLERS: H, act, viewCommon, summary,
   };
 }

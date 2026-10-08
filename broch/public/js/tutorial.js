@@ -769,7 +769,7 @@ class Player {
   }
   freshSets() {
     const f = this.fresh || {};
-    return { verts: new Set(f.verts || []), edges: new Set(f.edges || []), knights: new Set(f.knights || []), ships: new Set(f.ships || []), hexes: new Set(f.hexes || []), plants: new Set(f.plants || []), robber: !!f.robber, merchant: false, pirate: !!f.pirate };
+    return { verts: new Set(f.verts || []), edges: new Set(f.edges || []), knights: new Set(f.knights || []), ships: new Set(f.ships || []), hexes: new Set(f.hexes || []), plants: new Set(f.plants || []), robber: !!f.robber, merchant: false, pirate: !!f.pirate, beast: !!f.beast, thickets: new Set(f.thickets || []), any: !!f.beast };
   }
   pt(x, y) {
     const svg = this.boardEl.querySelector('svg');

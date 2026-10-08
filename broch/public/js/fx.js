@@ -8,6 +8,10 @@ const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-m
 // ------------------------------------------------------------ sound
 let ctx = null, master = null;
 let muted = (() => { try { return localStorage.getItem('broch_muted') === '1'; } catch { return false; } })();
+// which tile a resource flies in from (standalone games add their own)
+export const LOOT_TERRAIN = { lumber: 'forest', brick: 'hills', wool: 'pasture', grain: 'fields', ore: 'mountains', paper: 'forest', cloth: 'pasture', coin: 'mountains' };
+// standalone games say which tile each of their resources comes from
+export const LOOT_BY_MODE = {};
 export const isMuted = () => muted;
 export function setMuted(m) {
   muted = m;
@@ -89,6 +93,8 @@ export const sfx = {
   zap() { tone(260, 0.2, { type: 'sawtooth', slide: 980, vol: 0.22 }); noise(0.1, { freq: 4200, type: 'highpass', vol: 0.18 }); },
   smog() { noise(0.55, { freq: 180, type: 'lowpass', vol: 0.8 }); tone(110, 0.5, { type: 'sawtooth', slide: 58, vol: 0.14 }); },
   leaf() { [660, 880, 1100].forEach((f, i) => tone(f, 0.28, { at: i * 0.07, type: 'sine', vol: 0.16 })); },
+  roar() { tone(120, 0.9, { type: 'sawtooth', slide: 55, vol: 0.3, attack: 0.04 }); tone(180, 0.7, { type: 'square', slide: 80, vol: 0.1, attack: 0.05 }); noise(0.6, { freq: 260, q: 0.8, vol: 0.7 }); },
+  tink() { tone(2100, 0.09, { type: 'triangle', vol: 0.2, slide: 1500 }); noise(0.04, { freq: 5200, q: 2, type: 'highpass', vol: 0.2 }); },
   tick(i = 0) { tone(900 + Math.min(i, 20) * 35, 0.05, { type: 'triangle', vol: 0.13 }); },
 };
 
@@ -467,12 +473,13 @@ async function productionFx(view, total, loot, title) {
   let delay = 0;
   if (total != null) {
     const hexes = view.board.hexes.filter(h => h.number === total && h.id !== view.robber);
-    const TER = { lumber: 'forest', brick: 'hills', wool: 'pasture', grain: 'fields', ore: 'mountains', paper: 'forest', cloth: 'pasture', coin: 'mountains' };
+    const TER = LOOT_BY_MODE[view.mode] || LOOT_TERRAIN;
     let count = 0;
     for (const { p, items } of loot) {
       for (const [res, n] of Object.entries(items)) {
         if (!TER[res]) continue;
-        const src = hexes.find(h => h.terrain === TER[res] && h.verts.some(v => view.buildings[v] && view.buildings[v].p === p)) || hexes.find(h => h.terrain === TER[res]);
+        const kinds = [].concat(TER[res]);
+        const src = hexes.find(h => kinds.includes(h.terrain) && h.verts.some(v => view.buildings[v] && view.buildings[v].p === p)) || hexes.find(h => kinds.includes(h.terrain));
         if (!src || count >= 24) continue;
         count++;
         flights.push(flyCard(boardPoint(src.x * S, src.y * S), targetFor(view, p, res), res, p, view, delay, n));

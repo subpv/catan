@@ -1432,3 +1432,113 @@ svg.board:not(.alive) .wave, svg.board:not(.alive) .boat-bob, svg.board:not(.ali
 .tut-extra .te.pop { animation: tutpop .5s cubic-bezier(.2,1.8,.4,1); }
 .mode-pick.sa { grid-template-columns: repeat(3, 1fr); } .mode-pick.sa .mode-tile b { white-space: normal; line-height: 1.12; } .mode-pick.sa .mode-tile { height: 128px; }
 @media (max-width: 760px) { .mode-pick.sa { grid-template-columns: 1fr 1fr; } }
+
+/* =============================================================== Dawn of Humankind: tile scenes (living board) */
+.alive .hk-walk { animation: hkwalk 18s ease-in-out infinite; }
+.alive .hk-walk.s { animation-duration: 13s; }
+@keyframes hkwalk {
+  0% { transform: translateX(-9px) scaleX(1); } 48% { transform: translateX(10px) scaleX(1); } 50% { transform: translateX(10px) scaleX(-1); }
+  98% { transform: translateX(-9px) scaleX(-1); } 100% { transform: translateX(-9px) scaleX(1); }
+}
+.alive .hk-leg { animation: hkleg .8s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 0; }
+.alive .hk-leg.b { animation-delay: -.4s; }
+@keyframes hkleg { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+.alive .hk-trunk { transform-box: fill-box; transform-origin: 20% 0; animation: hktrunk 3.4s ease-in-out infinite; }
+@keyframes hktrunk { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(14deg); } }
+.alive .hk-graze { transform-box: fill-box; transform-origin: 0 40%; animation: hkgraze 7s ease-in-out infinite; }
+@keyframes hkgraze { 0%, 50%, 92%, 100% { transform: none; } 58%, 84% { transform: rotate(34deg); } 66% { transform: rotate(26deg); } 74% { transform: rotate(36deg); } }
+.alive .hk-berry { animation: hkberry 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes hkberry { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+.alive .hk-arm { transform-box: view-box; }
+.alive .hk-arm.pick { transform-origin: 2px -8px; animation: hkpick 2.4s ease-in-out infinite; }
+@keyframes hkpick { 0%, 100% { transform: rotate(-4deg); } 40% { transform: rotate(26deg); } 60% { transform: rotate(22deg); } }
+.alive .hk-arm.hit { transform-origin: 2px -8px; animation: hkhit 1.1s ease-in infinite; }
+@keyframes hkhit { 0% { transform: rotate(10deg); } 58% { transform: rotate(-62deg); } 70% { transform: rotate(12deg); } 100% { transform: rotate(10deg); } }
+.alive .hk-arm.scrape { transform-origin: 2px -8px; animation: hkscrape .9s ease-in-out infinite alternate; }
+@keyframes hkscrape { from { transform: rotate(-20deg); } to { transform: rotate(24deg); } }
+.alive .hk-arm.paint { transform-origin: 2px -8px; animation: hkpaint 2.8s ease-in-out infinite; }
+@keyframes hkpaint { 0%, 100% { transform: rotate(-10deg); } 25% { transform: rotate(14deg) translateY(-1px); } 50% { transform: rotate(-4deg); } 75% { transform: rotate(18deg); } }
+.alive .hk-hop { animation: hkhop 4.2s ease-in-out infinite; }
+@keyframes hkhop { 0%, 62%, 100% { transform: translate(0, 0); } 70% { transform: translate(4px, -7px); } 78% { transform: translate(8px, 0); } 86% { transform: translate(12px, -6px); } 94% { transform: translate(16px, 0); } 99% { transform: translate(16px, 0); opacity: 1; } }
+.alive .hk-hide { transform-box: fill-box; transform-origin: 50% 0; animation: hksway 3.6s ease-in-out infinite; }
+@keyframes hksway { 0%, 100% { transform: skewX(-4deg); } 50% { transform: skewX(4deg); } }
+.alive .hk-point { animation: hkpoint 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+@keyframes hkpoint { 0%, 100% { opacity: .55; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.15); } }
+.alive .hk-glow { animation: hkglow 1.1s ease-in-out infinite alternate; }
+@keyframes hkglow { from { opacity: .55; } to { opacity: 1; } }
+.alive .hk-wallart { animation: hkwall 7s ease-in-out infinite; }
+@keyframes hkwall { 0%, 8% { opacity: 0; } 55%, 85% { opacity: 1; } 100% { opacity: 0; } }
+.alive .hk-peek { animation: hkpeek 7s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes hkpeek { 0%, 20% { transform: translateY(5px) scale(.9); } 34%, 70% { transform: none; } 82%, 100% { transform: translateY(5px) scale(.9); } }
+.alive .hk-dance { animation: hkdance 1.2s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes hkdance { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-3px) rotate(5deg); } }
+.alive .hk-bat { animation: hkbat 6s ease-in-out infinite; }
+@keyframes hkbat { 0% { transform: translate(-20px, 4px) scaleY(1); opacity: 0; } 8% { opacity: 1; } 25% { transform: translate(-6px, -4px) scaleY(.5); } 40% { transform: translate(8px, 2px) scaleY(1); } 55% { transform: translate(20px, -5px) scaleY(.5); } 70%, 100% { transform: translate(34px, 0) scaleY(1); opacity: 0; } }
+.alive .hk-tumble { animation: hktumble 9s linear infinite; }
+@keyframes hktumble { 0% { transform: translate(-30px, 4px) rotate(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translate(14px, -2px) rotate(540deg); opacity: 0; } }
+.alive .hk-circle { animation: hkcircle 9s linear infinite; }
+@keyframes hkcircle { from { transform: rotate(0) translateX(18px) rotate(0); } to { transform: rotate(360deg) translateX(18px) rotate(-360deg); } }
+/* the Smilodon */
+.hk-prowl { transform-box: fill-box; transform-origin: 50% 100%; animation: hkprowl 1.6s ease-in-out infinite; }
+@keyframes hkprowl { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-2px) rotate(1.5deg); } }
+.hk-tail { transform-box: fill-box; transform-origin: 100% 90%; animation: hktail 1.8s ease-in-out infinite; }
+@keyframes hktail { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(14deg); } }
+.hk-head { transform-box: fill-box; transform-origin: 20% 70%; animation: hkhead 3.4s ease-in-out infinite; }
+@keyframes hkhead { 0%, 100% { transform: none; } 35% { transform: rotate(-5deg); } 70% { transform: rotate(4deg) translateY(1px); } }
+svg.board:not(.alive) .hk-prowl, svg.board:not(.alive) .hk-tail, svg.board:not(.alive) .hk-head { animation: none !important; }
+
+/* Dawn of Humankind: progress tracks */
+.hk-prog { padding-bottom: 10px; }
+.hk-track { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 14px; border-top: 1px solid var(--line); }
+.hk-ti { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: var(--tc); box-shadow: inset 0 -3px 0 rgba(0,0,0,.22); }
+.hk-tb b { font-size: 14px; } .hk-tb small { display: block; color: var(--muted); font-size: 12px; line-height: 1.25; margin-top: 2px; }
+.hk-pips { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.hk-pips i { width: 14px; height: 8px; border-radius: 4px; background: #E7DFC9; box-shadow: inset 0 1px 0 rgba(0,0,0,.12); }
+.hk-done { color: #2F7A3C; font-weight: 800; }
+.hk-track .btn.small { display: inline-flex; gap: 4px; align-items: center; padding: 5px 9px; }
+.hk-idea { display: inline-flex; gap: 4px; align-items: center; font-weight: 700; color: #B8860B; }
+.hk-prog .evclean, .hk-prog > .muted { margin: 8px 14px 0; }
+
+/* =============================================================== Rise of the Inkas: tile scenes (living board) */
+.alive .in-frond { transform-box: fill-box; transform-origin: 50% 100%; animation: insway 4s ease-in-out infinite; }
+@keyframes insway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+.alive .in-vine { transform-box: fill-box; transform-origin: 50% 0; animation: invine 3.6s ease-in-out infinite; }
+@keyframes invine { 0%, 100% { transform: skewX(-4deg) translateX(-.5px); } 50% { transform: skewX(4deg) translateX(.5px); } }
+.alive .in-bob { animation: inbob 2.6s ease-in-out infinite; }
+@keyframes inbob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-2.5px) rotate(3deg); } }
+.alive .in-wing { transform-box: fill-box; transform-origin: 0 0; animation: inwing 1.6s ease-in-out infinite; }
+@keyframes inwing { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-26deg); } 86% { transform: rotate(8deg); } 94% { transform: rotate(-20deg); } }
+.alive .in-boat { animation: inboat 3.4s ease-in-out infinite; }
+@keyframes inboat { 0%, 100% { transform: translate(0, 0) rotate(-2deg); } 50% { transform: translate(1.5px, -2px) rotate(2deg); } }
+.alive .in-wave { animation: inwave 3s ease-in-out infinite; }
+@keyframes inwave { 0%, 100% { transform: translateX(-3px); opacity: .6; } 50% { transform: translateX(3px); opacity: 1; } }
+.alive .in-glint { transform-box: fill-box; transform-origin: center; animation: inglint 3s ease-in-out infinite; opacity: 0; }
+@keyframes inglint { 0%, 60%, 100% { opacity: 0; transform: scale(.3) rotate(0); } 75% { opacity: 1; transform: scale(1.2) rotate(40deg); } }
+.alive .in-draw { animation: indraw 9s ease-in-out infinite; }
+@keyframes indraw { 0% { stroke-dashoffset: 100; opacity: 1; } 45%, 80% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+.alive .in-flag { transform-box: fill-box; transform-origin: 0 50%; animation: inflag 1.2s ease-in-out infinite alternate; }
+@keyframes inflag { from { transform: skewY(-6deg) scaleX(.92); } to { transform: skewY(6deg) scaleX(1.05); } }
+.alive .hk-arm.cast { transform-origin: 2px -8px; animation: incast 4.4s ease-in-out infinite; }
+@keyframes incast { 0%, 30%, 100% { transform: rotate(14deg); } 45% { transform: rotate(-52deg); } 60% { transform: rotate(-30deg); } 80% { transform: rotate(14deg); } }
+svg.board:not(.alive) .in-draw { stroke-dashoffset: 0 !important; animation: none !important; }
+
+/* Rise of the Inkas: era panel */
+.in-steps { display: inline-flex; align-items: center; gap: 4px; }
+.in-era { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 800 11px var(--serif); background: #E7DFC9; color: #8A7C5A; }
+.in-era.on { background: var(--ec); color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.55), 0 0 0 4.500px var(--ec); }
+.in-era.done { background: var(--ec); color: #fff; opacity: .55; }
+.in-arrow { width: 8px; height: 2px; background: #CBBF9C; }
+.in-body { padding: 8px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+.in-name { font-size: 17px; display: flex; gap: 6px; align-items: center; }
+.in-toks { display: flex; gap: 6px; align-items: center; }
+.in-toks small { margin-left: 4px; color: var(--muted); }
+.in-tok { width: 22px; height: 22px; border-radius: 50%; border: 2.500px solid; box-shadow: inset 0 -2px 0 rgba(0,0,0,.2); }
+.in-tok.empty { background: #EFE6CF; border-color: #CBBF9C; border-style: dashed; box-shadow: none; }
+.in-set { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.in-set small { flex-basis: 100%; color: var(--muted); font-size: 12px; }
+.in-lbl { font-weight: 700; font-size: 13px; display: inline-flex; gap: 4px; align-items: center; }
+.in-good { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px 3px 6px; border-radius: 999px; background: var(--c); color: #fff; font-size: 13px; }
+.in-set-inline { display: inline-flex; gap: 4px; vertical-align: middle; margin-left: 6px; }
+.in-rule { margin: 0; font-size: 12.500px; color: var(--muted); line-height: 1.35; }
+.in-body .btn.block { margin-top: 2px; display: inline-flex; gap: 6px; justify-content: center; align-items: center; }
+.in-body > small { font-size: 12px; }

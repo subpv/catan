@@ -405,17 +405,17 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
     if (h.terrain === 'sea') return;
     if (h.terrain === 'fog') { out.push(fogTile(board, h)); return; }
     const cx = h.x * S, cy = h.y * S;
-    const col = h.terrain === 'gold' ? 'url(#goldg)' : TERRAIN_COLOR[h.terrain];
+    const col = h.terrain === 'gold' ? 'url(#goldg)' : (ext && ext.color && ext.color(h)) || TERRAIN_COLOR[h.terrain];
     const reveal = fr.hexes && fr.hexes.has(h.id);
     out.push(`<g class="tile ${reveal ? 'fx-reveal' : ''} ${h.terrain}" data-num="${h.number || ''}" data-hex="${h.id}"><polygon points="${hexPoints(board, h, 0.97)}" fill="${col}" stroke="rgba(0,0,0,.18)" stroke-width="2"/>
       <polygon class="tile-glow" points="${hexPoints(board, h, 0.9)}" fill="none" stroke="#FFF6DA" stroke-width="5"/>
       <polygon points="${hexPoints(board, h, 0.84)}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/></g>`);
     if (h.terrain === 'river') out.push(riverArt(h));
-    const g = TERRAIN_GLYPH[h.terrain];
+    const g = ext && ext.glyph ? ext.glyph(h) : TERRAIN_GLYPH[h.terrain];
     if (g) out.push(`<g transform="translate(${cx - 13},${cy - 44}) scale(1.08)" style="color:rgba(255,255,255,${h.terrain === 'gold' ? .9 : .55})">${GLYPH[g]}</g>`);
     if (life) {
       if (view.robber === h.id) out.push(`<polygon class="lf-dim" points="${hexPoints(board, h, 0.97)}" fill="rgba(24,10,4,.38)"/>`);
-      else if (!(h.terrain === 'desert' && view.fishing)) out.push(`<g class="life">${lifeFor(h, cx, cy, rankOf[h.id], seedOf(view.id))}</g>`);
+      else if (!(h.terrain === 'desert' && view.fishing)) out.push(`<g class="life">${ext && ext.life ? ext.life(h, cx, cy, rankOf[h.id], seedOf(view.id)) : lifeFor(h, cx, cy, rankOf[h.id], seedOf(view.id))}</g>`);
     }
     if (h.terrain === 'gold') out.push(`<g class="sparkle" style="color:#FFF6C8"><circle cx="${f(cx - 30)}" cy="${f(cy - 18)}" r="2.4" fill="currentColor"/><circle cx="${f(cx + 32)}" cy="${f(cy - 8)}" r="1.8" fill="currentColor"/><circle cx="${f(cx + 20)}" cy="${f(cy + 34)}" r="2.2" fill="currentColor"/></g>`);
     if (h.terrain === 'desert' && view.fishing) {
@@ -541,11 +541,11 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
     g += job && job.kind === 'wall' ? grow(wallS) : wallS;
     const metro = job && job.kind === 'metro' ? grow : x => x;
     if (b.metro) g += metro(metroBack());
-    g += b.type === 'city' ? cityPath(c) : settlementPath(c);
+    g += ext && ext.building ? ext.building(b, c, vid) : b.type === 'city' ? cityPath(c) : settlementPath(c);
     if (b.metro) g += metro(metroFront());
     if (b.p === boot) { boot = null; g += `<g transform="translate(${b.type === 'city' ? 17 : 12},6) rotate(-8)"><title>${t('Old boot')}</title><path d="M-3.4 -7.5 H2.2 V0.6 L6.6 2.6 Q8.4 3.5 8.4 5.6 V7.2 H-3.4 Z" fill="#7A5232" stroke="#3A2614" stroke-width="1.3" stroke-linejoin="round"/><path d="M-3.4 4.6 H8.4" stroke="#3A2614" stroke-width="1"/><path d="M-1.6 -5.6 H0.6 M-1.6 -3.4 H0.6" stroke="#E8D3A8" stroke-width=".8"/></g>`; }
     const isNew = fr.verts.has(+vid) && !job;
-    const d = b.type === 'city' ? CITY_D : SETTLE_D;
+    const d = ext && ext.shape ? ext.shape(b.type) : b.type === 'city' ? CITY_D : SETTLE_D;
     const flash = isNew ? `<path class="fx-flash" d="${d}" fill="#FFF3C4" stroke="#FFF8DE" stroke-width="2.5" stroke-linejoin="round"/>` : '';
     const body = `${b.wall ? '' : shade(d)}${g}${flash}`;
     if (job && (job.kind === 'settlement' || job.kind === 'city')) {

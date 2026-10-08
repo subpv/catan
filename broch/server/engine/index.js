@@ -5,6 +5,8 @@ const base = require('./game');
 
 const STANDALONE = {
   energies: require('./energies'),
+  humankind: require('./humankind'),
+  inkas: require('./inkas'),
 };
 const engineOf = mode => STANDALONE[mode] || base;
 const MODES = ['classic', 'knights', ...Object.keys(STANDALONE)];

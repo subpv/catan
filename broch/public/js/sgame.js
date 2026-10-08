@@ -64,7 +64,7 @@ export function mountSGame(app, id, mode) {
       if (!prev) setTimeout(tutNudge, 1500);
       const d = diff(prev, G.view);
       G.fresh = d.fresh;
-      if (prev && G.view.plants) G.fresh.plants = new Set(G.view.plants.filter(x => !(prev.plants || []).some(y => y.id === x.id)).map(x => x.id));
+      if (prev) Object.assign(G.fresh, plugin().fresh?.(G.view, prev) || {}); // pieces only this game has
       onNewState(prev);
       plugin().afterState?.(G.view, prev, G.A); // may queue a scene, so dialogs wait for it
       render();
@@ -287,7 +287,7 @@ function renderBoardPart() {
   const tg = targets();
   const key = boardKey(tg);
   const fr = G.fresh;
-  const freshAny = fr && (fr.verts.size || fr.edges.size || fr.hexes.size || (fr.plants && fr.plants.size));
+  const freshAny = fr && (fr.verts.size || fr.edges.size || fr.hexes.size || fr.any);
   if (key === G.boardKey && !freshAny) return;
   G.boardKey = key;
   const P = plugin();

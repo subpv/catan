@@ -162,6 +162,10 @@ const plugin = register({
   lostText: 'The world lost.',
   tokenKeys: ['science', 'energy'], limited: LIMITED, bankBuys: RES, tradeKeys: ['lumber', 'brick', 'wool', 'grain', 'ore', 'science', 'energy'],
   bankText: 'Resources use your harbors. Science trades 3:1, energy 2:1.',
+  fresh(view, prev) {
+    const plants = new Set(view.plants.filter(x => !(prev.plants || []).some(y => y.id === x.id)).map(x => x.id));
+    return { plants, any: plants.size > 0 };
+  },
   ext, boardKey: v => JSON.stringify([v.plants, Object.entries(v.buildings).filter(([, b]) => b.hazard).map(([k]) => k)]),
 
   hud(v) {

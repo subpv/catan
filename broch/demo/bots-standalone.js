@@ -39,6 +39,58 @@ const BOTS = {
   },
 };
 
+const HK = ['meat', 'hide', 'flint', 'bone'];
+BOTS.humankind = function humankind(v) {
+  const L = v.legal || {}, me = v.players[v.me], res = me.res || {};
+  if (L.setupSpots) return { type: 'placeSettlement', v: bestSpot(v, L.setupSpots) };
+  if (L.setupRoads) return { type: 'placeRoad', e: pick(L.setupRoads) };
+  const mine = v.pending.filter(x => x.group === v.activeGroup && x.player === v.me)[0];
+  if (mine && mine.type === 'discard') return { type: 'discard', cards: discardCards(v, mine.count, HK) };
+  if (mine && mine.type === 'beast') {
+    const hs = Object.keys(L.beast || {}).map(Number);
+    const bad = hs.filter(h => (L.beast[h] || []).length && !v.board.hexes[h].verts.some(x => v.buildings[x] && v.buildings[x].p === v.me));
+    const h = bad.length ? pick(bad) : pick(hs);
+    const vs = L.beast[h] || [];
+    return { type: 'moveBeast', h, victim: vs.length ? pick(vs) : undefined };
+  }
+  if (v.phase !== 'play' || v.pending.length || v.current !== v.me) return null;
+  if (v.step === 'roll') return { type: 'roll' };
+  if (L.cities && L.cities.length) return { type: 'buildCity', v: pick(L.cities) };
+  if (L.settlements && L.settlements.length) return { type: 'buildSettlement', v: bestSpot(v, L.settlements) };
+  if (L.roads && L.roads.length && me.pieces.roads > 3) {
+    const fogEdges = L.roads.filter(e => v.board.edges[e].v.some(x => v.board.hexes.some(h => h.terrain === 'fog' && h.verts.includes(x))));
+    if (fogEdges.length) return { type: 'buildRoad', e: pick(fogEdges) };
+  }
+  const adv = Object.entries(L.advance || {}).filter(([, a]) => a && res[a.res] >= a.cost + 1);
+  if (adv.length && Math.random() < 0.6) return { type: 'advance', track: adv[0][0] };
+  if (L.roads && L.roads.length && me.pieces.roads > 9 && res.hide > 0 && res.flint > 0) return { type: 'buildRoad', e: pick(L.roads) };
+  return { type: 'endTurn' };
+};
+
+const IK = ['catch', 'feathers', 'coca', 'nugget'];
+BOTS.inkas = function inkas(v) {
+  const L = v.legal || {}, me = v.players[v.me], res = me.res || {};
+  if (L.setupSpots) return { type: 'placeSettlement', v: bestSpot(v, L.setupSpots) };
+  if (L.setupRoads) return { type: 'placeRoad', e: pick(L.setupRoads) };
+  const mine = v.pending.filter(x => x.group === v.activeGroup && x.player === v.me)[0];
+  if (mine && mine.type === 'discard') return { type: 'discard', cards: discardCards(v, mine.count, IK) };
+  if (mine && mine.type === 'thicket') {
+    const hs = Object.keys(L.thicket || {}).map(Number);
+    const theirs = hs.filter(h => !v.board.hexes[h].verts.some(x => v.buildings[x] && v.buildings[x].p === v.me));
+    const h = theirs.length ? pick(theirs) : pick(hs);
+    const vs = L.thicket[h] || [];
+    return { type: 'growThicket', h, victim: vs.length ? pick(vs) : undefined };
+  }
+  if (v.phase !== 'play' || v.pending.length || v.current !== v.me) return null;
+  if (v.step === 'roll') return { type: 'roll' };
+  if (L.tribute && L.tribute.can) return { type: 'tribute' };
+  if (L.clear && L.clear.length && L.clearCost && Math.random() < 0.7) return { type: 'clearThicket', h: pick(L.clear) };
+  if (L.cities && L.cities.length) return { type: 'buildCity', v: pick(L.cities) };
+  if (L.settlements && L.settlements.length) return { type: 'buildSettlement', v: bestSpot(v, L.settlements) };
+  if (L.roads && L.roads.length && me.pieces.roads > 11 && res.coca > 2) return { type: 'buildRoad', e: pick(L.roads) };
+  return { type: 'endTurn' };
+};
+
 export function decide(v) {
   if (v.phase === 'over') return null;
   const bot = BOTS[v.mode];
