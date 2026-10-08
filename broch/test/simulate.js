@@ -39,6 +39,10 @@ function candidates(s, p) {
       case 'aqueduct': out.push({ type: 'aqueduct', res: pick(C.RES) }); break;
       case 'placeFreeKnight': out.push({ type: 'placeFreeKnight', v: L.freeKnightSpots.length ? pick(L.freeKnightSpots) : null }); break;
       case 'spy': out.push({ type: 'spyTake', idx: 0 }); break;
+      case 'fishSwap': out.push({ type: 'fishSwap', idx: Math.random() < 0.5 ? null : 0 }); break;
+      case 'bankPick': { const c = {}; for (let i = 0; i < it.count; i++) { const k = pick(C.RES.filter(r => s.bank[r] > 0)); if (k) c[k] = (c[k] || 0) + 1; } out.push({ type: 'bankPick', cards: c }); break; }
+      case 'quake': out.push({ type: 'quake', e: pick(L.quakeRoads) }); break;
+      case 'helpGive': { const have = C.RES.filter(r => s.players[p].res[r] > 0); if (have.length) out.push({ type: 'helpGive', to: pick(L.helpTo), card: pick(have) }); break; }
       case 'masterMerchant': {
         const r = v.reveal; const pool = [];
         for (const [k, n] of [...Object.entries(r.res), ...Object.entries(r.comm)]) for (let i = 0; i < n; i++) pool.push(k);
@@ -79,6 +83,8 @@ function candidates(s, p) {
       out.push({ type: 'endTurn' });
       if (L.moveShips) for (const [from, tos] of Object.entries(L.moveShips)) out.push({ type: 'moveShip', from: +from, to: pick(tos) });
       if (L.goldTrade) out.push({ type: 'goldTrade', res: pick(C.RES) });
+      if (L.repair && L.repair.ok) out.push({ type: 'repairRoad', e: pick(L.repair.edges) });
+      if (L.boot && L.boot.length) out.push({ type: 'giveBoot', to: pick(L.boot) });
       if (L.fish) for (const [what, ok] of Object.entries(L.fish)) if (ok) out.push({ type: 'useFish', what, target: pick(s.players.map((_, i) => i).filter(i => i !== p)), res: pick(C.RES) });
       if (L.deliver) for (const [kind, ok] of Object.entries(L.deliver)) if (ok) out.push({ type: 'deliver', kind });
       if (L.lairs && L.lairs.length) out.push({ type: 'attackLair', hex: pick(L.lairs) });
@@ -166,7 +172,11 @@ const CONFIGS = {
   'sea-knights': ['knights', { expansion: 'seafarers', scenario: 'shores' }],
   'tb-fish': ['classic', { expansion: 'traders', variants: { fishermen: true } }],
   'tb-rivers': ['classic', { expansion: 'traders', variants: { rivers: true } }],
-  'tb-all': ['classic', { expansion: 'traders', variants: { fishermen: true, rivers: true, events: true } }],
+  'tb-all': ['classic', { expansion: 'traders', variants: { fishermen: true, events: true, friendly: true, harbors: true } }],
+  'tb-rivers-all': ['classic', { expansion: 'traders', variants: { rivers: true, events: true, friendly: true, harbors: true } }],
+  'tb-events': ['classic', { expansion: 'traders', variants: { events: true } }],
+  'tb-friendly': ['classic', { expansion: 'traders', variants: { friendly: true } }],
+  'tb-harbors': ['classic', { expansion: 'traders', variants: { harbors: true } }],
   'tb-knights': ['knights', { expansion: 'traders', variants: { fishermen: true, rivers: true, events: true } }],
   'explorers-knights': ['knights', { expansion: 'explorers' }],
   explorers: ['classic', { expansion: 'explorers' }],

@@ -26,9 +26,9 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
   const scenario = expansion === 'explorers' ? 'fog' : (X.SCENARIOS[options.scenario] ? options.scenario : 'shores');
   const kind = sea ? 'sea' : big ? 'extended' : 'standard';
   const def = C.BOARDS[big ? 'extended' : 'standard'];
-  const variants = expansion === 'traders' ? { fishermen: !!(options.variants && options.variants.fishermen), rivers: !!(options.variants && options.variants.rivers), events: !!(options.variants && options.variants.events) } : {};
+  const variants = expansion === 'traders' ? X.hub.normalize(options.variants, { big, players: players.length, knights }) : {};
   const board = X.makeBoard({ expansion, mode, options: { ...options, big, scenario, variants }, players: players.length, generate });
-  const defaultVp = knights ? 13 : sea ? (expansion === 'explorers' ? 12 : X.SCENARIOS[scenario].vp) : 10;
+  const defaultVp = (knights ? 13 : sea ? (expansion === 'explorers' ? 12 : X.SCENARIOS[scenario].vp) : expansion === 'traders' ? X.hub.defaultVp(variants) : 10) + (knights && variants.harbors ? 1 : 0);
   const order = shuffle(players.map((_, i) => i));
   const seats = order.map(i => players[i]);
   const n = seats.length;
@@ -42,7 +42,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       big, scenario: sea ? scenario : null, variants, missions: expansion === 'explorers' ? (options.missions || C.MISSIONS) : null,
     },
     board,
-    robber: board.desert != null ? board.desert : board.hexes.find(h => h.terrain === 'desert').id,
+    robber: expansion === 'traders' && X.hub.initialRobber(board, variants) !== undefined ? X.hub.initialRobber(board, variants) : board.desert != null ? board.desert : board.hexes.find(h => h.terrain === 'desert').id,
     merchant: null,
     buildings: {}, roads: {}, knights: {},
     players: seats.map((pl, i) => ({
@@ -92,14 +92,16 @@ const E = (s, e) => s.board.edges[e];
 
 function hand(pl) { return sum(pl.res) + sum(pl.comm); }
 function has(pl, cost) {
-  return Object.entries(cost).every(([k, n]) => (isRes(k) ? pl.res[k] : pl.comm[k]) >= n);
+  return Object.entries(cost).every(([k, n]) => (k === 'gold' ? pl.gold : isRes(k) ? pl.res[k] : pl.comm[k]) >= n);
 }
 function pay(s, pl, cost) {
   for (const [k, n] of Object.entries(cost)) {
-    if (isRes(k)) { pl.res[k] -= n; s.bank[k] += n; } else pl.comm[k] -= n;
+    if (k === 'gold') pl.gold -= n;
+    else if (isRes(k)) { pl.res[k] -= n; s.bank[k] += n; } else pl.comm[k] -= n;
   }
 }
 function take(s, pl, type, n) {
+  if (type === 'gold') { pl.gold += n; return n; }
   if (isRes(type)) {
     const got = Math.min(n, s.bank[type]);
     s.bank[type] -= got; pl.res[type] += got; return got;
@@ -107,6 +109,7 @@ function take(s, pl, type, n) {
   pl.comm[type] += n; return n;
 }
 function moveCard(from, to, type, n = 1) {
+  if (type === 'gold') { const k = Math.min(n, from.gold); from.gold -= k; to.gold += k; return k; }
   const a = isRes(type) ? 'res' : 'comm';
   const k = Math.min(n, from[a][type]);
   from[a][type] -= k; to[a][type] += k; return k;
@@ -120,9 +123,9 @@ function randomCard(pl) {
 function cardList(cards) {
   return Object.entries(cards).filter(([, n]) => n > 0).map(([k, n]) => `${n} ${k}`).join(', ') || 'nothing';
 }
-function validCards(obj, knights) {
+function validCards(obj, knights, gold = false) {
   if (!obj || typeof obj !== 'object') return false;
-  return Object.entries(obj).every(([k, n]) => (isRes(k) || (knights && isComm(k))) && Number.isInteger(n) && n >= 0);
+  return Object.entries(obj).every(([k, n]) => (isRes(k) || (knights && isComm(k)) || (gold && k === 'gold')) && Number.isInteger(n) && n >= 0);
 }
 
 function countPieces(s, p) {
@@ -268,14 +271,14 @@ function legalSetupSettlements(s) {
 }
 function legalSetupRoads(s) {
   const v = s.setup.last;
-  return V(s, v).edges.filter(e => s.roads[e] === undefined && X.roadEdgeOk(s, e));
+  return V(s, v).edges.filter(e => s.roads[e] === undefined && X.roadEdgeOk(s, e, s.current));
 }
 function legalSettlements(s, p) {
-  return s.board.vertices.filter(v => distanceOk(s, v.id) && X.landVertex(s, v.id) && !s.knights[v.id] && touchesOwnRoute(s, v.id, p)).map(v => v.id);
+  return s.board.vertices.filter(v => distanceOk(s, v.id) && X.landVertex(s, v.id) && !s.knights[v.id] && touchesOwnRoute(s, v.id, p) && X.settlementOk(s, v.id, p)).map(v => v.id);
 }
 function legalRoads(s, p) {
   return s.board.edges.filter(e => {
-    if (s.roads[e.id] !== undefined || s.ships[e.id] || !X.roadEdgeOk(s, e.id)) return false;
+    if (s.roads[e.id] !== undefined || s.ships[e.id] || !X.roadEdgeOk(s, e.id, p)) return false;
     return e.v.some(v => {
       const b = s.buildings[v];
       if (b && b.p === p) return true;
@@ -345,23 +348,27 @@ function isActor(s, p) {
 // ---------------------------------------------------------------- dice & production
 
 function roll(s, forced) {
-  const card = !forced && s.eventCards ? X.drawEvent(s) : null;
-  const red = forced ? forced[0] : card ? card[0] : d6();
-  const yellow = forced ? forced[1] : card ? card[1] : d6();
-  const total = red + yellow;
+  const rv = (!forced && X.rollValues(s)) || { red: forced ? forced[0] : d6(), yellow: forced ? forced[1] : d6(), card: null };
+  const red = rv.red;
+  const yellow = rv.yellow;
+  const total = rv.total != null ? rv.total : red + yellow;
   const event = K(s) ? C.EVENT_FACES[Math.floor(Math.random() * 6)] : null;
-  s.dice = { red, yellow, total, event };
+  s.dice = { red, yellow, total, event, card: rv.card ? { ev: rv.card.ev, n: rv.card.n } : undefined };
   s.stats.rolls[total]++;
   s.flags.rolled = true;
   s.step = 'main';
-  if (event) log(s, '{@p} rolled {n} ({#e}).', { p: s.current, n: total, e: event === 'ship' ? 'barbarian ship' : `${event} gate` });
+  if (rv.card) log(s, '{@p} turned over an event card ({n}).', { p: s.current, n: total });
+  else if (event) log(s, '{@p} rolled {n} ({#e}).', { p: s.current, n: total, e: event === 'ship' ? 'barbarian ship' : `${event} gate` });
   else log(s, '{@p} rolled {n}.', { p: s.current, n: total });
 
   if (K(s)) {
     if (event === 'ship') advanceBarbarians(s);
     else drawProgressForGate(s, event, red);
   }
-  if (total === 7) handleSeven(s);
+  if (rv.card) {
+    X.runCard(s, rv.card);                 // the event first, the yields after it
+    if (total !== 7) produce(s, total);
+  } else if (total === 7) handleSeven(s);
   else produce(s, total);
   checkWin(s);
 }
@@ -369,7 +376,7 @@ function roll(s, forced) {
 function produce(s, total) {
   const want = s.players.map(() => ({}));
   const goldWant = s.players.map(() => 0);
-  const hexes = s.board.hexes.filter(h => h.number === total && h.id !== s.robber && !h.hidden);
+  const hexes = s.board.hexes.filter(h => X.hexPays(s, h, total) && h.id !== s.robber && !h.hidden);
   for (const h of hexes) {
     const res = C.TERRAIN_RES[h.terrain];
     for (const v of h.verts) {
@@ -379,6 +386,7 @@ function produce(s, total) {
       if (!res) continue;
       const w = want[b.p];
       if (b.type === 'settlement') w[res] = (w[res] || 0) + 1;
+      else if (s.flags.plague) w[res] = (w[res] || 0) + 1; // plague: a city yields only one resource
       else if (K(s) && C.TERRAIN_COMM[h.terrain]) {
         w[res] = (w[res] || 0) + 1;
         const c = C.TERRAIN_COMM[h.terrain];
@@ -427,7 +435,8 @@ function handleSeven(s) {
     if (h > handLimit(s, p)) discards.push({ type: 'discard', player: p, count: Math.floor(h / 2) });
   });
   pushPending(s, discards);
-  if (robberActive(s)) pushPending(s, [{ type: 'moveRobber', player: s.current }]);
+  if (X.noRobber(s)) X.hub.sevenWithoutRobber(s);
+  else if (robberActive(s)) pushPending(s, [{ type: 'moveRobber', player: s.current }]);
   else log(s, 'The barbarians have not attacked yet, so the robber stays put.');
 }
 
@@ -559,6 +568,10 @@ function canAffordAnyBuild(s, p) {
 }
 
 function endTurn(s) {
+  if (X.beginEnd(s, s.current)) return; // a scenario has a few more steps before the turn passes
+  finishTurn(s);
+}
+function finishTurn(s) {
   if (s.options.specialBuild && s.players.length > 2) {
     const n = s.players.length;
     const queue = [];
@@ -590,7 +603,7 @@ function buildRoad(s, p, e, free) {
   s.roads[e] = p;
   log(s, '{@p} built a road.', { p });
   X.reveal(s, p, E(s, e).v);
-  X.riverBuilt(s, p, 'road', e);
+  X.built(s, p, 'road', e);
   updateLongest(s);
 }
 
@@ -602,6 +615,7 @@ function act(s, p, a) {
   if (!handler) fail('Unknown action.');
   handler(s, p, a);
   s.version++;
+  X.afterAct(s);
   if (s.phase === 'play' && !s.pending.length) checkWin(s);
 }
 
@@ -623,7 +637,7 @@ const HANDLERS = {
     s.buildings[a.v] = { p, type: 'settlement' };
     s.setup.last = a.v; s.setup.need = 'road';
     log(s, '{@p} placed a settlement.', { p });
-    X.riverBuilt(s, p, 'settlement', a.v);
+    X.built(s, p, 'settlement', a.v);
     // normally only the second building pays out; the house rule pays for both (a C&K city still counts like a settlement)
     if (s.options.startBoth || (!K(s) && s.setup.idx >= s.players.length)) startingResources(s, p, a.v, 'settlement');
   },
@@ -639,7 +653,7 @@ const HANDLERS = {
     if (s.phase !== 'setup' || p !== s.current || s.setup.need !== 'road') fail('Not your placement.');
     if (!legalSetupRoads(s).includes(a.e)) fail('The road must touch your new building.');
     s.roads[a.e] = p;
-    X.riverBuilt(s, p, 'road', a.e);
+    X.built(s, p, 'road', a.e);
     s.setup.idx++;
     const n = s.players.length;
     if (s.setup.idx >= s.setup.queue.length) {
@@ -693,7 +707,7 @@ const HANDLERS = {
     log(s, '{@p} built a settlement.', { p });
     X.islandBonus(s, p, a.v);
     X.reveal(s, p, [a.v]);
-    X.riverBuilt(s, p, 'settlement', a.v);
+    X.built(s, p, 'settlement', a.v);
     updateLongest(s);
   },
   buildCity(s, p, a) {
@@ -702,10 +716,12 @@ const HANDLERS = {
     const b = s.buildings[a.v];
     if (!b || b.p !== p || b.type !== 'settlement') fail('Upgrade one of your settlements.');
     if (countPieces(s, p).cities >= C.PIECES.city) fail('No cities left.');
+    if (!X.cityOk(s, a.v, p)) fail('You cannot upgrade that settlement.');
     if (!has(pl, C.COSTS.city)) fail('Not enough resources.');
     pay(s, pl, C.COSTS.city);
     b.type = 'city';
     log(s, '{@p} built a city.', { p });
+    X.built(s, p, 'city', a.v);
   },
 
   // ---- classic development cards
@@ -802,11 +818,12 @@ const HANDLERS = {
       return;
     }
     if (a.hex === s.robber) fail('Move the robber to a different tile.');
+    if (!X.robberHexes(s, p, [a.hex]).length) fail('The robber cannot go to that tile.');
     s.robber = a.hex;
     resolvePending(s, it);
     log(s, '{@p} moved the robber.', { p, h: a.hex });
     const victims = [...new Set(h.verts.map(v => s.buildings[v]).filter(b => b && b.p !== p).map(b => b.p))]
-      .filter(q => hand(P(s, q)) > 0);
+      .filter(q => hand(P(s, q)) > 0 && X.victimOk(s, p, q));
     if (it.bishop) {
       victims.forEach(q => steal(s, p, q));
     } else if (victims.length === 1) steal(s, p, victims[0]);
@@ -817,9 +834,11 @@ const HANDLERS = {
     if (!s.options.robberReturn) fail('That house rule is not switched on.');
     const it = findPending(s, p, 'moveRobber');
     if (!it) fail('You are not moving the robber.');
-    const d = s.board.hexes.find(h => h.terrain === 'desert');
+    const hb = X.robberHome(s);
+    const d = hb !== undefined ? (hb == null ? null : s.board.hexes[hb]) : s.board.hexes.find(h => h.terrain === 'desert');
     resolvePending(s, it);
-    if (d) s.robber = d.id;
+    if (hb !== undefined) s.robber = hb;
+    else if (d) s.robber = d.id;
     log(s, '{@p} forgot to move the robber, so it goes back to the desert.', { p, h: d ? d.id : undefined });
     if (a && a.endTurn && s.phase === 'play' && s.step === 'main' && !s.pending.length && p === s.current) { s.flags.ending = true; endTurn(s); }
   },
@@ -833,7 +852,7 @@ const HANDLERS = {
   // ---- trading
   offerTrade(s, p, a) {
     requireMain(s, p);
-    if (!validCards(a.give, K(s)) || !validCards(a.get, K(s)) || !sum(a.give) || !sum(a.get)) fail('Set up both sides of the trade.');
+    if (!validCards(a.give, K(s), s.gold) || !validCards(a.get, K(s), s.gold) || !sum(a.give) || !sum(a.get)) fail('Set up both sides of the trade.');
     if (!has(P(s, p), a.give)) fail('You do not have those cards.');
     s.trade = { id: ++s.tradeSeq, from: p, give: clean(a.give), get: clean(a.get), responses: {} };
     log(s, '{@p} offers {$g} for {$w}.', { p, g: clean(a.give), w: clean(a.get) });
@@ -863,6 +882,15 @@ const HANDLERS = {
     requireMain(s, p);
     const pl = P(s, p);
     const okType = t => isRes(t) || (K(s) && isComm(t));
+    if (a.get === 'gold' && s.gold && okType(a.give)) { // the Gold-Tauschkurs card: 4:1, 3:1 or 2:1 for one gold
+      const rate = bankRatio(s, p, a.give);
+      const tm = Math.max(1, Math.min(10, a.times | 0 || 1));
+      if ((isRes(a.give) ? pl.res[a.give] : pl.comm[a.give]) < rate * tm) fail('You need {$c}.', { c: { [a.give]: rate * tm } });
+      pay(s, pl, { [a.give]: rate * tm });
+      pl.gold += tm;
+      log(s, '{@p} traded {$g} with the bank for {n} gold.', { p, g: { [a.give]: rate * tm }, n: tm });
+      return;
+    }
     if (!okType(a.give) || !okType(a.get) || a.give === a.get) fail('Pick what to give and what to get.');
     const times = Math.max(1, Math.min(10, a.times | 0 || 1));
     const ratio = bankRatio(s, p, a.give);
@@ -1298,7 +1326,7 @@ function legalFor(s, p) {
   const pl = P(s, p);
   for (const it of activePending(s).filter(i => i.player === p)) {
     if (it.type === 'moveRobber' && s.options.robberReturn) L.leaveRobber = true;
-    if (it.type === 'moveRobber') L.robberHexes = s.board.hexes.filter(h => !h.hidden && (h.terrain === 'sea' ? s.sea && h.id !== s.pirate : h.id !== s.robber)).map(h => h.id);
+    if (it.type === 'moveRobber') L.robberHexes = X.robberHexes(s, p, s.board.hexes.filter(h => !h.hidden && (h.terrain === 'sea' ? s.sea && h.id !== s.pirate : h.id !== s.robber)).map(h => h.id));
     if (it.type === 'relocateKnight') L.relocate = it.options.filter(v => !occupied(s, v));
     if (it.type === 'placeMetropolis') L.metroCities = ownCities(s, p, b => !b.metro);
     if (it.type === 'loseCity') L.loseCities = ownCities(s, p, b => !b.metro);
@@ -1366,6 +1394,7 @@ function viewFor(s, me) {
     if (it.level) o.level = it.level;
     if (it.target != null) o.target = it.target;
     if (it.bishop) o.bishop = true;
+    if (it.pub) Object.assign(o, it.pub);
     return o;
   });
   const activeGroup = s.pending.length ? s.pending[0].group : null;
@@ -1433,6 +1462,7 @@ function migrate(s) {
     s.options.big = s.options.big ?? (s.kind === 'extended');
     s.players.forEach(pl => { pl.gold = 0; pl.fish = 0; pl.cargo = { fish: 0, spice: 0 }; pl.delivered = { fish: 0, spice: 0 }; });
   }
+  if (s.expansion === 'traders') X.hub.migrate(s);
   // games saved before the trail was kept: find it once so the golden road shows up
   if (s.longestRoad && s.longestRoad.p != null && !s.longestRoad.edges) s.longestRoad.edges = longestFor(s, s.longestRoad.p, true).edges;
   return s;
@@ -1454,7 +1484,8 @@ function summary(s) {
 // expansion rules live in expansions.js and get the helpers they need from here
 const X = require('./expansions')({
   log, pushPending, findPending, resolvePending, P, V, E, fail, has, pay, take, hand, sum, countPieces, randomCard, moveCard, updateLongest, isRes,
-  foreignAt, requireActor, requireMain, steal, K, activePending,
+  foreignAt, requireActor, requireMain, requireTurnAny, steal, K, activePending, vp, handleSeven, finishTurn, nextTurn, checkWin, snapshot, legalRoads,
+  legalSettlements, distanceOk, occupied, handLimit, d6,
 });
 Object.assign(HANDLERS, X.handlers);
 
