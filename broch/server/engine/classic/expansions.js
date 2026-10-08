@@ -1,10 +1,9 @@
 'use strict';
-// Rules for the expansions: Seafarers (ships, pirate, gold, islands, fog) and Explorers & Pirates (missions on a fog map).
+// Rules for the expansions: Seafarers (ships, pirate, gold, islands, fog) and the hand-over to Traders & Barbarians.
 // Traders & Barbarians lives in ../traders-barbarians/hub.js (and its scenario files); the functions below hand over to it.
 // game.js passes in its helpers, so this file never needs to import it.
 
 const C = require('../shared/constants');
-const { shuffle } = require('../shared/board');
 const { build: buildSea } = require('../seafarers/sea');
 const { SCENARIOS, buildScenario } = require('../seafarers/scenarios');
 const makeHub = require('../traders-barbarians/hub');
@@ -32,42 +31,21 @@ module.exports = function make(core) {
 
   // ------------------------------------------------------------ board setup
   function makeBoard({ expansion, mode, options, players, generate }) {
-    if (expansion === 'seafarers' || expansion === 'explorers') {
-      const explorers = expansion === 'explorers';
-      const printed = !explorers && buildScenario({ scenario: options.scenario || 'shores', players, big: !!options.big, variable: !!options.variable });
-      // Seafarers plays the printed maps of the rulebook; Explorers & Pirates (and tables without a printed map) get a generated archipelago
-      const board = printed || buildSea({ scenario: explorers ? 'fog' : (options.scenario || 'shores'), players, big: !!options.big, explorers });
-      if (!explorers && !printed) board.bonus = { vp: 2, mode: 'each' };
-      if (explorers) addMissionMarkers(board, options);
+    if (expansion === 'seafarers') {
+      const printed = buildScenario({ scenario: options.scenario || 'shores', players, big: !!options.big, variable: !!options.variable });
+      // Seafarers plays the printed maps of the rulebook; tables without a printed map get a generated archipelago
+      const board = printed || buildSea({ scenario: options.scenario || 'shores', players, big: !!options.big });
+      if (!printed) board.bonus = { vp: 2, mode: 'each' };
       return board;
     }
     if (expansion === 'traders') return HB.makeBoard({ options, generate });
     return generate(options.big ? 'extended' : 'standard');
   }
 
-  function addMissionMarkers(board, options) {
-    const missions = options.missions || C.MISSIONS;
-    const hexes = board.hexes;
-    if (missions.includes('fish')) {
-      const seas = shuffle(hexes.filter(h => h.terrain === 'sea' && h.neighbors.some(n => hexes[n].terrain !== 'sea')));
-      const nums = shuffle([3, 4, 5, 6, 8, 9, 10, 11]);
-      board.shoals = seas.slice(0, board.hexes.length > 100 ? 7 : 5).map((h, i) => ({ id: i, hex: h.id, number: nums[i % nums.length] }));
-    }
-    if (missions.includes('spice')) {
-      const lands = shuffle(hexes.filter(h => h.terrain !== 'sea' && h.terrain !== 'desert' && h.terrain !== 'gold' && h.number));
-      board.spices = lands.slice(0, board.hexes.length > 100 ? 7 : 5).map(h => h.id);
-    }
-    if (missions.includes('lairs')) {
-      const used = new Set((board.shoals || []).map(x => x.hex));
-      const seas = shuffle(hexes.filter(h => h.terrain === 'sea' && !used.has(h.id) && h.neighbors.some(n => hexes[n].terrain !== 'sea')));
-      board.lairs = seas.slice(0, board.hexes.length > 100 ? 4 : 3).map((h, i) => ({ id: i, hex: h.id, hp: 3 }));
-    }
-  }
-
   // ------------------------------------------------------------ state
   function initState(s, options) {
     const exp = s.expansion;
-    s.sea = exp === 'seafarers' || exp === 'explorers';
+    s.sea = exp === 'seafarers';
     s.ships = {};
     s.bridges = {};
     s.pirate = s.sea ? s.board.pirateStart : null;
@@ -97,14 +75,9 @@ module.exports = function make(core) {
       s.villages = s.board.villages.map(v => ({ v: v.v, n: v.n, cloth: 5, conn: [] }));
       s.clothSupply = 10;
     }
-    if (exp === 'explorers') {
-      s.missions = (options.missions || C.MISSIONS).slice();
-      s.lairs = (s.board.lairs || []).map(l => ({ ...l, hits: {} }));
-      s.lairOwners = {};
-    }
     s.players.forEach(pl => {
       pl.chips = 0; pl.harborTokens = []; pl.cloth = 0;
-      pl.gold = 0; pl.fish = 0; pl.cargo = { fish: 0, spice: 0 }; pl.delivered = { fish: 0, spice: 0 }; pl.fishTok = [];
+      pl.gold = 0; pl.fish = 0; pl.fishTok = [];
     });
     s.flags = {};
     if (exp === 'traders') HB.init(s, options);
@@ -245,41 +218,6 @@ module.exports = function make(core) {
     if (items.length) pushPending(s, items);
     clothProduce(s, total);
     if (s.expansion === 'traders') HB.afterProduce(s, total);
-    if (s.board.spices) spiceProduce(s, total);
-    if (s.board.shoals) shoalProduce(s, total);
-  }
-
-  // ------------------------------------------------------------ explorers & pirates
-  function spiceProduce(s, total) {
-    for (const hid of s.board.spices) {
-      const h = H(s, hid);
-      if (h.number !== total || h.hidden || s.robber === hid) continue;
-      for (const v of h.verts) {
-        const b = s.buildings[v];
-        if (!b) continue;
-        const n = b.type === 'city' ? 2 : 1;
-        P(s, b.p).cargo.spice += n;
-        log(s, '{@p} loads {n} spice.', { p: b.p, n });
-      }
-    }
-  }
-  function shoalProduce(s, total) {
-    for (const sh of s.board.shoals) {
-      const h = H(s, sh.hex);
-      if (sh.number !== total || h.hidden || s.pirate === sh.hex) continue;
-      const got = new Set();
-      for (const e of h.edges) { const ship = s.ships[e]; if (ship) got.add(ship.p); }
-      got.forEach(p => { P(s, p).cargo.fish += 1; log(s, '{@p} hauls in a catch of fish.', { p }); });
-    }
-  }
-  function missionVp(s, p) {
-    if (s.expansion !== 'explorers') return 0;
-    const pl = P(s, p);
-    let v = 0;
-    if (s.missions.includes('fish')) v += Math.min(C.MISSION_VP_CAP, Math.floor(pl.delivered.fish / 2));
-    if (s.missions.includes('spice')) v += Math.min(C.MISSION_VP_CAP, Math.floor(pl.delivered.spice / 2));
-    v += Object.values(s.lairOwners).filter(o => o === p).length;
-    return v;
   }
 
   // ------------------------------------------------------------ victory points
@@ -288,7 +226,6 @@ module.exports = function make(core) {
     pts += bonusVp(s, p);
     pts += P(s, p).chips || 0;
     pts += clothVp(s, p);
-    pts += missionVp(s, p);
     if (s.expansion === 'traders') pts += HB.vpExtra(s, p);
     return pts;
   }
@@ -546,37 +483,6 @@ module.exports = function make(core) {
       log(s, '{@p} takes {$c} from the gold field.', { p, c: cards });
       resolvePending(s, it);
     },
-    // ---- explorers & pirates
-    deliver(s, p, a) {
-      if (s.expansion !== 'explorers') fail('There are no missions in this game.');
-      core.requireMain(s, p);
-      const kind = a.kind;
-      if (!['fish', 'spice'].includes(kind) || !s.missions.includes(kind)) fail('That mission is not in this game.');
-      const pl = P(s, p);
-      const n = pl.cargo[kind];
-      if (!n) fail('You have nothing to deliver.');
-      if (!Object.values(s.buildings).some(b => b.p === p)) fail('You need a settlement to deliver to.');
-      pl.cargo[kind] = 0; pl.delivered[kind] += n;
-      log(s, '{@p} delivers {n} {#k} to the council.', { p, n, k: kind });
-    },
-    attackLair(s, p, a) {
-      if (s.expansion !== 'explorers') fail('There are no pirate lairs in this game.');
-      core.requireMain(s, p);
-      const lair = s.lairs.find(l => l.hex === a.hex && l.hp > 0);
-      if (!lair || H(s, lair.hex).hidden) fail('There is no lair there.');
-      if (!H(s, lair.hex).edges.some(e => s.ships[e] && s.ships[e].p === p)) fail('You need a ship next to the lair.');
-      if (!has(P(s, p), { ore: 1, wool: 1 })) fail('Attacking costs 1 ore and 1 wool.');
-      pay(s, P(s, p), { ore: 1, wool: 1 });
-      lair.hp--; lair.hits[p] = (lair.hits[p] || 0) + 1;
-      log(s, '{@p} attacks a pirate lair ({n} left).', { p, n: lair.hp });
-      if (lair.hp <= 0) {
-        const max = Math.max(...Object.values(lair.hits));
-        const tops = Object.keys(lair.hits).filter(k => lair.hits[k] === max).map(Number);
-        const winner = tops.includes(p) ? p : tops[0];
-        s.lairOwners[lair.id] = winner;
-        log(s, 'The pirate lair is destroyed. {@p} earns the bounty (+1 VP).', { p: winner });
-      }
-    },
   };
 
   function countShips(s, p) { return Object.values(s.ships).filter(x => x.p === p).length; }
@@ -600,10 +506,6 @@ module.exports = function make(core) {
     }
     if (main) {
       if (s.sea) L.moveShips = movableShips(s, p);
-      if (s.expansion === 'explorers') {
-        L.deliver = { fish: P(s, p).cargo.fish > 0 && s.missions.includes('fish'), spice: P(s, p).cargo.spice > 0 && s.missions.includes('spice') };
-        L.lairs = s.lairs.filter(l => l.hp > 0 && !H(s, l.hex).hidden && H(s, l.hex).edges.some(e => s.ships[e] && s.ships[e].p === p)).map(l => l.hex);
-      }
     }
   }
 
@@ -619,10 +521,6 @@ module.exports = function make(core) {
     if (b.bonus) vb.bonus = b.bonus;
     if (b.bonusIslands) vb.bonusIslands = b.bonusIslands;
     if (b.wonder) vb.wonder = { walls: b.wonder.walls, bridges: b.wonder.bridges, lights: b.wonder.lights };
-    if (s.expansion === 'explorers') {
-      vb.shoals = (b.shoals || []).filter(x => !H(s, x.hex).hidden);
-      vb.spices = (b.spices || []).filter(x => !H(s, x).hidden);
-    }
     vb.scenario = b.scenario;
     return vb;
   }
@@ -639,16 +537,11 @@ module.exports = function make(core) {
     if (s.gifts) v.dynPorts = s.dynPorts;
     if (s.wonders) { v.wonders = s.wonders; v.wonderCost = Object.fromEntries(Object.keys(s.wonders).map(k => [k, WONDERS[k].cost])); }
     if (s.villages) { v.villages = s.villages.map(vl => ({ v: vl.v, n: vl.n, cloth: vl.cloth, conn: vl.conn })); v.clothSupply = s.clothSupply; }
-    if (s.expansion === 'explorers') {
-      v.missions = s.missions;
-      v.lairs = s.lairs.filter(l => !H(s, l.hex).hidden).map(l => ({ id: l.id, hex: l.hex, hp: l.hp, owner: s.lairOwners[l.id] ?? null }));
-    }
     v.players.forEach((pv, i) => {
       const pl = s.players[i];
       pv.gold = pl.gold; pv.fish = pl.fish;
       if (s.gifts) { pv.chips = pl.chips; pv.harbors = pl.harborTokens.length; }
       if (s.villages) pv.cloth = pl.cloth;
-      pv.cargo = pl.cargo; pv.delivered = pl.delivered;
       pv.pieces.ships = C.PIECES.ship - countShips(s, i);
       pv.pieces.bridges = C.PIECES.bridge;
       pv.vpTarget = vpTarget(s, i);
@@ -661,7 +554,7 @@ module.exports = function make(core) {
   return {
     makeBoard, initState, landVertex, vertexIsland, roadEdgeOk, shipEdgeOk, legalShips, movableShips, setupSpotOk,
     endWinner, villagesReached, wonderWin, legalSetupShips, reveal, afterProduce, vpExtra, vpTarget, islandBonus, handlers: Object.assign(handlers, HB.handlers), legalExtra, viewBoard, viewExtra, countShips,
-    SCENARIOS, pirateBlocks, ownShipAt, missionVp,
+    SCENARIOS, pirateBlocks, ownShipAt,
     hub: HB,
     rollValues: s => (s.expansion === 'traders' ? HB.rollValues(s) : null),
     runCard: (s, card) => HB.runCard(s, card),

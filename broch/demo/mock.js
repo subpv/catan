@@ -68,7 +68,7 @@ function card(g) {
   const m = g.meta;
   fixColors(m);
   return {
-    id: m.id, name: m.name, mode: m.mode, expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, knightsFree: !!m.knightsFree, maxPlayers: m.maxPlayers, vpTarget: m.vpTarget, status: m.status, host: m.host,
+    id: m.id, name: m.name, mode: m.mode, expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, knightsFree: !!m.knightsFree, maxPlayers: m.maxPlayers, vpTarget: m.vpTarget, status: m.status, host: m.host,
     seats: m.seats.map(id => ({ ...pub(userOf(g, id)), bot: !!userOf(g, id).bot, color: m.colors[id] })),
     current: g.state && g.state.phase !== 'over' ? g.state.players[g.state.current].userId : null,
     turn: g.state ? g.state.turn : 0,
@@ -154,17 +154,16 @@ async function api(path, opts = {}) {
     const mode = b.mode === 'knights' || engine.isStandalone(b.mode) ? b.mode : 'classic';
     const standalone = engine.isStandalone(mode);
     const maxPlayers = Math.max(standalone ? engine.minPlayers(mode) : 2, Math.min(standalone ? engine.maxPlayers(mode) : 6, b.maxPlayers | 0 || 4));
-    const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
+    const expansion = !standalone && ['seafarers', 'traders'].includes(b.expansion) ? b.expansion : 'none';
     const scenario = expansion === 'seafarers' ? (SEA_SCENARIOS[b.scenario] ? b.scenario : 'shores') : mode === 'explorers' ? String(Math.max(1, Math.min(5, b.escen | 0 || 2))) : null;
     const bv = b.variants || {};
     const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, caravans: !!bv.caravans, barbarians: !!bv.barbarians, traders: !!bv.traders, events: !!bv.events, friendly: !!bv.friendly, harbors: !!bv.harbors } : null;
-    const missions = expansion === 'explorers' ? (Array.isArray(b.missions) ? b.missions.filter(x => ['fish', 'spice', 'lairs'].includes(x)) : ['fish', 'spice', 'lairs']) : null;
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
-    const defVp = standalone ? engine.defaultVp(mode, scenario) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
+    const defVp = standalone ? engine.defaultVp(mode, scenario) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'traders' ? tradersVp(variants) : 10;
     const id = 'demo' + (++seq);
     // the host adds bots in the lobby (or plays with friends only)
     const seats = [u.id];
-    const g = { meta: { id, bots: {}, name: '', mode, expansion, scenario, variants, missions, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone && b.gameOptions ? { ...b.gameOptions } : null, maxPlayers, vpTarget: standalone && engine.fixedVp(mode) ? defVp : b.vpTarget || defVp, host: u.id, seats, status: 'open' }, state: null };
+    const g = { meta: { id, bots: {}, name: '', mode, expansion, scenario, variants, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone && b.gameOptions ? { ...b.gameOptions } : null, maxPlayers, vpTarget: standalone && engine.fixedVp(mode) ? defVp : b.vpTarget || defVp, host: u.id, seats, status: 'open' }, state: null };
     games.set(id, g);
     emit({ t: 'lobby' });
     return { game: card(g) };
@@ -200,7 +199,7 @@ async function api(path, opts = {}) {
     if (m[2] === 'start') {
       fixColors(g.meta);
       const players = g.meta.seats.map(id => { const u = userOf(g, id); return { id, name: u.name, color: g.meta.colors[id], country: u.country }; });
-      g.state = engine.createGame({ id: g.meta.id, mode: g.meta.mode, players, options: { vpTarget: g.meta.vpTarget, expansion: g.meta.expansion, scenario: g.meta.scenario, variants: g.meta.variants, missions: g.meta.missions, robberReturn: !!g.meta.robberReturn, startBoth: !!g.meta.startBoth, variable: !!g.meta.variable, knightsFree: !!g.meta.knightsFree, game: g.meta.gameOptions || {}, big: g.meta.big ?? players.length > 4 } });
+      g.state = engine.createGame({ id: g.meta.id, mode: g.meta.mode, players, options: { vpTarget: g.meta.vpTarget, expansion: g.meta.expansion, scenario: g.meta.scenario, variants: g.meta.variants, robberReturn: !!g.meta.robberReturn, startBoth: !!g.meta.startBoth, variable: !!g.meta.variable, knightsFree: !!g.meta.knightsFree, game: g.meta.gameOptions || {}, big: g.meta.big ?? players.length > 4 } });
       g.meta.status = 'playing';
       emit({ t: 'lobby' });
       botTick(g);

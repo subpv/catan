@@ -1,5 +1,5 @@
 'use strict';
-// Archipelago boards for the sea-based modes (Seafarers, Explorers & Pirates).
+// Generated archipelago boards for Seafarers (the fallback when a scenario has no printed map).
 // A big hex grid is filled with islands, then trimmed to the hexes near land, then terrain and numbers are dealt.
 
 const { geometryFromCenters, rowCenters, shuffle } = require('../shared/board');
@@ -86,7 +86,7 @@ function layout({ scenario, players, big }) {
   return { H, full, islands, landOf, ring };
 }
 
-function build({ scenario = 'shores', players = 4, big = false, explorers = false }) {
+function build({ scenario = 'shores', players = 4, big = false }) {
   if (!SCENARIOS[scenario]) throw new Error('Unknown scenario');
   let L = null;
   for (let attempt = 0; attempt < 60; attempt++) {
@@ -96,7 +96,7 @@ function build({ scenario = 'shores', players = 4, big = false, explorers = fals
     if (homeCells >= need && L.islands.length >= (scenario === 'islands' ? 4 : 3)) break;
   }
   const { H, islands, landOf } = L;
-  const fog = scenario === 'fog' || explorers;
+  const fog = scenario === 'fog';
 
   // which old hexes become hidden
   const hidden = new Set();

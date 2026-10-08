@@ -21,17 +21,17 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
   if (players.length < 2 || players.length > 6) fail('Broch needs 2–6 players');
   const knights = mode === 'knights';
   const expansion = C.EXPANSIONS.includes(options.expansion) ? options.expansion : 'none';
-  const sea = expansion === 'seafarers' || expansion === 'explorers';
+  const sea = expansion === 'seafarers';
   // the 5–6 player set (30 tiles, 28 chips, 11 harbors) is needed from five players on; with fewer it is a switch (a bigger board)
   const big = players.length > 4 || (options.big ?? false);
-  const scenario = expansion === 'explorers' ? 'fog' : (X.SCENARIOS[options.scenario] ? options.scenario : 'shores');
+  const scenario = X.SCENARIOS[options.scenario] ? options.scenario : 'shores';
   const kind = sea ? 'sea' : big ? 'extended' : 'standard';
   const def = C.BOARDS[big ? 'extended' : 'standard'];
   const variants = expansion === 'traders' ? X.hub.normalize(options.variants, { big, players: players.length, knights }) : {};
   const board = X.makeBoard({ expansion, mode, options: { ...options, big, scenario, variants }, players: players.length, generate });
   // the frame piece with the barbarian track replaces the frame piece with a 3:1 harbor (rulebook, set-up)
   if (knights && !sea) dropHarbor(board);
-  const defaultVp = (knights ? (expansion === 'seafarers' ? X.SCENARIOS[scenario].vp + 2 : 13) : sea ? (expansion === 'explorers' ? 12 : X.SCENARIOS[scenario].vp) : expansion === 'traders' ? X.hub.defaultVp(variants) : 10) + (knights && variants.harbors ? 1 : 0);
+  const defaultVp = (knights ? (expansion === 'seafarers' ? X.SCENARIOS[scenario].vp + 2 : 13) : sea ? X.SCENARIOS[scenario].vp : expansion === 'traders' ? X.hub.defaultVp(variants) : 10) + (knights && variants.harbors ? 1 : 0);
   const order = shuffle(players.map((_, i) => i));
   const seats = order.map(i => players[i]);
   const n = seats.length;
@@ -46,7 +46,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       robberReturn: !!options.robberReturn,
       startBoth: !!options.startBoth,
       knightsFree: !!options.knightsFree && !knights,
-      big, scenario: sea ? scenario : null, variable: sea && !!options.variable, variants, missions: expansion === 'explorers' ? (options.missions || C.MISSIONS) : null,
+      big, scenario: sea ? scenario : null, variable: sea && !!options.variable, variants,
     },
     board,
     robber: expansion === 'traders' && X.hub.initialRobber(board, variants) !== undefined ? X.hub.initialRobber(board, variants) : board.desert != null ? board.desert : board.hexes.find(h => h.terrain === 'desert').id,
@@ -76,7 +76,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
     winner: null, startedAt: Date.now(), finishedAt: null, version: 0,
   };
   C.RES.forEach(r => { s.bank[r] = def.bank; });
-  X.initState(s, { ...options, variants, missions: s.options.missions });
+  X.initState(s, { ...options, variants });
   s.current = s.setup.queue[0];
   log(s, 'Game started. {@ps} take their seats.', { ps: seats.map((_, i) => i) });
   log(s, '{@p} places first.', { p: s.current });
@@ -1656,7 +1656,7 @@ function migrate(s) {
     s.expansion = 'none'; s.sea = false; s.ships = {}; s.bridges = {}; s.pirate = null; s.islandBonus = {};
     s.rivers = false; s.fishing = false; s.eventCards = false; s.fish = null; s.deck = null;
     s.options.big = s.options.big ?? (s.kind === 'extended');
-    s.players.forEach(pl => { pl.gold = 0; pl.fish = 0; pl.cargo = { fish: 0, spice: 0 }; pl.delivered = { fish: 0, spice: 0 }; });
+    s.players.forEach(pl => { pl.gold = 0; pl.fish = 0; });
   }
   // games saved before the house rule had its own switch were played with unlimited knights
   if (s.options && s.options.knightsFree === undefined) s.options.knightsFree = s.mode !== 'knights';

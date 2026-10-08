@@ -58,7 +58,7 @@ const EVENT_FACES = ['ship', 'ship', 'ship', 'trade', 'politics', 'science'];
 const BARBARIAN_STEPS = 7;
 
 // ---- expansions
-const EXPANSIONS = ['none', 'seafarers', 'traders', 'explorers'];
+const EXPANSIONS = ['none', 'seafarers', 'traders'];
 // Traders & Barbarians. Fishermen of Catan: what fish buy, the token bag (11 x one fish, 10 x two, 8 x three, plus the old boot;
 // the 5-6 player set adds 4 + 5 + 5), the fishing grounds and the lake (the 5-6 set adds two grounds and a second lake)
 const FISH_COSTS = { robber: 2, steal: 3, take: 4, road: 5, dev: 7 };
@@ -77,9 +77,6 @@ const EVENT_CARDS = [
 ];
 // points to win: Fishermen and Rivers 10, Caravans and Barbarian Attack 12, Traders & Barbarians 13, one more with Harbours of Catan
 const tradersVp = v => ((v && v.traders) ? 13 : (v && (v.caravans || v.barbarians)) ? 12 : 10) + ((v && v.harbors) ? 1 : 0);
-// Explorers & Pirates missions
-const MISSIONS = ['fish', 'spice', 'lairs'];
-const MISSION_VP_CAP = 3;
 
 // Ten player colors, checked to stay clearly apart from each other (CIELAB distance >= 38)
 const COLORS = ['red', 'blue', 'orange', 'white', 'teal', 'purple', 'black', 'pink', 'yellow', 'brown'];
@@ -87,5 +84,5 @@ const COLORS = ['red', 'blue', 'orange', 'white', 'teal', 'purple', 'black', 'pi
 module.exports = {
   RES, COMM, TERRAIN_RES, TERRAIN_COMM, COSTS, PIECES, BOARDS, PROGRESS, PROGRESS_VP,
   TRACK_COMM, EVENT_FACES, BARBARIAN_STEPS, COLORS,
-  EXPANSIONS, tradersVp, FISH_COSTS, FISH_BAG, FISH_BAG_EXTRA, FISH_NUMBERS, FISH_NUMBERS_EXTRA, LAKE_NUMBERS, LAKE2_NUMBERS, FISH_MAX, EVENT_CARDS, MISSIONS, MISSION_VP_CAP,
+  EXPANSIONS, tradersVp, FISH_COSTS, FISH_BAG, FISH_BAG_EXTRA, FISH_NUMBERS, FISH_NUMBERS_EXTRA, LAKE_NUMBERS, LAKE2_NUMBERS, FISH_MAX, EVENT_CARDS,
 };

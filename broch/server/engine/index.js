@@ -10,6 +10,17 @@ const STANDALONE = {
   explorers: require('./explorers-pirates/explorers'), // Explorers & Pirates: its own engine, shown in the lobby as an expansion
 };
 const engineOf = mode => STANDALONE[mode] || base;
+
+// The simplified Explorers & Pirates that once ran inside the classic engine (mode 'classic' or 'knights' with expansion
+// 'explorers') is gone. A running game saved with it is restarted, in place, as a fresh game of the full standalone
+// Explorers & Pirates with the same players (finished games are only history and stay as they are).
+function restartRetiredExplorers(s) {
+  const players = s.players.map(pl => ({ id: pl.userId, name: pl.name, color: pl.color, country: pl.country }));
+  const fresh = STANDALONE.explorers.createGame({ id: s.id, players, options: { scenario: 2 } });
+  fresh.log.push({ turn: fresh.turn, k: 'This game was saved with the retired simplified Explorers & Pirates and starts again as the full Explorers & Pirates.', a: {}, at: Date.now() });
+  Object.keys(s).forEach(k => { delete s[k]; });
+  return Object.assign(s, fresh);
+}
 const MODES = ['classic', 'knights', ...Object.keys(STANDALONE)];
 
 module.exports = {
@@ -24,6 +35,6 @@ module.exports = {
   act: (s, p, a) => engineOf(s.mode).act(s, p, a),
   viewFor: (s, p) => engineOf(s.mode).viewFor(s, p),
   summary: s => engineOf(s.mode).summary(s),
-  migrate: s => (s ? engineOf(s.mode).migrate(s) : s),
+  migrate: s => (!s ? s : s.expansion === 'explorers' && !STANDALONE[s.mode] && s.phase !== 'over' ? restartRetiredExplorers(s) : engineOf(s.mode).migrate(s)),
   vp: (s, p) => (STANDALONE[s.mode] ? STANDALONE[s.mode]._internal.spec.vp(s, p) : base.vp(s, p)),
 };

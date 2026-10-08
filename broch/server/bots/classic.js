@@ -122,8 +122,6 @@ function decide(v) {
   if (L.ships?.length && Math.random() < 0.6) return { type: 'buildShip', e: pick(L.ships) };
   if (L.bridges?.length && Math.random() < 0.5) return { type: 'buildBridge', e: pick(L.bridges) };
   if (L.moveShips) { const ms = Object.entries(L.moveShips).filter(([, to]) => to.length); if (ms.length && Math.random() < 0.35) { const [from, to] = pick(ms); return { type: 'moveShip', from: +from, to: pick(to) }; } }
-  if (L.deliver) for (const [kind, ok] of Object.entries(L.deliver)) if (ok) return { type: 'deliver', kind };
-  if (L.lairs?.length) return { type: 'attackLair', hex: pick(L.lairs) };
   if (L.upgrade && Math.random() < 0.6) return { type: 'upgradeWagon' };
   if (L.repair?.ok) return { type: 'repairRoad', e: pick(L.repair.edges) };
   if (L.goldTrade && Math.random() < 0.5) return { type: 'goldTrade', res: pick(RES) };

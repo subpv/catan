@@ -100,8 +100,6 @@ const CONFIGS = {
   'tb-friendly': ['classic', { expansion: 'traders', variants: { friendly: true } }],
   'tb-harbors': ['classic', { expansion: 'traders', variants: { harbors: true } }],
   'tb-knights': ['knights', { expansion: 'traders', variants: { fishermen: true, rivers: true, events: true } }],
-  'explorers-knights': ['knights', { expansion: 'explorers' }],
-  explorers: ['classic', { expansion: 'explorers' }],
   'classic-rr': ['classic', { robberReturn: true }],
   'knights-rr': ['knights', { robberReturn: true }],
   'sea-rr': ['classic', { expansion: 'seafarers', scenario: 'shores', robberReturn: true }],
