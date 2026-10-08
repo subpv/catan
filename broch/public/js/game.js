@@ -1251,7 +1251,7 @@ function costsDialog() {
   if (isSea(G.view)) rows.push([t('Ship'), COSTS.ship, t('Sails on sea edges; moves once per turn')]);
   if (G.view.rivers) rows.push([t('Bridge'), COSTS.bridge, t('Crosses a river; earns 3 gold')]);
   if (isHub(G.view)) rows.push(...hub().costRows(G.view));
-  if (!knights) rows.push([t('Development card'), COSTS.dev, t('Knight, Road Building, Year of Plenty, Monopoly or a point')]);
+  if (!knights) rows.push((isHub(G.view) && hub().devRow(G.view)) || [t('Development card'), COSTS.dev, t('Knight, Road Building, Year of Plenty, Monopoly or a point')]);
   else rows.push([t('Knight'), COSTS.knight, t('Basic knight (inactive)')], [t('Activate knight'), { grain: 1 }, ''], [t('Promote knight'), { wool: 1, ore: 1 }, t('Mighty needs politics 3')], [t('City wall'), COSTS.wall, t('+2 hand limit')]);
   const o = G.view.options || {};
   const house = [o.robberReturn && t('House rule: forgotten robber'), o.knightsFree && t('House rule: knights without a limit'), o.startBoth && t('House rule: starting resources for both')].filter(Boolean);
@@ -1259,7 +1259,7 @@ function costsDialog() {
     ${isHub(G.view) ? hub().costsExtra(G.view).map(x => `<p class="muted" style="font-size:13px">${esc(x)}</p>`).join('') : ''}
     ${G.view.expansion === 'seafarers' && SCEN[G.view.options?.scenario] ? `<h3 style="margin:12px 0 4px">${tx(SCEN[G.view.options.scenario].label)}</h3><ul class="muted" style="font-size:13px;margin:0;padding-left:18px">${SCEN[G.view.options.scenario].rules.map(r => `<li>${tx(r)}</li>`).join('')}</ul><p class="muted" style="font-size:13px;margin:6px 0 0">${tx('Win with {n} points.', { n: G.view.vpTarget ?? G.view.options.vpTarget })}</p>` : ''}
     ${knights ? `<p class="muted" style="font-size:13px">${tx('Improvements cost 1–5 commodities: cloth for trade, coin for politics, paper for science. Cities on forest, pasture and mountains yield a commodity instead of a second resource.')}</p>` : ''}
-    ${!knights ? `<p class="muted" style="font-size:13px">${tx('Longest Road: 5 or more connected roads, 2 points. Largest Army: 3 or more played knights, 2 points. You may play 1 development card per turn, but not one you bought this turn.')}</p>` : ''}
+    ${!knights ? `<p class="muted" style="font-size:13px">${isHub(G.view) && hub().awardsText(G.view) ? esc(hub().awardsText(G.view)) : tx('Longest Road: 5 or more connected roads, 2 points. Largest Army: 3 or more played knights, 2 points. You may play 1 development card per turn, but not one you bought this turn.')}</p>` : ''}
     ${house.length ? `<p class="muted" style="font-size:13px"><b>${tx('House rules in this game')}:</b> ${house.map(esc).join(' · ')}</p>` : ''}
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button></div>`, {
     onMount: el => el.querySelector('[data-tut-mode]')?.addEventListener('click', () => { closeModals(); openTutorial(tutorialFor(G.view)); }),

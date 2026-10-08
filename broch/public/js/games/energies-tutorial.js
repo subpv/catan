@@ -37,7 +37,7 @@ function energies() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('Every turn starts with event chips from the bag.'), t('The pollution marker decides how many: 1 chip at 6–18, 2 chips below 6 or at 19–23, 3 chips from 24.'));
+        T.say(t('Every turn starts with event chips from the bag.'), t('The pollution marker decides how many: 1 chip at 6–18, 2 chips below 6 or at 19–23, 3 chips from 24 (with 4 players).'));
         T.extra(env({ slot: slotPill('ev_disaster', 0, 4, 'brown') }));
         await T.wait(2400);
         for (let i = 1; i <= 3; i++) {
@@ -115,7 +115,7 @@ function energies() {
         T.extra(env({ pol: 9, bag: 40, bal: `${pill('cloud', `${t('You')} 3`, 'warn')}${pill('cloud', `${t('Blue')} 1`, 'green')}` }));
         await T.wait(2400);
         await T.bigCard({ title: t('Climate conference'), color: '#4F7A3C', icon: 'ev_climate' });
-        T.say(t('Climate conference: the best balance takes a card, the worst gives one back.'), t('Other events hit the worst balance (air pollution, production boost) or reward the greenest (sustainable production, state funding).'));
+        T.say(t('Climate conference: the best balance takes a card, the worst gives one back.'), t('Air pollution damages the worst balance, production boost lets it build a free brown plant. Sustainable production rewards the most green plants, state funding the best balance.'));
         await T.pay({ wood: 1 }, T.vertPt(home));
         await T.wait(1800);
       },
@@ -123,11 +123,13 @@ function energies() {
         T.say(t('Energy tokens are flexible.'), t('2 swap for any card, 1 removes a damage, 2 buy a warehouse (hand limit 10), 1 tears down a brown plant.'));
         await T.give({ energy: 1 });
         await T.bankTrade({ energy: 2 }, 'metal');
-        T.say(t('You can always trade.'), t('With players, 4:1 resources, 3:1 research cards, 2:1 energy tokens, or at harbors.'));
-        await T.wait(2400);
+        T.say(t('You can always trade.'), t('With players in any ratio you agree on. They may answer your offer with a counter-offer.'));
+        await T.wait(2800);
+        T.say(t('Trade with the supply.'), t('Resources 4:1 (harbors make it 3:1 or 2:1), research cards 3:1, energy tokens 2:1.'));
+        await T.wait(2600);
       },
       async T => {
-        T.say(t('Development cards help too.'), t('Environmental protection moves the inspector or removes a damage. Three of them win 2 points.'));
+        T.say(t('Development cards help too.'), t('Play 1 card per turn, not the turn you bought it. Environmental protection moves the inspector or removes a damage; three of them win 2 points.'));
         await T.give({ metal: 1, fiber: 1, food: 1 });
         await T.pay({ metal: 1, fiber: 1, food: 1 }, T.pt(0, 0));
         await T.bigCard({ title: t('Environmental protection'), color: '#5B3A6E', icon: 'protection' });
@@ -139,7 +141,7 @@ function energies() {
         await T.wait(2400);
         T.say(t('Empty bag: only more green than brown plants can win.'), t('The biggest difference wins. If nobody has more green plants, everybody loses.'));
         await T.wait(2600);
-        T.say(t('Village 1 · Research city 2 · Longest Trade Route 2 · Environmentalist 2'), t('Build green, keep the bag full, and reach 10.'));
+        T.say(t('Village 1 · Research city 2 · Longest Trade Route (5 roads) 2 · Environmentalist 2'), t('Build green, keep the bag full, and reach 10.'));
         await T.countVp(10);
         await T.finale();
       },

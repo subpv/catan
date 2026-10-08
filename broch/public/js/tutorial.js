@@ -393,14 +393,14 @@ function traders() {
         await T.wait(2400);
       },
       async T => {
-        T.say(t('Roll a fishing ground’s number to catch fish.'), t('A settlement gets 1 token, a city 2. The lake pays on 2, 3, 11 and 12.'));
+        T.say(t('Roll a fishing ground’s number to catch fish.'), t('A settlement gets 1 random token, a city 2. The lake pays on 2, 3, 11 and 12. Your second settlement next to a ground or the lake earns a token at once.'));
         await T.roll(1, 4);
         T.hit(5);
         await T.gain(T.pt(g1.x, g1.y), 'fish', 2, 0, top);
         await T.wait(1100);
       },
       async T => {
-        T.say(t('Pay with fish'), t('2 take the robber off the board · 3 steal · 4 take a resource · 5 a road · 7 a development card. At most 7 tokens.'));
+        T.say(t('Pay with fish'), t('2 take the robber off the board · 3 steal · 4 take a resource · 5 a road · 7 a development card. Extra fish are lost. At most 7 tokens, and they can be neither stolen nor traded.'));
         await T.fishMenu();
         await T.wait(1200);
       },
@@ -424,7 +424,7 @@ function traders() {
         await T.wait(700);
       },
       async T => {
-        T.say(t('Bridges cross the river.'), t('A bridge costs 2 brick and 1 lumber and pays 3 gold.'));
+        T.say(t('Bridges cross the river.'), t('Roads cannot cross a river. A bridge costs 2 brick and 1 lumber, pays 3 gold, and you have 3 of them.'));
         await T.give({ brick: 2, lumber: 1 });
         await T.pay({ brick: 2, lumber: 1 }, T.edgePt(bridge));
         T.set(v2 => { v2.roads[bridge] = 0; v2.bridges[bridge] = true; }, { edges: [bridge] });
@@ -433,14 +433,14 @@ function traders() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('Gold'), t('Swap 2 gold for any resource, twice per turn. The richest player gets +1 point, the poorest −2.'));
+        T.say(t('Gold'), t('Swap 2 gold for any resource, twice per turn. Gold also counts in trades with players, who may answer with a counter-offer, and you can buy it from the supply at 4:1, 3:1 or 2:1. The one player with the most gold gets +1 point, everyone with the least −2.'));
         await T.bankTrade({ gold: 2 }, 'ore');
         T.float(T.vertPt(riverHome), '+1', '#F6CF57');
         await T.wait(1500);
       },
       async T => {
-        T.say(t('Event cards'), t('A deck of 37 cards replaces the dice. Every number comes up as often as it should, and some cards bring an event.'));
-        await T.eventCard(8, t('Plague'));
+        T.say(t('Event cards'), t('A deck of 37 cards replaces the dice. Every number comes up as often as it should, and some cards bring an event. The New Year card shuffles a fresh deck.'));
+        await T.eventCard(8, t('Epidemic'));
         T.hit(8);
         await T.wait(1400);
       },
@@ -454,11 +454,15 @@ function traders() {
         await T.wait(3200);
       },
       async T => {
+        T.say(t('How trains grow'), t('A wagon starts a train at one of the arrows of the watering hole or goes in front of an existing train. Trains never branch, they merge where they meet and end when they cannot go on.'));
+        await T.wait(3200);
+      },
+      async T => {
         T.say(t('Wagons pay off'), t('Buildings between two wagons are worth 1 point more. A wagon on the same edge as a road counts as an additional road for the Longest Road. With 5–6 players there are two watering holes and player 2 holds a voting round too.'));
         await T.wait(3200);
       },
       async T => {
-        T.say(t('Barbarian Attack'), t('Barbarians land on the coast after every settlement or city. Knights from the castle drive them off, and 2 prisoners are worth 1 point. 12 points.'));
+        T.say(t('Barbarian Attack'), t('Barbarians land on the coast after every settlement or city. Knights from the castle drive them off, and 2 prisoners are worth 1 point. You start with a city and there is no robber. 12 points.'));
         await T.banner(t('Barbarians'));
         await T.wait(1200);
       },
@@ -467,25 +471,33 @@ function traders() {
         await T.wait(3200);
       },
       async T => {
-        T.say(t('Knights drive them off'), t('At the end of your turn move each knight up to 3 paths, or 5 for 1 grain. Where there are more knights than barbarians, the tile is free and the barbarians become prisoners; a die then decides which of the knights there are lost (3 gold each).'));
+        T.say(t('Knights drive them off'), t('At the end of your turn move each knight up to 3 paths, or 5 for 1 grain; knights on the castle must leave it. Where there are more knights than barbarians, the tile is free and the barbarians become prisoners; a die then decides which of the knights there are lost (3 gold each).'));
         await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Development cards'), t('Knights come from development cards, played at once: Knighthood puts a knight on a castle path, Swift Knight on any free path, Capture takes a prisoner, Treason brings 2 gold and moves 2 barbarians. On a 7 you steal a card from a player of your choice.'));
+        await T.wait(3600);
       },
       async T => {
         T.say(t('Barbarian Attack for 5–6 players'), t('The board has two castles, and the numbers 5 and 9 each sit on two coast tiles, so both get a barbarian. The second player of the pair builds, trades with the bank and drives the barbarians off as well.'));
         await T.wait(3200);
       },
       async T => {
-        T.say(t('Traders & Barbarians'), t('Haul glass, marble, sand and tools with your wagon for points and gold. 13 points.'));
+        T.say(t('Traders & Barbarians'), t('Haul glass, marble, sand and tools with your wagon for points and gold. You start with a city and 5 gold, and a 2 or 12 is rolled again. 13 points.'));
         await T.banner(t('Wagons'));
         await T.wait(1200);
       },
       async T => {
-        T.say(t('Move your wagon'), t('At the end of your turn: 4 movement points. A path costs 2, your own road 1, another player’s road 1 and 1 gold for its owner, a barbarian on the way 2 more. 1 grain gives 2 more points, once per turn.'));
+        T.say(t('Move your wagon'), t('At the end of your turn you have 4 movement points. A path costs 2, your own road 1, another player’s road 1 and 1 gold for its owner, a barbarian on the way 2 more. 1 grain gives 2 more movement points, once per turn.'));
         await T.wait(3200);
       },
       async T => {
         T.say(t('Pick up and deliver'), t('In the middle of a commodity hex you pick up a token or deliver yours: 1 point and 1 to 5 gold, by wagon level. The quarry needs tools, the glassworks sand, the castle marble and glass.'));
         await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Upgrade your wagon'), t('Pay 1 lumber, 1 wool and 1 ore (2 lumber for the last two upgrades) to move the cube: more movement points, better chances against barbarians and more gold per delivery. The full upgrade is worth 1 point.'));
+        await T.wait(3400);
       },
       async T => {
         T.say(t('Barbarians'), t('From the second wagon level on, roll a die in front of a barbarian: 6 at level 2, 5–6 at level 3, 4–6 at level 4, 3–6 at level 5. A 7 or a knight card moves a barbarian; on a road you draw a card from its owner.'));
@@ -496,7 +508,7 @@ function traders() {
         await T.wait(2800);
       },
       async T => {
-        T.say(t('Variants'), t('The friendly robber spares players with 2 points or fewer. Harbors of Catan reward settlements at harbors with a tile worth 2 points.'));
+        T.say(t('Variants'), t('The friendly robber spares players with 2 points or fewer. Harbors of Catan: buildings at harbors count 1 (a city 2); the first with 3 or the most holds a tile worth 2 points, and everybody needs 1 more point to win.'));
         await T.wait(2400);
         await T.finale();
       },
@@ -518,12 +530,12 @@ function big() {
         await T.wait(2600);
       },
       async T => {
-        T.say(t('Two players share every turn'), t('Stone 1 rolls the dice, trades with everybody and builds.'));
+        T.say(t('Two players share every turn'), t('Stone 1 rolls the dice, trades with everybody (who may answer an offer with a counter-offer) and builds.'));
         T.turnChip(0);
         await T.wait(2400);
       },
       async T => {
-        T.say(t('Then stone 2 plays, three seats to the left'), t('No dice, no trades with players: only the bank, building and 1 development card.'));
+        T.say(t('Then stone 2 plays, three seats to the left'), t('No dice and no trading with players, only with the bank. Build, buy and play 1 development card.'));
         T.turnChip(3);
         await T.wait(500);
         T.road(eAt(B, vAt(B, -2.598, -0.5), vAt(B, -2.598, 0.5)), 3);

@@ -97,6 +97,8 @@ function inkas() {
         await T.wait(1200);
         await T.bankTrade({ coca: 2 }, 'timber');
         await T.wait(900);
+        T.say(t('Trade with the others too.'), t('Only with the player whose turn it is. They may answer an offer with a counter-offer.'));
+        await T.wait(2600);
       },
       async T => {
         T.say(t('Build roads and settlements.'), t('A road costs wood and stone. Tap the glowing way.'));
@@ -104,7 +106,7 @@ function inkas() {
         await T.tap({ edges: [r1] });
         await T.pay(pay.road, T.edgePt(r1));
         T.road(r1, 0);
-        T.say(t('A settlement needs a road to it and two empty crossings around it.'), t('It costs wood, stone, potatoes and wool. Tap the glowing crossing.'));
+        T.say(t('A settlement needs a road leading to it, and the crossings next to it must be empty.'), t('It costs wood, stone, potatoes and wool. Tap the glowing crossing.'));
         await T.tap({ vertices: [N] });
         await T.pay(pay.settlement, T.vertPt(N));
         T.build(N, 'settlement', 0);
@@ -163,7 +165,8 @@ function inkas() {
         await T.bigCard({ title: t('Combat Arts'), color: '#B23A2A', icon: 'combat' });
         T.say(t('Advantage cards.'), t('3 connected roads: Longest Trade Route. 2 played Combat Arts cards: Mightiest Combat Arts.'));
         await T.bigCard({ title: t('Longest Trade Route'), color: '#C9971B', icon: 'road' });
-        await T.wait(500);
+        T.say(t('They bring no points, but a power.'), t('Longest Trade Route: once per turn trade 2 cards for 1. Mightiest Combat Arts: once per turn move the robber from a field next to your building onto the jungle frame and take 1 card of that field.'));
+        await T.wait(3600);
       },
       async T => {
         T.say(t('Lead the third tribe to success!'), t('4 + 4 + 3 development points: whoever places the 11th one wins.'));
