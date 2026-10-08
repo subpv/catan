@@ -45,7 +45,16 @@ export function decide(v) {
       case 'placeMetropolis': return { type: 'placeMetropolis', v: pick(L.metroCities) };
       case 'loseCity': return { type: 'loseCity', v: pick(L.loseCities) };
       case 'chooseProgress': return { type: 'chooseProgress', deck: pick(['trade', 'politics', 'science']) };
-      case 'discardProgress': return { type: 'discardProgress', idx: 0 };
+      case 'discardProgress': {
+        if (!mine.mustPlay) return { type: 'discardProgress', idx: 0 };
+        // a 5th card on the bot's own turn must be played: take one that needs nothing, otherwise give one back if allowed
+        const safe = ['crane', 'irrigation', 'mining', 'roadBuilding', 'smith', 'warlord', 'saboteur', 'wedding', 'merchantFleet', 'resourceMonopoly', 'tradeMonopoly'];
+        const idx = (me.progress || []).findIndex(c => safe.includes(c));
+        if (idx >= 0) return { type: 'playProgress', idx, kind: me.progress[idx] === 'tradeMonopoly' ? 'cloth' : pick(RES) };
+        return { type: 'discardProgress', idx: 0 };
+      }
+      case 'harborGive': { const c = ['paper', 'cloth', 'coin'].filter(k => (me.comm?.[k] || 0) > 0); return { type: 'harborGive', comm: pick(c.length ? c : ['paper']) }; }
+      case 'deserterPick': return { type: 'deserterPick', v: pick(L.giveKnights) };
       case 'aqueduct': return { type: 'aqueduct', res: pick(RES) };
       case 'placeFreeKnight': return { type: 'placeFreeKnight', v: L.freeKnightSpots?.length ? pick(L.freeKnightSpots) : null };
       case 'spy': return { type: 'spyTake', idx: v.reveal?.progress?.length ? 0 : null };

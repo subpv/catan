@@ -217,9 +217,9 @@ function knights() {
         await T.wait(1200);
       },
       async T => {
-        T.say(t('Commodities buy city improvements.'), t('Trade costs cloth, politics coin, science paper. Tap +.'));
+        T.say(t('Commodities buy city improvements.'), t('Trade costs cloth, politics coin, science paper: level 1 costs 1, level 2 costs 2, and so on. Tap +.'));
         T.imp({ trade: 0, politics: 0, science: 0 });
-        await T.give({ paper: 2 });
+        await T.give({ paper: 3 });
         await T.tap({ el: '.tut-imp [data-tr="science"]' });
         await T.impUp('science');
         await T.impUp('science');
@@ -227,7 +227,7 @@ function knights() {
         await T.give({ paper: 3 });
         await T.impUp('science');
         await T.wait(1300);
-        T.say(t('First to level 4 raises a Metropolis.'), t('It is worth 2 points and sits on your city.'));
+        T.say(t('First to level 4 raises a Metropolis.'), t('It is worth 2 points and sits on one of your cities. Only a player who reaches level 5 first can take it from you.'));
         await T.give({ paper: 4 });
         await T.impUp('science');
         T.set(v2 => { v2.buildings[home].metro = 'science'; }, { verts: [home] });
@@ -254,23 +254,23 @@ function knights() {
         await T.wait(1000);
       },
       async T => {
-        T.say(t('A ship on the event die moves the barbarians.'), t('Each ship brings them one step closer to Broch.'));
+        T.say(t('A ship on the event die moves the barbarians.'), t('Each ship brings them one step closer to Broch. Until they have landed once, a 7 cannot move the robber.'));
         T.barb(3);
         for (const [a, b] of [[2, 5], [6, 1], [4, 4]]) { await T.roll(a, b, { event: 'ship' }); T.barb(T.s.barb + 1); await T.wait(600); }
         await T.wait(500);
       },
       async T => {
-        T.say(t('The barbarians attack!'), t('Their strength: all cities on the board. Your defense: all active knights.'));
+        T.say(t('The barbarians attack!'), t('Their strength: all cities on the board. Your defense: all active knights. Afterwards every knight is inactive again.'));
         await T.roll(1, 2, { event: 'ship' });
         T.barb(7);
         await T.battle(2, 2);
-        T.say(t('Repelled!'), t('The strongest defender earns a point. If the barbarians win, the weakest city is plundered.'));
+        T.say(t('Repelled!'), t('The strongest defender earns a point. If the barbarians win, whoever defended least loses a city (metropolises are safe).'));
         T.vp(7);
         T.barb(0);
         await T.wait(2000);
       },
       async T => {
-        T.say(t('Progress cards'), t('A coloured gate on the event die gives cards to players whose improvements are high enough.'));
+        T.say(t('Progress cards'), t('A coloured gate on the event die gives a card to players whose red die is low enough for their improvements. You may hold 4 cards.'));
         await T.roll(2, 4, { event: 'science' });
         await T.bigCard({ title: t('Alchemist'), color: TRACK.science, icon: 'science' });
         await T.wait(600);
