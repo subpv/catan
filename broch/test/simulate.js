@@ -93,6 +93,7 @@ function candidates(s, p) {
     }
   }
   if (s.trade && s.trade.from !== p && !(p in s.trade.responses)) out.push({ type: 'respondTrade', id: s.trade.id, accept: Math.random() < 0.5 });
+  if (s.trade && s.trade.from !== p && Math.random() < 0.2) { const give = cardsOf(v, 1); if (Object.keys(give).length) out.push({ type: 'counterTrade', id: s.trade.id, give, get: { [pick(C.RES)]: 1 } }); }
   if (s.phase === 'play' && !s.pending.length) {
     if (s.step === 'roll' && p === s.current) {
       out.push({ type: 'roll' });
@@ -143,7 +144,7 @@ function candidates(s, p) {
         if (Object.keys(give).length) out.push({ type: 'offerTrade', give, get: { [pick(C.RES)]: 1 } });
       }
       if (s.trade && s.trade.from === p) {
-        const acc = Object.entries(s.trade.responses).find(([, r]) => r === 'accept');
+        const acc = Object.entries(s.trade.responses).find(([, r]) => r === 'accept' || r === 'counter');
         if (acc) out.push({ type: 'confirmTrade', with: +acc[0] });
         out.push({ type: 'cancelTrade' });
       }

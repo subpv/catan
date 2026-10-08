@@ -688,9 +688,16 @@ const HANDLERS = {
     if (a.accept && t && (t.give.energy || 0) + K.P(s, p).res.energy > ENERGY_MAX) fail('You may hold at most 5 energy tokens.');
     K.HANDLERS.respondTrade(s, p, a);
   },
+  counterTrade(s, p, a) {
+    const g = a.give || {}, w = a.get || {};
+    if (Object.keys(g).some(k => g[k] > 0 && w[k] > 0)) fail('You may not swap a card for the same kind of card.');
+    if (K.P(s, p).res.energy + (w.energy || 0) - (g.energy || 0) > ENERGY_MAX) fail('You may hold at most 5 energy tokens.');
+    K.HANDLERS.counterTrade(s, p, a);
+  },
   confirmTrade(s, p, a) {
     const t = s.trade;
-    if (t && (t.get.energy || 0) + K.P(s, p).res.energy - (t.give.energy || 0) > ENERGY_MAX) fail('You may hold at most 5 energy tokens.');
+    const x = t && t.responses[a.with] === 'counter' ? t.counters[a.with] : t;
+    if (x && (x.get.energy || 0) + K.P(s, p).res.energy - (x.give.energy || 0) > ENERGY_MAX) fail('You may hold at most 5 energy tokens.');
     K.HANDLERS.confirmTrade(s, p, a);
   },
   bankTrade(s, p, a) {

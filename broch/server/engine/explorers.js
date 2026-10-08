@@ -740,7 +740,7 @@ const HANDLERS = {
     if (!isRoller(s, p)) fail('With ship 2 you trade only with the supply, not with the other players.');
     if (!validCards(a.give, HAND) || !validCards(a.get, HAND) || !sum(a.give) || !sum(a.get)) fail('Set up both sides of the trade.');
     if (!has(P(s, p), a.give)) fail('You do not have those cards.');
-    s.trade = { id: ++s.tradeSeq, from: p, give: clean(a.give), get: clean(a.get), responses: {} };
+    s.trade = { id: ++s.tradeSeq, from: p, give: clean(a.give), get: clean(a.get), responses: {}, counters: {} };
     log(s, '{@p} offers {$g} for {$w}.', { p, g: clean(a.give), w: clean(a.get) });
   },
   respondTrade(s, p, a) {
@@ -749,15 +749,27 @@ const HANDLERS = {
     if (a.accept && !has(P(s, p), t.get)) fail('You do not have the requested cards.');
     t.responses[p] = a.accept ? 'accept' : 'reject';
   },
+  counterTrade(s, p, a) {
+    const t = s.trade;
+    if (!t || t.id !== a.id || p === t.from) fail('No such offer.');
+    if (!validCards(a.give, HAND) || !validCards(a.get, HAND) || !sum(a.give) || !sum(a.get)) fail('Set up both sides of the trade.');
+    if (!has(P(s, p), a.give)) fail('You do not have those cards.');
+    (t.counters = t.counters || {})[p] = { give: clean(a.get), get: clean(a.give) };
+    t.responses[p] = 'counter';
+    log(s, '{@p} counters: gives {$g} for {$w}.', { p, g: clean(a.give), w: clean(a.get) });
+  },
   confirmTrade(s, p, a) {
     requireBuild(s, p);
     const t = s.trade;
-    if (!t || t.from !== p || t.responses[a.with] !== 'accept') fail('That player has not accepted.');
+    if (!t || t.from !== p) fail('That player has not accepted.');
+    const r = t.responses[a.with];
+    if (r !== 'accept' && r !== 'counter') fail('That player has not accepted.');
+    const x = r === 'counter' ? t.counters[a.with] : t; // a counter-offer carries its own terms
     const me = P(s, p), them = P(s, a.with);
-    if (!has(me, t.give) || !has(them, t.get)) fail('Someone no longer has the cards.');
-    for (const [k, n] of Object.entries(t.give)) moveCard(me, them, k, n);
-    for (const [k, n] of Object.entries(t.get)) moveCard(them, me, k, n);
-    log(s, '{@p} traded {$g} with {@q} for {$w}.', { p, q: a.with, g: t.give, w: t.get });
+    if (!has(me, x.give) || !has(them, x.get)) fail('Someone no longer has the cards.');
+    for (const [k, n] of Object.entries(x.give)) moveCard(me, them, k, n);
+    for (const [k, n] of Object.entries(x.get)) moveCard(them, me, k, n);
+    log(s, '{@p} traded {$g} with {@q} for {$w}.', { p, q: a.with, g: x.give, w: x.get });
     s.trade = null;
   },
   cancelTrade(s, p) {

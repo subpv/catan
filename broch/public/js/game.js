@@ -645,13 +645,13 @@ function tradeHtml() {
   const mineOffer = tr.from === v.me;
   let body = `<div class="trade-line">${t('{name} gives', { name: pname(tr.from) })} ${cardsHtml(tr.give)}</div><div class="trade-line" style="margin-top:4px">${tx('and wants')} ${cardsHtml(tr.get)}</div>`;
   if (mineOffer) {
-    const rows = v.players.map((p, i) => i === v.me ? '' : `<div class="row" style="margin-top:6px"><span class="spacer">${pname(i)}</span>${tr.responses[i] === 'accept' ? `<button class="btn small gold" data-confirm="${i}">${tx('Trade with {name}', { name: p.name })}</button>` : `<span class="muted" style="font-size:13px">${tr.responses[i] === 'reject' ? tx('Declined') : tx('Thinking…')}</span>`}</div>`).join('');
+    const rows = v.players.map((p, i) => i === v.me ? '' : `<div class="row" style="margin-top:6px"><span class="spacer">${pname(i)}</span>${tr.responses[i] === 'accept' ? `<button class="btn small gold" data-confirm="${i}">${tx('Trade with {name}', { name: p.name })}</button>` : tr.responses[i] === 'counter' && tr.counters && tr.counters[i] ? `<div style="flex:1 1 100%"><div class="trade-line">${tx('Counter-offer: you give')} ${cardsHtml(tr.counters[i].give)}</div><div class="trade-line" style="margin-top:4px">${tx('and get')} ${cardsHtml(tr.counters[i].get)}</div><button class="btn small gold" style="margin-top:6px" data-confirm="${i}">${tx('Accept the counter-offer of {name}', { name: p.name })}</button></div>` : `<span class="muted" style="font-size:13px">${tr.responses[i] === 'reject' ? tx('Declined') : tx('Thinking…')}</span>`}</div>`).join('');
     body += rows + `<div class="row" style="margin-top:10px"><button class="btn small" data-do="cancelTrade">${tx('Withdraw offer')}</button></div>`;
   } else if (isMine()) {
     const r = tr.responses[v.me];
     const can = has(tr.get);
-    body += r ? `<div class="muted" style="margin-top:8px;font-size:13px">${r === 'accept' ? tx('You accepted. Waiting for them to confirm.') : tx('You declined.')}</div>`
-      : `<div class="row" style="margin-top:10px"><button class="btn small gold" data-respond="1" ${can ? '' : 'disabled'}>${tx('Accept')}</button><button class="btn small" data-respond="0">${tx('Decline')}</button>${can ? '' : `<span class="muted" style="font-size:12px">${tx('You lack the cards.')}</span>`}</div>`;
+    body += r ? `<div class="muted" style="margin-top:8px;font-size:13px">${r === 'accept' ? tx('You accepted. Waiting for them to confirm.') : r === 'counter' ? tx('You made a counter-offer. Waiting for them to confirm.') : tx('You declined.')}</div>`
+      : `<div class="row" style="margin-top:10px"><button class="btn small gold" data-respond="1" ${can ? '' : 'disabled'}>${tx('Accept')}</button><button class="btn small" data-counter="1">${tx('Counter-offer')}</button><button class="btn small" data-respond="0">${tx('Decline')}</button>${can ? '' : `<span class="muted" style="font-size:12px">${tx('You lack the cards.')}</span>`}</div>`;
   }
   // slide in once per offer; later answers only change the text (a fresh slide on every answer looked like a new window)
   const first = G.tradeSeen !== tr.id;
@@ -793,6 +793,7 @@ function onClick(e) {
   const im = el.closest('[data-improve]');
   if (im) { if (im.dataset.why) { sfx.error(); toast(im.dataset.why, 'warn'); return; } return send({ type: 'improve', track: im.dataset.improve }); }
   const cf = el.closest('[data-confirm]'); if (cf) return send({ type: 'confirmTrade', with: +cf.dataset.confirm });
+  if (el.closest('[data-counter]')) return tradeDialog(G.view.trade);
   const rs = el.closest('[data-respond]'); if (rs && !rs.disabled) return send({ type: 'respondTrade', id: G.view.trade.id, accept: rs.dataset.respond === '1' });
   const tb = el.closest('.feed [data-tab]');
   if (tb) {
@@ -961,14 +962,14 @@ function autoDialogs(force = false) {
   }
 }
 
-function tradeDialog() {
+function tradeDialog(counter) {
   const v = G.view;
   const types = [...RES, ...(v.mode === 'knights' ? COMM : []), ...(v.gold ? ['gold'] : [])];
-  const give = {}, get = {};
-  modal(`<h2>${tx('Offer a trade')}</h2><p class="muted" style="margin:0">${tx('Everyone sees the offer and can accept. You pick who to trade with.')}</p>
+  const give = counter ? { ...counter.get } : {}, get = counter ? { ...counter.give } : {}; // a counter starts from the offer, turned around
+  modal(`<h2>${counter ? tx('Make a counter-offer') : tx('Offer a trade')}</h2><p class="muted" style="margin:0">${counter ? tx('Propose other terms. The active player decides whether to take them.') : tx('Everyone sees the offer and can accept. You pick who to trade with.')}</p>
     <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg"></div>
     <div class="section-label" style="color:var(--muted)">${tx('You want')}</div><div class="picker" id="tw"></div>
-    <div class="foot"><button class="btn" data-close>${tx('Cancel')}</button><button class="btn" id="tbank">${tx('Bank instead')}</button><button class="btn primary" id="tok">${tx('Offer')}</button></div>`, {
+    <div class="foot"><button class="btn" data-close>${tx('Cancel')}</button>${counter ? '' : `<button class="btn" id="tbank">${tx('Bank instead')}</button>`}<button class="btn primary" id="tok">${counter ? tx('Send counter-offer') : tx('Offer')}</button></div>`, {
     onMount(el, close) {
       const m = me();
       const draw = () => {
@@ -991,10 +992,10 @@ function tradeDialog() {
         el.querySelector('#tok').disabled = !sum(give) || !sum(get);
       };
       draw();
-      el.querySelector('#tbank').onclick = () => { close(); bankDialog(); };
+      if (!counter) el.querySelector('#tbank').onclick = () => { close(); bankDialog(); };
       el.querySelector('#tok').onclick = async () => {
         const clean = o => Object.fromEntries(Object.entries(o).filter(([, n]) => n));
-        if (await send({ type: 'offerTrade', give: clean(give), get: clean(get) })) close();
+        if (await send(counter ? { type: 'counterTrade', id: counter.id, give: clean(give), get: clean(get) } : { type: 'offerTrade', give: clean(give), get: clean(get) })) close();
       };
     },
   });
