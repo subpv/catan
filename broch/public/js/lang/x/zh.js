@@ -1025,6 +1025,8 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"石头1：{@p}。石头2：{@q}
 "Experiment: bigger start":"实验：更大的开局",
 "Everybody starts with 1 settlement and 2 cities instead of 1 settlement and 1 city (a third setup round).":"每个人以1个村庄和2个城市开局，而不是1个村庄和1个城市（第三轮放置）。",
 "Everybody starts with 2 settlements and 1 city instead of 2 settlements (a third setup round).":"每个人以2个村庄和1个城市开局，而不是2个村庄（第三轮放置）。",
+"House rule: show victory point cards at once":"自定规则：胜利点卡立即公开",
+"A bought victory point card is revealed immediately and counts for everybody, instead of staying hidden until the win.":"购买的胜利点卡会立即公开并对所有人计分，而不是隐藏到获胜时。",
 "Start with two settlements and two roads.":"以两个村庄和两条道路开局。",
 "The second settlement pays 1 card for each tile around it. Later settlements must connect to your roads.":"第二个村庄会为周围的每块地块提供 1 张牌。之后的村庄必须与你的道路相连。",
 "Trade with players.":"与玩家交易。",

@@ -1025,6 +1025,8 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Pierre 1 : {@p}. Pierre 2 : {@q
 "Experiment: bigger start":"Expérience : départ plus grand",
 "Everybody starts with 1 settlement and 2 cities instead of 1 settlement and 1 city (a third setup round).":"Tout le monde commence avec 1 colonie et 2 villes au lieu d'1 colonie et 1 ville (un troisième tour de placement).",
 "Everybody starts with 2 settlements and 1 city instead of 2 settlements (a third setup round).":"Tout le monde commence avec 2 colonies et 1 ville au lieu de 2 colonies (un troisième tour de placement).",
+"House rule: show victory point cards at once":"Règle maison : révéler tout de suite les cartes de points de victoire",
+"A bought victory point card is revealed immediately and counts for everybody, instead of staying hidden until the win.":"Une carte de point de victoire achetée est révélée aussitôt et compte pour tous, au lieu de rester cachée jusqu'à la victoire.",
 "Start with two settlements and two roads.":"Commencez avec deux colonies et deux routes.",
 "The second settlement pays 1 card for each tile around it. Later settlements must connect to your roads.":"La deuxième colonie rapporte 1 carte pour chaque tuile qui l’entoure. Les colonies suivantes doivent être reliées à vos routes.",
 "Trade with players.":"Échangez avec les joueurs.",

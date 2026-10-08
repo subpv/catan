@@ -94,3 +94,13 @@ ok('bigger start: Cities & Knights = 1 settlement + 2 cities', () => {
   const a = setupAll('knights', {}), b = setupAll('knights', { expExtraStart: true });
   for (let p = 0; p < 3; p++) { assert.deepStrictEqual([count(a, p, 'settlement'), count(a, p, 'city')], [1, 1]); assert.deepStrictEqual([count(b, p, 'settlement'), count(b, p, 'city')], [1, 2]); }
 });
+ok('victory point cards shown at once (house rule)', () => {
+  for (const on of [false, true]) {
+    const s = setupAll('classic', { vpAtOnce: on });
+    s.step = 'main'; s.pending = []; s.devDeck = ['victoryPoint']; Object.assign(s.players[s.current].res, { grain: 1, wool: 1, ore: 1 });
+    const p = s.current, before = engine.viewFor(s, (p + 1) % 3).players[p].vp;
+    act(s, p, { type: 'buyDev' });
+    const after = engine.viewFor(s, (p + 1) % 3).players[p].vp;
+    assert.strictEqual(after - before, on ? 1 : 0);
+  }
+});

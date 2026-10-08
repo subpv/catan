@@ -51,6 +51,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       startBoth: !!options.startBoth,
       knightsFree: !!options.knightsFree && !knights,
       // experiment: building is allowed in every player's turn (after the dice), not only in your own
+      vpAtOnce: !!options.vpAtOnce && !knights,
       expBuildAnytime: !!options.expBuildAnytime,
       // experiment: a third setup round - classic: 2 settlements + 1 city, Cities & Knights: 1 settlement + 2 cities
       expExtraStart: extraStart,
@@ -167,7 +168,7 @@ function vp(s, p, includeHidden = true) {
   if (s.longestRoad.p === p) pts += 2;
   if (!K(s)) {
     if (s.largestArmy.p === p) pts += 2;
-    if (includeHidden) pts += pl.dev.filter(d => d.type === 'victoryPoint').length;
+    pts += pl.dev.filter(d => d.type === 'victoryPoint' && (includeHidden || d.revealed)).length;
   } else pts += KN.points(s, p);
   pts += X.vpExtra(s, p);
   return Math.max(0, pts);
@@ -642,6 +643,8 @@ const HANDLERS = {
     const type = s.devDeck.pop();
     pl.dev.push({ type, turn: s.turn });
     log(s, '{@p} bought a development card.', { p });
+    // house rule: a victory point card is shown (and counts for everybody) the moment it is bought
+    if (type === 'victoryPoint' && s.options.vpAtOnce) { pl.dev[pl.dev.length - 1].revealed = true; log(s, '{@p} reveals {%c} (+1 VP).', { p, c: 'victoryPoint' }); }
   },
   playDev(s, p, a) {
     if (K(s)) fail('No development cards in knights mode.');

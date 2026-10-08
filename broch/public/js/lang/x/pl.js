@@ -1025,6 +1025,8 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Kamień 1: {@p}. Kamień 2: {@q
 "Experiment: bigger start":"Eksperyment: większy start",
 "Everybody starts with 1 settlement and 2 cities instead of 1 settlement and 1 city (a third setup round).":"Wszyscy zaczynają z 1 osadą i 2 miastami zamiast 1 osady i 1 miasta (trzecia runda ustawiania).",
 "Everybody starts with 2 settlements and 1 city instead of 2 settlements (a third setup round).":"Wszyscy zaczynają z 2 osadami i 1 miastem zamiast 2 osad (trzecia runda ustawiania).",
+"House rule: show victory point cards at once":"Reguła domowa: od razu ujawniaj karty punktów zwycięstwa",
+"A bought victory point card is revealed immediately and counts for everybody, instead of staying hidden until the win.":"Kupiona karta punktu zwycięstwa jest od razu ujawniana i liczy się dla wszystkich, zamiast pozostawać ukryta do wygranej.",
 "Start with two settlements and two roads.":"Zaczynasz z dwiema osadami i dwiema drogami.",
 "The second settlement pays 1 card for each tile around it. Later settlements must connect to your roads.":"Druga osada daje 1 kartę za każde sąsiadujące pole. Kolejne osady muszą łączyć się z twoimi drogami.",
 "Trade with players.":"Handluj z graczami.",
