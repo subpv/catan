@@ -180,6 +180,14 @@ module.exports = function make(core) {
   };
 
   // ------------------------------------------------------------ state
+  // what every game carries, whatever the expansion, so clients and rules can read it without asking: the pieces and tokens
+  // of this expansion switched off (init below switches on what the chosen variants need)
+  api.defaults = s => {
+    s.bridges = {};
+    s.rivers = false; s.fishing = false; s.eventCards = false; s.fish = null; s.deck = null; s.gold = false;
+    s.hub = { mod: null, scenario: null, harbor: { p: null } };
+    s.players.forEach(pl => { pl.gold = 0; pl.fish = 0; pl.fishTok = []; });
+  };
   api.init = (s, options) => {
     const v = options.variants || {};
     const big = !!s.options.big;
@@ -746,6 +754,11 @@ module.exports = function make(core) {
     if (b.rivers) { vb.rivers = b.rivers; vb.bridgeSites = b.bridgeSites; vb.riverHexes = b.riverHexes; }
     if (b.lakes) vb.lakes = b.lakes;
     hook(s, 'viewBoard', vb);
+  };
+  api.viewDefaults = (s, v) => {
+    v.bridges = s.bridges;
+    v.rivers = false; v.fishing = false; v.eventCards = false; v.gold = false;
+    v.players.forEach((pv, i) => { pv.gold = s.players[i].gold; pv.fish = s.players[i].fish; pv.pieces.bridges = C.PIECES.bridge; });
   };
   api.viewExtra = (s, me, v) => {
     v.rivers = s.rivers; v.fishing = s.fishing; v.eventCards = s.eventCards; v.gold = s.gold;
