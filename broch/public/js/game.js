@@ -249,9 +249,13 @@ function statusInfo() {
         placeMetropolis: [t('Choose a city for your metropolis ({track}).', { track: term(mp.track) }), t('Tap one of your highlighted cities.')],
         loseCity: [t('The barbarians pillage one of your cities.'), t('Tap the city that becomes a settlement.')],
         chooseProgress: [t('You helped defend Broch. Draw a progress card.'), '', t('Choose deck')],
-        discardProgress: [t('You have more than 4 progress cards.'), t('Discard down to 4.'), t('Choose card')],
+        discardProgress: mp.mustPlay
+          ? [t('You drew a 5th progress card. Play one now.'), mp.canGiveBack ? t('None of your cards can be played, so you may hand one back.') : t('You may hold at most 4: play any of your cards.'), t('Choose card')]
+          : [t('You have more than 4 progress cards.'), t('Give one back (under its deck).'), t('Choose card')],
         aqueduct: [t('Your aqueduct provides a resource.'), t('Nothing was produced for you this roll.'), t('Choose')],
         placeFreeKnight: [t('A knight deserted to your side.'), t('Tap a corner next to your road, or skip.')],
+        deserterPick: [t('A knight of yours deserts.'), t('Tap the knight that leaves the board.')],
+        harborGive: [t('{name} offers you a resource.', { name: v.players[mp.to]?.name }), t('Give one of your commodities in return.'), t('Choose commodity')],
         spy: [t('Your spy sees their progress cards.'), '', t('Choose card')],
         masterMerchant: [t('Take 2 cards from their hand.'), '', t('Choose cards')],
       }[mp.type] || [t('Make your choice.'), ''];
@@ -263,6 +267,7 @@ function statusInfo() {
       discard: 'Waiting for {names} to discard…', moveRobber: 'Waiting for {names} to move the robber…', steal: 'Waiting for {names} to steal…',
       relocateKnight: 'Waiting for {names} to relocate a knight…', give: 'Waiting for {names} to give cards…', loseCity: 'Waiting for {names} to pick a city to lose…',
       chooseProgress: 'Waiting for {names} to draw progress cards…', goldPick: 'Waiting for {names} to choose from the gold field…',
+      deserterPick: 'Waiting for {names} to pick a deserting knight…', harborGive: 'Waiting for {names} to trade a commodity…', discardProgress: 'Waiting for {names} to play or give back a progress card…',
     }[pend[0].type] || 'Waiting for {names} to decide…';
     return { msg: t(W, { names: who }) };
   }
@@ -307,6 +312,7 @@ function targets() {
   if (L.metroCities) return { vertices: L.metroCities };
   if (L.loseCities) return { vertices: L.loseCities };
   if (L.freeKnightSpots) return { vertices: L.freeKnightSpots };
+  if (L.giveKnights) return { ownKnights: L.giveKnights };
   const tg = {};
   if (v.free.roads > 0 && v.current === v.me && L.roads) tg.edges = L.roads;
   if (L.knights && Object.keys(L.knights).length) tg.ownKnights = Object.keys(L.knights).map(Number);
@@ -320,6 +326,7 @@ function onBoardClick(e) {
   const v = G.view, L = v.legal || {};
   const id = +(el.dataset.v ?? el.dataset.e ?? el.dataset.h ?? el.dataset.k ?? el.dataset.s);
   if (G.pick) { G.pick.onPick(id); return; }
+  if (L.giveKnights && el.dataset.k != null) return send({ type: 'deserterPick', v: id });
   if (el.dataset.k != null) return knightMenu(id);
   if (el.dataset.s != null) return shipMenu(id);
   if (L.setupSpots) return send({ type: v.setup.need === 'city' ? 'placeCity' : 'placeSettlement', v: id });
@@ -375,7 +382,6 @@ function render() {
   if (setHtml(G.app.querySelector('.imp-host'), 'imp', G.view.mode === 'knights' ? improveHtml() : '')) animateImprovements();
   renderFeed();
   autoDialogs();
-  aqueductPrompt();
   syncLoops(G.app);
 }
 
@@ -629,6 +635,12 @@ const IMP_UNLOCK = {
   politics: ['⚔', t => tx('Level 3: your knights can become mighty.')],
   science: ['💧', t => tx('Level 3: the aqueduct pays out a resource when you get nothing.')],
 };
+// the buildings printed on the tableaus, level 1 to 5
+const IMP_NAMES = {
+  science: ['School', 'Library', 'Aqueduct', 'Theater', 'University'],
+  trade: ['Market', 'Guild', 'Merchant Guild', 'Bank', 'Trade Center'],
+  politics: ['Town Hall', 'Embassy', 'Fortress', 'Court', 'Council of Broch'],
+};
 function improveHtml() {
   const v = G.view, L = v.legal || {};
   const mineP = isMine() ? me() : null;
@@ -643,7 +655,7 @@ function improveHtml() {
     let steps = '';
     for (let i = 1; i <= 5; i++) {
       const label = i === 3 ? IMP_UNLOCK[tr][0] : i === 4 ? '♛' : i === 5 ? '★' : i;
-      steps += `<div class="step s${i} ${i <= lead ? 'lit' : ''}" style="--c:${col}" title="${i === 3 ? esc(htmlToText(IMP_UNLOCK[tr][1]())) : i === 4 ? tx('Level 4: the first player here raises a metropolis (+2 points).') : ''}"><span>${label}</span></div>`;
+      steps += `<div class="step s${i} ${i <= lead ? 'lit' : ''}" style="--c:${col}" title="${esc(`${t(IMP_NAMES[tr][i - 1])} · ${t('Red die: 1–{n}', { n: i + 1 })}`)}${i === 3 ? esc(' · ' + htmlToText(IMP_UNLOCK[tr][1]())) : i === 4 ? esc(' · ' + t('Level 4: the first player here raises a metropolis (+2 points).')) : i === 5 ? esc(' · ' + t('Level 5: your metropolis here is safe.')) : ''}"><span>${label}</span></div>`;
     }
     let tokens = '';
     Object.entries(byLevel).forEach(([lvl, ids]) => {
@@ -658,14 +670,10 @@ function improveHtml() {
     const imp = L.improve?.[tr];
     const why = mineP && !(imp && imp.ok) ? improveWhy(tr, c) : '';
     const btn = mineP ? `<button class="imp-btn ${why ? 'off' : ''}" data-improve="${tr}" ${why ? `data-why="${esc(why)}" aria-disabled="true"` : ''} title="${esc(why || (imp ? t('Improve {track} ({n} {res})', { track: term(tr), n: imp.cost, res: resName(c) }) : term(tr)))}" style="--c:${col}"><b>+</b><span>${mineP.improvements[tr] < 5 ? mineP.improvements[tr] + 1 : ''}</span>${glyph(c, 14)}</button>` : '<span class="imp-btn ghosty"></span>';
-    const aq = tr === 'science' && mineP && mineP.improvements.science >= 3
-      ? (mineP.aqueduct
-        ? `<button class="aq-chip" data-aqueduct title="${esc(t('Aqueduct: {res}. Tap to change.', { res: resName(mineP.aqueduct) }))}" style="background:${CARD_COLOR[mineP.aqueduct]}">💧${glyph(mineP.aqueduct, 14)}</button>`
-        : `<button class="aq-chip todo" data-aqueduct title="${esc(t('Aqueduct'))}">💧 ?</button>`) : '';
     const crown = holder != null ? `<span class="metro" style="--pc:${PCOLOR[v.players[holder].color]}" title="${esc(t('Metropolis: {name}', { name: v.players[holder].name }))}">♛</span>` : '';
     return `<div class="lane ${tr}" style="--c:${col}">
       <div class="lane-l"><span class="lane-ic" style="background:${col}">${glyph(c, 15)}</span><b>${esc(term(tr))}</b></div>
-      <div class="track"><div class="cols">${steps}</div>${tokens}</div>${crown}${aq}${btn}</div>`;
+      <div class="track"><div class="cols">${steps}</div>${tokens}</div>${crown}${btn}</div>`;
   }).join('');
   G.prevImpNext = next;
   const noCity = mineP && !Object.values(v.buildings).some(b => b.p === v.me && b.type === 'city');
@@ -682,6 +690,8 @@ function improveWhy(tr, comm) {
   if (!Object.values(v.buildings).some(b => b.p === v.me && b.type === 'city')) return t('You need a city first.');
   const lvl = m.improvements[tr];
   if (lvl >= 5) return t('Already at the top.');
+  const block = v.legal?.improve?.[tr]?.block;
+  if (block) return t(block);
   const cost = v.legal?.improve?.[tr]?.cost ?? lvl + 1;
   return htmlToText(tf('You need {$c}.', { c: { [comm]: cost } }));
 }
@@ -744,7 +754,6 @@ function onClick(e) {
   if (d && !d.disabled) return doAction(d.dataset.do);
   const dv = el.closest('[data-dev]'); if (dv) return devDialog(dv.dataset.dev);
   const pg = el.closest('[data-prog]'); if (pg) return progressDialog(+pg.dataset.prog);
-  if (el.closest('[data-aqueduct]')) return aqueductChoice();
   const im = el.closest('[data-improve]');
   if (im) { if (im.dataset.why) { sfx.error(); toast(im.dataset.why, 'warn'); return; } return send({ type: 'improve', track: im.dataset.improve }); }
   const cf = el.closest('[data-confirm]'); if (cf) return send({ type: 'confirmTrade', with: +cf.dataset.confirm });
@@ -837,22 +846,6 @@ const handPool = () => {
 };
 const resChoices = (list = RES) => list.map(r => ({ value: r, html: `${glyph(r, 18)} ${esc(resName(r))}`, style: `background:${CARD_COLOR[r]};color:#fff;border-color:transparent;justify-content:flex-start` }));
 
-// The aqueduct (science level 3): pick the resource once, right when the level is reached. From then on the server
-// pays it out by itself whenever a roll (not a 7) gives you nothing. The chip in the science lane changes it.
-function aqueductChoice() {
-  choiceDialog(tx('Aqueduct'), tx('Choose your resource once. From now on the aqueduct pays it out whenever a roll gives you nothing (except on a 7).'), resChoices(), res => send({ type: 'setAqueduct', res }));
-}
-function aqueductPrompt() {
-  const v = G.view;
-  if (v.mode !== 'knights' || !isMine() || v.phase !== 'play') return;
-  const m = me();
-  if (m.improvements.science < 3 || m.aqueduct || G.opened.has('aqueduct-pick')) return;
-  if (document.querySelector('.modal-back') || myPending().length) return;
-  if (window.BROCH_FX_BUSY) { setTimeout(() => { if (G && G.view === v) aqueductPrompt(); }, 400); return; }
-  G.opened.add('aqueduct-pick');
-  aqueductChoice();
-}
-
 function autoDialogs(force = false) {
   const v = G.view;
   if (!isMine() || v.phase !== 'play') return;
@@ -879,8 +872,20 @@ function autoDialogs(force = false) {
       return choiceDialog(tx('Draw a progress card'), tx('Pick a deck.'), ['science', 'trade', 'politics'].map(d => ({ value: d, html: esc(term(d)), style: `background:${DECK_COLOR[d]};color:#fff;border-color:transparent` })), deck => send({ type: 'chooseProgress', deck }), false);
     case 'aqueduct':
       return choiceDialog(tx('Aqueduct'), tx('Take one resource of your choice.'), resChoices(), res => send({ type: 'aqueduct', res }), false);
-    case 'discardProgress':
-      return choiceDialog(tx('Discard a progress card'), tx('You may hold at most 4.'), me().progress.map((c, i) => ({ value: i, html: esc(cardName(c)) })), idx => send({ type: 'discardProgress', idx }), false);
+    case 'discardProgress': {
+      const cards = me().progress;
+      const giveBack = () => choiceDialog(tx('Give back a progress card'), tx('You may hold at most 4. The card goes under its deck.'), cards.map((c, i) => ({ value: i, html: esc(cardName(c)) })), idx => send({ type: 'discardProgress', idx }), false);
+      if (!mp.mustPlay) return giveBack();
+      const opts = cards.map((c, i) => ({ value: i, html: esc(cardName(c)), style: `background:${DECK_COLOR[PROGRESS_DECK[c]]};color:#fff;border-color:transparent` }));
+      if (mp.canGiveBack) opts.push({ value: 'back', html: tx('Give one back instead') });
+      return choiceDialog(tx('Play a progress card'), tx('You drew a 5th card. Nobody may hold more than 4: play one of your cards now.'),
+        opts, idx => { if (idx === 'back') { giveBack(); return true; } const c = cards[idx]; playProgress(idx, c, (PROGRESS_INFO[c] || [])[1] ?? null); return true; }, false);
+    }
+    case 'harborGive': {
+      const m = me();
+      const opts = COMM.filter(c => m.comm[c] > 0).map(c => ({ value: c, html: `${glyph(c, 18)} ${esc(resName(c))} (${m.comm[c]})`, style: `background:${CARD_COLOR[c]};color:#fff;border-color:transparent;justify-content:flex-start` }));
+      return choiceDialog(tx('Commercial Harbor'), t('{name} offers you 1 {res} for one of your commodities.', { name: v.players[mp.to].name, res: resName(mp.res) }), opts, comm => send({ type: 'harborGive', comm }), false);
+    }
     case 'spy': {
       const r = v.reveal;
       const opts = (r?.progress || []).map((c, i) => ({ value: i, html: esc(cardName(c)) }));
@@ -994,7 +999,8 @@ function progressDialog(idx) {
   const card = me().progress[idx];
   const [desc, param] = PROGRESS_INFO[card] || ['', null];
   const deck = PROGRESS_DECK[card];
-  const myTurn = v.current === v.me && v.phase === 'play' && v.step !== 'sbp' && !v.pending.length;
+  const forced = myPending().some(p => p.type === 'discardProgress' && p.mustPlay);
+  const myTurn = v.current === v.me && v.phase === 'play' && v.step !== 'sbp' && (!v.pending.length || forced);
   const timing = card === 'alchemist' ? v.step === 'roll' : v.step === 'main';
   const why = !myTurn ? t('Play it on your turn.') : !timing ? (card === 'alchemist' ? t('The Alchemist is played before rolling.') : t('Roll the dice first.')) : '';
   modal(`<div class="progress-card ${deck} fx-flip"><b>${esc(cardName(card))}</b><small>${tx(desc)}</small></div>
@@ -1051,6 +1057,25 @@ function playProgress(idx, card, param) {
     case 'intrigue': return startPick('vertices', L.intrigue, t('Intrigue: tap an opposing knight on your road.'), x => go({ v: x }));
     case 'player':
       return choiceDialog(esc(cardName(card)), tx(PROGRESS_INFO[card][0]), opponents.map(({ p, i }) => ({ value: i, html: `${houseIcon(p.color)} ${esc(p.name)} · ${tx('Points: {n}', { n: p.vp })}` })), target => go({ target }));
+    case 'harbor': {
+      const offers = {};
+      return modal(`<h2>${esc(cardName('commercialHarbor'))}</h2><p class="muted" style="margin:0">${tx('Offer 1 resource card to each opponent. Whoever owns a commodity must give you one of their choice; the others are skipped.')}</p>
+        <div id="hb" style="margin-top:8px"></div><div class="foot"><button class="btn" data-close>${tx('Cancel')}</button><button class="btn primary" id="ok">${tx('Offer')}</button></div>`, {
+        onMount(el, close) {
+          const m = me();
+          const draw = () => {
+            const used = {}; Object.values(offers).forEach(r => { used[r] = (used[r] || 0) + 1; });
+            el.querySelector('#hb').innerHTML = opponents.map(({ p, i }) => `<div class="row wrap" style="padding:6px 0;border-top:1px solid var(--line);gap:6px"><span class="spacer" style="min-width:110px">${houseIcon(p.color)} ${esc(p.name)}</span>${RES.map(r => {
+              const free = (m.res[r] || 0) - (used[r] || 0) + (offers[i] === r ? 1 : 0);
+              return `<button class="btn small" data-i="${i}" data-r="${r}" ${free < 1 ? 'disabled' : ''} title="${esc(resName(r))}" style="background:${CARD_COLOR[r]};color:#fff;border-color:transparent;${offers[i] === r ? 'outline:3px solid #2B1E12;' : 'opacity:.75;'}">${glyph(r, 16)}</button>`;
+            }).join('')}</div>`).join('');
+            el.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { const i = +b.dataset.i; if (offers[i] === b.dataset.r) delete offers[i]; else offers[i] = b.dataset.r; sfx.click(); draw(); });
+          };
+          draw();
+          el.querySelector('#ok').onclick = async () => { if (await go({ offers })) close(); };
+        },
+      });
+    }
     case 'cardType':
       return choiceDialog(esc(cardName('merchantFleet')), tx('Which card type do you want to trade 2:1 this turn?'), resChoices([...RES, ...COMM]), kind => go({ kind }));
     case 'resource':

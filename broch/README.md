@@ -3,7 +3,7 @@
 An online settlers-style board game for you and your friends, self-hosted on TrueNAS.
 
 - **Base game:** the classic island, 10 points, following the 2025 rulebooks of CATAN – Das Spiel (3–4 players) and its 5–6 player expansion
-- **Expansions:** Cities & Knights (13 points: commodities, city improvements, knights, barbarian raids, progress cards; the aqueduct at science level 3 asks for your resource once, right when you reach the level, and from then on pays it out by itself whenever a roll (not a 7) gives you nothing; a chip in the science lane changes it), Seafarers (ships, islands, fog, gold, pirate; scenarios Heading for New Shores, The Four Islands, The Fog Islands), Traders & Barbarians (Fishermen of Catan, Rivers of Catan, Event cards; each switchable), Explorers & Pirates (fog map, fish and spice missions, pirate lairs). Cities & Knights can be combined with one of the other three.
+- **Expansions:** Cities & Knights (13 points, 15 with Seafarers: commodities, city improvements, knights, barbarian raids, all 54 progress cards; the aqueduct at science level 3 lets you take any resource each time a roll (not a 7) gives you nothing), Seafarers (ships, islands, fog, gold, pirate; scenarios Heading for New Shores, The Four Islands, The Fog Islands), Traders & Barbarians (Fishermen of Catan, Rivers of Catan, Event cards; each switchable), Explorers & Pirates (fog map, fish and spice missions, pirate lairs). Cities & Knights can be combined with one of the other three.
 - **House rules (switches in the lobby, all off by default; with them off the rulebook applies):**
   - *Forgotten robber:* if a player has to move the robber and ends their turn instead, the robber goes back to the desert
   - *Knights without a limit (classic game):* knight cards can be played as often per turn as you like; every other development card is still limited to one per turn (the rulebook allows one development card per turn, whichever it is)
@@ -130,11 +130,13 @@ The expansions are compact versions that fit Broch's engine, not line-by-line co
 - **Traders & Barbarians:** Fishermen, Rivers (bridges, gold, richest/poorest) and Event cards are in. Barbarian Attack, Caravans and Traders-and-Barbarians' other scenarios are **not** implemented. Rivers is a simplified take.
 - **Explorers & Pirates:** a simplified mission game (explore, load and deliver fish and spice, hit pirate lairs). It is not the full printed rules with settlers, harbour settlements and the mission-card flow.
 
-A few simplifications in Cities & Knights:
+Cities & Knights follows the printed rules (Städte & Ritter, 2025 edition), with these small differences:
 
-- **Commercial Harbor:** you give your most plentiful resource and receive a random commodity from each opponent.
-- **Deserter:** the opponent's weakest knight is the one that deserts.
-- If you have no free city when you reach level 4, the metropolis stays open: you get it with your next improvement in that track, unless someone else reaches level 4 first.
+- The barbarian track is shown as a bar of 7 steps; the frame piece with the track replaces one 3:1 harbor, so the board has 8 harbors (10 on the 5–6 player board).
+- Commodity cards and the Defender of Broch chips are not limited to the printed 12 per kind (18 with 5–6) and 6 chips (8 with 5–6); the robber starts on the desert instead of the stone peninsula, which changes nothing because it may not move before the first attack.
+- A settlement cannot be built on a corner that holds one of your own knights: move the knight away first.
+- Seafarers: knights follow roads and ships, but a ship line is not pinned by a knight standing at its end, the Diplomat only removes roads, and the optional "choose how many knights to commit" variant is not included.
+- A level 4 improvement that would bring a metropolis needs a city that has none yet: with a single city that already carries a metropolis you stop at level 3 in the other tracks (as in the book).
 
 ## Speed
 

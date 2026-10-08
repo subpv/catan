@@ -29,7 +29,9 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
   const def = C.BOARDS[big ? 'extended' : 'standard'];
   const variants = expansion === 'traders' ? { fishermen: !!(options.variants && options.variants.fishermen), rivers: !!(options.variants && options.variants.rivers), events: !!(options.variants && options.variants.events) } : {};
   const board = X.makeBoard({ expansion, mode, options: { ...options, big, scenario, variants }, players: players.length, generate });
-  const defaultVp = knights ? 13 : sea ? (expansion === 'explorers' ? 12 : X.SCENARIOS[scenario].vp) : 10;
+  // the frame piece with the barbarian track replaces the frame piece with a 3:1 harbor (rulebook, set-up)
+  if (knights && !sea) dropHarbor(board);
+  const defaultVp = knights ? (expansion === 'seafarers' ? X.SCENARIOS[scenario].vp + 2 : 13) : sea ? (expansion === 'explorers' ? 12 : X.SCENARIOS[scenario].vp) : 10;
   const order = shuffle(players.map((_, i) => i));
   const seats = order.map(i => players[i]);
   const n = seats.length;
@@ -53,7 +55,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
     players: seats.map((pl, i) => ({
       userId: pl.id, name: pl.name, color: pl.color || C.COLORS[i], country: pl.country || null,
       res: zero(C.RES), comm: zero(C.COMM),
-      dev: [], devPlayed: 0, knightsPlayed: 0, aqueduct: null,
+      dev: [], devPlayed: 0, knightsPlayed: 0,
       progress: [], vpCards: 0, defender: 0,
       improvements: { trade: 0, politics: 0, science: 0 },
     })),
@@ -79,6 +81,14 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
   log(s, 'Game started. {@ps} take their seats.', { ps: seats.map((_, i) => i) });
   log(s, '{@p} places first.', { p: s.current });
   return s;
+}
+
+function dropHarbor(board) {
+  const any = board.ports.filter(pt => pt.type === 'any');
+  if (!any.length) return;
+  const gone = any[Math.floor(Math.random() * any.length)];
+  board.ports = board.ports.filter(pt => pt !== gone);
+  board.edges[gone.edge].v.forEach(v => { if (board.vertices[v].port === 'any') board.vertices[v].port = null; });
 }
 
 // Log entries are English templates plus parameters so every client can translate them.
@@ -298,9 +308,9 @@ function ownSettlements(s, p) {
   return Object.entries(s.buildings).filter(([, b]) => b.p === p && b.type === 'settlement').map(([v]) => +v);
 }
 function legalKnightSpots(s, p) {
-  return s.board.vertices.filter(v => !occupied(s, v.id) && X.landVertex(s, v.id) && touchesOwnRoad(s, v.id, p)).map(v => v.id);
+  return s.board.vertices.filter(v => !occupied(s, v.id) && X.landVertex(s, v.id) && touchesOwnRoute(s, v.id, p)).map(v => v.id);
 }
-// BFS along player's roads from vertex `from`; returns {empty:[], knights:[]} reachable
+// BFS along the player's roads (and ships, with Seafarers) from vertex `from`; returns {empty:[], knights:[]} reachable
 function roadReach(s, p, from) {
   const seen = new Set([from]);
   const q = [from];
@@ -308,7 +318,7 @@ function roadReach(s, p, from) {
   while (q.length) {
     const v = q.shift();
     for (const e of V(s, v).edges) {
-      if (s.roads[e] !== p) continue;
+      if (s.roads[e] !== p && !(s.ships && s.ships[e] && s.ships[e].p === p)) continue;
       const [a, b] = E(s, e).v; const u = a === v ? b : a;
       if (seen.has(u)) continue;
       seen.add(u);
@@ -325,6 +335,8 @@ function roadReach(s, p, from) {
 function knightCountAt(s, p, level) { return countPieces(s, p).knights[level]; }
 function maxKnightLevel(s, p) { return P(s, p).improvements.politics >= 3 ? 3 : 2; }
 function robberActive(s) { return !K(s) || s.barbarian.attacks > 0; }
+// a knight may chase the robber from one of the three tiles around its corner (with Seafarers also the pirate at sea)
+function nextToRobber(s, v) { const hs = V(s, v).hexes; return hs.includes(s.robber) || (s.sea && s.pirate != null && hs.includes(s.pirate)); }
 
 function bankRatio(s, p, type) {
   let r = 4;
@@ -412,15 +424,11 @@ function produce(s, total) {
     if (Object.keys(got).length) log(s, '{@p} receives {$c}.', { p, c: got });
   });
   if (K(s)) {
+    // Aqueduct (science level 3): whoever gets nothing from the roll (not a 7) takes any resource of their choice, every time
     const aq = [];
     s.players.forEach((pl, p) => {
       if (gotAny[p] || goldWant[p] || pl.improvements.science < 3) return;
-      // the resource was chosen once; from then on the aqueduct pays it out by itself
-      if (pl.aqueduct && s.bank[pl.aqueduct] > 0) {
-        take(s, pl, pl.aqueduct, 1);
-        s.stats.gained[p] += 1;
-        log(s, "{@p}'s aqueduct provides {$c}.", { p, c: { [pl.aqueduct]: 1 } });
-      } else if (!pl.aqueduct) aq.push({ type: 'aqueduct', player: p });
+      if (C.RES.some(r => s.bank[r] > 0)) aq.push({ type: 'aqueduct', player: p });
     });
     pushPending(s, aq);
   }
@@ -509,16 +517,54 @@ function drawProgress(s, p, deck) {
   }
   pl.progress.push({ type: card, deck });
   log(s, '{@p} draws a progress card ({#d}).', { p, d: deck });
-  if (pl.progress.length > 4 && !s.pending.some(i => i.type === 'discardProgress' && i.player === p)) {
-    pushPending(s, [{ type: 'discardProgress', player: p }]);
+  checkProgressLimit(s, p, false);
+}
+
+// Nobody may hold more than 4 hidden progress cards. A 5th card on your own turn must be played at once;
+// when it is not your turn you hand any one of your cards back (under its deck).
+function checkProgressLimit(s, p, front) {
+  const pl = P(s, p);
+  if (pl.progress.length <= 4 || s.pending.some(i => i.type === 'discardProgress' && i.player === p)) return;
+  const mustPlay = p === s.current && s.step === 'main' && s.phase === 'play';
+  pushPending(s, [{ type: 'discardProgress', player: p, mustPlay }], front);
+}
+// a coarse check whether a card could do anything at all right now (decides whether a forced play may be skipped)
+function couldPlayNow(s, p, type) {
+  const pl = P(s, p);
+  const others = s.players.map((_, i) => i).filter(i => i !== p);
+  switch (type) {
+    case 'alchemist': return false;
+    case 'engineer': return ownCities(s, p, b => !b.wall).length > 0 && countPieces(s, p).walls < C.PIECES.wall;
+    case 'medicine': return ownSettlements(s, p).length > 0 && countPieces(s, p).cities < C.PIECES.city && has(pl, C.COSTS.medicine);
+    case 'masterMerchant': return others.some(q => vp(s, q, false) > vp(s, p, false) && hand(P(s, q)) > 0);
+    case 'bishop': return robberActive(s);
+    case 'deserter': return others.some(q => Object.values(s.knights).some(k => k.p === q));
+    case 'diplomat': return openRoads(s).length > 0;
+    case 'intrigue': return Object.keys(s.knights).some(v => s.knights[v].p !== p && touchesOwnRoute(s, +v, p));
+    case 'spy': return others.some(q => P(s, q).progress.length > 0);
+    default: return true;
   }
 }
 
 function title(card) { return card.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()); }
 
+// Level 4 (or level 5, taking it over) of a track brings the metropolis. It sits on one of your cities that has none yet:
+// who has no such city may not build that level (rulebook: with 1 city that already carries a metropolis, only up to level 3).
+function metropolisAt(s, p, track, level) {
+  const holder = s.metropolis[track];
+  if (level === 4 && holder === null) return true;
+  return level === 5 && holder !== null && holder !== p && P(s, holder).improvements[track] < 5;
+}
+function improveBlock(s, p, track) {
+  const lvl = P(s, p).improvements[track];
+  if (lvl >= 5) return 'Already at the top.';
+  if (!ownCities(s, p).length) return 'You need a city first.';
+  if (metropolisAt(s, p, track, lvl + 1) && !ownCities(s, p, b => !b.metro).length) return 'You need a city without a metropolis for this level.';
+  return null;
+}
+
 function awardMetropolis(s, p, track) {
   const opts = ownCities(s, p, b => !b.metro);
-  if (!opts.length) { log(s, '{@p} has no free city for the metropolis ({#t}).', { p, t: track }); return; }
   s.metropolis[track] = p;
   if (opts.length === 1) { s.buildings[opts[0]].metro = track; log(s, '{@p} raises a metropolis ({#t}).', { p, t: track }); }
   else pushPending(s, [{ type: 'placeMetropolis', player: p, track }], true);
@@ -966,7 +1012,7 @@ const HANDLERS = {
     requireKnights(s); requireMain(s, p);
     if (!robberActive(s)) fail('The robber cannot be moved before the first barbarian attack.');
     const k = readyKnight(s, p, a.v);
-    if (!V(s, a.v).hexes.includes(s.robber)) fail('That knight is not next to the robber.');
+    if (!nextToRobber(s, a.v)) fail('That knight is not next to the robber.');
     k.active = false;
     log(s, "{@p}'s knight chases the robber away.", { p });
     pushPending(s, [{ type: 'moveRobber', player: p }], true);
@@ -994,23 +1040,25 @@ const HANDLERS = {
     requireKnights(s); requireActor(s, p);
     const pl = P(s, p);
     if (!C.TRACK_COMM[a.track]) fail('Unknown improvement.');
-    if (!ownCities(s, p).length) fail('You need a city first.');
+    const block = improveBlock(s, p, a.track);
+    if (block) fail(block);
     const lvl = pl.improvements[a.track];
-    if (lvl >= 5) fail('Already at the top.');
     const comm = C.TRACK_COMM[a.track];
     let cost = lvl + 1;
     if (s.flags.crane && p === s.current) cost = Math.max(0, cost - 1);
     if (pl.comm[comm] < cost) fail('You need {$c}.', { c: { [comm]: cost } });
-    pl.comm[comm] -= cost;
-    if (s.flags.crane && p === s.current) s.flags.crane = false;
-    pl.improvements[a.track] = lvl + 1;
-    log(s, '{@p} improved {#t} to level {n}.', { p, t: a.track, n: lvl + 1 });
     const nl = lvl + 1;
     const holder = s.metropolis[a.track];
-    if (nl >= 4 && holder === null) awardMetropolis(s, p, a.track);
-    else if (nl === 5 && holder !== null && holder !== p && P(s, holder).improvements[a.track] < 5) {
-      for (const b of Object.values(s.buildings)) if (b.metro === a.track) b.metro = null;
-      log(s, '{@p} takes the metropolis ({#t}) from {@q}.', { p, q: holder, t: a.track });
+    const takes = metropolisAt(s, p, a.track, nl);
+    pl.comm[comm] -= cost;
+    if (s.flags.crane && p === s.current) s.flags.crane = false;
+    pl.improvements[a.track] = nl;
+    log(s, '{@p} improved {#t} to level {n}.', { p, t: a.track, n: nl });
+    if (takes) {
+      if (holder !== null) {
+        for (const b of Object.values(s.buildings)) if (b.metro === a.track) b.metro = null;
+        log(s, '{@p} takes the metropolis ({#t}) from {@q}.', { p, q: holder, t: a.track });
+      }
       awardMetropolis(s, p, a.track);
     }
   },
@@ -1042,6 +1090,7 @@ const HANDLERS = {
     if (!it) fail('Nothing to discard.');
     const pl = P(s, p);
     if (!pl.progress[a.idx]) fail('Pick a card.');
+    if (it.mustPlay && pl.progress.some(c => couldPlayNow(s, p, c.type))) fail('You must play one of your progress cards now.');
     const [c] = pl.progress.splice(a.idx, 1);
     s.progressDecks[c.deck].push(c.type);
     log(s, '{@p} discarded a progress card.', { p });
@@ -1051,27 +1100,18 @@ const HANDLERS = {
     const it = findPending(s, p, 'aqueduct');
     if (!it || !isRes(a.res)) fail('Pick a resource.');
     const pl = P(s, p);
-    pl.aqueduct = a.res;
-    if (take(s, pl, a.res, 1)) {
-      s.stats.gained[p] += 1;
-      log(s, "{@p}'s aqueduct provides {$c}.", { p, c: { [a.res]: 1 } });
-    }
+    if (s.bank[a.res] < 1) fail('The bank is out of that.');
+    take(s, pl, a.res, 1);
+    s.stats.gained[p] += 1;
+    log(s, "{@p}'s aqueduct provides {$c}.", { p, c: { [a.res]: 1 } });
     resolvePending(s, it);
-  },
-  // choose (or change) the resource the aqueduct pays out; allowed any time once science is at level 3
-  setAqueduct(s, p, a) {
-    requireKnights(s);
-    const pl = P(s, p);
-    if (pl.improvements.science < 3) fail('You need the aqueduct first.');
-    if (!isRes(a.res)) fail('Pick a resource.');
-    pl.aqueduct = a.res;
   },
   placeFreeKnight(s, p, a) {
     const it = findPending(s, p, 'placeFreeKnight');
     if (!it) fail('No knight to place.');
     if (a.v != null) {
       if (!legalKnightSpots(s, p).includes(a.v)) fail('Pick an empty corner next to your road.');
-      s.knights[a.v] = { p, level: it.level, active: false, activatedTurn: null, promotedTurn: null };
+      s.knights[a.v] = { p, level: it.level, active: !!it.active, activatedTurn: null, promotedTurn: null };
       log(s, '{@p} places the deserting knight.', { p });
       updateLongest(s);
     }
@@ -1088,6 +1128,26 @@ const HANDLERS = {
       log(s, "{@p}'s spy steals a progress card from {@q}.", { p, q: it.target });
     }
     resolvePending(s, it);
+    checkProgressLimit(s, p, true);
+  },
+  harborGive(s, p, a) {
+    const it = findPending(s, p, 'harborGive');
+    if (!it) fail('Nothing to give.');
+    const pl = P(s, p), to = P(s, it.to);
+    if (!isComm(a.comm) || pl.comm[a.comm] < 1) fail('Pick a commodity you hold.');
+    resolvePending(s, it);
+    if (to.res[it.res] < 1) return; // cannot happen: the offered card stays in the hand
+    moveCard(to, pl, it.res, 1);
+    moveCard(pl, to, a.comm, 1);
+    log(s, "{@p} swaps {$g} for {@q}'s {$w}.", { p: it.to, q: p, g: { [it.res]: 1 }, w: { [a.comm]: 1 } });
+  },
+  // Deserter: the player who is hit chooses which of their knights leaves the board
+  deserterPick(s, p, a) {
+    const it = findPending(s, p, 'deserterPick');
+    if (!it) fail('No knight to give up.');
+    const k = s.knights[a.v];
+    if (!k || k.p !== p) fail('Pick one of your knights.');
+    removeDeserter(s, it, a.v);
   },
   takeCards(s, p, a) {
     const it = findPending(s, p, 'masterMerchant');
@@ -1103,18 +1163,23 @@ const HANDLERS = {
   // ---- progress cards
   playProgress(s, p, a) {
     requireKnights(s);
-    requireTurnAny(s, p);
+    // a 5th card on your own turn must be played at once: that lifts the pending decision (put back if the card fails)
+    const forced = findPending(s, p, 'discardProgress');
+    const mustPlay = forced && forced.mustPlay && p === s.current;
+    if (!mustPlay) requireTurnAny(s, p);
+    else if (s.phase !== 'play' || s.step !== 'main') fail('Not allowed right now.');
     const pl = P(s, p);
     const card = pl.progress[a.idx];
     if (!card) fail('Pick a card.');
     if (card.type === 'alchemist') { if (s.step !== 'roll') fail('Play the Alchemist before rolling.'); }
     else if (s.step !== 'main') fail('Roll the dice first.');
-    PROGRESS_FX[card.type](s, p, a);
-    // effect succeeded -> discard
+    const at = mustPlay ? s.pending.indexOf(forced) : -1;
+    if (mustPlay) resolvePending(s, forced);
+    try { PROGRESS_FX[card.type](s, p, a); } catch (e) { if (mustPlay) s.pending.splice(at, 0, forced); throw e; }
+    // effect succeeded -> back under its deck
     pl.progress.splice(pl.progress.indexOf(card), 1);
     s.progressDecks[card.deck].push(card.type);
     log(s, '{@p} played {%c}.', { p, c: card.type });
-    // play order: log after effect but alchemist logs roll first; acceptable
   },
 
   chat(s, p, a) {
@@ -1162,10 +1227,10 @@ function displaced(s, knight, from) {
 }
 
 function openRoads(s) {
-  // a road is "open" if one of its ends has no other road and no building of the owner
+  // a road is "open" if one of its ends has no other road and no settlement, city or knight of the owner
   return Object.entries(s.roads).map(([e, q]) => [+e, q]).filter(([e, q]) => E(s, e).v.some(v => {
-    const b = s.buildings[v];
-    if (b && b.p === q) return false;
+    const b = s.buildings[v], k = s.knights[v];
+    if ((b && b.p === q) || (k && k.p === q)) return false;
     return V(s, v).edges.filter(x => x !== e && s.roads[x] === q).length === 0;
   })).map(([e]) => e);
 }
@@ -1176,6 +1241,19 @@ function adjacentHexesOfType(s, p, terrain) {
     V(s, +v).hexes.forEach(h => { if (s.board.hexes[h].terrain === terrain) set.add(h); });
   }
   return [...set];
+}
+
+// Deserter: the knight chosen by its owner leaves; the player of the card sets up a knight of the same level (or the
+// highest lower level still in the supply) with the same status, even a mighty one without the Fortress.
+function removeDeserter(s, it, v) {
+  const k = s.knights[v];
+  delete s.knights[v];
+  log(s, "One of {@p}'s knights deserts.", { p: k.p });
+  if (s.pending.includes(it)) resolvePending(s, it);
+  updateLongest(s);
+  let level = k.level;
+  while (level >= 1 && knightCountAt(s, it.to, level) >= C.PIECES.knightPerLevel) level--;
+  if (level >= 1 && legalKnightSpots(s, it.to).length) pushPending(s, [{ type: 'placeFreeKnight', player: it.to, level, active: !!k.active }], true);
 }
 
 const PROGRESS_FX = {
@@ -1215,18 +1293,26 @@ const PROGRESS_FX = {
   },
   roadBuilding(s, p) { s.free.roads = Math.min(2, C.PIECES.road - countPieces(s, p).roads); },
   smith(s) { s.free.promotes = 2; },
-  commercialHarbor(s, p) {
+  // Commercial Harbor: offer 1 resource card to every other player (a.offers = { seat: resource }, any mix); whoever owns a
+  // commodity must hand over one of their choice. Players without one are skipped, and you cannot offer more cards than you hold.
+  commercialHarbor(s, p, a) {
     const pl = P(s, p);
-    s.players.forEach((o, q) => {
-      if (q === p) return;
-      const comms = C.COMM.filter(c => o.comm[c] > 0);
-      const mine = C.RES.filter(r => pl.res[r] > 0).sort((x, y) => pl.res[y] - pl.res[x]);
-      if (!comms.length || !mine.length) return;
-      const c = comms[Math.floor(Math.random() * comms.length)];
-      moveCard(pl, o, mine[0], 1);
-      moveCard(o, pl, c, 1);
-      log(s, "{@p} swaps {$g} for {@q}'s {$w}.", { p, q, g: { [mine[0]]: 1 }, w: { [c]: 1 } });
-    });
+    const offers = a.offers && typeof a.offers === 'object' ? a.offers : {};
+    const n = s.players.length;
+    const spent = {};
+    const items = [];
+    for (let i = 1; i < n; i++) {
+      const q = (p + i) % n;
+      const res = offers[q];
+      if (res == null) continue;
+      if (!isRes(res)) fail('Pick a resource.');
+      const o = P(s, q);
+      if (!C.COMM.some(c => o.comm[c] > 0)) { log(s, '{@q} has no commodity, so there is no swap.', { q }); continue; }
+      if (pl.res[res] - (spent[res] || 0) < 1) continue;
+      spent[res] = (spent[res] || 0) + 1;
+      items.push({ type: 'harborGive', player: q, to: p, res });
+    }
+    pushPending(s, items, true);
   },
   masterMerchant(s, p, a) {
     const t = a.target;
@@ -1236,7 +1322,7 @@ const PROGRESS_FX = {
   },
   merchant(s, p, a) {
     const h = s.board.hexes[a.hex];
-    if (!h || h.terrain === 'desert') fail('Pick a land tile.');
+    if (!h || h.hidden || !C.TERRAIN_RES[h.terrain]) fail('Pick a land tile.');
     if (!h.verts.some(v => s.buildings[v] && s.buildings[v].p === p)) fail('The merchant must stand next to your settlement or city.');
     s.merchant = { hex: a.hex, owner: p };
   },
@@ -1262,16 +1348,12 @@ const PROGRESS_FX = {
   },
   deserter(s, p, a) {
     const t = a.target;
-    const theirs = Object.entries(s.knights).filter(([, k]) => k.p === t && t !== p);
+    if (t === p || !P(s, t)) fail('Pick a player who has knights.');
+    const theirs = Object.keys(s.knights).filter(v => s.knights[v].p === t);
     if (!theirs.length) fail('Pick a player who has knights.');
-    theirs.sort((x, y) => x[1].level - y[1].level);
-    const [v, k] = theirs[0];
-    delete s.knights[v];
-    log(s, "One of {@p}'s knights deserts.", { p: t });
-    updateLongest(s);
-    if (knightCountAt(s, p, k.level) < C.PIECES.knightPerLevel && legalKnightSpots(s, p).length) {
-      pushPending(s, [{ type: 'placeFreeKnight', player: p, level: k.level }], true);
-    }
+    const it = { type: 'deserterPick', player: t, to: p };
+    if (theirs.length === 1) removeDeserter(s, it, +theirs[0]);
+    else pushPending(s, [it], true);
   },
   diplomat(s, p, a) {
     if (!openRoads(s).includes(a.e)) fail('Pick an open road (one with a loose end).');
@@ -1283,7 +1365,7 @@ const PROGRESS_FX = {
   },
   intrigue(s, p, a) {
     const k = s.knights[a.v];
-    if (!k || k.p === p || !touchesOwnRoad(s, a.v, p)) fail('Pick an opposing knight on one of your roads.');
+    if (!k || k.p === p || !touchesOwnRoute(s, a.v, p)) fail('Pick an opposing knight on one of your roads.');
     delete s.knights[a.v];
     displaced(s, k, a.v);
     updateLongest(s);
@@ -1333,6 +1415,7 @@ function legalFor(s, p) {
     if (it.type === 'placeMetropolis') L.metroCities = ownCities(s, p, b => !b.metro);
     if (it.type === 'loseCity') L.loseCities = ownCities(s, p, b => !b.metro);
     if (it.type === 'placeFreeKnight') L.freeKnightSpots = legalKnightSpots(s, p);
+    if (it.type === 'deserterPick') L.giveKnights = Object.keys(s.knights).filter(v => s.knights[v].p === p).map(Number);
   }
   const freeRoad = s.free.roads > 0 && p === s.current && !s.pending.length && s.step !== 'sbp';
   if (freeRoad) L.roads = legalRoads(s, p);
@@ -1345,12 +1428,12 @@ function legalFor(s, p) {
     if (K(s)) {
       if (has(pl, C.COSTS.knight) && c.knights[1] < 2) L.knightSpots = legalKnightSpots(s, p);
       if (has(pl, C.COSTS.wall) && c.walls < C.PIECES.wall) L.walls = ownCities(s, p, b => !b.wall);
-      const hasCity = ownCities(s, p).length > 0;
       L.improve = {};
       for (const t of Object.keys(C.TRACK_COMM)) {
         const lvl = pl.improvements[t];
         let cost = lvl + 1; if (s.flags.crane && p === s.current) cost = Math.max(0, cost - 1);
-        L.improve[t] = { cost, ok: hasCity && lvl < 5 && pl.comm[C.TRACK_COMM[t]] >= cost };
+        const block = improveBlock(s, p, t);
+        L.improve[t] = { cost, ok: !block && pl.comm[C.TRACK_COMM[t]] >= cost, block };
       }
       L.knights = {};
       const main = s.step === 'main' && p === s.current;
@@ -1365,7 +1448,7 @@ function legalFor(s, p) {
             (has(pl, C.COSTS.promote) || (s.free.promotes > 0 && p === s.current)),
           moves: reach.empty,
           displace: reach.foreignKnights.filter(u => s.knights[u].level < k.level),
-          chase: ready && robberActive(s) && V(s, +v).hexes.includes(s.robber),
+          chase: ready && robberActive(s) && nextToRobber(s, +v),
         };
       }
     }
@@ -1377,8 +1460,8 @@ function legalFor(s, p) {
     [...C.RES, ...(K(s) ? C.COMM : [])].forEach(t => { L.ratios[t] = bankRatio(s, p, t); });
     if (K(s)) {
       L.openRoads = openRoads(s);
-      L.intrigue = Object.keys(s.knights).map(Number).filter(v => s.knights[v].p !== p && touchesOwnRoad(s, v, p));
-      L.merchantHexes = s.board.hexes.filter(h => h.terrain !== 'desert' && h.verts.some(v => s.buildings[v] && s.buildings[v].p === p)).map(h => h.id);
+      L.intrigue = Object.keys(s.knights).map(Number).filter(v => s.knights[v].p !== p && touchesOwnRoute(s, v, p));
+      L.merchantHexes = s.board.hexes.filter(h => !h.hidden && C.TERRAIN_RES[h.terrain] && h.verts.some(v => s.buildings[v] && s.buildings[v].p === p)).map(h => h.id);
       L.inventorHexes = s.board.hexes.filter(h => h.number != null && ![2, 12, 6, 8].includes(h.number)).map(h => h.id);
     }
   }
@@ -1396,6 +1479,10 @@ function viewFor(s, me) {
     if (it.level) o.level = it.level;
     if (it.target != null) o.target = it.target;
     if (it.bishop) o.bishop = true;
+    if (it.res) o.res = it.res;
+    if (it.mustPlay) o.mustPlay = true;
+    if (it.type === 'placeFreeKnight') o.active = !!it.active;
+    if (it.type === 'discardProgress' && it.mustPlay) o.canGiveBack = !P(s, it.player).progress.some(c => couldPlayNow(s, it.player, c.type));
     return o;
   });
   const activeGroup = s.pending.length ? s.pending[0].group : null;
@@ -1427,7 +1514,7 @@ function viewFor(s, me) {
         progress: self ? pl.progress.map(c2 => c2.type) : null,
         knightsPlayed: pl.knightsPlayed,
         vp: self ? vp(s, i) : vp(s, i, false),
-        improvements: pl.improvements, aqueduct: self ? pl.aqueduct || null : undefined, defender: pl.defender, vpCards: knights ? pl.vpCards : undefined,
+        improvements: pl.improvements, defender: pl.defender, vpCards: knights ? pl.vpCards : undefined,
         pieces: {
           roads: C.PIECES.road - c.roads, settlements: C.PIECES.settlement - c.settlements,
           cities: C.PIECES.city - c.cities, walls: C.PIECES.wall - c.walls,

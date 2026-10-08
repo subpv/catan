@@ -16,6 +16,14 @@ function cardsOf(v, count) {
   return out;
 }
 
+function progressArgs(s, p, L, c, idx) {
+  const opp = pick(s.players.map((_, i) => i).filter(i => i !== p));
+  const offers = {}; s.players.forEach((_, i) => { if (i !== p && Math.random() < 0.7) offers[i] = pick(C.RES); });
+  return { type: 'playProgress', idx, target: opp, kind: c.type === 'tradeMonopoly' ? pick(C.COMM) : pick(C.RES), offers,
+    v: pick([...(L.cities || []), ...Object.keys(s.buildings).map(Number)]), hex: pick(L.merchantHexes || [0]),
+    a: pick(L.inventorHexes || [0]), b: pick(L.inventorHexes || [0]), e: pick(L.openRoads && L.openRoads.length ? L.openRoads : [0]) };
+}
+
 function candidates(s, p) {
   const v = viewFor(s, p), L = v.legal, out = [];
   if (L.goldPick) {
@@ -35,7 +43,13 @@ function candidates(s, p) {
       case 'placeMetropolis': out.push({ type: 'placeMetropolis', v: pick(L.metroCities) }); break;
       case 'loseCity': out.push({ type: 'loseCity', v: pick(L.loseCities) }); break;
       case 'chooseProgress': out.push({ type: 'chooseProgress', deck: pick(['trade', 'politics', 'science']) }); break;
-      case 'discardProgress': out.push({ type: 'discardProgress', idx: 0 }); break;
+      case 'discardProgress': {
+        out.push({ type: 'discardProgress', idx: 0 });
+        if (it.mustPlay) s.players[p].progress.forEach((c, idx) => out.push(progressArgs(s, p, L, c, idx)));
+        break;
+      }
+      case 'harborGive': out.push({ type: 'harborGive', comm: pick(C.COMM) }); break;
+      case 'deserterPick': out.push({ type: 'deserterPick', v: pick(L.giveKnights) }); break;
       case 'aqueduct': out.push({ type: 'aqueduct', res: pick(C.RES) }); break;
       case 'placeFreeKnight': out.push({ type: 'placeFreeKnight', v: L.freeKnightSpots.length ? pick(L.freeKnightSpots) : null }); break;
       case 'spy': out.push({ type: 'spyTake', idx: 0 }); break;
@@ -84,12 +98,7 @@ function candidates(s, p) {
       if (L.lairs && L.lairs.length) out.push({ type: 'attackLair', hex: pick(L.lairs) });
       const me = s.players[p];
       for (const d of me.dev) out.push({ type: 'playDev', card: d.type, a: pick(C.RES), b: pick(C.RES), res: pick(C.RES) });
-      me.progress.forEach((c, idx) => {
-        const opp = pick(s.players.map((_, i) => i).filter(i => i !== p));
-        out.push({ type: 'playProgress', idx, target: opp, kind: c.type === 'tradeMonopoly' ? pick(C.COMM) : pick(C.RES),
-          v: pick([...(L.cities || []), ...Object.keys(s.buildings).map(Number)]), hex: pick(L.merchantHexes || [0]),
-          a: pick(L.inventorHexes || [0]), b: pick(L.inventorHexes || [0]), e: pick(L.openRoads && L.openRoads.length ? L.openRoads : [0]) });
-      });
+      me.progress.forEach((c, idx) => out.push(progressArgs(s, p, L, c, idx)));
       if (L.ratios) for (const [t, r] of Object.entries(L.ratios)) {
         const have = (me.res[t] ?? me.comm[t]) || 0;
         if (have >= r) out.push({ type: 'bankTrade', give: t, get: pick(C.RES) });
