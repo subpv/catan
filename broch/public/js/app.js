@@ -99,7 +99,7 @@ function renderAuth(mode = 'login') {
 }
 
 // ------------------------------------------------------------ lobby
-const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, events: false }, missions: ['fish', 'spice', 'lairs'], big: false, robberReturn: false, startBoth: false, knightsFree: false, maxPlayers: 4, vpTarget: 10, vpTouched: false };
+const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, events: false }, missions: ['fish', 'spice', 'lairs'], big: false, robberReturn: false, startBoth: false, knightsFree: true, maxPlayers: 4, vpTarget: 10, vpTouched: false };
 const SCEN_VP = { shores: 14, islands: 13, fog: 12 };
 const defaultVp = () => (isStandalone(newGame.mode) ? GAMES[newGame.mode].vp : newGame.mode === 'knights' ? (newGame.expansion === 'seafarers' ? SCEN_VP[newGame.scenario] + 2 : 13) : newGame.expansion === 'seafarers' ? SCEN_VP[newGame.scenario] : newGame.expansion === 'explorers' ? 12 : 10);
 const EXP_LABEL = { seafarers: 'Seafarers', traders: 'Traders & Barbarians', explorers: 'Explorers & Pirates' };
