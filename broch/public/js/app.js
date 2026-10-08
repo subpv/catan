@@ -105,7 +105,8 @@ function renderAuth(mode = 'login') {
 const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, caravans: false, barbarians: false, traders: false, events: false, friendly: false, harbors: false }, missions: ['fish', 'spice', 'lairs'], escen: 2, big: false, variable: false, robberReturn: false, startBoth: false, knightsFree: true, gameOptions: {}, maxPlayers: 4, vpTarget: 10, vpTouched: false };
 const minPlayersOf = mode => (isStandalone(mode) && GAMES[mode].minPlayers) || 2;
 const BIG3 = ['caravans', 'barbarians', 'traders'];
-const bigScenario = () => newGame.expansion === 'traders' && BIG3.some(k => newGame.variants[k]);
+const NO56 = ['caravans', 'barbarians']; // the scenarios without a 5-6 player map (Traders & Barbarians has one)
+const bigScenario = () => newGame.expansion === 'traders' && NO56.some(k => newGame.variants[k]);
 const tradersVp = v => (v.traders ? 13 : v.caravans || v.barbarians ? 12 : 10) + (v.harbors ? 1 : 0);
 const EUP_VP = { 1: 8, 2: 12, 3: 15, 4: 15, 5: 17 };
 const EUP_DESC = { 1: 'Learn the basics: discover the fog with ships, found settlements with explorers and upgrade them to harbor settlements. First to 8 points.', 2: 'Free setup. Units conquer the pirate lairs on the gold rivers. First to 12 points.', 3: 'Catch fish swarms and bring them to the base of the council. First to 15 points.', 4: 'Fish and spice: befriend the villages of the spice islands. First to 15 points.', 5: 'All three missions at once. First to 17 points.' };
@@ -141,7 +142,7 @@ async function renderLobby() {
     if (newGame.expansion === 'seafarers') { const sc = SCEN[newGame.scenario]; return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${SCEN_KEYS.map(k => chip(newGame.scenario === k, `data-scen="${k}"`, SCEN[k].label)).join('')}</div><div class="muted" style="font-size:13px;margin-top:8px">${tx(sc.blurb)} ${tx('Win with {n} points.', { n: sc.vp })}</div>${sc.variable ? `<div class="chips" style="margin-top:8px">${chip(newGame.variable, 'data-vsetup', 'Variable setup', 'Deal the tiles, numbers and harbours again inside the printed outlines, as the rulebook allows.')}</div>` : ''}`; }
     if (newGame.expansion === 'traders') {
       const V = newGame.variants;
-      const scen = [['fishermen', 'Fishermen of Catan', 'Fishing grounds, fish tokens and the old boot.'], ['rivers', 'Rivers of Catan', 'Bridges, gold, and the richest and poorest player.'], ['caravans', 'The Caravans', 'Nomads send wagons out; vote with wool and grain. 3–4 players.'], ['barbarians', 'Barbarian Attack', 'Barbarians land on the coast; knights drive them off. 3–4 players.'], ['traders', 'Traders & Barbarians', 'Haul glass, marble, sand and tools with your wagon. 3–4 players.']];
+      const scen = [['fishermen', 'Fishermen of Catan', 'Fishing grounds, fish tokens and the old boot.'], ['rivers', 'Rivers of Catan', 'Bridges, gold, and the richest and poorest player.'], ['caravans', 'The Caravans', 'Nomads send wagons out; vote with wool and grain. 3–4 players.'], ['barbarians', 'Barbarian Attack', 'Barbarians land on the coast; knights drive them off. 3–4 players.'], ['traders', 'Traders & Barbarians', 'Haul glass, marble, sand and tools with your wagon. 3–6 players.']];
       return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${scen.map(([k, l, h]) => chip(V[k], `data-scn="${k}"`, l, h)).join('')}</div>
         <div class="muted sub-h">${tx('Variants')}</div><div class="chips">${chip(V.events, 'data-var="events"', 'Event cards', 'A deck of event cards replaces the dice.')}${chip(V.friendly, 'data-var="friendly"', 'Friendly robber', 'The robber spares players with 2 points or fewer.')}${chip(V.harbors, 'data-var="harbors"', 'Harbors of Catan', 'Settlements and cities at harbors earn harbor points; the Strongest Harbors plaque is worth 2 points.')}</div>`;
     }
@@ -199,7 +200,7 @@ async function renderLobby() {
             </div>
           </div>
           <div class="sub-opts ${(isStandalone(newGame.mode) && (GAMES[newGame.mode].lobbyOptions || []).length) || newGame.expansion === 'seafarers' ? 'tall' : ''}">${subOpts()}</div>
-          ${isStandalone(newGame.mode) ? '' : `${bigScenario() ? '' : sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx('Larger board with 30 tiles. From 5 players on it is always used, and two players share every turn (stone 1 and stone 2).'))}
+          ${isStandalone(newGame.mode) ? '' : `${bigScenario() ? '' : sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx(newGame.variants.traders ? 'Larger island with 37 tiles and 7 commodity hexes. From 5 players on it is always used, and two players share every turn (stone 1 and stone 2).' : 'Larger board with 30 tiles. From 5 players on it is always used, and two players share every turn (stone 1 and stone 2).'))}
           <div class="muted house-h">${tx('House rules')}</div>
           ${sw('robberReturn', tx('House rule: forgotten robber'), tx('If a player ends their turn without moving the robber, it goes back to the desert.'))}
           ${newGame.mode === 'classic' ? sw('knightsFree', tx('House rule: knights without a limit'), tx('Knight cards can be played as often per turn as you like. The rulebook allows only one development card per turn.')) : ''}
@@ -233,7 +234,7 @@ async function renderLobby() {
       const k = b.dataset.exp;
       if (isStandalone(newGame.mode)) newGame.mode = 'classic';
       if (k === 'none') { newGame.mode = 'classic'; newGame.expansion = 'none'; }
-      else if (k === 'knights') { newGame.mode = newGame.mode === 'knights' ? 'classic' : 'knights'; if (newGame.mode === 'knights' && bigScenario()) { BIG3.forEach(x => { newGame.variants[x] = false; }); newGame.variants.fishermen = true; } }
+      else if (k === 'knights') { newGame.mode = newGame.mode === 'knights' ? 'classic' : 'knights'; if (newGame.mode === 'knights' && (bigScenario() || newGame.variants.traders)) { BIG3.forEach(x => { newGame.variants[x] = false; }); newGame.variants.fishermen = true; } }
       else if (k === 'explorers') { newGame.mode = 'explorers'; newGame.expansion = 'none'; newGame.big = false; newGame.maxPlayers = Math.min(newGame.maxPlayers, GAMES.explorers.maxPlayers || 6); }
       else newGame.expansion = newGame.expansion === k ? 'none' : k;
       reVp(); sfx.click(); draw(false);
@@ -260,7 +261,7 @@ async function renderLobby() {
       const k = b.dataset.scn, on = !newGame.variants[k];
       ['fishermen', 'rivers', ...BIG3].forEach(x => { newGame.variants[x] = false; });
       newGame.variants[k] = on;
-      if (on && BIG3.includes(k)) { if (newGame.mode === 'knights') newGame.mode = 'classic'; newGame.big = false; newGame.maxPlayers = Math.min(4, newGame.maxPlayers); }
+      if (on && BIG3.includes(k)) { if (newGame.mode === 'knights') newGame.mode = 'classic'; if (NO56.includes(k)) { newGame.big = false; newGame.maxPlayers = Math.min(4, newGame.maxPlayers); } }
       reVp(); sfx.click(); draw(false);
     });
     el.querySelectorAll('[data-vsetup]').forEach(b => b.onclick = () => { newGame.variable = !newGame.variable; sfx.click(); draw(false); });

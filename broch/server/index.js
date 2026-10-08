@@ -235,7 +235,9 @@ async function api(req, res, url) {
     const scenario = expansion === 'seafarers' ? (SEA_SCENARIOS[b.scenario] ? b.scenario : 'shores') : mode === 'explorers' ? String(Math.max(1, Math.min(5, b.escen | 0 || 2))) : null;
     const bv = b.variants || {};
     const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, caravans: !!bv.caravans, barbarians: !!bv.barbarians, traders: !!bv.traders, events: !!bv.events, friendly: !!bv.friendly, harbors: !!bv.harbors } : null;
-    if (variants && (variants.caravans || variants.barbarians || variants.traders) && (mode === 'knights' || maxPlayers > 4 || b.big === true)) throw new HttpError(400, 'This scenario is for the classic rules and 2–4 players.');
+    if (variants && (variants.caravans || variants.barbarians || variants.traders) && mode === 'knights') throw new HttpError(400, 'This scenario is for the classic rules and 2–4 players.');
+    // Caravans and Barbarian Attack have no 5-6 player map; Traders & Barbarians has one (5-6 book p10-11)
+    if (variants && (variants.caravans || variants.barbarians) && (maxPlayers > 4 || b.big === true)) throw new HttpError(400, 'This scenario is for the classic rules and 2–4 players.');
     const missions = expansion === 'explorers' ? (Array.isArray(b.missions) ? b.missions.filter(x => ['fish', 'spice', 'lairs'].includes(x)) : ['fish', 'spice', 'lairs']) : null;
     const def = standalone ? engine.defaultVp(mode, scenario) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) + (variants && variants.harbors ? 1 : 0) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
     const vpTarget = standalone && engine.fixedVp(mode) ? def : Math.max(5, Math.min(20, b.vpTarget | 0 || def));
