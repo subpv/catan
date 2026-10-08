@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 data/
 demo/broch-demo.html
 demo/broch-demo-artifact.html
