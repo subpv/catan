@@ -106,9 +106,7 @@ for (const n of [5, 6]) {
   assert.equal(s.board.hexes.length, 37);
   assert(!s.options.paired);
 }
-// the lobby: Caravans and Barbarian Attack have no 5-6 map, Traders & Barbarians has
-throws(() => mk(5, {}, { traders: false, barbarians: true }), 'classic rules and 2–4');
-throws(() => mk(5, {}, { traders: false, caravans: true }), 'classic rules and 2–4');
+// the lobby: all three big scenarios have a 5-6 map, none works with Cities & Knights
 throws(() => engine.createGame({ id: 't', mode: 'knights', players: players(3), options: { expansion: 'traders', variants: { traders: true } } }), 'classic rules');
 
 // ---------------------------------------------------------------- production: 2 and 12
