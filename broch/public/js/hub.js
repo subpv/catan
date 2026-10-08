@@ -16,7 +16,7 @@ extendCore({
     glass: 'glass', tools: 'tools', sand: 'sand', marble: 'marble', castle: 'castle', quarry: 'quarry', glassworks: 'glassworks',
     swamp: 'Swamp', lake: 'Lake', waterhole: 'Watering hole', river: 'River',
   },
-  cards: { consecration: 'Knight Consecration', strong: 'Strong Knight', treason: 'Treason', captive: 'Captive', goodTrip: 'Swift Journey' },
+  cards: { consecration: 'Knighthood', strong: 'Swift Knight', treason: 'Treason', captive: 'Capture', goodTrip: 'Swift Journey' },
   glyphs: {
     wagon: '<path d="M3 8h14v8H3z M17 11h3l1 3v2h-4 M7 19a2 2 0 1 0 .01 0 M15 19a2 2 0 1 0 .01 0 M3 8c0-3 14-3 14 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
     barbarian: '<path d="M6 21l1-8h10l1 8z M8 13a4 4 0 1 1 8 0 M4 6l3 3 M20 6l-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>',
@@ -334,16 +334,29 @@ export function createHub(c) {
   function costRows(v) {
     const rows = [];
     if (v.hub.scenario === 'traders') rows.push([t('Wagon upgrade'), { lumber: 1, wool: 1, ore: 1 }, t('Levels 2 and 3; levels 4 and 5 need 2 lumber')]);
-    if (v.hub.scenario === 'barbarians') rows.push([t('Development card'), { wool: 1, grain: 1, ore: 1 }, t('Turned over and played at once')]);
     if (v.hub.damaged && Object.keys(v.hub.damaged).length) rows.push([t('Repair road'), { lumber: 1, brick: 1 }, t('After an earthquake')]);
     return rows;
+  }
+  // the development card row and the points paragraph of the costs dialog, where the scenario changes them (null: the usual text)
+  function devRow(v) {
+    const s = v.hub.scenario;
+    if (s === 'barbarians') return [t('Development card'), { wool: 1, grain: 1, ore: 1 }, t('Turned over and played at once')];
+    if (s === 'traders') return [t('Development card'), { wool: 1, grain: 1, ore: 1 }, t('Knight, Road Building, Swift Journey or a point')];
+    return null;
+  }
+  function awardsText(v) {
+    const s = v.hub.scenario;
+    if (s === 'barbarians') return t('Longest Road: 5 or more connected roads, 2 points. There is no Largest Army and no robber.');
+    if (s === 'traders') return t('Largest Army: 3 or more played knights, 2 points. There is no Longest Road. You may play 1 development card per turn, but not one you bought this turn.');
+    return null;
   }
   function costsExtra(v) {
     const s = v.hub.scenario, out = [];
     if (v.fishing) out.push(t('Fish: 2 fish take the robber off the board, 3 steal a card, 4 take a resource, 5 build a road, 7 buy a development card. At most 7 tokens; the old boot costs you 1 more point to win.'));
-    if (v.gold) out.push(t('Gold: 2 gold buy a resource (twice per turn). 4:1, 3:1 or 2:1 buys a gold. Gold cannot be stolen.'));
+    if (v.gold) out.push(t('Gold: 2 gold buy a resource (twice per turn). You can buy gold from the supply at 4:1, 3:1 or 2:1 and use it in trades with players. Gold cannot be stolen.'));
+    if (v.rivers) out.push(t('Rivers: a road or settlement next to a river earns 1 gold, a bridge 3; roads cannot cross a river. The one player with the most gold gets +1 point, everyone with the least −2.'));
     if (s === 'caravans') out.push(t('Merchant Trains: if you build a settlement or city, a voting round at the end of your turn decides where the next trade wagon goes (wool and grain are the votes). Buildings between two wagons are worth 1 more; a wagon on the same edge as a road counts as an additional road for the Longest Road.'));
-    if (s === 'barbarians') out.push(t('Barbarians: they land after every settlement or city you build. Three conquer a tile. Knights drive them off when there are more knights than barbarians around a tile. 2 prisoners are worth 1 point.'));
+    if (s === 'barbarians') out.push(t('Barbarians: they land after every settlement or city you build. Three conquer a tile. Knights drive them off when there are more knights than barbarians around a tile. 2 prisoners are worth 1 point. Knights come from development cards, which are played at once.'));
     if (s === 'traders') out.push(t('Wagons: a path costs 2, your road 1, another road 1 and 1 gold, a barbarian 2 more. Deliver wares for points and gold.'));
     return out;
   }
@@ -355,7 +368,7 @@ export function createHub(c) {
     return `<div class="evcard" title="${esc(term_)}: ${esc(t(EVENT_TEXT[d.card.ev] || ''))}"><span class="evn">${d.total}</span><span class="evt">${esc(term_)}</span></div>${d.red ? `<div class="die red">${d.red}</div>` : ''}`;
   }
 
-  return { status, waiting, targets, boardClick, dialog, tokenList, actions, chips, hud, playerMeta, action, costRows, costsExtra, diceCard, fishDialog };
+  return { status, waiting, targets, boardClick, dialog, tokenList, actions, chips, hud, playerMeta, action, costRows, costsExtra, devRow, awardsText, diceCard, fishDialog };
 }
 
 // ---------------------------------------------------------------- the event card scene (played by fx.js)

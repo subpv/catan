@@ -147,7 +147,7 @@ Dawn of Humankind (follows the book; what the book leaves open or the pictures d
 - **Supply:** 20 cards of each resource (80 in all). If the supply cannot pay everyone for one resource, nobody gets it (the book is silent here; this is the usual CATAN rule).
 - **Hunting track:** the threat move on a level-up is optional (the book says "darf"). Awards: Collector markers are 3 for 4 players and 2 for 3 players, like the book's component list.
 
-- **New Energies:** follows the official German rulebook (always the variable set-up: shuffled tiles, number chips A-R in a counter-clockwise spiral). Simplified: other players cannot make counter-offers (use the chat or a new offer), harbours sit at random places on the frame, the supply shortage rule of the classic game applies to cards (research cards are only 20), a village or research city with a damage also blocks the energy of its plants, a tie for the end-of-bag win goes to the player with more points. The slot counts of the events (4/4/3/3 brown, 4 climate, 3/4 green) are read from the pictures of the frame.
+- **New Energies:** follows the official German rulebook (always the variable set-up: shuffled tiles, number chips A-R in a counter-clockwise spiral). Simplified: harbours sit at random places on the frame, the supply shortage rule of the classic game applies to cards (research cards are only 20), a village or research city with a damage also blocks the energy of its plants, a tie for the end-of-bag win goes to the player with more points. The slot counts of the events (4/4/3/3 brown, 4 climate, 3/4 green) are read from the pictures of the frame.
 
 Cities & Knights follows the printed rules (Städte & Ritter, 2025 edition), with these small differences:
 

@@ -84,7 +84,7 @@ function humankind() {
     view: v, vpTarget: 10,
     steps: [
       async T => {
-        T.say(t('Welcome to Dawn of Humankind!'), t('Leave Africa, settle the world and collect 10 points. Everyone starts with 3 camps and 1 explorer in Africa.'));
+        T.say(t('Welcome to Dawn of Humankind!'), t('Leave Africa, settle the world and collect 10 points. Everyone starts with 3 camps and 1 explorer in Africa, plus 1 fur and 1 bone.'));
         T.vp(0); T.extra(env({}));
         await T.wait(2600);
       },
@@ -97,6 +97,10 @@ function humankind() {
         await T.gain(T.hexPt(C6), 'bone', 1, 0, camp);
         await T.give({ fur: 1, meat: 1 });
         await T.wait(1300);
+      },
+      async T => {
+        T.say(t('A new explorer costs fur and meat.'), t('1 fur and 1 meat put an explorer next to one of your camps. You may have 2 on the board, and each walks once per turn.'));
+        await T.wait(3000);
       },
       async T => {
         T.say(t('Explorers walk along the paths.'), t('1 fur or 1 meat lets an explorer walk up to 3 crossings. Tap the explorer, then the glowing crossing.'));
@@ -149,7 +153,7 @@ function humankind() {
         sfx.reveal();
         await T.banner(t('Hunting luck'), 'gold');
         T.vp(2);
-        T.say(t('Every tile hides something.'), t('Hunting luck: the hunting marker of the region (+1 point). Desertification: a number chip of that landscape is removed in Africa. A threat: you move the Neanderthal or the Saber-toothed tiger.'));
+        T.say(t('Every tile hides something.'), t('Hunting luck: the hunting marker of the region (+1 point). Desertification: a number chip of that landscape is removed in Africa. A threat: you move the Neanderthal or the Saber-toothed tiger. From 2 tiles on you are the Most Successful Hunter (+1 point).'));
         await T.wait(3200);
       },
       async T => {
@@ -164,7 +168,7 @@ function humankind() {
         await T.wait(1300);
       },
       async T => {
-        T.say(t('Trade for what you need.'), t('3 equal cards for 1 card of your choice. Players trade only with the player whose turn it is.'));
+        T.say(t('Trade for what you need.'), t('With the supply: 3 equal cards for 1 card of your choice. Players trade only with the player whose turn it is, and may answer an offer with a counter-offer.'));
         await T.give({ bone: 2 });
         await T.bankTrade({ bone: 3 }, 'flint');
         await T.wait(900);
