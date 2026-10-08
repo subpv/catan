@@ -6,6 +6,7 @@ import { SCENARIOS as SEA_SCENARIOS } from '../server/engine/scenarios.js';
 import { decide as decideClassic } from '../server/bots/classic.js';
 import { decide as decideStandalone } from '../server/bots/standalone.js';
 import { botName } from '../server/bots/names.js';
+import PROGRESS from './progress-data.js';
 const decide = v => (engine.isStandalone(v.mode) ? decideStandalone(v) : decideClassic(v));
 
 const COLORS = ['red', 'blue', 'orange', 'white', 'teal', 'purple', 'black', 'pink', 'yellow', 'brown'];
@@ -252,6 +253,24 @@ async function act(id, action) {
 }
 
 window.BROCH_MOCK = { api, connect, watch, act, _games: games }; // _games: test hook
+
+// the progress overview (button at the bottom left)
+window.addEventListener('DOMContentLoaded', () => {
+  const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  const btn = document.createElement('button');
+  btn.textContent = 'Fortschritt';
+  btn.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:40;background:#F0C24A;color:#2B1E12;font:700 12px Inter,system-ui;padding:7px 12px;border:0;border-radius:999px;cursor:pointer';
+  const box = document.createElement('div');
+  box.style.cssText = 'position:fixed;inset:0;z-index:60;background:rgba(10,4,2,.72);display:none;overflow:auto;padding:24px 12px';
+  box.innerHTML = `<div style="max-width:900px;margin:0 auto;background:#FBF3DE;color:#2B1E12;border-radius:16px;padding:22px;font:14px/1.45 Inter,system-ui"><div style="display:flex;align-items:center"><h2 style="margin:0;font-family:Georgia,serif;flex:1">${esc(PROGRESS.title)}</h2><button data-x style="border:0;background:#2B1E12;color:#FBF3DE;border-radius:999px;padding:6px 14px;cursor:pointer;font-weight:700">Schließen</button></div>
+    <h3>So testest du</h3><ul>${PROGRESS.howto.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    <h3>Modi</h3>${PROGRESS.modes.map(m => `<div style="border-top:1px solid #d9c9a3;padding:8px 0"><b>${esc(m.name)}</b> <span style="background:${m.status === 'Beta' ? '#F4D58A' : '#BFE3C0'};border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700">${m.status === 'Beta' ? 'BETA' : 'fertig'}</span><div>${esc(m.test)}</div><div style="color:#6b5a40">Lücken: ${esc(m.gaps)}</div></div>`).join('')}
+    <h3>Neu</h3><ul>${PROGRESS.news.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    <h3>Was mir noch fehlt</h3><ul>${PROGRESS.missing.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`;
+  btn.onclick = () => { box.style.display = 'block'; };
+  box.addEventListener('click', e => { if (e.target === box || e.target.dataset.x !== undefined) box.style.display = 'none'; });
+  document.body.append(btn, box);
+});
 
 // small marker so it's obvious this is the demo
 window.addEventListener('DOMContentLoaded', () => {
