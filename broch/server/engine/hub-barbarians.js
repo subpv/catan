@@ -253,7 +253,7 @@ module.exports = function make(core, HB) {
       // after each victory a die is rolled: the knights involved (on the edges of this hex) that stand on the pair of edges with the
       // indicated orientation go back to their owner's supply, 3 gold for each
       const die = d6(), colour = DIE_COLOUR[die];
-      log(s, 'The die shows {n}: the {#c} edges.', { n: die, c: colour });
+      log(s, 'The die shows {n}: the {#c} paths.', { n: die, c: colour });
       hex(s, id).edges.forEach(e => {
         const k = b.knights[e];
         if (!k || s.board.edgeDir[e] !== colour) return;

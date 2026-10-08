@@ -157,8 +157,10 @@ export function hubExt(view) {
         g += `<g transform="translate(${f(x)},${f(y)}) rotate(${f(flatAng(ang))})" pointer-events="none" opacity=".8"><path d="M-9 4 Q0 -8 9 4" fill="none" stroke="#F4EFE2" stroke-width="2.4" stroke-dasharray="3 3" stroke-linecap="round"/><path d="M-9 4 H9" stroke="#F4EFE2" stroke-width="1.4" opacity=".6"/></g>`;
       });
       if (bb) {
-        const ch = board.hexes[board.castle];
-        hexEdges(ch).forEach(e => { const [x, y] = mid(e); const dir = board.edgeDir[e]; g += `<circle cx="${f(x + (ch.x * S - x) * 0.18)}" cy="${f(y + (ch.y * S - y) * 0.18)}" r="5.4" fill="${EDGE_DOT[dir]}" stroke="#fff" stroke-width="1.6"/>`; });
+        (board.castles || [board.castle]).forEach(cid => { // the 5-6 player board has two castles
+          const ch = board.hexes[cid];
+          hexEdges(ch).forEach(e => { const [x, y] = mid(e); const dir = board.edgeDir[e]; g += `<circle cx="${f(x + (ch.x * S - x) * 0.18)}" cy="${f(y + (ch.y * S - y) * 0.18)}" r="5.4" fill="${EDGE_DOT[dir]}" stroke="#fff" stroke-width="1.6"/>`; });
+        });
         (board.coast || []).forEach(id => {
           const h = board.hexes[id], n = bb.barb[id] || 0, cx = h.x * S, cy = h.y * S;
           if (conq.has(id)) {
