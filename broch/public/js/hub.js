@@ -14,7 +14,7 @@ extendCore({
     calm: 'Calm Sea', help: 'Neighborly Help', conflict: 'Conflict', bounty: 'Bountiful Year', retreat: 'Robber Retreats', fine: 'A Fine Day', newyear: 'New Year',
     brown: 'brown', green: 'green', purple: 'purple',
     glass: 'glass', tools: 'tools', sand: 'sand', marble: 'marble', castle: 'castle', quarry: 'quarry', glassworks: 'glassworks',
-    swamp: 'Swamp', lake: 'Lake', waterhole: 'Waterhole', river: 'River',
+    swamp: 'Swamp', lake: 'Lake', waterhole: 'Watering hole', river: 'River',
   },
   cards: { consecration: 'Knight Consecration', strong: 'Strong Knight', treason: 'Treason', captive: 'Captive', goodTrip: 'Good Journey' },
   glyphs: {
@@ -58,7 +58,7 @@ export function createHub(c) {
     bankPick: mp => [t('Take {n} from the bank.', { n: mp.count }), t('Choose any resource the bank has.'), t('Choose cards')],
     helpGive: () => [t('Neighborly help: give a card.'), t('You lead: give 1 card to a player with fewer points.'), t('Choose')],
     fishSwap: () => [t('Your hand of fish tokens is full.'), t('Swap one of your tokens for a new one from the stock, or keep them all.'), t('Choose')],
-    wagonCards: () => [t('A caravan wagon is set out.'), t('Lay out wool and grain as votes. Every card is 1 vote and goes back to the bank.'), t('Vote')],
+    wagonCards: () => [t('Voting round: where does the trade wagon go?'), t('Bid wool and/or grain: every card is 1 vote, and all your votes go to one place. The cards go back to the bank.'), t('Vote')],
     wagonVote: mp => [t('Vote: where does the wagon go? You have {n} votes.', { n: mp.votes }), t('Tap a glowing path. All your votes go to one place.')],
     wagonPlace: () => [t('You decide where the wagon goes.'), t('Tap a glowing path.')],
     placeKnight: () => [t('Set your knight on a free path.'), t('Tap a glowing path.')],
@@ -169,7 +169,8 @@ export function createHub(c) {
   function wagonCardsDialog() {
     const m = c.me();
     const sel = { wool: 0, grain: 0 };
-    modal(`<h2>${tx('Vote for the new wagon')}</h2><p class="muted" style="margin:0">${tx('Every card you lay out is 1 vote. The cards go back to the bank. You may lay out none.')}</p><div class="picker" id="wc"></div>
+    const bids = V().hub.cv.vote ? Object.entries(V().hub.cv.vote.votes).filter(([, n]) => n > 0).map(([q, n]) => `${pn(+q)} ${n}`).join(', ') : '';
+    modal(`<h2>${tx('Vote for the new wagon')}</h2><p class="muted" style="margin:0">${tx('Every card you lay out is 1 vote. The cards go back to the bank. You may lay out none.')}</p>${bids ? `<p class="muted" style="margin:4px 0 0">${tx('Bids so far: {list}', { list: bids })}</p>` : ''}<div class="picker" id="wc"></div>
       <div class="foot"><button class="btn" id="wcnone">${tx('No votes')}</button><button class="btn primary" id="wcok">${tx('Vote')}</button></div>`, {
       dismissable: false,
       onMount(el, close) {
@@ -248,7 +249,7 @@ export function createHub(c) {
     const hub = v.hub, bits = [];
     const pill = (ic, text, title) => `<span class="hud-pill" title="${esc(title)}"><svg viewBox="0 0 24 24" width="15" height="15" style="color:#F0E4C8">${GLYPH[ic] || ''}</svg> ${text}</span>`;
     if (hub.scenario === 'barbarians') bits.push(pill('barbarian', hub.bb.supply, t('Barbarians still to land')), pill('knight', hub.bb.deck, t('Development cards left')));
-    if (hub.scenario === 'caravans') bits.push(pill('wagon', hub.cv.pool, t('Caravan wagons left')));
+    if (hub.scenario === 'caravans') bits.push(pill('wagon', hub.cv.pool, t('Trade wagons left')));
     if (hub.scenario === 'traders') bits.push(pill('wagon', Object.values(hub.tb.stacks).reduce((a, b) => a + b, 0), t('Goods tiles left')));
     if (hub.harbors && hub.harborHolder != null) bits.push(pill('harbor', esc(v.players[hub.harborHolder].name), t('Strongest Harbors plaque')));
     return bits.join('');
@@ -258,7 +259,7 @@ export function createHub(c) {
     const chip = (ic, bg, text, title) => `<span class="mp" title="${esc(title)}"><span class="ic" style="background:${bg}">${glyph(ic, 13)}</span>${text}</span>`;
     if (hub.scenario === 'barbarians') out.push(chip('barbarian', '#9A5A2A', `${hub.bb.prisoners[i]}`, t('Prisoners')));
     if (hub.scenario === 'traders') out.push(chip('wagon', '#8A6234', `${hub.tb.tab[i].level}·${hub.tb.tab[i].delivered}`, t('Wagon level · deliveries')));
-    if (hub.scenario === 'caravans' && p.wagonVp) out.push(chip('wagon', '#8A6234', `+${p.wagonVp}`, t('Houses between two wagons')));
+    if (hub.scenario === 'caravans' && p.wagonVp) out.push(chip('wagon', '#8A6234', `+${p.wagonVp}`, t('Buildings between two wagons')));
     if (hub.harbors) out.push(chip('harbor', '#2C5F7A', `${hub.harborPts[i]}${hub.harborHolder === i ? ' ★' : ''}`, t('Harbor points')));
     return out.join('');
   }
@@ -340,7 +341,7 @@ export function createHub(c) {
     const s = v.hub.scenario, out = [];
     if (v.fishing) out.push(t('Fish: 2 fish take the robber off the board, 3 steal a card, 4 take a resource, 5 build a road, 7 buy a development card. At most 7 tokens; the old boot costs you 1 more point to win.'));
     if (v.gold) out.push(t('Gold: 2 gold buy a resource (twice per turn). 4:1, 3:1 or 2:1 buys a gold. Gold cannot be stolen.'));
-    if (s === 'caravans') out.push(t('Caravans: after you build a settlement or city, vote with wool and grain where the next wagon goes. Houses between two wagons are worth 1 more; roads along a wagon count twice for the Longest Road.'));
+    if (s === 'caravans') out.push(t('Merchant Trains: if you build a settlement or city, a voting round at the end of your turn decides where the next trade wagon goes (wool and grain are the votes). Buildings between two wagons are worth 1 more; a wagon on the same edge as a road counts as an additional road for the Longest Road.'));
     if (s === 'barbarians') out.push(t('Barbarians: they land after every settlement or city you build. Three conquer a tile. Knights drive them off when there are more knights than barbarians around a tile. 2 prisoners are worth 1 point.'));
     if (s === 'traders') out.push(t('Wagons: a path costs 2, your road 1, another road 1 and 1 gold, a barbarian 2 more. Deliver wares for points and gold.'));
     return out;

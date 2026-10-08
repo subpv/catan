@@ -1,4 +1,4 @@
-// Board art for Traders & Barbarians: swamps and rivers, the waterhole and its caravans, the castle, quarry and glassworks,
+// Board art for Traders & Barbarians: swamps and rivers, the watering hole and its merchant trains, the castle, quarry and glassworks,
 // barbarians, knights on the paths, wagons. hubExt(view) returns the hooks renderBoard (board.js) calls.
 import { PCOLOR, PCOLOR_DARK, inkOn, t } from './core.js';
 import { settlementPath, cityPath } from './board.js';
@@ -140,17 +140,18 @@ export function hubExt(view) {
     // after all tiles: the waterhole's arrows, bridge sites, castle colours, barbarians and conquered tiles
     tiles({ view: v }) {
       let g = '';
-      if (board.waterhole) {
-        board.waterhole.arrows.forEach(e => {
+      // the watering holes' arrows: the start locations of the merchant trains (two holes in a 5-6 player game)
+      (board.waterholes || (board.waterhole ? [board.waterhole] : [])).forEach(wh0 => {
+        const wh = board.hexes[wh0.hex];
+        wh0.arrows.forEach(e => {
           const [x, y] = mid(e), [ia, ib] = board.edges[e].v;
-          const wh = board.hexes[board.waterhole.hex];
           const inner = board.vertices[wh.verts.includes(ia) ? ia : ib];
           const out = board.vertices[wh.verts.includes(ia) ? ib : ia];
           const ang = Math.atan2(out.y - inner.y, out.x - inner.x) * 180 / Math.PI;
           if (cv && cv.wagons[e] !== undefined) return;
           g += `<g transform="translate(${f(x)},${f(y)}) rotate(${f(ang)})" pointer-events="none" opacity=".85"><path d="M-9 0 H7 M2 -5 L8 0 L2 5" fill="none" stroke="#3A5A2A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>`;
         });
-      }
+      });
       (board.bridgeSites || []).forEach(e => {
         if (v.roads[e] !== undefined) return;
         const [x, y, ang] = mid(e);
@@ -185,7 +186,15 @@ export function hubExt(view) {
         g += `<g transform="translate(${f(x)},${f(y)}) rotate(${f(flatAng(ang) + 90)})" pointer-events="none"><title>${t('Damaged road: repair it with 1 lumber and 1 brick')}</title><rect x="-8" y="-4" width="16" height="8" rx="2" fill="${PCOLOR[c]}" stroke="${PCOLOR_DARK[c]}" stroke-width="2"/><path d="M-5 -4 L-1 1 L2 -3 L6 4" fill="none" stroke="#2B1E12" stroke-width="1.4"/></g>`;
       });
       if (cv) {
-        Object.keys(cv.wagons).forEach(e => { const [x, y, ang] = mid(+e); g += `<g pointer-events="none"><title>${t('Caravan wagon')}</title>${wagonFig(x, y - 2, flatAng(ang))}</g>`; });
+        Object.keys(cv.wagons).forEach(e => { const [x, y, ang] = mid(+e); g += `<g pointer-events="none"><title>${t('Trade wagon')}</title>${wagonFig(x, y - 2, flatAng(ang))}</g>`; });
+        // the front of every merchant train that can still grow: a small arrow beyond its last wagon
+        (cv.trains || []).forEach(tr => {
+          if (!tr.started || tr.dead || !tr.edges.length) return;
+          const last = tr.edges[tr.edges.length - 1], fv = board.vertices[tr.front];
+          const [ia, ib] = board.edges[last].v, from = board.vertices[ia === tr.front ? ib : ia];
+          const ang = Math.atan2(fv.y - from.y, fv.x - from.x) * 180 / Math.PI;
+          g += `<g transform="translate(${f(fv.x * S)},${f(fv.y * S)}) rotate(${f(ang)})" pointer-events="none"><title>${t('Front of the merchant train')}</title><path d="M-4 -6 L4 0 L-4 6" fill="none" stroke="#F0C24A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+        });
       }
       if (bb) {
         Object.entries(bb.knights).forEach(([e, k]) => {

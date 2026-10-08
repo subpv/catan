@@ -382,7 +382,7 @@ function traders() {
     view: v, vpTarget: 10,
     steps: [
       async T => {
-        T.say(t('Traders & Barbarians'), t('Pick one scenario: Fishermen, Rivers, Caravans, Barbarian Attack or Traders & Barbarians. Variants mix in.'));
+        T.say(t('Traders & Barbarians'), t('Pick one scenario: Fishermen, Rivers, Merchant Trains, Barbarian Attack or Traders & Barbarians. Variants mix in.'));
         T.vp(1);
         await T.wait(2600);
       },
@@ -445,9 +445,17 @@ function traders() {
         await T.wait(1400);
       },
       async T => {
-        T.say(t('The Caravans'), t('Nomads send wagons out from the waterhole. After you build, vote with wool and grain where the next wagon goes. 12 points.'));
-        await T.banner(t('Caravans'));
+        T.say(t('Merchant Trains'), t('Nomads at the watering hole send out trade wagons. If you build a settlement or city, a voting round at the end of your turn decides where the next wagon goes. 12 points.'));
+        await T.banner(t('Merchant Trains'));
         await T.wait(1200);
+      },
+      async T => {
+        T.say(t('Voting round'), t('Starting with the active player, everybody may bid wool and/or grain: 1 vote per card, all to one place. One player with more votes than all others together decides alone. Otherwise the place with the most votes wins, then the player with the most votes decides, then the active player.'));
+        await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Wagons pay off'), t('Buildings between two wagons are worth 1 point more. A wagon on the same edge as a road counts as an additional road for the Longest Road. With 5–6 players there are two watering holes and player 2 holds a voting round too.'));
+        await T.wait(3200);
       },
       async T => {
         T.say(t('Barbarian Attack'), t('Barbarians land on the coast after every settlement or city. Knights from the castle drive them off, and 2 prisoners are worth 1 point. 12 points.'));
