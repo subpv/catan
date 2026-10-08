@@ -1,6 +1,7 @@
 'use strict';
-// One entry point for every game Broch can run. The classic game, Cities & Knights and their expansions live in
-// game.js; each standalone game is its own engine behind the same five calls (create, act, view, summary, migrate).
+// One entry point for every game Broch can run, one folder per game. The classic game (modes 'classic' and 'knights', with the
+// Seafarers and Traders & Barbarians expansions) is classic/game.js with knights/, seafarers/ and traders-barbarians/ plugged in;
+// each standalone game is its own engine behind the same five calls (create, act, view, summary, migrate).
 const base = require('./classic/game');
 
 const STANDALONE = {
