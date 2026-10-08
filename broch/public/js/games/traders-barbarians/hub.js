@@ -1,7 +1,7 @@
 // Traders & Barbarians in the game screen: the questions the engine asks (earthquake, wagons, knights ...), the fish and gold
 // dialogs, chips and pills. game.js builds the helper bundle `c` once and calls these hooks; everything else lives here.
-import { esc, glyph, GLYPH, PCOLOR, RES, CARD_COLOR, resName, cardName, term, t, extendCore, houseIcon, modal } from './core.js';
-import { layer, hold, sfx } from './fx.js';
+import { esc, glyph, GLYPH, PCOLOR, RES, CARD_COLOR, resName, cardName, term, t, extendCore, houseIcon, modal } from '../../core/core.js';
+import { layer, hold, sfx } from '../../core/fx.js';
 
 const FISH_COST = { robber: 2, steal: 3, take: 4, road: 5, dev: 7 };
 const WARE_COLOR = { glass: '#4FA3D9', tools: '#8C8C94', sand: '#D9B25C', marble: '#E8E4DA' };

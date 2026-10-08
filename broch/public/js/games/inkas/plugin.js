@@ -1,11 +1,11 @@
 // Rise of the Inkas (Der Aufstieg der Inka): the plugin for the standalone game. Andean board art (inkas-art.js), the tribe
 // tablet with its three tribes, thickets over buildings in decline, the robber on the frame, development cards and the
 // two advantage cards (Longest Trade Route, Mightiest Combat Arts).
-import { register } from './registry.js';
-import { extendCore, glyph, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, GLYPH, resName, cardName, term, houseIcon, modal } from '../core.js';
-import { enqueue, layer, hold, sfx, LOOT_BY_MODE, AWARDS_BY_MODE } from '../fx.js';
-import { DEV_DESC } from '../cards.js';
-import * as art from './inkas-art.js';
+import { register } from '../registry.js';
+import { extendCore, glyph, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, GLYPH, resName, cardName, term, houseIcon, modal } from '../../core/core.js';
+import { enqueue, layer, hold, sfx, LOOT_BY_MODE, AWARDS_BY_MODE } from '../../core/fx.js';
+import { DEV_DESC } from '../../core/cards.js';
+import * as art from './art.js';
 
 const tx = (k, p) => esc(t(k, p));
 

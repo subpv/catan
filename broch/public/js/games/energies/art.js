@@ -1,7 +1,7 @@
 // Board art for New Energies: power plants (brown and green), environmental damages (the grey cog that sits on a
 // number chip or on a village / research city) and the Environmental inspector. Everything lives in the board's
 // coordinate system (S = 56 per hex unit); the animations are driven by the .alive class (see styles.css).
-import { PCOLOR, PCOLOR_DARK } from '../core.js';
+import { PCOLOR, PCOLOR_DARK } from '../../core/core.js';
 
 export const S = 56;
 const f = n => n.toFixed(1);

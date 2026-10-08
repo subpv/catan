@@ -1,9 +1,9 @@
 // Explorers & Pirates (Entdecker & Piraten): the plugin for the game screen (sgame.js). The board is the book's: a start
 // island, a sea with the council's base, and two undiscovered regions (parrots in the north, geese in the south). Ships carry
 // explorers, units, fish swarms and spice bags; harbor settlements hold a basin; three missions with their tracks.
-import { register } from './registry.js';
-import { extendCore, glyph, GLYPH, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, houseIcon, modal } from '../core.js';
-import { LOOT_BY_MODE, SEVEN_BY_MODE } from '../fx.js';
+import { register } from '../registry.js';
+import { extendCore, glyph, GLYPH, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, houseIcon, modal } from '../../core/core.js';
+import { LOOT_BY_MODE, SEVEN_BY_MODE } from '../../core/fx.js';
 
 const tx = (k, p) => esc(t(k, p));
 const S = 56;

@@ -1,6 +1,6 @@
 // The side feed: chat, a visual game history (one card per turn) and graphs.
 import { esc, t, tf, glyph, houseIcon, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, cardName, term, isLightColor, inkOn } from './core.js';
-import { GAMES } from './games/registry.js';
+import { GAMES } from '../games/registry.js';
 
 const tx = (k, p) => esc(t(k, p));
 const EXTRA_COLOR = { fish: '#1F7A99', spice: '#B53A2A', gold: '#C58E12' };

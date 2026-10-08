@@ -2,9 +2,9 @@
 // piece of the real board (flat-top hexes, sea in the west, jungle in the east) and teaches the rules of the rulebook:
 // landscapes and trade goods, the roll, trading with the supply, building, the culture board, the decline of a tribe with
 // its thickets, building over thickets, the robber, the advantage and development cards, and the win at 11 points.
-import { addChapter, addHandKeys, baseView, eAt } from '../tutorial.js';
-import { t, esc, glyph } from '../core.js';
-import { sfx } from '../fx.js';
+import { addChapter, addHandKeys, baseView, eAt } from '../../core/tutorial.js';
+import { t, esc, glyph } from '../../core/core.js';
+import { sfx } from '../../core/fx.js';
 
 addHandKeys(['timber', 'stone', 'fleece', 'metal', 'potato', 'catch', 'coca', 'feathers']);
 

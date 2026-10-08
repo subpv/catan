@@ -1,8 +1,8 @@
 // How to play Explorers & Pirates: a short interactive chapter for the tutorial player (tutorial.js).
 // A small sea with a start island, the council's base and a few undiscovered fields plays the book's ideas one by one.
-import { addChapter, hAt, vAt, eAt, baseView, geometry } from '../tutorial.js';
-import { t } from '../core.js';
-import { sfx } from '../fx.js';
+import { addChapter, hAt, vAt, eAt, baseView, geometry } from '../../core/tutorial.js';
+import { t } from '../../core/core.js';
+import { sfx } from '../../core/fx.js';
 
 const pill = (icon, text) => `<span class="te">${text}</span>`;
 

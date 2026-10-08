@@ -5,7 +5,7 @@ import { t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, GLYPH, glyph, houseIcon, dieHt
 import { renderBoard } from './board.js';
 import { sfx } from './fx.js';
 import { fireworks } from './victory.js';
-import { GAMES } from './games/registry.js';
+import { GAMES } from '../games/registry.js';
 
 const S = 56;
 const SQ3 = Math.sqrt(3);

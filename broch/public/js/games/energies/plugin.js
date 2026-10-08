@@ -2,11 +2,11 @@
 // plants, environmental damages and the Environmental inspector (energies-art.js), the environment panel (global
 // pollution bar, event overview, bag), your personal tableau with the environmental balance, the event-chip scene,
 // the development-card and energy-token dialogs and the answers to the events.
-import { register } from './registry.js';
-import { extendCore, glyph, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, term, cardName, houseIcon, dieHtml, GLYPH } from '../core.js';
-import { enqueue, layer, hold, sfx, LOOT_BY_MODE } from '../fx.js';
-import { DEV_DESC } from '../cards.js';
-import * as art from './energies-art.js';
+import { register } from '../registry.js';
+import { extendCore, glyph, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, term, cardName, houseIcon, dieHtml, GLYPH } from '../../core/core.js';
+import { enqueue, layer, hold, sfx, LOOT_BY_MODE } from '../../core/fx.js';
+import { DEV_DESC } from '../../core/cards.js';
+import * as art from './art.js';
 
 const tx = (k, p) => esc(t(k, p));
 const S = art.S;

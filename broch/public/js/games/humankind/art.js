@@ -1,7 +1,7 @@
 // Dawn of Humankind: the stone-age look of the board. Tile scenes (mammoths, bison, berry pickers, flint knappers,
 // cave painters ...), camps, explorers, the Neanderthal and the Saber-toothed tiger, camp site and discovery tiles.
 // Every scene is a little looping animation (CSS in styles.css, classes hk-*) that only runs on the living board.
-import { PCOLOR, PCOLOR_DARK } from '../core.js';
+import { PCOLOR, PCOLOR_DARK } from '../../core/core.js';
 
 const f = n => n.toFixed(1);
 // a few pixels of difference per tile and a stable pseudo-random number from the tile and a slot

@@ -8,11 +8,11 @@ export const LANGS = [
 ];
 
 const LOADERS = {
-  de: () => import('./lang/de.js'), da: () => import('./lang/da.js'), sv: () => import('./lang/sv.js'),
-  nb: () => import('./lang/nb.js'), nl: () => import('./lang/nl.js'), fr: () => import('./lang/fr.js'),
-  es: () => import('./lang/es.js'), it: () => import('./lang/it.js'), pt: () => import('./lang/pt.js'),
-  pl: () => import('./lang/pl.js'), tr: () => import('./lang/tr.js'), uk: () => import('./lang/uk.js'),
-  ko: () => import('./lang/ko.js'), ja: () => import('./lang/ja.js'), zh: () => import('./lang/zh.js'),
+  de: () => import('../lang/de.js'), da: () => import('../lang/da.js'), sv: () => import('../lang/sv.js'),
+  nb: () => import('../lang/nb.js'), nl: () => import('../lang/nl.js'), fr: () => import('../lang/fr.js'),
+  es: () => import('../lang/es.js'), it: () => import('../lang/it.js'), pt: () => import('../lang/pt.js'),
+  pl: () => import('../lang/pl.js'), tr: () => import('../lang/tr.js'), uk: () => import('../lang/uk.js'),
+  ko: () => import('../lang/ko.js'), ja: () => import('../lang/ja.js'), zh: () => import('../lang/zh.js'),
 };
 
 let dict = {};
@@ -43,7 +43,7 @@ export async function setLang(code) {
   if (!LANGS.some(l => l[0] === code)) code = 'en';
   dict = code === 'en' ? {} : (await LOADERS[code]()).default;
   // the standalone games keep their texts in lang/x/<code>.js (built from lang/games/*.tsv)
-  if (code !== 'en') { try { dict = { ...dict, ...(await import(`./lang/x/${code}.js`)).default }; } catch { /* no texts for this language yet: English */ } }
+  if (code !== 'en') { try { dict = { ...dict, ...(await import(`../lang/x/${code}.js`)).default }; } catch { /* no texts for this language yet: English */ } }
   current = code;
   document.documentElement.lang = code;
   try { localStorage.setItem('broch_lang', code); } catch { /* storage blocked */ }

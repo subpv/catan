@@ -1,7 +1,7 @@
 // Board art for Traders & Barbarians: swamps and rivers, the watering hole and its merchant trains, the castle, quarry and glassworks,
 // barbarians, knights on the paths, wagons. hubExt(view) returns the hooks renderBoard (board.js) calls.
-import { PCOLOR, PCOLOR_DARK, inkOn, t } from './core.js';
-import { settlementPath, cityPath } from './board.js';
+import { PCOLOR, PCOLOR_DARK, inkOn, t } from '../../core/core.js';
+import { settlementPath, cityPath } from '../../core/board.js';
 
 const S = 56;
 const f = n => n.toFixed(1);

@@ -5,7 +5,7 @@ import { t, esc, PCOLOR, PCOLOR_DARK, GLYPH, houseIcon, isLightColor } from './c
 import { flag } from './countries.js';
 import { sfx } from './fx.js';
 import { metroTowerInner } from './board.js';
-import { GAMES } from './games/registry.js';
+import { GAMES } from '../games/registry.js';
 
 const tx = (k, p) => esc(t(k, p));
 const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

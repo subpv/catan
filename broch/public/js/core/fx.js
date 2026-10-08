@@ -2,7 +2,7 @@
 import { t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, glyph, cardName, inkOn, tf, houseIcon, pipsHtml, term } from './core.js';
 import { cardDesc, deckOf } from './cards.js';
 import { findJob, jobAge, buildersBusyFor } from './builder.js';
-import { eventCardScene } from './hub.js';
+import { eventCardScene } from '../games/traders-barbarians/hub.js';
 
 const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

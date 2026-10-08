@@ -1,7 +1,7 @@
 // How to play New Energies: a short interactive chapter for the tutorial player (tutorial.js), after the official rules.
-import { addChapter, addHandKeys, hAt, vAt, eAt, baseView, sevenTiles } from '../tutorial.js';
-import { t, esc, glyph } from '../core.js';
-import { sfx } from '../fx.js';
+import { addChapter, addHandKeys, hAt, vAt, eAt, baseView, sevenTiles } from '../../core/tutorial.js';
+import { t, esc, glyph } from '../../core/core.js';
+import { sfx } from '../../core/fx.js';
 
 addHandKeys(['wood', 'clay', 'fiber', 'food', 'metal', 'research', 'energy']);
 
