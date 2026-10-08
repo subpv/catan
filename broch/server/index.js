@@ -140,7 +140,8 @@ function serveStatic(req, res) {
   if (path.basename(file) === 'index.html' && e.buf.includes('name="broch-build" content=""')) {
     if (!e.stamped) { const buf = Buffer.from(e.buf.toString().replace('name="broch-build" content=""', `name="broch-build" content="${BUILD_ID}"`)); e = staticCache.get(file); e.buf = buf; e.etag = '"' + crypto.createHash('sha1').update(buf).digest('base64url').slice(0, 20) + '"'; e.br = e.gz = null; e.stamped = true; }
   }
-  const headers = { 'Content-Type': e.type, 'Cache-Control': 'no-cache', ETag: e.etag, Vary: 'Accept-Encoding' };
+  // private + no-cache: browsers revalidate with the ETag (cheap 304), and Cloudflare or any other shared cache never keeps a copy (it would serve old scripts after an update)
+  const headers = { 'Content-Type': e.type, 'Cache-Control': 'private, no-cache', 'CDN-Cache-Control': 'no-store', ETag: e.etag, Vary: 'Accept-Encoding' };
   if (req.headers['if-none-match'] === e.etag) { res.writeHead(304, headers); return res.end(); }
   const ae = req.headers['accept-encoding'] || '';
   let body = e.buf;
