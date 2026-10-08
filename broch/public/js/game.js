@@ -382,6 +382,7 @@ function render() {
   if (setHtml(G.app.querySelector('.imp-host'), 'imp', G.view.mode === 'knights' ? improveHtml() : '')) animateImprovements();
   renderFeed();
   autoDialogs();
+  aqueductPrompt();
   syncLoops(G.app);
 }
 
@@ -670,10 +671,14 @@ function improveHtml() {
     const imp = L.improve?.[tr];
     const why = mineP && !(imp && imp.ok) ? improveWhy(tr, c) : '';
     const btn = mineP ? `<button class="imp-btn ${why ? 'off' : ''}" data-improve="${tr}" ${why ? `data-why="${esc(why)}" aria-disabled="true"` : ''} title="${esc(why || (imp ? t('Improve {track} ({n} {res})', { track: term(tr), n: imp.cost, res: resName(c) }) : term(tr)))}" style="--c:${col}"><b>+</b><span>${mineP.improvements[tr] < 5 ? mineP.improvements[tr] + 1 : ''}</span>${glyph(c, 14)}</button>` : '<span class="imp-btn ghosty"></span>';
+    const aq = tr === 'science' && mineP && mineP.improvements.science >= 3
+      ? (mineP.aqueduct
+        ? `<button class="aq-chip" data-aqueduct title="${esc(t('Aqueduct: {res}. Tap to change.', { res: resName(mineP.aqueduct) }))}" style="background:${CARD_COLOR[mineP.aqueduct]}">💧${glyph(mineP.aqueduct, 14)}</button>`
+        : `<button class="aq-chip todo" data-aqueduct title="${esc(t('Aqueduct'))}">💧 ?</button>`) : '';
     const crown = holder != null ? `<span class="metro" style="--pc:${PCOLOR[v.players[holder].color]}" title="${esc(t('Metropolis: {name}', { name: v.players[holder].name }))}">♛</span>` : '';
     return `<div class="lane ${tr}" style="--c:${col}">
       <div class="lane-l"><span class="lane-ic" style="background:${col}">${glyph(c, 15)}</span><b>${esc(term(tr))}</b></div>
-      <div class="track"><div class="cols">${steps}</div>${tokens}</div>${crown}${btn}</div>`;
+      <div class="track"><div class="cols">${steps}</div>${tokens}</div>${crown}${aq}${btn}</div>`;
   }).join('');
   G.prevImpNext = next;
   const noCity = mineP && !Object.values(v.buildings).some(b => b.p === v.me && b.type === 'city');
@@ -754,6 +759,7 @@ function onClick(e) {
   if (d && !d.disabled) return doAction(d.dataset.do);
   const dv = el.closest('[data-dev]'); if (dv) return devDialog(dv.dataset.dev);
   const pg = el.closest('[data-prog]'); if (pg) return progressDialog(+pg.dataset.prog);
+  if (el.closest('[data-aqueduct]')) return aqueductChoice();
   const im = el.closest('[data-improve]');
   if (im) { if (im.dataset.why) { sfx.error(); toast(im.dataset.why, 'warn'); return; } return send({ type: 'improve', track: im.dataset.improve }); }
   const cf = el.closest('[data-confirm]'); if (cf) return send({ type: 'confirmTrade', with: +cf.dataset.confirm });
@@ -845,6 +851,22 @@ const handPool = () => {
   return pool;
 };
 const resChoices = (list = RES) => list.map(r => ({ value: r, html: `${glyph(r, 18)} ${esc(resName(r))}`, style: `background:${CARD_COLOR[r]};color:#fff;border-color:transparent;justify-content:flex-start` }));
+
+// The aqueduct (science level 3): pick the resource once, right when the level is reached. From then on the server
+// pays it out by itself whenever a roll (not a 7) gives you nothing. The chip in the science lane changes it.
+function aqueductChoice() {
+  choiceDialog(tx('Aqueduct'), tx('Choose your resource once. From now on the aqueduct pays it out whenever a roll gives you nothing (except on a 7).'), resChoices(), res => send({ type: 'setAqueduct', res }));
+}
+function aqueductPrompt() {
+  const v = G.view;
+  if (v.mode !== 'knights' || !isMine() || v.phase !== 'play') return;
+  const m = me();
+  if (m.improvements.science < 3 || m.aqueduct || G.opened.has('aqueduct-pick')) return;
+  if (document.querySelector('.modal-back') || myPending().length) return;
+  if (window.BROCH_FX_BUSY) { setTimeout(() => { if (G && G.view === v) aqueductPrompt(); }, 400); return; }
+  G.opened.add('aqueduct-pick');
+  aqueductChoice();
+}
 
 function autoDialogs(force = false) {
   const v = G.view;

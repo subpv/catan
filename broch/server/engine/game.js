@@ -55,7 +55,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
     players: seats.map((pl, i) => ({
       userId: pl.id, name: pl.name, color: pl.color || C.COLORS[i], country: pl.country || null,
       res: zero(C.RES), comm: zero(C.COMM),
-      dev: [], devPlayed: 0, knightsPlayed: 0,
+      dev: [], devPlayed: 0, knightsPlayed: 0, aqueduct: null,
       progress: [], vpCards: 0, defender: 0,
       improvements: { trade: 0, politics: 0, science: 0 },
     })),
@@ -424,11 +424,15 @@ function produce(s, total) {
     if (Object.keys(got).length) log(s, '{@p} receives {$c}.', { p, c: got });
   });
   if (K(s)) {
-    // Aqueduct (science level 3): whoever gets nothing from the roll (not a 7) takes any resource of their choice, every time
     const aq = [];
     s.players.forEach((pl, p) => {
       if (gotAny[p] || goldWant[p] || pl.improvements.science < 3) return;
-      if (C.RES.some(r => s.bank[r] > 0)) aq.push({ type: 'aqueduct', player: p });
+      // the resource was chosen once; from then on the aqueduct pays it out by itself
+      if (pl.aqueduct && s.bank[pl.aqueduct] > 0) {
+        take(s, pl, pl.aqueduct, 1);
+        s.stats.gained[p] += 1;
+        log(s, "{@p}'s aqueduct provides {$c}.", { p, c: { [pl.aqueduct]: 1 } });
+      } else if (!pl.aqueduct) aq.push({ type: 'aqueduct', player: p });
     });
     pushPending(s, aq);
   }
@@ -1100,11 +1104,20 @@ const HANDLERS = {
     const it = findPending(s, p, 'aqueduct');
     if (!it || !isRes(a.res)) fail('Pick a resource.');
     const pl = P(s, p);
-    if (s.bank[a.res] < 1) fail('The bank is out of that.');
-    take(s, pl, a.res, 1);
-    s.stats.gained[p] += 1;
-    log(s, "{@p}'s aqueduct provides {$c}.", { p, c: { [a.res]: 1 } });
+    pl.aqueduct = a.res;
+    if (take(s, pl, a.res, 1)) {
+      s.stats.gained[p] += 1;
+      log(s, "{@p}'s aqueduct provides {$c}.", { p, c: { [a.res]: 1 } });
+    }
     resolvePending(s, it);
+  },
+  // choose (or change) the resource the aqueduct pays out; allowed any time once science is at level 3
+  setAqueduct(s, p, a) {
+    requireKnights(s);
+    const pl = P(s, p);
+    if (pl.improvements.science < 3) fail('You need the aqueduct first.');
+    if (!isRes(a.res)) fail('Pick a resource.');
+    pl.aqueduct = a.res;
   },
   placeFreeKnight(s, p, a) {
     const it = findPending(s, p, 'placeFreeKnight');
@@ -1514,7 +1527,7 @@ function viewFor(s, me) {
         progress: self ? pl.progress.map(c2 => c2.type) : null,
         knightsPlayed: pl.knightsPlayed,
         vp: self ? vp(s, i) : vp(s, i, false),
-        improvements: pl.improvements, defender: pl.defender, vpCards: knights ? pl.vpCards : undefined,
+        improvements: pl.improvements, aqueduct: self ? pl.aqueduct || null : undefined, defender: pl.defender, vpCards: knights ? pl.vpCards : undefined,
         pieces: {
           roads: C.PIECES.road - c.roads, settlements: C.PIECES.settlement - c.settlements,
           cities: C.PIECES.city - c.cities, walls: C.PIECES.wall - c.walls,

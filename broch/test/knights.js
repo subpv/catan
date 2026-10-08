@@ -49,7 +49,7 @@ test('metropolis: level 4 needs a city without a metropolis', () => {
   assert.strictEqual(A.improvements.politics, 4);
 });
 
-test('aqueduct: asks again after every roll that gives nothing', () => {
+test('aqueduct (house choice): the resource is chosen once, then paid out by itself', () => {
   const { s } = fresh();
   s.players[0].improvements.science = 3;
   s.step = 'roll'; s.flags = {};
@@ -68,6 +68,7 @@ test('aqueduct: asks again after every roll that gives nothing', () => {
     assert(it, 'aqueduct pending');
     act(s, 0, { type: 'aqueduct', res: 'ore' });
     assert.strictEqual(s.pending.some(i => i.type === 'aqueduct' && i.player === 0), false);
+    assert.strictEqual(s.players[0].aqueduct, 'ore');
   }
 });
 
