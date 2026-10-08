@@ -16,7 +16,6 @@ module.exports = {
   GameError: base.GameError,
   MODES, STANDALONE: Object.keys(STANDALONE),
   defaultVp: (mode, scenario) => { const sp = STANDALONE[mode] && STANDALONE[mode]._internal.spec; return sp ? (sp.vpFor && scenario ? sp.vpFor(scenario) : sp.vpTarget) : 10; },
-  maxPlayers: mode => (STANDALONE[mode] && STANDALONE[mode]._internal.spec.maxPlayers) || 4,
   isStandalone: mode => !!STANDALONE[mode],
   fixedVp: mode => !!(STANDALONE[mode] && STANDALONE[mode]._internal.fixedVp), // the end of the game is not a points target
   minPlayers: mode => (STANDALONE[mode] && (STANDALONE[mode]._internal.minPlayers || (STANDALONE[mode]._internal.spec && STANDALONE[mode]._internal.spec.minPlayers))) || 2,
