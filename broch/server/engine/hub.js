@@ -743,6 +743,7 @@ module.exports = function make(core) {
     return v;
   };
 
+  api.knightCard = (s, p) => { const m = mod(s); if (m && m.knightCard) m.knightCard(s, p); };
   api.sevenWithoutRobber = s => { const m = mod(s); if (m && m.seven) m.seven(s); };
   // a game saved before the rules were redone: bring it up to date
   api.migrate = s => {
@@ -774,9 +775,16 @@ module.exports = function make(core) {
   api.K = K;
   api.log = log;
 
+  api.buyDev = (s, p) => { const m = mod(s); return !!(m && m.buyDev && m.buyDev(s, p)); };
+  api.portUsable = (s, v) => { const m = mod(s); return !(m && m.portUsable && !m.portUsable(s, v)); };
+  api.cityStart = s => !!(s.hub && (s.hub.mod === 'barbarians' || s.hub.mod === 'traders'));
+  api.roadWeight = (s, e) => { const m = mod(s); return m && m.roadWeight ? m.roadWeight(s, e) : 1; };
+  api.noLongest = s => { const m = mod(s); return !!(m && m.noLongest); };
+
   // the big scenarios register themselves
   ['caravans', 'barbarians', 'traders'].forEach(name => {
     try { MODS[name] = require(`./hub-${name}`)(core, api); } catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e; }
+    if (MODS[name] && MODS[name].handlers) Object.assign(api.handlers, MODS[name].handlers);
   });
   return api;
 };

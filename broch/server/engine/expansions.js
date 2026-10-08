@@ -58,17 +58,16 @@ module.exports = function make(core) {
     s.islandBonus = {};
     s.rivers = false; s.fishing = false; s.eventCards = false; s.fish = null; s.deck = null; s.gold = false;
     s.hub = { mod: null, scenario: null, harbor: { p: null } };
-    if (exp === 'traders') HB.init(s, options);
-    s.players.forEach(pl => { pl.fishTok = []; });
     if (exp === 'explorers') {
       s.missions = (options.missions || C.MISSIONS).slice();
       s.lairs = (s.board.lairs || []).map(l => ({ ...l, hits: {} }));
       s.lairOwners = {};
     }
     s.players.forEach(pl => {
-      pl.gold = 0; pl.fish = 0; pl.cargo = { fish: 0, spice: 0 }; pl.delivered = { fish: 0, spice: 0 };
+      pl.gold = 0; pl.fish = 0; pl.cargo = { fish: 0, spice: 0 }; pl.delivered = { fish: 0, spice: 0 }; pl.fishTok = [];
     });
     s.flags = {};
+    if (exp === 'traders') HB.init(s, options);
   }
 
   // ------------------------------------------------------------ geometry rules
@@ -369,5 +368,10 @@ module.exports = function make(core) {
     noRobber: s => s.expansion === 'traders' && HB.noRobber(s),
     afterAct: s => { if (s.expansion === 'traders') HB.afterAct(s); },
     beginEnd: (s, p) => s.expansion === 'traders' && HB.beginEnd(s, p),
+    buyDev: (s, p) => s.expansion === 'traders' && HB.buyDev(s, p),
+    portUsable: (s, v) => s.expansion !== 'traders' || HB.portUsable(s, v),
+    cityStart: s => s.expansion === 'traders' && HB.cityStart(s),
+    roadWeight: (s, e) => (s.expansion === 'traders' ? HB.roadWeight(s, e) : 1),
+    noLongest: s => s.expansion === 'traders' && HB.noLongest(s),
   };
 };

@@ -1,6 +1,6 @@
 'use strict';
 // Random-play fuzzer: plays many games with random legal-ish moves and checks invariants.
-const { createGame, act, viewFor, GameError, _internal } = require('../server/engine/game');
+const { createGame, act, viewFor, GameError, _internal, vp } = require('../server/engine/game');
 const C = require('../server/engine/constants');
 
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -43,6 +43,31 @@ function candidates(s, p) {
       case 'bankPick': { const c = {}; for (let i = 0; i < it.count; i++) { const k = pick(C.RES.filter(r => s.bank[r] > 0)); if (k) c[k] = (c[k] || 0) + 1; } out.push({ type: 'bankPick', cards: c }); break; }
       case 'quake': out.push({ type: 'quake', e: pick(L.quakeRoads) }); break;
       case 'helpGive': { const have = C.RES.filter(r => s.players[p].res[r] > 0); if (have.length) out.push({ type: 'helpGive', to: pick(L.helpTo), card: pick(have) }); break; }
+      case 'wagonCards': out.push({ type: 'wagonCards', wool: Math.floor(Math.random() * (s.players[p].res.wool + 1)), grain: Math.floor(Math.random() * (s.players[p].res.grain + 1)) }); break;
+      case 'wagonVote': out.push({ type: 'wagonVote', pos: pick(L.wagonPositions) }); break;
+      case 'wagonPlace': out.push({ type: 'wagonPlace', pos: pick(L.wagonPositions) }); break;
+      case 'placeKnight': out.push({ type: 'placeKnight', e: pick(L.knightPlace) }); break;
+      case 'captive': out.push({ type: 'captive', hex: pick(L.barbHexes) }); break;
+      case 'treason': {
+        const from = []; const pool = L.barbHexes.slice(); const nf = Math.min(2, pool.length); while (from.length < nf) from.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+        const to = L.treasonTargets.filter(h => !from.includes(h)).sort(() => Math.random() - 0.5).slice(0, 2);
+        out.push({ type: 'treason', from, to }); break;
+      }
+      case 'moveKnights': {
+        for (const [e, o] of Object.entries(L.knightMoves || {})) { const all = [...o.near, ...o.far]; if (all.length && Math.random() < 0.7) out.push({ type: 'moveKnight', from: +e, to: pick(all) }); }
+        out.push({ type: 'knightsDone' }); break;
+      }
+      case 'moveBarb': out.push({ type: 'moveBarb', from: pick(L.barbMoves.from), to: pick(L.barbMoves.to) }); break;
+      case 'moveWagon': {
+        const W = L.wagon;
+        if (W.placing) { out.push({ type: 'wagonBarbTo', to: pick(W.barbTargets) }); break; }
+        W.steps.forEach(st => { for (let i = 0; i < 3; i++) out.push({ type: 'wagonStep', to: st.to }); });
+        W.expel.forEach(e => out.push({ type: 'wagonExpel', edge: e }));
+        if (W.grain && Math.random() < 0.3) out.push({ type: 'wagonGrain' });
+        if (W.trip) out.push({ type: 'playGoodTrip' });
+        out.push({ type: 'wagonDone' }, { type: 'wagonDone' });
+        break;
+      }
       case 'masterMerchant': {
         const r = v.reveal; const pool = [];
         for (const [k, n] of [...Object.entries(r.res), ...Object.entries(r.comm)]) for (let i = 0; i < n; i++) pool.push(k);
@@ -83,6 +108,7 @@ function candidates(s, p) {
       out.push({ type: 'endTurn' });
       if (L.moveShips) for (const [from, tos] of Object.entries(L.moveShips)) out.push({ type: 'moveShip', from: +from, to: pick(tos) });
       if (L.goldTrade) out.push({ type: 'goldTrade', res: pick(C.RES) });
+      if (L.upgrade) out.push({ type: 'upgradeWagon' });
       if (L.repair && L.repair.ok) out.push({ type: 'repairRoad', e: pick(L.repair.edges) });
       if (L.boot && L.boot.length) out.push({ type: 'giveBoot', to: pick(L.boot) });
       if (L.fish) for (const [what, ok] of Object.entries(L.fish)) if (ok) out.push({ type: 'useFish', what, target: pick(s.players.map((_, i) => i).filter(i => i !== p)), res: pick(C.RES) });
@@ -122,7 +148,8 @@ function checkInvariants(s) {
   // the golden trail on the board must be exactly the Longest Road: as long as it, connected, all owned by the holder
   const lr = s.longestRoad;
   if (lr.p != null) {
-    if (!lr.edges || lr.edges.length !== lr.len) throw new Error(`longest road trail has ${lr.edges && lr.edges.length} edges, length is ${lr.len}`);
+    const wsum = lr.edges ? lr.edges.reduce((a, e) => a + (s.hub && s.hub.cv && s.hub.cv.wagons[e] !== undefined ? 2 : 1), 0) : -1;
+    if (!lr.edges || wsum !== lr.len) throw new Error(`longest road trail has ${lr.edges && lr.edges.length} edges, length is ${lr.len}`);
     for (const e of lr.edges) if (s.roads[e] !== lr.p && !(s.ships && s.ships[e] && s.ships[e].p === lr.p)) throw new Error('longest road trail uses a foreign edge');
     for (let i = 1; i < lr.edges.length; i++) {
       const a = s.board.edges[lr.edges[i - 1]].v, b = s.board.edges[lr.edges[i]].v;
@@ -147,9 +174,9 @@ function play(mode, n, options = {}, maxSteps = 20000) {
       const c = candidates(s, p);
       if (!c.length) continue;
       const a = pick(c);
-      try { act(s, p, a); moved = true; checkInvariants(s); viewFor(s, p); break; } catch (e) {
+      try { act(s, p, a); moved = true; (play.hist = play.hist || []).push(p + ':' + a.type); if (play.hist.length > 40) play.hist.shift(); checkInvariants(s); viewFor(s, p); break; } catch (e) {
         if (!(e instanceof GameError)) { console.error('CRASH', mode, n, JSON.stringify(options), JSON.stringify(a), e.stack); errors++; return { crashed: true }; }
-        fails++;
+        fails++; play.lastErr = e.message + ' ' + JSON.stringify(a);
       }
     }
     if (!moved && steps % 50 === 0) {
@@ -158,6 +185,7 @@ function play(mode, n, options = {}, maxSteps = 20000) {
       if (!anyCandidates) { console.error('STUCK', mode, n, JSON.stringify(options), s.phase, s.step, JSON.stringify(s.pending)); errors++; return { stuck: true }; }
     }
   }
+  if (process.env.DEBUG_END && s.phase !== 'over') console.log((play.hist || []).join(' '), 'PENDING', JSON.stringify(s.pending), 'LASTERR', play.lastErr, 'UNFINISHED', mode, n, 'turn', s.turn, 'vp', s.players.map((_, i) => vp(s, i)).join(','), s.hub && s.hub.bb ? JSON.stringify({ barb: s.hub.bb.barb, supply: s.hub.bb.supply, pr: s.hub.bb.prisoners }) : '');
   return { over: s.phase === 'over', steps, turns: s.turn, winner: s.winner, fails };
 }
 
@@ -174,6 +202,11 @@ const CONFIGS = {
   'tb-rivers': ['classic', { expansion: 'traders', variants: { rivers: true } }],
   'tb-all': ['classic', { expansion: 'traders', variants: { fishermen: true, events: true, friendly: true, harbors: true } }],
   'tb-rivers-all': ['classic', { expansion: 'traders', variants: { rivers: true, events: true, friendly: true, harbors: true } }],
+  'tb-caravans': ['classic', { expansion: 'traders', variants: { caravans: true } }],
+  'tb-barb': ['classic', { expansion: 'traders', variants: { barbarians: true } }],
+  'tb-traders': ['classic', { expansion: 'traders', variants: { traders: true } }],
+  'tb-traders-all': ['classic', { expansion: 'traders', variants: { traders: true, events: true, harbors: true } }],
+  'tb-barb-all': ['classic', { expansion: 'traders', variants: { barbarians: true, events: true, harbors: true } }],
   'tb-events': ['classic', { expansion: 'traders', variants: { events: true } }],
   'tb-friendly': ['classic', { expansion: 'traders', variants: { friendly: true } }],
   'tb-harbors': ['classic', { expansion: 'traders', variants: { harbors: true } }],
@@ -192,7 +225,7 @@ const res = Object.fromEntries(only.map(k => [k, []]));
 for (let i = 0; i < runs; i++) {
   for (const k of only) {
     const [mode, opts] = CONFIGS[k];
-    const n = 2 + (i % 5);
+    const n = 2 + (i % (opts.variants && (opts.variants.caravans || opts.variants.barbarians || opts.variants.traders) ? 3 : 5));
     const o = { ...opts };
     if (opts.expansion && opts.expansion !== 'none' && opts.big === undefined && n > 4) o.big = true;
     res[k].push(play(mode, n, o));

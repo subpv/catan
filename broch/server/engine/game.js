@@ -214,7 +214,7 @@ function longestFor(s, p, withPath = false) {
       if (last && last !== kind && !(s.buildings[v] && s.buildings[v].p === p)) continue;
       used.add(e); path.push(e);
       const [a, b] = E(s, e).v;
-      dfs(a === v ? b : a, len + 1, kind);
+      dfs(a === v ? b : a, len + X.roadWeight(s, e), kind);
       path.pop(); used.delete(e);
     }
   };
@@ -225,6 +225,7 @@ function longestFor(s, p, withPath = false) {
 }
 
 function updateLongest(s) {
+  if (X.noLongest(s)) return;
   const lens = s.players.map((_, p) => longestFor(s, p));
   const max = Math.max(...lens);
   const h = s.longestRoad.p;
@@ -327,6 +328,7 @@ function bankRatio(s, p, type) {
   for (const [v, b] of Object.entries(s.buildings)) {
     if (b.p !== p) continue;
     const port = V(s, +v).port;
+    if (port && !X.portUsable(s, +v)) continue;
     if (port === 'any') r = Math.min(r, 3);
     else if (port && port === type) r = 2;
   }
@@ -639,7 +641,7 @@ const HANDLERS = {
     log(s, '{@p} placed a settlement.', { p });
     X.built(s, p, 'settlement', a.v);
     // normally only the second building pays out; the house rule pays for both (a C&K city still counts like a settlement)
-    if (s.options.startBoth || (!K(s) && s.setup.idx >= s.players.length)) startingResources(s, p, a.v, 'settlement');
+    if (s.options.startBoth || (!K(s) && !X.cityStart(s) && s.setup.idx >= s.players.length)) startingResources(s, p, a.v, 'settlement');
   },
   placeCity(s, p, a) {
     if (s.phase !== 'setup' || p !== s.current || s.setup.need !== 'city') fail('Not your placement.');
@@ -647,6 +649,7 @@ const HANDLERS = {
     s.buildings[a.v] = { p, type: 'city' };
     s.setup.last = a.v; s.setup.need = 'road';
     log(s, '{@p} placed a city.', { p });
+    X.built(s, p, 'city', a.v);
     startingResources(s, p, a.v, 'city');
   },
   placeRoad(s, p, a) {
@@ -667,7 +670,7 @@ const HANDLERS = {
       return;
     }
     s.current = s.setup.queue[s.setup.idx];
-    s.setup.need = K(s) && s.setup.idx >= n ? 'city' : 'settlement';
+    s.setup.need = (K(s) || X.cityStart(s)) && s.setup.idx >= n ? 'city' : 'settlement';
     s.setup.last = null;
   },
 
@@ -727,6 +730,7 @@ const HANDLERS = {
   // ---- classic development cards
   buyDev(s, p) {
     if (K(s)) fail('No development cards in knights mode.');
+    if (X.buyDev(s, p)) return; // a scenario with its own cards
     requireActor(s, p);
     const pl = P(s, p);
     if (!s.devDeck.length) fail('The development deck is empty.');
@@ -748,11 +752,15 @@ const HANDLERS = {
       case 'knight':
         pl.knightsPlayed++;
         log(s, '{@p} played {%c}.', { p, c: 'knight' });
+        if (X.noRobber(s)) { X.hub.knightCard(s, p); break; } // Traders & Barbarians: the knight moves a barbarian
         if (pl.knightsPlayed >= 3 && pl.knightsPlayed > s.largestArmy.count && s.largestArmy.p !== p) {
           s.largestArmy = { p, count: pl.knightsPlayed };
           log(s, '{@p} now has the Largest Army.', { p });
         } else if (s.largestArmy.p === p) s.largestArmy.count = pl.knightsPlayed;
         pushPending(s, [{ type: 'moveRobber', player: p }], true);
+        break;
+      case 'goodTrip':
+        fail('Play it while you move your wagon.');
         break;
       case 'roadBuilding':
         s.free.roads = Math.min(2, C.PIECES.road - countPieces(s, p).roads);
