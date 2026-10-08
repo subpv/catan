@@ -14,6 +14,7 @@ module.exports = function make(core) {
   const d6 = () => 1 + Math.floor(Math.random() * 6);
   const SCEN = ['fishermen', 'rivers', 'caravans', 'barbarians', 'traders'];
   const BIG3 = ['caravans', 'barbarians', 'traders'];
+  const NO_56 = ['barbarians', 'traders']; // big scenarios without a 5-6 player layout (yet)
   const api = {};
   const MODS = {};
 
@@ -28,12 +29,14 @@ module.exports = function make(core) {
   const hook = (s, name, ...args) => { const m = mod(s); return m && m[name] ? m[name](s, ...args) : undefined; };
 
   // ------------------------------------------------------------ options
-  // The book plays one scenario at a time. The three big scenarios need the classic rules and a 2-4 player board.
+  // The book plays one scenario at a time. The three big scenarios need the classic rules; two of them a 2-4 player board.
   api.normalize = (v = {}, { big = false, players = 4, knights = false } = {}) => {
-    const out = { fishermen: false, rivers: false, caravans: false, barbarians: false, traders: false, events: !!v.events, friendly: !!v.friendly, harbors: !!v.harbors };
+    const out = { fishermen: false, rivers: false, caravans: false, barbarians: false, traders: false, events: !!v.events, friendly: !!v.friendly, harbors: !!v.harbors, two: !!v.two };
     const big3 = BIG3.find(k => v[k]);
     if (big3) {
-      if (big || players > 4 || knights) fail('This scenario is for the classic rules and 2–4 players.');
+      // Merchant Trains has a 5-6 player layout (5-6 book p7); the others are still 3-4 player scenarios
+      if (knights) fail('This scenario is for the classic rules.');
+      if (NO_56.includes(big3) && (big || players > 4)) fail('This scenario is for the classic rules and 2–4 players.');
       out[big3] = true;
     } else if (v.fishermen) out.fishermen = true;
     else if (v.rivers) out.rivers = true;
