@@ -151,12 +151,12 @@ async function api(path, opts = {}) {
     const standalone = engine.isStandalone(mode);
     const maxPlayers = Math.max(standalone ? engine.minPlayers(mode) : 2, Math.min(standalone ? engine.maxPlayers(mode) : 6, b.maxPlayers | 0 || 4));
     const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
-    const scenario = expansion === 'seafarers' ? (SEA_SCENARIOS[b.scenario] ? b.scenario : 'shores') : null;
+    const scenario = expansion === 'seafarers' ? (SEA_SCENARIOS[b.scenario] ? b.scenario : 'shores') : mode === 'explorers' ? String(Math.max(1, Math.min(5, b.escen | 0 || 2))) : null;
     const bv = b.variants || {};
     const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, caravans: !!bv.caravans, barbarians: !!bv.barbarians, traders: !!bv.traders, events: !!bv.events, friendly: !!bv.friendly, harbors: !!bv.harbors } : null;
     const missions = expansion === 'explorers' ? (Array.isArray(b.missions) ? b.missions.filter(x => ['fish', 'spice', 'lairs'].includes(x)) : ['fish', 'spice', 'lairs']) : null;
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
-    const defVp = standalone ? engine.defaultVp(mode) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
+    const defVp = standalone ? engine.defaultVp(mode, scenario) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
     const id = 'demo' + (++seq);
     // bots take the other seats straight away so you can start
     const seats = [u.id, ...users.slice(1, maxPlayers).map(x => x.id)];

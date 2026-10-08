@@ -5,7 +5,7 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node test/knights.js && node test/energies-rules.js && node test/inkas-rules.js && node test/seafarers.js && node test/scenario-maps.js && node test/simulate.js 30"
+    "test": "node test/knights.js && node test/energies-rules.js && node test/inkas-rules.js && node test/eup-rules.js && node test/seafarers.js && node test/scenario-maps.js && node test/simulate.js 30 && node test/simulate-games.js 5"
   },
   "dependencies": {
     "ws": "^8.22.0"
