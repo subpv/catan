@@ -12,6 +12,8 @@ let muted = (() => { try { return localStorage.getItem('broch_muted') === '1'; }
 export const LOOT_TERRAIN = { lumber: 'forest', brick: 'hills', wool: 'pasture', grain: 'fields', ore: 'mountains', paper: 'forest', cloth: 'pasture', coin: 'mountains' };
 // standalone games say which tile each of their resources comes from
 export const LOOT_BY_MODE = {};
+// standalone games with their own threat pieces (instead of the robber) describe the 7 scene: { title, sub(view, discards), svg, sfx }
+export const THREAT_BY_MODE = {};
 export const isMuted = () => muted;
 export function setMuted(m) {
   muted = m;
@@ -519,11 +521,11 @@ const ROBBER_SVG = `<svg viewBox="-60 -80 120 170" class="fx-robber-fig"><defs><
 export const THREAT_BY_MODE = {};
 async function robberScene(view) {
   const th = THREAT_BY_MODE[view.mode];
-  (sfx[th && th.sound] || sfx.robber)();
+  (th && sfx[th.sfx || th.sound] ? sfx[th.sfx || th.sound] : sfx.robber)();
   shake();
   const discards = view.pending.filter(p => p.type === 'discard');
   const robberMoves = view.barbarian ? view.barbarian.attacks > 0 : true;
-  const sub = [
+  const sub = th && th.sub ? th.sub(view, discards.length) : [
     discards.length ? t('Players holding too many cards must discard half.') : t('Nobody has to discard.'),
     th ? t(th.moves) : robberMoves ? t('The robber is on the move.') : t('The barbarians have not attacked yet, so the robber stays put.'),
   ].join(' ');

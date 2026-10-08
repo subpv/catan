@@ -1,6 +1,6 @@
 // Dawn of Humankind: the stone-age look of the board. Tile scenes (mammoths, bison, berry pickers, flint knappers,
-// cave painters ...), camps and villages instead of houses, and the Smilodon. Every scene is a little looping
-// animation (CSS in styles.css, classes hk-*) that only runs on the living board.
+// cave painters ...), camps, explorers, the Neanderthal and the Saber-toothed tiger, camp site and discovery tiles.
+// Every scene is a little looping animation (CSS in styles.css, classes hk-*) that only runs on the living board.
 import { PCOLOR, PCOLOR_DARK } from '../core.js';
 
 const f = n => n.toFixed(1);
@@ -11,8 +11,9 @@ const SKIN = ['#E8B890', '#D9A272', '#C68C5E', '#EDC7A0', '#B9794C'];
 const FUR = ['#A5703E', '#8C5A32', '#B98A4E', '#7A4F2B', '#9C7A4A'];
 const HAIR = ['#3A2A1C', '#1F1610', '#6B4A2A', '#8C5A2B', '#2B2B2B'];
 
-export const TERRAIN_COLOR = { forest: '#3F6B3E', hills: '#A67A52', pasture: '#B7B568', fields: '#9DBB57', mountains: '#707789', desert: '#E3CF9E' };
-export const TERRAIN_GLYPH = { forest: 'hide', hills: 'flint', pasture: 'meat', fields: 'meat', mountains: 'bone' };
+// the four landscapes of the book: Wald (fur), Ödland (bone), Grasland (meat), Gebirge (flint)
+export const TERRAIN_COLOR = { forest: '#2F6B3A', wasteland: '#DDB547', grassland: '#8CC85A', mountains: '#7B8089' };
+export const TERRAIN_GLYPH = { forest: 'fur', wasteland: 'bone', grassland: 'meat', mountains: 'flint' };
 
 // ------------------------------------------------------------ people and animals
 const person = ({ skin, fur, hair, tool = '', arm = true, legs = true }) => `
@@ -85,7 +86,7 @@ const at = (cx, cy, x, y, inner, cls = '') => `<g transform="translate(${f(cx + 
 const mirror = (cx, on, out) => (on ? `<g transform="translate(${f(2 * cx)},0) scale(-1,1)">${out}</g>` : out);
 
 // ------------------------------------------------------------ the scenes, one family per tile kind
-export function tileLife(h, cx, cy, nth = 0, seed = 0) {
+function scene(h, cx, cy, nth = 0, seed = 0) {
   const jit = (k, r) => Math.round((hash(h.id + seed % 7, k) - 0.5) * 2 * r);
   const v = nth % 3;
   switch (h.terrain) {
@@ -122,26 +123,61 @@ export function tileLife(h, cx, cy, nth = 0, seed = 0) {
   }
 }
 
-// ------------------------------------------------------------ camps and villages
+
+// a field's little scene. The four landscapes reuse the scene families: grassland alternates between the steppe (mammoths,
+// bison and a lurking hunter) and berry meadows, mountains between flint knapping and caves, wasteland is dry scrub.
+const KIND = { forest: ['forest'], wasteland: ['desert'], grassland: ['pasture', 'fields'], mountains: ['hills', 'mountains'] };
+export function tileLife(h, cx, cy, nth = 0, seed = 0) {
+  const kinds = KIND[h.terrain];
+  if (!kinds) return '';
+  const kind = kinds[nth % kinds.length];
+  // the fields are flat-topped (wider than high): shrink the scene a little so nothing leaves the field
+  return `<g transform="translate(${f(cx)},${f(cy + 1)}) scale(.9) translate(${f(-cx)},${f(-cy)})">${scene({ ...h, terrain: kind }, cx, cy, Math.floor(nth / kinds.length), seed)}</g>`;
+}
+
+// ------------------------------------------------------------ camps
 export const CAMP_D = 'M-10 11 L0 -13 L10 11 Z';
-export const VILLAGE_D = 'M-16 12 V-1 Q-16 -13 -7 -13 Q2 -13 2 -1 L8 -8 L16 12 Z';
-export const shape = type => (type === 'city' ? VILLAGE_D : CAMP_D);
+export const shape = () => CAMP_D;
 export function building(b, color) {
   const c = PCOLOR[color], d = PCOLOR_DARK[color];
   const poles = (x, y) => `<path d="M${x - 1.400} ${y} L${x - 3.400} ${y - 4.400} M${x + 1.400} ${y} L${x + 3.400} ${y - 4.400}" stroke="#5A3A1C" stroke-width="1.600" stroke-linecap="round"/>`;
   const fire = (x, y) => `<g transform="translate(${x},${y})"><g class="lf-fire"><path d="M0 0 q-2.800 -2.400 -.9 -6.400 q.6 1.800 1.400 2 q1.400 -1.800 .6 -4 q3.800 2.800 1.400 6.600 q-.2 1.800 -2.500 1.800z" fill="#F59B1B" stroke="#C7561B" stroke-width=".4"/></g></g>`;
-  if (b.type === 'city') {
-    return `${poles(8, -8)}<path d="M-16 12 V-1 Q-16 -13 -7 -13 Q2 -13 2 -1 V12 Z" fill="${c}" stroke="${d}" stroke-width="2.200" stroke-linejoin="round"/>
-      <path d="M-14 -2 Q-7 -6 0 -2 M-14.600 3.600 Q-7 -.4 0.600 3.600" fill="none" stroke="${d}" stroke-width="1" opacity=".5"/><path d="M-10 12 V4 Q-7 1 -4 4 V12Z" fill="${d}" opacity=".5"/>
-      <path d="M2 12 L8 -8 L16 12 Z" fill="${c}" stroke="${d}" stroke-width="2.200" stroke-linejoin="round"/><path d="M6.600 12 L8.600 3 L11 12Z" fill="${d}" opacity=".45"/>
-      <g class="lf-smoke"><circle cx="-7" cy="-16" r="2.400" fill="rgba(210,210,214,.75)"/><circle cx="-6.600" cy="-16" r="2.400" fill="rgba(210,210,214,.75)" style="animation-delay:-1.500s"/></g>${fire(-1, 15)}`;
-  }
   return `${poles(0, -13)}<path d="M-10 11 L0 -13 L10 11 Z" fill="${c}" stroke="${d}" stroke-width="2.200" stroke-linejoin="round"/>
     <path d="M-3.800 11 L0 0 L3.800 11Z" fill="${d}" opacity=".5"/><path d="M-6.400 5 L-1.400 -6.200 M6.400 5 L1.400 -6.200" stroke="${d}" stroke-width="1" opacity=".45"/>${fire(13, 11)}`;
 }
 
-// ------------------------------------------------------------ the Smilodon
-export function beastArt(life, fresh) {
+// ------------------------------------------------------------ explorers: two hunters with a spear
+export function explorer(color, { moved = false, life = false, mine = false } = {}) {
+  const c = PCOLOR[color], d = PCOLOR_DARK[color];
+  const man = (x, y, k, spear) => `<g transform="translate(${x},${y})">
+    <ellipse cy="1.200" rx="4.600" ry="1.400" fill="rgba(0,0,0,.28)"/>
+    <rect x="-2.400" y="-4" width="1.900" height="5" rx=".6" fill="${SKIN[k]}"/><rect x=".5" y="-4" width="1.900" height="5" rx=".6" fill="${SKIN[k]}"/>
+    <path d="M-3.800 -3.600 L-3 -11 H3 L3.800 -3.600 L2.300 -4.800 L.7 -3.500 L-.8 -4.800 L-2.300 -3.500 Z" fill="${c}" stroke="${d}" stroke-width=".8" stroke-linejoin="round"/>
+    <circle cy="-13.600" r="3" fill="${SKIN[k]}" stroke="#4A2E18" stroke-width=".4"/><path d="M-3.100 -14.200 Q-1 -18.600 3.100 -15.200 L2.900 -13.400 Q0 -15.800 -2.900 -13.200Z" fill="${HAIR[k]}"/>
+    ${spear ? `<g class="${life ? 'hk-spear' : ''}"><line x1="4.200" y1="-9" x2="5.800" y2="-25" stroke="#6B4A2A" stroke-width="1.200" stroke-linecap="round"/><path d="M5.200 -24 L5.800 -29 L6.800 -24Z" fill="#B7C0CC" stroke="#3E454F" stroke-width=".5" stroke-linejoin="round"/></g><line x1="2.800" y1="-9" x2="4.400" y2="-9.600" stroke="${SKIN[k]}" stroke-width="1.500" stroke-linecap="round"/>` : `<line x1="-2.800" y1="-9" x2="-5" y2="-5.600" stroke="${SKIN[k]}" stroke-width="1.500" stroke-linecap="round"/>`}</g>`;
+  return `<g class="hk-ex ${life ? 'alive-ex' : ''}" ${moved ? 'opacity=".62"' : ''}>${man(-5.200, 1, 2, false)}${man(5, 2, 0, true)}</g>`;
+}
+
+// ------------------------------------------------------------ the Neanderthal: stocky, heavy brow, club
+export function neanderthal(life, fresh) {
+  const ring = life ? '<ellipse class="lf-rmarch" cy="14" rx="19" ry="5.400" fill="none" stroke="#E8452F" stroke-width="1.500" stroke-dasharray="4.500 3"/><ellipse class="lf-rring" cy="14" rx="19" ry="5.400" fill="none" stroke="#E8452F" stroke-width="1.600"/>' : '';
+  return `${fresh ? '<circle class="fx-dust" cy="13" r="10"/>' : ''}<ellipse cy="14" rx="14" ry="3.600" fill="rgba(0,0,0,.4)"/>${ring}
+  <g class="${fresh ? 'fx-robber-drop' : ''}"><g class="${life ? 'hk-neander' : ''}">
+    <rect x="-8" y="3" width="6" height="11" rx="2.400" fill="#8B7A62" stroke="#4A3C2A" stroke-width=".9"/><rect x="2" y="3" width="6" height="11" rx="2.400" fill="#8B7A62" stroke="#4A3C2A" stroke-width=".9"/>
+    <path d="M-11 5 L-9 -9 Q0 -14 9 -9 L11 5 L8 3 L5 6 L2 3 L-1 6 L-4 3 L-8 6Z" fill="#6B5139" stroke="#3A2A18" stroke-width="1.100" stroke-linejoin="round"/>
+    <path d="M-7 -6 q3 3 6 0 M0 -4 q3 3 6 0" fill="none" stroke="#4A3524" stroke-width=".8" stroke-linecap="round"/>
+    <g class="${life ? 'hk-club' : ''}"><line x1="9" y1="-5" x2="16" y2="-17" stroke="#9A7B4F" stroke-width="2.800" stroke-linecap="round"/><ellipse cx="17" cy="-19" rx="3.800" ry="4.800" transform="rotate(30 17 -19)" fill="#7A5A32" stroke="#3A2A18" stroke-width="1"/><line x1="9" y1="-5" x2="12" y2="-10" stroke="#A8957A" stroke-width="3" stroke-linecap="round"/></g>
+    <circle cx="0" cy="-17" r="7.400" fill="#A8957A" stroke="#4A3C2A" stroke-width="1"/>
+    <path d="M-7.400 -18 Q-6 -25 0 -24.600 Q6 -25 7.400 -18 Q3 -21 0 -20.600 Q-3 -21 -7.400 -18Z" fill="#3A2A1C"/>
+    <path d="M-6.200 -17.200 Q0 -20.200 6.200 -17.200 L6 -15.600 Q0 -17.800 -6 -15.600Z" fill="#7C6A52" stroke="#4A3C2A" stroke-width=".6" stroke-linejoin="round"/>
+    <g class="${life ? 'lf-blink' : ''}"><circle cx="-2.600" cy="-15.400" r="1.200" fill="#1F1610"/><circle cx="2.600" cy="-15.400" r="1.200" fill="#1F1610"/></g>
+    <path d="M-2 -11.600 q2 1.400 4 0" fill="none" stroke="#4A3C2A" stroke-width=".9" stroke-linecap="round"/>
+    <line x1="-9" y1="-6" x2="-12" y2="1" stroke="#A8957A" stroke-width="3" stroke-linecap="round"/>
+  </g></g>`;
+}
+
+// ------------------------------------------------------------ the Saber-toothed tiger (Smilodon)
+export function sabertooth(life, fresh) {
   const ring = life ? '<ellipse class="lf-rmarch" cy="14" rx="19" ry="5.400" fill="none" stroke="#E8452F" stroke-width="1.500" stroke-dasharray="4.500 3"/><ellipse class="lf-rring" cy="14" rx="19" ry="5.400" fill="none" stroke="#E8452F" stroke-width="1.600"/>' : '';
   return `${fresh ? '<circle class="fx-dust" cy="13" r="10"/>' : ''}<ellipse cy="14" rx="17" ry="3.800" fill="rgba(0,0,0,.4)"/>${ring}
   <g class="${fresh ? 'fx-robber-drop' : ''}"><g class="${life ? 'hk-prowl' : ''}">
@@ -157,3 +193,55 @@ export function beastArt(life, fresh) {
       <path d="M26.400 -1.600 q2.400 .2 2.600 2" fill="#2B1608" stroke="#2B1608" stroke-width="1.600" stroke-linecap="round"/><path d="M22 3 q3 1.600 6.400 .2" fill="none" stroke="#6B3F10" stroke-width="1" stroke-linecap="round"/></g>
   </g></g>`;
 }
+
+// ------------------------------------------------------------ camp site tiles (Lagerplatz-Plättchen)
+export const SITE_COLOR = { europe: ['#5C8FD0', '#2E5A94'], asia: ['#F0B1D0', '#B8527F'], australia: ['#B87B45', '#6E4421'], america: ['#F58C3E', '#B2501A'] };
+// the symbols: berries, enoki mushrooms, macadamia nut, potato
+const SYMBOL = {
+  europe: '<circle cx="-3" cy="2" r="3.600" fill="#1E2B63"/><circle cx="3.200" cy="1.400" r="3.600" fill="#26357A"/><circle cx="0" cy="-3.400" r="3.600" fill="#1E2B63"/><circle cx="-4" cy="1" r=".9" fill="#7C8CD0"/><circle cx="2.200" cy=".4" r=".9" fill="#7C8CD0"/><circle cx="-1" cy="-4.400" r=".9" fill="#7C8CD0"/><path d="M0 -7 q2.600 -3.200 5.200 -1.400 q-2 3 -5.200 1.400z" fill="#4C9A3C" stroke="#2A6A22" stroke-width=".5"/>',
+  asia: '<path d="M-4 6 V-1 M0 6 V-3 M4 6 V0 M-2 6 V-5 M2 6 V-4" stroke="#F4D78A" stroke-width="1.500" stroke-linecap="round"/><circle cx="-4" cy="-2" r="2" fill="#D79A28"/><circle cx="0" cy="-4" r="2" fill="#E3A93A"/><circle cx="4" cy="-1" r="2" fill="#D79A28"/><circle cx="-2" cy="-6" r="1.800" fill="#E8B64A"/><circle cx="2" cy="-5.600" r="1.800" fill="#E3A93A"/>',
+  australia: '<ellipse cx="0" cy="1" rx="5.600" ry="6" fill="#8A5A2B" stroke="#3E2610" stroke-width=".9"/><path d="M-2.600 -2 q-1 4 1.200 7 M1 -3 q-1 4 1 8" fill="none" stroke="#C99A60" stroke-width=".9" stroke-linecap="round"/><ellipse cx="-2" cy="-1.600" rx="1.500" ry="2.400" fill="#C99A60" opacity=".55"/><path d="M0 -5 q1 -2.600 3.600 -3" fill="none" stroke="#3E2610" stroke-width="1" stroke-linecap="round"/>',
+  america: '<path d="M-6 1 C-7 -4 -2 -6.600 2 -5.600 C6 -5 7.600 -1 6.200 2.600 C4.600 6.200 -2 6.800 -4.600 4.600 C-5.800 3.600 -6 2.400 -6 1Z" fill="#D9B27A" stroke="#6E4E22" stroke-width=".9" stroke-linejoin="round"/><circle cx="-1.600" cy="-1.200" r=".8" fill="#6E4E22"/><circle cx="2.600" cy="1.600" r=".8" fill="#6E4E22"/><circle cx="-3" cy="2.600" r=".7" fill="#6E4E22"/>',
+};
+export const siteTile = (region, size = 1) => {
+  const [c, d] = SITE_COLOR[region] || SITE_COLOR.europe;
+  return `<g transform="scale(${size})"><path d="M0 -13.500 L11.700 -6.700 V6.700 L0 13.500 L-11.700 6.700 V-6.700Z" fill="${c}" stroke="${d}" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M0 -13.500 L11.700 -6.700 V6.700 L0 13.500" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.200"/><g transform="translate(0,.6)">${SYMBOL[region] || ''}</g></g>`;
+};
+
+// ------------------------------------------------------------ the animals of the discovery tiles
+const BEAST = {
+  europe: '<path d="M-8 3 C-9 -3 -4 -6 2 -5 C7 -5 9 -1 8 3Z" fill="#6A4624"/><rect x="-6.500" y="2" width="2.200" height="5" fill="#4A2E18"/><rect x="3.600" y="2" width="2.200" height="5" fill="#4A2E18"/><path d="M6 -4 l3.400 .8 l1 4 l-4 .6z" fill="#7A5230"/><path d="M9.200 0 q3.600 -.6 4.400 -4.600 q-3.200 .6 -4.400 2.800z" fill="#EEE2C0" stroke="#8C7B5C" stroke-width=".5"/>',
+  asia: '<path d="M-8 3 C-9.600 -5 -2 -8 4 -6 C9 -4.600 9.600 0 8.600 3Z" fill="#6B4A2A"/><rect x="-6" y="2" width="2.400" height="5.400" fill="#4A331F"/><rect x="3.600" y="2" width="2.400" height="5.400" fill="#4A331F"/><circle cx="8.600" cy="-3.400" r="3.600" fill="#6B4A2A"/><path d="M10 -1.400 q2 3.400 .2 6.600" fill="none" stroke="#6B4A2A" stroke-width="2" stroke-linecap="round"/><path d="M9.400 -.4 q4.600 2 4 -3.600" fill="none" stroke="#F4EBD0" stroke-width="1.100" stroke-linecap="round"/>',
+  australia: '<ellipse cx="0" cy="1" rx="8.600" ry="5.600" fill="#6C7F3C" stroke="#2F3C16" stroke-width=".8"/><path d="M-5 -2 l2.400 3 M0 -4 l0 4.400 M5 -2 l-2.400 3" stroke="#3D4D1C" stroke-width=".8"/><circle cx="9.400" cy="1.200" r="2.400" fill="#8A9B52" stroke="#2F3C16" stroke-width=".6"/><rect x="-6" y="4" width="2.600" height="3" fill="#4A5A24"/><rect x="3.600" y="4" width="2.600" height="3" fill="#4A5A24"/>',
+  namerica: '<path d="M-6 4 C-9 -4 -3 -8 2 -6 C6 -5 6 -1 4 1 L3 5Z" fill="#B9A079" stroke="#6B5A3A" stroke-width=".7"/><circle cx="3.600" cy="-6" r="3.200" fill="#C9B38A" stroke="#6B5A3A" stroke-width=".7"/><path d="M5.200 -2 q4 1 4.600 6 M6.400 -1 q3.600 2 3.600 7" fill="none" stroke="#6B5A3A" stroke-width="1.400" stroke-linecap="round"/><rect x="-5" y="3" width="2.400" height="4" fill="#8E7954"/>',
+  samerica: '<ellipse cx="0" cy="-.4" rx="8.600" ry="6.400" fill="#B5AA94" stroke="#5E5644" stroke-width=".8"/><path d="M-6 -3 l12 0 M-7 0 l14 0 M-5.600 3 l11.200 0 M-2.400 -5.600 v10.600 M2.600 -5.600 v10.600" stroke="#7C735E" stroke-width=".7" fill="none"/><path d="M8 0.400 q3.600 -.6 4.600 2.600 q-2.600 1.800 -5 0z" fill="#8A7A5C" stroke="#4F4636" stroke-width=".6"/><rect x="-6" y="4.600" width="2.600" height="3" fill="#6B6048"/><rect x="3.600" y="4.600" width="2.600" height="3" fill="#6B6048"/>',
+};
+export const beast = region => BEAST[region] || '';
+export const DF_COLOR = { europe: ['#5C8FD0', '#2E5A94'], asia: ['#E96AA6', '#A72E6E'], australia: ['#B87B45', '#6E4421'], namerica: ['#F58C3E', '#B2501A'], samerica: ['#F58C3E', '#B2501A'] };
+// a discovery tile (Entdeckungs-Plättchen): a leaf shape with the animal of its region
+export const dfTile = (region, size = 1) => {
+  const [c, d] = DF_COLOR[region] || DF_COLOR.europe;
+  return `<g transform="scale(${size})"><path d="M0 -17 C12 -17 18 -6 14.600 5.600 C11.600 14.600 -11.600 14.600 -14.600 5.600 C-18 -6 -12 -17 0 -17Z" fill="${c}" stroke="${d}" stroke-width="2"/><path d="M-9 -9 C-5 -14 4 -15 9 -11" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.600" stroke-linecap="round"/><g transform="translate(0,-.5) scale(.95)">${beast(region)}</g></g>`;
+};
+// the hunting marker lies on a cloud
+export const cloud = (region, by, colorOf) => {
+  const [c, d] = DF_COLOR[region] || DF_COLOR.europe;
+  const p = by == null ? '' : `<circle cx="17" cy="-12" r="8" fill="${PCOLOR[colorOf(by)]}" stroke="#fff" stroke-width="2"/><path d="M-0 -5 L1.600 -1.200 L5.600 -1 L2.400 1.600 L3.600 5.400 L0 3.200 L-3.600 5.400 L-2.400 1.600 L-5.600 -1 L-1.600 -1.200Z" transform="translate(17,-12) scale(.9)" fill="#fff"/>`;
+  return `<g class="hk-cloud ${by == null ? '' : 'taken'}"><path d="M-22 8 C-31 8 -31 -5 -21 -5 C-21 -17 -3 -19 1 -9 C8 -15 22 -10 20 -1 C30 -1 29 12 18 11 L-18 11 C-20 11 -21 10 -22 8Z" fill="${by == null ? c : 'rgba(255,255,255,.55)'}" stroke="${by == null ? d : 'rgba(255,255,255,.8)'}" stroke-width="2" stroke-linejoin="round"/>
+    ${by == null ? `<g transform="translate(-1,-2) scale(1.2)">${beast(region)}</g>` : `<g transform="translate(-1,-2) scale(1.1)" opacity=".28">${beast(region)}</g>`}${p}</g>`;
+};
+
+// ------------------------------------------------------------ the conditions next to a discovery field
+// Clothing: a dark hide with a white number; Construction: a pale tent with a dark number
+export const needBadge = (kind, n, ok) => kind === 'kl'
+  ? `<g class="hk-need ${ok ? 'ok' : ''}"><path d="M-8 -5 L-4 -8 H4 L8 -5 L6 -1 L6 7 H-6 V-1Z" fill="#6B4528" stroke="${ok ? '#7CE08A' : '#2B1A0B'}" stroke-width="${ok ? 2 : 1.300}" stroke-linejoin="round"/><text y="4.600" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="11" fill="#fff">${n}</text></g>`
+  : `<g class="hk-need ${ok ? 'ok' : ''}"><path d="M-9 7 L0 -9 L9 7Z" fill="#EBD3A6" stroke="${ok ? '#2E9B44' : '#7A5A32'}" stroke-width="${ok ? 2 : 1.300}" stroke-linejoin="round"/><text y="5.600" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="11" fill="#2B1E12">${n}</text></g>`;
+
+// the little hand that marks the Startplätze in Africa
+export const handMark = () => '<g opacity=".92"><circle r="7.500" fill="#8B5E34" stroke="#4A2E18" stroke-width="1.200"/><path d="M-1.600 4.400 V-2.600 M-.1 4.400 V-4.800 M1.500 4.400 V-2.800 M3 4.400 V-.8 M-3.200 4.400 V-.4" stroke="#F3DDB4" stroke-width="1.100" stroke-linecap="round"/><path d="M-3.400 3.600 q3.400 2.800 6.800 0" fill="none" stroke="#F3DDB4" stroke-width="1.100" stroke-linecap="round"/></g>';
+
+// ------------------------------------------------------------ small things for the board
+// a flat ice floe / glacier crest: pale triangles that make the north look like mountains of ice
+export const iceCrest = (x, y, s = 1) => `<g transform="translate(${f(x)},${f(y)}) scale(${s})"><path d="M-22 12 L-9 -14 L-1 -1 L8 -20 L24 12Z" fill="#F6FBFF" stroke="#C6DCEA" stroke-width="1.400" stroke-linejoin="round"/><path d="M-9 -14 L-4 -2 L-10 4Z M8 -20 L13 -4 L6 -1Z" fill="#DCEAF4"/></g>`;
+export const polarBear = (life = false) => `<g><ellipse cy="1" rx="10" ry="2.400" fill="rgba(60,90,120,.25)"/><rect x="-7" y="-4" width="3.400" height="5.600" rx="1.200" fill="#F4F8FB" stroke="#B8C8D4" stroke-width=".6"/><rect x="3.600" y="-4" width="3.400" height="5.600" rx="1.200" fill="#F4F8FB" stroke="#B8C8D4" stroke-width=".6"/><path d="M-10 -3 C-11 -10 -3 -12 3 -11 C8 -10 9 -5 8 -2Z" fill="#FBFDFF" stroke="#B8C8D4" stroke-width=".8"/><g class="${life ? 'hk-bearhead' : ''}"><ellipse cx="9.600" cy="-8.600" rx="4.600" ry="3.600" fill="#FBFDFF" stroke="#B8C8D4" stroke-width=".8"/><circle cx="7.600" cy="-11.600" r="1.400" fill="#FBFDFF" stroke="#B8C8D4" stroke-width=".6"/><circle cx="13.600" cy="-8.400" r="1" fill="#1F2A33"/></g></g>`;

@@ -10,9 +10,9 @@ const modes = only ? [only] : engine.STANDALONE;
 const BOTS = {};
 modes.forEach(m => { BOTS[m] = require(`./bots/${m}.js`); });
 
-function play(mode, n) {
+function play(mode, n, game = {}) {
   const players = Array.from({ length: n }, (_, i) => ({ id: 'u' + i, name: 'P' + i, color: ['red', 'blue', 'orange', 'white'][i], country: 'DE' }));
-  const s = engine.createGame({ id: 'g' + Math.random(), mode, players, options: {} });
+  const s = engine.createGame({ id: 'g' + Math.random(), mode, players, options: { game } });
   let guard = 0;
   while (s.phase !== 'over' && guard++ < 40000) {
     const seats = s.players.map((_, i) => i).sort(() => Math.random() - 0.5);
@@ -34,7 +34,8 @@ let bad = 0;
 for (const mode of modes) {
   let done = 0, lost = 0, turns = 0, wins = 0;
   for (let g = 0; g < GAMES; g++) {
-    const r = play(mode, 2 + (g % 3));
+    const lo = engine.minPlayers(mode);
+    const r = play(mode, lo + (g % (5 - lo)), { free: g % 2 === 1 }); // every other game uses the variable set-up where there is one
     if (r.over) { done++; turns += r.s.stats.turns; if (r.s.winner === null) lost++; else wins++; } else bad++;
     if (r.over) {
       // invariants: points never negative, summary works, view works for everyone

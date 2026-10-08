@@ -39,31 +39,56 @@ const BOTS = {
   },
 };
 
-const HK = ['meat', 'hide', 'flint', 'bone'];
+const HK = ['fur', 'bone', 'meat', 'flint'];
+// walking distance (in crossings) from a crossing to the nearest one that satisfies `goal`
+function hkDist(v, from, goal) {
+  const seen = new Map([[from, 0]]);
+  let layer = [from];
+  const adj = v.hkAdj || (v.hkAdj = (() => { const a = v.board.vertices.map(() => []); v.board.edges.forEach(e => { a[e.v[0]].push(e.v[1]); a[e.v[1]].push(e.v[0]); }); return a; })());
+  while (layer.length) {
+    const next = [];
+    for (const x of layer) { if (goal(x)) return seen.get(x); for (const y of adj[x]) if (!seen.has(y)) { seen.set(y, seen.get(x) + 1); next.push(y); } }
+    layer = next;
+  }
+  return 99;
+}
 BOTS.humankind = function humankind(v) {
-  const L = v.legal || {}, me = v.players[v.me], res = me.res || {};
-  if (L.setupSpots) return { type: 'placeSettlement', v: bestSpot(v, L.setupSpots) };
-  if (L.setupRoads) return { type: 'placeRoad', e: pick(L.setupRoads) };
+  const L = v.legal || {}, me = v.players[v.me], res = me.res || {}, hk = v.humankind;
+  if (L.setupCamps && L.setupCamps.length) return { type: 'placeCamp', v: bestSpot(v, L.setupCamps) };
+  if (L.setupExplorers && L.setupExplorers.length) return { type: 'placeExplorer', v: pick(L.setupExplorers) };
   const mine = v.pending.filter(x => x.group === v.activeGroup && x.player === v.me)[0];
   if (mine && mine.type === 'discard') return { type: 'discard', cards: discardCards(v, mine.count, HK) };
-  if (mine && mine.type === 'beast') {
-    const hs = Object.keys(L.beast || {}).map(Number);
-    const bad = hs.filter(h => (L.beast[h] || []).length && !v.board.hexes[h].verts.some(x => v.buildings[x] && v.buildings[x].p === v.me));
-    const h = bad.length ? pick(bad) : pick(hs);
-    const vs = L.beast[h] || [];
-    return { type: 'moveBeast', h, victim: vs.length ? pick(vs) : undefined };
+  if (mine && mine.type === 'threat') {
+    // the threat that blocks the most (other players' camps), never one of my own fields
+    let best = null;
+    for (const t of Object.keys(L.threat || {})) for (const [h, vs] of Object.entries(L.threat[t])) {
+      const own = v.board.hexes[h].verts.some(x => v.buildings[x] && v.buildings[x].p === v.me);
+      const sc = (vs.length ? 3 : 0) + v.board.hexes[h].verts.filter(x => v.buildings[x] && v.buildings[x].p !== v.me).length - (own ? 5 : 0) + Math.random();
+      if (!best || sc > best.sc) best = { sc, type: 'moveThreat', threat: t, h: +h, victim: vs.length ? pick(vs) : undefined };
+    }
+    if (best) { delete best.sc; return best; }
+    return { type: 'skipThreat' };
   }
+  if (mine && mine.type === 'erode') return { type: 'erode', h: pick(L.erode) };
   if (v.phase !== 'play' || v.pending.length || v.current !== v.me) return null;
   if (v.step === 'roll') return { type: 'roll' };
-  if (L.cities && L.cities.length) return { type: 'buildCity', v: pick(L.cities) };
-  if (L.settlements && L.settlements.length) return { type: 'buildSettlement', v: bestSpot(v, L.settlements) };
-  if (L.roads && L.roads.length && me.pieces.roads > 3) {
-    const fogEdges = L.roads.filter(e => v.board.edges[e].v.some(x => v.board.hexes.some(h => h.terrain === 'fog' && h.verts.includes(x))));
-    if (fogEdges.length) return { type: 'buildRoad', e: pick(fogEdges) };
+  if (L.camps && L.camps.length) return { type: 'buildCamp', v: L.camps[0], remove: L.campRemove ? pick(L.campRemove) : undefined };
+  // keep climbing: Clothing and Construction open the discovery fields, Food lengthens the walk
+  const adv = ['clothing', 'construction', 'food', 'hunt'].filter(k => L.advance && L.advance[k] && HK.every(r => (res[r] || 0) >= (L.advance[k].cost[r] || 0)));
+  if (adv.length && Math.random() < 0.7) return { type: 'advance', track: adv[0] };
+  const siteDist = x => hkDist(v, x, y => !!hk.sites[y]);
+  const movers = Object.entries(L.moves || {});
+  if (movers.length && (res.fur || res.meat)) {
+    const [from, dests] = pick(movers);
+    const best = dests.slice().sort((a, b) => siteDist(a) - siteDist(b) || Math.random() - 0.5)[0];
+    if (siteDist(best) < siteDist(+from)) return { type: 'moveExplorer', from: +from, to: best, pay: (res.fur || 0) >= (res.meat || 0) ? 'fur' : 'meat' };
   }
-  const adv = Object.entries(L.advance || {}).filter(([, a]) => a && res[a.res] >= a.cost + 1);
-  if (adv.length && Math.random() < 0.6) return { type: 'advance', track: adv[0][0] };
-  if (L.roads && L.roads.length && me.pieces.roads > 9 && res.hide > 0 && res.flint > 0) return { type: 'buildRoad', e: pick(L.roads) };
+  if (L.explorerSpots && L.explorerSpots.length && me.pieces.explorers > 0) {
+    const best = L.explorerSpots.slice().sort((a, b) => hkDist(v, a, y => !!hk.sites[y]) - hkDist(v, b, y => !!hk.sites[y]))[0];
+    return { type: 'placeExplorer', v: best };
+  }
+  const r = HK.find(k => (res[k] || 0) >= 5);
+  if (r) return { type: 'bankTrade', give: r, get: pick(HK.filter(k => k !== r)) };
   return { type: 'endTurn' };
 };
 
