@@ -199,7 +199,7 @@ function progressDialog(A) {
 
 // ------------------------------------------------------------ the plugin
 const plugin = register({
-  id: 'humankind', name: 'Dawn of Humankind', vp: 10, maxPlayers: 4, minPlayers: 3, tutorial: 'humankind', lifeIcon: 'campfire',
+  id: 'humankind', beta: true, name: 'Dawn of Humankind', vp: 10, maxPlayers: 4, minPlayers: 3, tutorial: 'humankind', lifeIcon: 'campfire',
   tagline: 'Leave Africa, settle the world and win 10 points.',
   blurb: 'The world in the Old Stone Age: 49 fields, 3 camps and 1 explorer each, starting in Africa. Walk with fur or meat, reach discovery fields with Clothing and Construction, found camps on camp sites for points and watch out for the Neanderthal and the Saber-toothed tiger. First to 10 points wins. For 3 or 4 players.',
   lobbyOptions: [{ key: 'free', label: 'Free founding', hint: 'Variable set-up: everyone places their 3 first camps and the explorer themselves in Africa.' }],
