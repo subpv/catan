@@ -78,8 +78,9 @@ const VILLAGES = [
   [{ kind: 'pirate', die: 5 }, { kind: 'gold' }, { kind: 'fast' }],
   [{ kind: 'pirate', die: 4 }, { kind: 'gold' }, { kind: 'fast' }],
 ];
-// the numbers on the back of the pirate lairs (not printed in the rulebook text: a spread of the usual numbers)
-const LAIR_NUMBERS = { small: [4, 5, 6, 8, 9, 10], big: [4, 5, 6, 8, 9, 10, 3, 11] };
+// the numbers on the back of the pirate lairs. The two lairs of the 5-6 player box carry 9 and 10 (told by the owner, to be checked on the
+// tiles); the numbers of the six lairs of the base box are not printed anywhere we have, so they stay a spread of the usual numbers.
+const LAIR_NUMBERS = { small: [4, 5, 6, 8, 9, 10], big: [4, 5, 6, 8, 9, 10, 9, 10] };
 
 const expand = counts => Object.entries(counts).flatMap(([k, n]) => Array.from({ length: n }, () => k));
 
