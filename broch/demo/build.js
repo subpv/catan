@@ -5,7 +5,7 @@ const path = require('path');
 const esbuild = require('esbuild');
 
 const root = path.join(__dirname, '..');
-const out = path.join(__dirname, 'broch-demo.html');
+const out = path.join(root, '..', 'dist', 'broch-demo.html'); // the file that is handed out
 
 const entry = `import './mock.js';\nimport '../public/js/app.js';\n`;
 const js = esbuild.buildSync({
@@ -21,11 +21,6 @@ const html = fs.readFileSync(path.join(root, 'public/index.html'), 'utf8')
   .replace(/<!--[^>]*-->\s*/g, '').replace(/<link rel="modulepreload"[^>]*>\s*/g, '')
   .replace('<link rel="stylesheet" href="/styles.css">', `<style>${css}</style>`)
   .replace('<script type="module" src="/js/app.js"></script>', () => `<script>${js.replace(/<\/script/gi, '<\\/script')}</script>`);
+fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, html);
-// variant for publishing as an artifact: the host adds the document skeleton itself
-const body = html
-  .replace(/<!doctype html>\s*/i, '').replace(/<html[^>]*>\s*/i, '').replace(/<\/html>\s*/i, '')
-  .replace(/<head>\s*/i, '').replace(/<\/head>\s*/i, '').replace(/<body>\s*/i, '').replace(/<\/body>\s*/i, '')
-  .replace(/<meta charset="utf-8">\s*/i, '').replace(/<meta name="viewport"[^>]*>\s*/i, '');
-fs.writeFileSync(path.join(__dirname, 'broch-demo-artifact.html'), body);
 console.log('wrote', out, Math.round(html.length / 1024) + ' KB');
