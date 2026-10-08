@@ -87,7 +87,7 @@ function turnCard(v, tr, pname, newest) {
     if (k === '{@p} discarded cards: {n}.') { rows.push(`<div class="ev loss">${chip(v.players[a.p], true)}<span class="minus">−${a.n}</span><span class="ev-ic">${glyph('card', 13)}</span><span class="why">${tx('Discard {n} cards', { n: a.n })}</span></div>`); continue; }
     if (AWARD.includes(k)) { rows.push(`<div class="ev award"><span class="ev-ic gold">${glyph('trophy', 14)}</span><span class="txt">${tf(k, a, pname)}</span></div>`); continue; }
     if (k === '{@p} wins with {n} victory points!') { rows.push(`<div class="ev award win"><span class="ev-ic gold">${glyph('victoryPoint', 14)}</span><span class="txt">${tf(k, a, pname)}</span></div>`); continue; }
-    const sys = k.startsWith('Game started') || k.startsWith('Setup complete') || k.startsWith('Special building phase') || k.startsWith('The event cards');
+    const sys = k.startsWith('Game started') || k.startsWith('Setup complete') || k.startsWith('Special building phase') || k.startsWith('Stone 1:') || k.startsWith('The event cards');
     rows.push(`<div class="ev ${sys ? 'sys' : ''}"><span class="ev-ic">${iconFor(k) === 'dot' ? '<i class="dot"></i>' : glyph(iconFor(k), 13)}</span><span class="txt">${tf(k, a, pname)}</span></div>`);
   }
   const gainHtml = gains.size ? `<div class="gains">${[...gains.entries()].map(([p, c]) => `<div class="gain">${chip(v.players[p], true)}<span class="cards">${cardsRow(c)}</span></div>`).join('')}</div>` : '';

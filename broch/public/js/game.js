@@ -280,7 +280,7 @@ function statusInfo() {
   const L0 = v.legal || {};
   const shipHint = L0.moveShips && Object.keys(L0.moveShips).length ? tx('Tap one of your pulsing ships to sail it (once per turn).') : '';
   const stone2 = v.flags.stone2;
-  return { msg: stone2 ? tx('Your turn with stone 2.') : tx('Build, trade or end your turn.'), sub: v.free.promotes ? tx('Free promotions left: {n} (tap a knight).', { n: v.free.promotes }) : stone2 ? tx('No dice. Trade with the bank only, build and play 1 development card.') : shipHint, mine: true, btns: `${stone2 ? '' : `<button class="btn" data-do="trade">${tx('Trade')}</button>`}<button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button><button class="btn primary" data-do="endTurn">${tx('End turn')}</button>` };
+  return { msg: stone2 ? tx('Your turn with stone 2.') : tx('Build, trade or end your turn.'), sub: v.free.promotes ? tx('Free promotions left: {n} (tap a knight).', { n: v.free.promotes }) : stone2 ? tx('No dice. Trade with the bank only.') : shipHint, mine: true, btns: `${stone2 ? '' : `<button class="btn" data-do="trade">${tx('Trade')}</button>`}<button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button><button class="btn primary" data-do="endTurn">${tx('End turn')}</button>` };
 }
 
 
