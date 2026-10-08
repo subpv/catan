@@ -107,6 +107,12 @@ function serveStatic(req, res) {
 
 // ------------------------------------------------------------ lobby helpers
 // every seat in an open game holds a distinct color; keep the user's favourite when it's free
+// per-game switches from the lobby (standalone games): plain booleans under short names
+function cleanOptions(o) {
+  const out = {};
+  if (o && typeof o === 'object') for (const [k, v] of Object.entries(o)) if (/^[A-Za-z]{1,24}$/.test(k) && typeof v === 'boolean') out[k] = v;
+  return out;
+}
 function fixSeatColors(meta) {
   meta.colors = meta.colors || {};
   for (const id of Object.keys(meta.colors)) if (!meta.seats.includes(id)) delete meta.colors[id];
@@ -223,7 +229,7 @@ async function api(req, res, url) {
     const u = need(); const b = await readBody(req);
     const mode = b.mode === 'knights' || engine.isStandalone(b.mode) ? b.mode : 'classic';
     const standalone = engine.isStandalone(mode);
-    const maxPlayers = Math.max(2, Math.min(standalone ? 4 : 6, b.maxPlayers | 0 || 4));
+    const maxPlayers = Math.max(engine.minPlayers(mode), Math.min(standalone ? 4 : 6, b.maxPlayers | 0 || 4));
     const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
     const scenario = expansion === 'seafarers' ? (['shores', 'islands', 'fog'].includes(b.scenario) ? b.scenario : 'shores') : null;
     const bv = b.variants || {};
@@ -232,7 +238,7 @@ async function api(req, res, url) {
     const def = standalone ? engine.defaultVp(mode) : mode === 'knights' ? 13 : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : 10;
     const vpTarget = Math.max(5, Math.min(20, b.vpTarget | 0 || def));
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
-    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, maxPlayers, vpTarget, specialBuild: b.specialBuild !== false, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
+    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, gameOptions: standalone ? cleanOptions(b.gameOptions) : null, maxPlayers, vpTarget, specialBuild: b.specialBuild !== false, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
     db.games.set(g.meta.id, g); store.saveGame(g, true);
     broadcastLobby();
     return send(res, 200, { game: gameCard(g) });
@@ -268,10 +274,10 @@ async function api(req, res, url) {
     } else if (m[2] === 'start') {
       if (meta.host !== u.id) throw new HttpError(403, 'Only the host can start.');
       if (meta.status !== 'open') throw new HttpError(400, 'Already started.');
-      if (meta.seats.length < 2) throw new HttpError(400, 'Wait for at least one more player.');
+      if (meta.seats.length < engine.minPlayers(meta.mode)) throw new HttpError(400, 'Wait for at least one more player.');
       fixSeatColors(meta);
       const players = meta.seats.map(id => { const x = db.users.find(y => y.id === id); return { id, name: x.name, color: meta.colors[id], country: x.country || null }; });
-      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, specialBuild: meta.specialBuild && players.length > 4, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, missions: meta.missions, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, big: meta.big ?? players.length > 4 } });
+      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, specialBuild: meta.specialBuild && players.length > 4, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, missions: meta.missions, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, big: meta.big ?? players.length > 4, game: meta.gameOptions || {} } });
       meta.status = 'playing'; meta.startedAt = Date.now();
     } else if (m[2] === 'abandon') {
       if (meta.host !== u.id && !u.admin) throw new HttpError(403, 'Only the host can abandon the game.');

@@ -98,7 +98,8 @@ function renderAuth(mode = 'login') {
 }
 
 // ------------------------------------------------------------ lobby
-const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, events: false }, missions: ['fish', 'spice', 'lairs'], big: false, robberReturn: false, startBoth: false, maxPlayers: 4, vpTarget: 10, vpTouched: false };
+const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, events: false }, missions: ['fish', 'spice', 'lairs'], big: false, robberReturn: false, startBoth: false, gameOptions: {}, maxPlayers: 4, vpTarget: 10, vpTouched: false };
+const minPlayersOf = mode => (isStandalone(mode) && GAMES[mode].minPlayers) || 2;
 const SCEN_VP = { shores: 14, islands: 13, fog: 12 };
 const defaultVp = () => (isStandalone(newGame.mode) ? GAMES[newGame.mode].vp : newGame.mode === 'knights' ? 13 : newGame.expansion === 'seafarers' ? SCEN_VP[newGame.scenario] : newGame.expansion === 'explorers' ? 12 : 10);
 const EXP_LABEL = { seafarers: 'Seafarers', traders: 'Traders & Barbarians', explorers: 'Explorers & Pirates' };
@@ -132,7 +133,7 @@ async function renderLobby() {
     if (newGame.expansion === 'seafarers') return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${Object.keys(SCEN_LABEL).map(k => chip(newGame.scenario === k, `data-scen="${k}"`, SCEN_LABEL[k])).join('')}</div>`;
     if (newGame.expansion === 'traders') return `<div class="muted sub-h">${tx('Variants')}</div><div class="chips">${chip(newGame.variants.fishermen, 'data-var="fishermen"', 'Fishermen of Catan', 'Fishing grounds, fish tokens and the old boot.')}${chip(newGame.variants.rivers, 'data-var="rivers"', 'Rivers of Catan', 'Bridges, gold, and the richest and poorest player.')}${chip(newGame.variants.events, 'data-var="events"', 'Event cards', 'A deck of event cards replaces the dice.')}</div>`;
     if (newGame.expansion === 'explorers') return `<div class="muted sub-h">${tx('Missions')}</div><div class="chips">${chip(newGame.missions.includes('fish'), 'data-mis="fish"', 'Fish for Catan')}${chip(newGame.missions.includes('spice'), 'data-mis="spice"', 'Spice for Catan')}${chip(newGame.missions.includes('lairs'), 'data-mis="lairs"', 'Pirate lairs')}</div>`;
-    if (isStandalone(newGame.mode)) return `<div class="muted sub-h">${tx(GAMES[newGame.mode].name)}</div><div class="muted" style="font-size:13px">${tx(GAMES[newGame.mode].blurb)}</div>`;
+    if (isStandalone(newGame.mode)) return `<div class="muted sub-h">${tx(GAMES[newGame.mode].name)}</div><div class="muted" style="font-size:13px">${tx(GAMES[newGame.mode].blurb)}</div>${(GAMES[newGame.mode].lobbyOptions || []).map(o => `<label class="switch ${newGame.gameOptions[o.key] ? 'on' : ''}" data-gopt="${o.key}" role="switch" aria-checked="${!!newGame.gameOptions[o.key]}" tabindex="0"><span class="tr"><i></i></span><span class="tx"><b>${tx(o.label)}</b><small>${tx(o.hint)}</small></span></label>`).join('')}`;
     if (newGame.mode === 'knights') return `<div class="muted sub-h">${tx('Cities & Knights')}</div><div class="muted" style="font-size:13px">${tx('Commodities, city improvements, knights and barbarian raids.')}</div>`;
     return `<div class="muted sub-h">${tx('Pick an expansion to see its options.')}</div>`;
   };
@@ -201,7 +202,7 @@ async function renderLobby() {
             <div class="seat-list">${g.seats.map(s => `<div class="seat">${houseIcon(s.color, 26)}<span>${flag(s.country)} ${esc(s.name)}${s.id === g.host ? ` <small class="muted">· ${tx('host')}</small>` : ''}</span></div>`).join('')}
               ${Array.from({ length: g.maxPlayers - g.seats.length }, () => `<div class="seat empty-seat"><span class="ghost-house"></span><span class="muted">${tx('Free seat')}</span></div>`).join('')}</div>
             <div class="field"><span>${tx('Pick your color')}</span>${colorSwatches(g, me)}</div>
-            <div class="row wrap">${g.host === me ? `<button class="btn primary" data-start="${g.id}" ${g.seats.length < 2 ? 'disabled' : ''}>${tx('Start game')}</button>` : `<span class="muted" style="font-size:13px">${tx('Waiting for the host to start…')}</span>`}
+            <div class="row wrap">${g.host === me ? `<button class="btn primary" data-start="${g.id}" ${g.seats.length < minPlayersOf(g.mode) ? 'disabled' : ''}>${tx('Start game')}</button>` : `<span class="muted" style="font-size:13px">${tx('Waiting for the host to start…')}</span>`}
               <span class="spacer"></span><button class="btn small" data-share="${g.id}">${tx('Copy invite link')}</button><button class="btn small" data-leave="${g.id}">${tx('Leave')}</button></div>
           </div>`).join('')}
         <div class="card"><h3>${tx('Open games')}</h3>${others.length ? others.map(g => row(g, `<button class="btn small gold" data-join="${g.id}" ${g.seats.length >= g.maxPlayers ? 'disabled' : ''}>${tx('Join')}</button>`)).join('') : `<div class="empty">${tx('No open games. Create one and invite your friends.')}</div>`}</div>
@@ -210,7 +211,7 @@ async function renderLobby() {
     const reVp = () => { if (!newGame.vpTouched) newGame.vpTarget = defaultVp(); };
     el.querySelectorAll('[data-game]').forEach(b => b.onclick = () => {
       newGame.mode = b.dataset.game; newGame.expansion = 'none'; newGame.big = false;
-      newGame.maxPlayers = Math.min(newGame.maxPlayers, GAMES[newGame.mode].maxPlayers || 4);
+      newGame.maxPlayers = Math.max(minPlayersOf(newGame.mode), Math.min(newGame.maxPlayers, GAMES[newGame.mode].maxPlayers || 4)); newGame.gameOptions = {};
       reVp(); sfx.click(); draw(false);
     });
     el.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => {
@@ -231,12 +232,16 @@ async function renderLobby() {
       const flip = () => { newGame[b.dataset.sw] = !newGame[b.dataset.sw]; sfx.click(); draw(false); };
       b.onclick = flip; b.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } };
     });
+    el.querySelectorAll('[data-gopt]').forEach(b => {
+      const flip = () => { newGame.gameOptions[b.dataset.gopt] = !newGame.gameOptions[b.dataset.gopt]; sfx.click(); draw(false); };
+      b.onclick = flip; b.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } };
+    });
     el.querySelectorAll('[data-scen]').forEach(b => b.onclick = () => { newGame.scenario = b.dataset.scen; reVp(); sfx.click(); draw(false); });
     el.querySelectorAll('[data-var]').forEach(b => b.onclick = () => { newGame.variants[b.dataset.var] = !newGame.variants[b.dataset.var]; sfx.click(); draw(false); });
     el.querySelectorAll('[data-mis]').forEach(b => b.onclick = () => { const m = b.dataset.mis; newGame.missions = newGame.missions.includes(m) ? newGame.missions.filter(x => x !== m) : [...newGame.missions, m]; if (!newGame.missions.length) newGame.missions = [m]; sfx.click(); draw(false); });
     el.querySelectorAll('[data-np]').forEach(b => b.onclick = () => {
       const was = newGame.maxPlayers;
-      newGame.maxPlayers = Math.max(2, Math.min(isStandalone(newGame.mode) ? (GAMES[newGame.mode].maxPlayers || 4) : 6, was + +b.dataset.np));
+      newGame.maxPlayers = Math.max(minPlayersOf(newGame.mode), Math.min(isStandalone(newGame.mode) ? (GAMES[newGame.mode].maxPlayers || 4) : 6, was + +b.dataset.np));
       if (was <= 4 && newGame.maxPlayers > 4) newGame.big = true;
       sfx.click(); draw(false);
     });

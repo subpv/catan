@@ -12,6 +12,8 @@ let muted = (() => { try { return localStorage.getItem('broch_muted') === '1'; }
 export const LOOT_TERRAIN = { lumber: 'forest', brick: 'hills', wool: 'pasture', grain: 'fields', ore: 'mountains', paper: 'forest', cloth: 'pasture', coin: 'mountains' };
 // standalone games say which tile each of their resources comes from
 export const LOOT_BY_MODE = {};
+// standalone games with their own threat pieces (instead of the robber) describe the 7 scene: { title, sub(view, discards), svg, sfx }
+export const THREAT_BY_MODE = {};
 export const isMuted = () => muted;
 export function setMuted(m) {
   muted = m;
@@ -516,16 +518,17 @@ const ROBBER_SVG = `<svg viewBox="-60 -80 120 170" class="fx-robber-fig"><defs><
   <path d="M-22 -40 Q0 -50 22 -40 L20 -32 Q0 -40 -20 -32 Z" fill="#000" opacity=".9"/>
   <circle cx="-9" cy="-36" r="3.2" fill="#F0C24A"/><circle cx="9" cy="-36" r="3.2" fill="#F0C24A"/></svg>`;
 async function robberScene(view) {
-  sfx.robber();
+  const th = THREAT_BY_MODE[view.mode];
+  (th && sfx[th.sfx] ? sfx[th.sfx] : sfx.robber)();
   shake();
   const discards = view.pending.filter(p => p.type === 'discard');
   const robberMoves = view.barbarian ? view.barbarian.attacks > 0 : true;
-  const sub = [
+  const sub = th ? th.sub(view, discards.length) : [
     discards.length ? t('Players holding too many cards must discard half.') : t('Nobody has to discard.'),
     robberMoves ? t('The robber is on the move.') : t('The barbarians have not attacked yet, so the robber stays put.'),
   ].join(' ');
-  const sc = layer('fx-robber', `<div class="fx-vignette"></div><div class="fx-robber-stage">${ROBBER_SVG}</div>
-    <div class="fx-robber-text"><div class="fx-seven">7</div><h1>${esc(t('The robber strikes!'))}</h1><p>${esc(sub)}</p></div>`);
+  const sc = layer('fx-robber', `<div class="fx-vignette"></div><div class="fx-robber-stage">${th ? th.svg : ROBBER_SVG}</div>
+    <div class="fx-robber-text"><div class="fx-seven">7</div><h1>${esc(t(th ? th.title : 'The robber strikes!'))}</h1><p>${esc(sub)}</p></div>`);
   await hold(sc, 2300);
 }
 

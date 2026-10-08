@@ -762,14 +762,14 @@ class Player {
   // ---- drawing
   draw(targets = {}) {
     const pg = GAMES[this.v.mode];
-    this.boardEl.innerHTML = renderBoard(this.v, targets, this.freshSets(), null, !reduced(), false, pg && pg.ext ? pg.ext(this.v) : null);
+    this.boardEl.innerHTML = pg && pg.board ? pg.board(this.v, targets, this.freshSets(), null, !reduced(), null) : renderBoard(this.v, targets, this.freshSets(), null, !reduced(), false, pg && pg.ext ? pg.ext(this.v) : null);
     const svg = this.boardEl.querySelector('svg');
     if (svg) { svg.removeAttribute('style'); syncLoops(this.boardEl); }
     this.fresh = null;
   }
   freshSets() {
     const f = this.fresh || {};
-    return { verts: new Set(f.verts || []), edges: new Set(f.edges || []), knights: new Set(f.knights || []), ships: new Set(f.ships || []), hexes: new Set(f.hexes || []), plants: new Set(f.plants || []), robber: !!f.robber, merchant: false, pirate: !!f.pirate, beast: !!f.beast, thickets: new Set(f.thickets || []), any: !!f.beast };
+    return { verts: new Set(f.verts || []), edges: new Set(f.edges || []), knights: new Set(f.knights || []), ships: new Set(f.ships || []), hexes: new Set(f.hexes || []), plants: new Set(f.plants || []), robber: !!f.robber, merchant: false, pirate: !!f.pirate, beast: !!f.beast, thickets: new Set(f.thickets || []), explorers: new Set(f.explorers || []), threats: new Set(f.threats || []), any: !!f.beast || !!(f.explorers && f.explorers.length) || !!(f.threats && f.threats.length) };
   }
   pt(x, y) {
     const svg = this.boardEl.querySelector('svg');

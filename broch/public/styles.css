@@ -1542,3 +1542,31 @@ svg.board:not(.alive) .in-draw { stroke-dashoffset: 0 !important; animation: non
 .in-rule { margin: 0; font-size: 12.500px; color: var(--muted); line-height: 1.35; }
 .in-body .btn.block { margin-top: 2px; display: inline-flex; gap: 6px; justify-content: center; align-items: center; }
 .in-body > small { font-size: 12px; }
+
+/* =============================================================== Dawn of Humankind: the world map (humankind-board.js) */
+.alive .alive-ex { animation: hkexbob 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes hkexbob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.3px); } }
+.alive .hk-spear { transform-box: fill-box; transform-origin: 50% 100%; animation: hkspear 3.6s ease-in-out infinite; }
+@keyframes hkspear { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(3deg); } }
+.alive .hk-neander { transform-box: fill-box; transform-origin: 50% 100%; animation: hkneander 2.2s ease-in-out infinite; }
+@keyframes hkneander { 0%, 100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(-1px) scaleY(1.025); } }
+.alive .hk-club { transform-box: fill-box; transform-origin: 0% 100%; animation: hkclub 2.4s ease-in-out infinite; }
+@keyframes hkclub { 0%, 55%, 100% { transform: rotate(0); } 70% { transform: rotate(-24deg); } 82% { transform: rotate(14deg); } }
+.alive .hk-cloud { animation: hkcloud 7s ease-in-out infinite; }
+@keyframes hkcloud { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.alive .hk-floe { transform-box: fill-box; transform-origin: center; animation: hkfloe 9s ease-in-out infinite; }
+@keyframes hkfloe { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+.alive .hk-tilepulse { transform-box: fill-box; transform-origin: center; animation: hkpulse 3.4s ease-in-out infinite; }
+@keyframes hkpulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); } }
+.alive .hk-dfbob { animation: hkdfbob 2.8s ease-in-out infinite; }
+@keyframes hkdfbob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-2px) rotate(2deg); } }
+.alive .hk-bearhead { transform-box: fill-box; transform-origin: 10% 90%; animation: hkbear 5s ease-in-out infinite; }
+@keyframes hkbear { 0%, 100% { transform: rotate(0); } 40% { transform: rotate(8deg) translateY(1px); } 70% { transform: rotate(-4deg); } }
+.hk-need.ok { filter: drop-shadow(0 0 2px rgba(120,235,140,.9)); }
+.hk-mk { display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; vertical-align: middle; font-size: 10px; font-weight: 800; }
+.hk-mk.free { border: 1px dashed #C9AE7C; border-radius: 999px; padding: 0 5px; color: #8A6A2E; }
+.hk-aw { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 14px; border-top: 1px solid var(--line); font-size: 13px; }
+.hk-awi { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #8B5A2B; color: #fff; }
+.hk-awv { display: inline-flex; gap: 4px; align-items: center; font-weight: 700; }
+.hk-sites { padding: 8px 14px 6px; } .hk-sites > div { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+.hk-sc { display: inline-flex; align-items: center; gap: 3px; background: #F5EEDA; border-radius: 999px; padding: 2px 9px 2px 3px; font-weight: 800; font-size: 13px; }

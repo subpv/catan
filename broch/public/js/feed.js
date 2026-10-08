@@ -1,5 +1,6 @@
 // The side feed: chat, a visual game history (one card per turn) and graphs.
 import { esc, t, tf, glyph, houseIcon, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, cardName, term, isLightColor, inkOn } from './core.js';
+import { GAMES } from './games/registry.js';
 
 const tx = (k, p) => esc(t(k, p));
 const EXTRA_COLOR = { fish: '#1F7A99', spice: '#B53A2A', gold: '#C58E12' };
@@ -35,7 +36,8 @@ const ICON = [
   [/robber|chase/, 'robber'], [/stole|steals|takes cards/, 'robber'], [/barbarian/i, 'barbarian'], [/pirate/, 'ship'],
   [/played|progress card/, 'card'], [/knight/, 'knight'], [/improved/, 'trophy'], [/wins with/, 'trophy'], [/discovers|sails into/, 'flag'],
 ];
-const iconFor = k => (ICON.find(([re]) => re.test(k)) || [null, 'dot'])[1];
+// standalone games with their own threat pieces show them instead of the robber
+const iconFor = (k, v) => { const i = (ICON.find(([re]) => re.test(k)) || [null, 'dot'])[1]; const th = i === 'robber' && GAMES[v && v.mode] && GAMES[v.mode].threat; return th && th.icon ? th.icon : i; };
 const SKIP = new Set(['{@p} offers {$g} for {$w}.', '{@p} rolled {n}.', '{@p} rolled {n} ({#e}).', '{@p} places first.']);
 
 const mini = (k, n = 1) => `<span class="mc" style="--c:${cardColor(k)}" title="${esc(resName(k))}">${glyph(k, 13)}${n > 1 ? `<b>${n}</b>` : ''}</span>`;
@@ -88,7 +90,7 @@ function turnCard(v, tr, pname, newest) {
     if (AWARD.includes(k)) { rows.push(`<div class="ev award"><span class="ev-ic gold">${glyph('trophy', 14)}</span><span class="txt">${tf(k, a, pname)}</span></div>`); continue; }
     if (k === '{@p} wins with {n} victory points!') { rows.push(`<div class="ev award win"><span class="ev-ic gold">${glyph('victoryPoint', 14)}</span><span class="txt">${tf(k, a, pname)}</span></div>`); continue; }
     const sys = k.startsWith('Game started') || k.startsWith('Setup complete') || k.startsWith('Special building phase') || k.startsWith('The event cards');
-    rows.push(`<div class="ev ${sys ? 'sys' : ''}"><span class="ev-ic">${iconFor(k) === 'dot' ? '<i class="dot"></i>' : glyph(iconFor(k), 13)}</span><span class="txt">${tf(k, a, pname)}</span></div>`);
+    rows.push(`<div class="ev ${sys ? 'sys' : ''}"><span class="ev-ic">${iconFor(k, v) === 'dot' ? '<i class="dot"></i>' : glyph(iconFor(k, v), 13)}</span><span class="txt">${tf(k, a, pname)}</span></div>`);
   }
   const gainHtml = gains.size ? `<div class="gains">${[...gains.entries()].map(([p, c]) => `<div class="gain">${chip(v.players[p], true)}<span class="cards">${cardsRow(c)}</span></div>`).join('')}</div>` : '';
   const buildHtml = builds.length ? `<div class="builds">${builds.map(b => {
