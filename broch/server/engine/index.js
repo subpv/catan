@@ -16,6 +16,7 @@ module.exports = {
   MODES, STANDALONE: Object.keys(STANDALONE),
   defaultVp: mode => (STANDALONE[mode] ? STANDALONE[mode]._internal.spec.vpTarget : 10),
   isStandalone: mode => !!STANDALONE[mode],
+  fixedVp: mode => !!(STANDALONE[mode] && STANDALONE[mode]._internal.fixedVp), // the end of the game is not a points target
   minPlayers: mode => (STANDALONE[mode] && STANDALONE[mode]._internal.minPlayers) || 2,
   createGame: opts => engineOf(opts.mode).createGame(opts),
   act: (s, p, a) => engineOf(s.mode).act(s, p, a),

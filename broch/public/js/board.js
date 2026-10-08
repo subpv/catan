@@ -21,6 +21,7 @@ export function boardBounds(board) {
     const bx = mx + dx / d * 1.05, by = my + dy / d * 1.05;
     xs.push(bx - 0.5, bx + 0.5); ys.push(by - 0.85, by + 0.6);
   });
+  (board.frame || []).forEach(([x, y]) => { xs.push(x); ys.push(y); }); // standalone games with a frame around the board
   const pad = 0.62;
   const minX = (Math.min(...xs) - pad) * S, maxX = (Math.max(...xs) + pad) * S;
   const minY = (Math.min(...ys) - pad) * S, maxY = (Math.max(...ys) + pad) * S;
@@ -362,13 +363,16 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
   </defs>`);
   if (jobs.size) out.push(`<style>${[...jobs.values()].map(jobCss).join('')}</style>`);
 
+  // standalone games may paint their own backdrop (the frame of Rise of the Inkas) instead of the open sea
+  const own = ext && ext.backdrop ? ext.backdrop({ view, board, S, life, bx0, by0, bw0, bh0 }) : null;
+  if (own != null) out.push(own);
   // gentle waves in the sea
   let waves = '';
   for (let i = 0; i < 12; i++) {
     const wx = bx0 + ((i * 0.37 + 0.11) % 1) * bw0, wy = by0 + ((i * 0.61 + 0.07) % 1) * bh0;
     waves += `<path class="wave w${i % 3}" d="M${f(wx)} ${f(wy)} q8 -5 16 0 t16 0" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="2" stroke-linecap="round"/>`;
   }
-  out.push(`<g>${waves}</g>`);
+  if (own == null) out.push(`<g>${waves}</g>`);
 
   // open sea tiles
   out.push('<g>');
@@ -381,8 +385,9 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
 
   // islands: shallow water and sand ring under every land tile
   out.push('<g>');
-  board.hexes.filter(isLand).forEach(h => out.push(`<polygon points="${hexPoints(board, h, 1.2)}" fill="rgba(140,200,215,.25)" stroke="rgba(140,200,215,.25)" stroke-width="14" stroke-linejoin="round"/>`));
-  board.hexes.filter(isLand).forEach(h => out.push(`<polygon points="${hexPoints(board, h, 1.1)}" fill="url(#sand)" stroke="#E2CC96" stroke-width="8" stroke-linejoin="round"/>`));
+  const rimmed = board.hexes.filter(h => isLand(h) && !(ext && ext.noRim && ext.noRim(h)));
+  if (!(ext && ext.noHalo)) rimmed.forEach(h => out.push(`<polygon points="${hexPoints(board, h, 1.2)}" fill="rgba(140,200,215,.25)" stroke="rgba(140,200,215,.25)" stroke-width="14" stroke-linejoin="round"/>`));
+  rimmed.forEach(h => out.push(`<polygon points="${hexPoints(board, h, 1.1)}" fill="url(#sand)" stroke="#E2CC96" stroke-width="8" stroke-linejoin="round"/>`));
   out.push('</g>');
 
   // fishing grounds (with lines to the two corners that profit from them)

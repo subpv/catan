@@ -92,27 +92,32 @@ BOTS.humankind = function humankind(v) {
   return { type: 'endTurn' };
 };
 
-const IK = ['catch', 'feathers', 'coca', 'nugget'];
+const IK = ['timber', 'stone', 'fleece', 'metal', 'potato', 'catch', 'coca', 'feathers'];
 BOTS.inkas = function inkas(v) {
   const L = v.legal || {}, me = v.players[v.me], res = me.res || {};
   if (L.setupSpots) return { type: 'placeSettlement', v: bestSpot(v, L.setupSpots) };
   if (L.setupRoads) return { type: 'placeRoad', e: pick(L.setupRoads) };
   const mine = v.pending.filter(x => x.group === v.activeGroup && x.player === v.me)[0];
   if (mine && mine.type === 'discard') return { type: 'discard', cards: discardCards(v, mine.count, IK) };
-  if (mine && mine.type === 'thicket') {
-    const hs = Object.keys(L.thicket || {}).map(Number);
-    const theirs = hs.filter(h => !v.board.hexes[h].verts.some(x => v.buildings[x] && v.buildings[x].p === v.me));
-    const h = theirs.length ? pick(theirs) : pick(hs);
-    const vs = L.thicket[h] || [];
-    return { type: 'growThicket', h, victim: vs.length ? pick(vs) : undefined };
+  if (mine && mine.type === 'robber') {
+    // away from the bot's own buildings, onto a field next to a rival
+    const hs = Object.keys(L.robber || {}).map(Number);
+    const own = h => v.board.hexes[h].verts.some(x => v.buildings[x] && v.buildings[x].p === v.me);
+    const good = hs.filter(h => !own(h) && L.robber[h].length), rest = hs.filter(h => !own(h));
+    const h = good.length ? pick(good) : pick(rest.length ? rest : hs);
+    const vs = L.robber[h] || [];
+    return { type: 'moveRobber', h, victim: vs.length ? pick(vs) : undefined };
   }
+  if (mine && mine.type === 'found') return { type: 'foundTribe', v: bestSpot(v, L.found) };
+  if (mine && mine.type === 'freeroad') return L.roads && L.roads.length ? { type: 'placeFreeRoad', e: pick(L.roads) } : { type: 'skipFreeRoad' };
   if (v.phase !== 'play' || v.pending.length || v.current !== v.me) return null;
   if (v.step === 'roll') return { type: 'roll' };
-  if (L.tribute && L.tribute.can) return { type: 'tribute' };
-  if (L.clear && L.clear.length && L.clearCost && Math.random() < 0.7) return { type: 'clearThicket', h: pick(L.clear) };
   if (L.cities && L.cities.length) return { type: 'buildCity', v: pick(L.cities) };
   if (L.settlements && L.settlements.length) return { type: 'buildSettlement', v: bestSpot(v, L.settlements) };
-  if (L.roads && L.roads.length && me.pieces.roads > 11 && res.coca > 2) return { type: 'buildRoad', e: pick(L.roads) };
+  if (L.roads && L.roads.length && me.pieces.roads > 2 && res.timber > 1 && res.stone > 1) return { type: 'buildRoad', e: pick(L.roads) };
+  if (L.canBuy && Math.random() < 0.5) return { type: 'buyCard' };
+  if (L.cards && L.cards.combat && me.dev && me.dev.combat && Math.random() < 0.7) return { type: 'playCard', card: 'combat' };
+  for (const k of IK) { const r = L.ratios && L.ratios[k]; if (r && res[k] >= r + 1 && Math.random() < 0.6) return { type: 'bankTrade', give: k, get: pick(['timber', 'stone', 'potato', 'fleece', 'metal']) }; }
   return { type: 'endTurn' };
 };
 

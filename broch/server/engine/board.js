@@ -32,7 +32,8 @@ function rowCenters(rows) {
 function geometry(rows) { return geometryFromCenters(rowCenters(rows)); }
 
 // Build vertices/edges from any list of hex centres ({x,y}); hexes keep the list order.
-function geometryFromCenters(centers) {
+// Hexes are pointy-top (first corner at the top); `flat` makes them flat-top (first corner at the right).
+function geometryFromCenters(centers, flat = false) {
   const hexes = [];
   const vertices = [];
   const vIndex = new Map();
@@ -62,7 +63,7 @@ function geometryFromCenters(centers) {
   centers.forEach(({ x, y }) => {
     const hex = { id: hexes.length, x: +x.toFixed(4), y: +y.toFixed(4), verts: [], edges: [] };
     for (let c = 0; c < 6; c++) {
-      const ang = Math.PI / 180 * (60 * c - 90); // start at top corner
+      const ang = Math.PI / 180 * (60 * c - (flat ? 0 : 90)); // start at the top corner (pointy-top) or the right corner (flat-top)
       hex.verts.push(vertexAt(x + Math.cos(ang), y + Math.sin(ang)));
     }
     for (let c = 0; c < 6; c++) {

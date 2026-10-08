@@ -158,7 +158,7 @@ async function api(path, opts = {}) {
     const id = 'demo' + (++seq);
     // bots take the other seats straight away so you can start
     const seats = [u.id, ...users.slice(1, maxPlayers).map(x => x.id)];
-    const g = { meta: { id, name: '', mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone && b.gameOptions ? { ...b.gameOptions } : null, maxPlayers, vpTarget: b.vpTarget || defVp, host: u.id, seats, status: 'open' }, state: null };
+    const g = { meta: { id, name: '', mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone && b.gameOptions ? { ...b.gameOptions } : null, maxPlayers, vpTarget: standalone && engine.fixedVp(mode) ? defVp : b.vpTarget || defVp, host: u.id, seats, status: 'open' }, state: null };
     games.set(id, g);
     emit({ t: 'lobby' });
     return { game: card(g) };

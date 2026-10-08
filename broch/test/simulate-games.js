@@ -12,7 +12,8 @@ modes.forEach(m => { BOTS[m] = require(`./bots/${m}.js`); });
 
 function play(mode, n, game = {}) {
   const players = Array.from({ length: n }, (_, i) => ({ id: 'u' + i, name: 'P' + i, color: ['red', 'blue', 'orange', 'white'][i], country: 'DE' }));
-  const s = engine.createGame({ id: 'g' + Math.random(), mode, players, options: { game } });
+  const bo = BOTS[mode].options ? BOTS[mode].options(n) : {};
+  const s = engine.createGame({ id: 'g' + Math.random(), mode, players, options: { ...bo, game: { ...(bo.game || {}), ...game } } });
   let guard = 0;
   while (s.phase !== 'over' && guard++ < 40000) {
     const seats = s.players.map((_, i) => i).sort(() => Math.random() - 0.5);

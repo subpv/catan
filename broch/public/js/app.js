@@ -185,7 +185,7 @@ async function renderLobby() {
               ${Object.values(GAMES).map(g => `<button class="mode-tile ${newGame.mode === g.id ? 'on' : ''}" data-game="${g.id}" aria-pressed="${newGame.mode === g.id}"><b>${tx(g.name)}</b><small>${tx(g.tagline)}</small>${help(g.tutorial, g.name)}</button>`).join('')}
             </div>
           </div>
-          <div class="sub-opts">${subOpts()}</div>
+          <div class="sub-opts ${isStandalone(newGame.mode) && (GAMES[newGame.mode].lobbyOptions || []).length ? 'tall' : ''}">${subOpts()}</div>
           ${isStandalone(newGame.mode) ? '' : `${sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx('Larger board with 30 tiles. From 5 players on it is always used, and two players share every turn (stone 1 and stone 2).'))}
           <div class="muted house-h">${tx('House rules')}</div>
           ${sw('robberReturn', tx('House rule: forgotten robber'), tx('If a player ends their turn without moving the robber, it goes back to the desert.'))}
@@ -193,7 +193,7 @@ async function renderLobby() {
           ${sw('startBoth', tx('House rule: starting resources for both'), tx('The rulebook pays starting resources only for the second building of the setup phase. With this rule both pay. In Cities & Knights the city counts like a settlement.'))}`}
           <div class="row wrap" style="gap:18px">
             <div class="field"><span>${tx('Players')}</span><div class="stepper"><button data-np="-1" aria-label="${tx('Fewer')}">−</button><b id="np">${newGame.maxPlayers}</b><button data-np="1" aria-label="${tx('More')}">+</button></div></div>
-            <div class="field"><span>${tx('Points to win')}</span><div class="stepper"><button data-vp="-1" aria-label="${tx('Fewer')}">−</button><b id="vpt">${newGame.vpTarget}</b><button data-vp="1" aria-label="${tx('More')}">+</button></div></div>
+            ${isStandalone(newGame.mode) && GAMES[newGame.mode].fixedVp ? '' : `<div class="field"><span>${tx('Points to win')}</span><div class="stepper"><button data-vp="-1" aria-label="${tx('Fewer')}">−</button><b id="vpt">${newGame.vpTarget}</b><button data-vp="1" aria-label="${tx('More')}">+</button></div></div>`}
           </div>
           <button class="btn primary block" id="create">${tx('Create game')}</button>
         </div>
@@ -239,6 +239,7 @@ async function renderLobby() {
       b.onclick = flip; b.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } };
     });
     el.querySelectorAll('[data-scen]').forEach(b => b.onclick = () => { newGame.scenario = b.dataset.scen; reVp(); sfx.click(); draw(false); });
+    el.querySelectorAll('[data-gopt]').forEach(b => b.onclick = () => { newGame.game[b.dataset.gopt] = !newGame.game[b.dataset.gopt]; sfx.click(); draw(false); });
     el.querySelectorAll('[data-var]').forEach(b => b.onclick = () => { newGame.variants[b.dataset.var] = !newGame.variants[b.dataset.var]; sfx.click(); draw(false); });
     el.querySelectorAll('[data-mis]').forEach(b => b.onclick = () => { const m = b.dataset.mis; newGame.missions = newGame.missions.includes(m) ? newGame.missions.filter(x => x !== m) : [...newGame.missions, m]; if (!newGame.missions.length) newGame.missions = [m]; sfx.click(); draw(false); });
     el.querySelectorAll('[data-np]').forEach(b => b.onclick = () => {
