@@ -27,7 +27,8 @@ const TERM_EN = {
   'barbarian ship': 'barbarian ship', 'trade gate': 'trade gate', 'politics gate': 'politics gate', 'science gate': 'science gate',
   basic: 'basic', strong: 'strong', mighty: 'mighty',
   forest: 'Forest', hills: 'Hills', pasture: 'Pasture', fields: 'Fields', mountains: 'Mountains', desert: 'Desert', gold: 'Gold', river: 'River',
-  fish: 'fish', spice: 'spice',
+  fish: 'fish', spice: 'spice', any: '3:1',
+  castle: 'Castle', bridge: 'Great Bridge', wall: 'Great Wall', theater: 'Great Theater', monument: 'Monument', lighthouse: 'Lighthouse', library: 'Great Library',
 };
 export const term = k => (RES_EN[k] ? resName(k) : t(TERM_EN[k] || k));
 const CARD_EN = {
@@ -77,6 +78,11 @@ export const GLYPH = {
   settlement: '<path d="M5 20V10.5L12 4l7 6.5V20z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
   city: '<path d="M2.5 20v-9L8 5.5l5.5 5.5v1.5h8V20z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
   wall: '<path d="M3 20V9h3v3h3V9h3v3h3V9h3v3h3V9h0v11z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
+  lighthouse: '<path d="M9 21l1.5-13h3L15 21z M10.5 8 12 4l1.5 4 M8 21h8 M6 11l3 1 M18 11l-3 1" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>',
+  castle: '<path d="M4 21V8h3v2h3V8h4v2h3V8h3v13z M10 21v-5h4v5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
+  theater: '<path d="M4 5h16v6c0 5-3 8-8 8s-8-3-8-8z M8.5 10h.01 M15.5 10h.01 M9 14.5c1.8 1.6 4.2 1.6 6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  monument: '<path d="M12 3l3 6v12H9V9z M6 21h12 M9 9h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
+  library: '<path d="M4 5.5C7 4 10 4.5 12 6c2-1.5 5-2 8-.5V19c-3-1.5-6-1-8 .5-2-1.5-5-2-8-.5z M12 6v13.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
   sword: '<path d="M19.5 4.5 10 14 M19.5 4.5V9 M19.5 4.5H15 M7.5 12.5l4 4 M8.5 15.5 4 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
   robber: '<path d="M7.5 21c0-4.5 1.6-7.2 3.3-8.2a4.3 4.3 0 1 1 2.4 0c1.7 1 3.3 3.7 3.3 8.2z" fill="currentColor"/>',
   trophy: '<path d="M8 3.5h8V9a4 4 0 0 1-8 0z M8 5.5H5a3 3 0 0 0 3.3 4 M16 5.5h3a3 3 0 0 1-3.3 4 M12 13v4 M8 21h8 M9.5 17h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>',

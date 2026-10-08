@@ -28,10 +28,10 @@ const BUILD = {
   '{@p} placed a settlement.': ['settlement', 'Settlement'], '{@p} placed a city.': ['city', 'City'],
   '{@p} built a ship.': ['ship', 'Ship'], '{@p} built a bridge.': ['bridge', 'Bridge'], '{@p} built a city wall.': ['wall', 'City wall'],
   '{@p} recruited a knight.': ['knight', 'Knight'], '{@p} bought a development card.': ['card', 'Dev card'],
-  '{@p} sailed a ship to a new spot.': ['ship', 'Ship'],
+  '{@p} sailed a ship to a new spot.': ['ship', 'Ship'], '{@p} placed a ship.': ['ship', 'Ship'],
 };
 const AWARD = ['{@p} now holds the Longest Road ({n}).', '{@p} now has the Largest Army.', '{@p} raises a metropolis ({#t}).', '{@p} takes the metropolis ({#t}) from {@q}.',
-  'The barbarians are repelled. {@p} is named Defender of Broch (+1 VP).', '{@p} settles a new island and earns a bonus point (+1 VP).', 'The pirate lair is destroyed. {@p} earns the bounty (+1 VP).', '{@p} reveals {%c} (+1 VP).'];
+  'The barbarians are repelled. {@p} is named Defender of Broch (+1 VP).', '{@p} settles a new island and earns a bonus point (+1 VP).', '{@p} settles a new island and earns {n} bonus points.', '{@p} settles a small island and takes a victory point chip (+1 VP).', '{@p} takes a victory point chip (+1 VP).', '{@p} starts to build a wonder ({#w}).', '{@p} builds level {n} of a wonder ({#w}).', 'The pirate lair is destroyed. {@p} earns the bounty (+1 VP).', '{@p} reveals {%c} (+1 VP).'];
 const ICON = [
   [/robber|chase/, 'robber'], [/stole|steals|takes cards/, 'robber'], [/barbarian/i, 'barbarian'], [/pirate/, 'ship'],
   [/played|progress card/, 'card'], [/knight/, 'knight'], [/improved/, 'trophy'], [/wins with/, 'trophy'], [/discovers|sails into/, 'flag'],

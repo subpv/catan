@@ -8,6 +8,7 @@ const store = require('./store');
 const { db } = store;
 const engine = require('./engine');
 const { COLORS, tradersVp } = require('./engine/constants');
+const { SCENARIOS: SEA_SCENARIOS } = require('./engine/scenarios');
 
 const PORT = +process.env.PORT || 8080;
 const REGISTRATION_CODE = process.env.REGISTRATION_CODE || '';
@@ -131,7 +132,7 @@ function gameCard(g) {
   if (m.status === 'open') fixSeatColors(m);
   return {
     id: m.id, name: m.name, mode: m.mode, maxPlayers: m.maxPlayers, vpTarget: m.vpTarget, status: m.status,
-    expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, knightsFree: !!m.knightsFree,
+    expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, variable: !!m.variable, knightsFree: !!m.knightsFree,
     host: m.host, createdAt: m.createdAt,
     seats: m.seats.map(id => {
       const u = publicUser(db.users.find(x => x.id === id)) || { id, name: '?' };
@@ -231,15 +232,15 @@ async function api(req, res, url) {
     const standalone = engine.isStandalone(mode);
     const maxPlayers = Math.max(standalone ? engine.minPlayers(mode) : 2, Math.min(standalone ? engine.maxPlayers(mode) : 6, b.maxPlayers | 0 || 4));
     const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
-    const scenario = expansion === 'seafarers' ? (['shores', 'islands', 'fog'].includes(b.scenario) ? b.scenario : 'shores') : null;
+    const scenario = expansion === 'seafarers' ? (SEA_SCENARIOS[b.scenario] ? b.scenario : 'shores') : null;
     const bv = b.variants || {};
     const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, caravans: !!bv.caravans, barbarians: !!bv.barbarians, traders: !!bv.traders, events: !!bv.events, friendly: !!bv.friendly, harbors: !!bv.harbors } : null;
     if (variants && (variants.caravans || variants.barbarians || variants.traders) && (mode === 'knights' || maxPlayers > 4 || b.big === true)) throw new HttpError(400, 'This scenario is for the classic rules and 2–4 players.');
     const missions = expansion === 'explorers' ? (Array.isArray(b.missions) ? b.missions.filter(x => ['fish', 'spice', 'lairs'].includes(x)) : ['fish', 'spice', 'lairs']) : null;
-    const def = standalone ? engine.defaultVp(mode) : mode === 'knights' ? (expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] + 2 : 13) + (variants && variants.harbors ? 1 : 0) : expansion === 'seafarers' ? { shores: 14, islands: 13, fog: 12 }[scenario] : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
+    const def = standalone ? engine.defaultVp(mode) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) + (variants && variants.harbors ? 1 : 0) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
     const vpTarget = standalone && engine.fixedVp(mode) ? def : Math.max(5, Math.min(20, b.vpTarget | 0 || def));
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
-    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, missions, big, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone ? cleanOptions(b.gameOptions) : null, maxPlayers, vpTarget, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
+    const g = { meta: { id: newId(6), name: String(b.name || '').slice(0, 40), mode, expansion, scenario, variants, missions, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone ? cleanOptions(b.gameOptions) : null, maxPlayers, vpTarget, host: u.id, seats: [u.id], status: 'open', createdAt: Date.now() }, state: null };
     db.games.set(g.meta.id, g); store.saveGame(g, true);
     broadcastLobby();
     return send(res, 200, { game: gameCard(g) });
@@ -278,7 +279,7 @@ async function api(req, res, url) {
       if (meta.seats.length < engine.minPlayers(meta.mode)) throw new HttpError(400, engine.minPlayers(meta.mode) > 2 ? 'This game needs more players.' : 'Wait for at least one more player.');
       fixSeatColors(meta);
       const players = meta.seats.map(id => { const x = db.users.find(y => y.id === id); return { id, name: x.name, color: meta.colors[id], country: x.country || null }; });
-      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, missions: meta.missions, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, knightsFree: !!meta.knightsFree, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });
+      g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, missions: meta.missions, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, variable: !!meta.variable, knightsFree: !!meta.knightsFree, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });
       meta.status = 'playing'; meta.startedAt = Date.now();
     } else if (m[2] === 'abandon') {
       if (meta.host !== u.id && !u.admin) throw new HttpError(403, 'Only the host can abandon the game.');

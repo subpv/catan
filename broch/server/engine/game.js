@@ -46,7 +46,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       robberReturn: !!options.robberReturn,
       startBoth: !!options.startBoth,
       knightsFree: !!options.knightsFree && !knights,
-      big, scenario: sea ? scenario : null, variants, missions: expansion === 'explorers' ? (options.missions || C.MISSIONS) : null,
+      big, scenario: sea ? scenario : null, variable: sea && !!options.variable, variants, missions: expansion === 'explorers' ? (options.missions || C.MISSIONS) : null,
     },
     board,
     robber: expansion === 'traders' && X.hub.initialRobber(board, variants) !== undefined ? X.hub.initialRobber(board, variants) : board.desert != null ? board.desert : board.hexes.find(h => h.terrain === 'desert').id,
@@ -60,7 +60,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       improvements: { trade: 0, politics: 0, science: 0 },
     })),
     phase: 'setup', step: null, turn: 0, current: 0,
-    setup: { queue: [...[...Array(n).keys()], ...[...Array(n).keys()].reverse()], idx: 0, need: 'settlement', last: null },
+    setup: { queue: [...[...Array(n).keys()], ...[...Array(n).keys()].reverse(), ...(board.rules && board.rules.thirdSettlement ? [...Array(n).keys()] : [])], idx: 0, need: 'settlement', last: null, payFrom: board.rules && board.rules.thirdSettlement ? 2 * n : n },
     dice: null, pending: [], pgroup: 0,
     bank: zero(C.RES),
     devDeck: knights ? [] : shuffle(expand(def.dev)),
@@ -200,10 +200,20 @@ function vpBreakdown(s, p) {
 
 function checkWin(s) {
   if (s.phase !== 'play') return;
+  // Cloth for Broch: the game ends when only three villages still hold cloth
+  const ended = X.endWinner(s);
+  if (ended !== null) {
+    s.phase = 'over'; s.winner = ended; s.finishedAt = Date.now(); s.pending = []; s.trade = null;
+    log(s, '{@p} wins with {n} victory points!', { p: ended, n: vp(s, ended) });
+    snapshot(s, true);
+    return;
+  }
   let p = s.current;
   // 5–6 players: if both players of one turn reach the target in that turn, the holder of stone 1 has won
   if (s.pair && s.pair.phase === 2 && vp(s, s.pair.one) >= X.vpTarget(s, s.pair.one)) p = s.pair.one;
-  if (vp(s, p) >= X.vpTarget(s, p)) {
+  // Wonders of Broch: a finished wonder wins, or a taller wonder than everybody else with enough points
+  const wonderWon = X.wonderWin(s, p);
+  if (wonderWon !== null ? wonderWon : vp(s, p) >= X.vpTarget(s, p)) {
     s.phase = 'over'; s.winner = p; s.finishedAt = Date.now(); s.pending = []; s.trade = null;
     log(s, '{@p} wins with {n} victory points!', { p, n: vp(s, p) });
     snapshot(s, true);
@@ -346,7 +356,8 @@ function bankRatio(s, p, type) {
   let r = 4;
   for (const [v, b] of Object.entries(s.buildings)) {
     if (b.p !== p) continue;
-    const port = V(s, +v).port;
+    // printed harbours, and the harbours won from the forgotten tribe (Seafarers)
+    const port = V(s, +v).port || (s.dynPorts && s.dynPorts[v] && s.dynPorts[v].p === p ? s.dynPorts[v].type : null);
     if (port && !X.portUsable(s, +v)) continue;
     if (port === 'any') r = Math.min(r, 3);
     else if (port && port === type) r = 2;
@@ -706,6 +717,30 @@ function requireTurnAny(s, p) {
   if (s.phase !== 'play' || s.pending.length || p !== s.current || s.step === 'sbp') fail('Not allowed right now.');
 }
 
+// the founding phase moves on once the road (or, in Seafarers, the ship) of a settlement is down
+function finishSetupRoad(s) {
+  s.setup.idx++;
+  const n = s.players.length;
+  if (s.setup.idx >= s.setup.queue.length) {
+    s.phase = 'play'; s.step = 'roll'; s.turn = 1; s.current = s.setup.queue[0]; s.setup = null;
+    s.stats.turns = 1;
+    log(s, 'Setup complete. {@p} begins.', { p: s.current });
+    if (s.options.paired) {
+      s.pair = { one: s.current, phase: 1 };
+      log(s, 'Stone 1: {@p}. Stone 2: {@q}.', { p: s.current, q: (s.current + STONE2_GAP) % n });
+    }
+    s.track = [];
+    snapshot(s);
+    s.track[0].t = 0;
+    updateLongest(s);
+    return;
+  }
+  s.current = s.setup.queue[s.setup.idx];
+  // C&K and the Traders & Barbarians city start: the second round places cities (a third Cloth round places settlements)
+  s.setup.need = (K(s) || X.cityStart(s)) && s.setup.idx >= n && s.setup.idx < 2 * n ? 'city' : 'settlement';
+  s.setup.last = null;
+}
+
 const HANDLERS = {
   // ---- setup
   placeSettlement(s, p, a) {
@@ -716,7 +751,7 @@ const HANDLERS = {
     log(s, '{@p} placed a settlement.', { p });
     X.built(s, p, 'settlement', a.v);
     // normally only the second building pays out; the house rule pays for both (a C&K city still counts like a settlement)
-    if (s.options.startBoth || (!K(s) && !X.cityStart(s) && s.setup.idx >= s.players.length)) startingResources(s, p, a.v, 'settlement');
+    if (s.options.startBoth || (!K(s) && !X.cityStart(s) && s.setup.idx >= (s.setup.payFrom ?? s.players.length))) startingResources(s, p, a.v, 'settlement');
   },
   placeCity(s, p, a) {
     if (s.phase !== 'setup' || p !== s.current || s.setup.need !== 'city') fail('Not your placement.');
@@ -732,25 +767,8 @@ const HANDLERS = {
     if (!legalSetupRoads(s).includes(a.e)) fail('The road must touch your new building.');
     s.roads[a.e] = p;
     X.built(s, p, 'road', a.e);
-    s.setup.idx++;
-    const n = s.players.length;
-    if (s.setup.idx >= s.setup.queue.length) {
-      s.phase = 'play'; s.step = 'roll'; s.turn = 1; s.current = s.setup.queue[0]; s.setup = null;
-      s.stats.turns = 1;
-      log(s, 'Setup complete. {@p} begins.', { p: s.current });
-      if (s.options.paired) {
-        s.pair = { one: s.current, phase: 1 };
-        log(s, 'Stone 1: {@p}. Stone 2: {@q}.', { p: s.current, q: (s.current + STONE2_GAP) % n });
-      }
-      s.track = [];
-      snapshot(s);
-      s.track[0].t = 0;
-      updateLongest(s);
-      return;
-    }
-    s.current = s.setup.queue[s.setup.idx];
-    s.setup.need = (K(s) || X.cityStart(s)) && s.setup.idx >= n ? 'city' : 'settlement';
-    s.setup.last = null;
+    X.reveal(s, p, E(s, a.e).v);
+    finishSetupRoad(s);
   },
 
   // ---- turn
@@ -842,7 +860,7 @@ const HANDLERS = {
         fail('Play it while you move your wagon.');
         break;
       case 'roadBuilding':
-        s.free.roads = Math.min(2, C.PIECES.road - countPieces(s, p).roads);
+        s.free.roads = Math.min(2, C.PIECES.road - countPieces(s, p).roads + (s.sea ? C.PIECES.ship - X.countShips(s, p) : 0));
         log(s, '{@p} played {%c}.', { p, c: 'roadBuilding' });
         break;
       case 'yearOfPlenty': {
@@ -892,19 +910,32 @@ const HANDLERS = {
   moveRobber(s, p, a) {
     const it = findPending(s, p, 'moveRobber');
     if (!it) fail('You are not moving the robber.');
+    if (a.hex === -1 && s.expansion === 'seafarers') {
+      // Seafarers: the pirate may also be set on the frame, where he blocks nothing and robs nobody
+      if (s.pirate == null) fail('Move the pirate to a different sea tile.');
+      s.pirate = null;
+      resolvePending(s, it);
+      log(s, '{@p} put the pirate on the frame.', { p });
+      return;
+    }
     const h = s.board.hexes[a.hex];
     if (!h || h.hidden) fail('Move the robber to a different tile.');
     if (h.terrain === 'sea') {
+      if (s.board.rules && s.board.rules.noPirate) fail('The pirate is not in this game.');
       if (!s.sea || a.hex === s.pirate) fail('Move the pirate to a different sea tile.');
+      if (s.villages && !X.villagesReached(s, p)) fail('You can only move the pirate once a shipping line of yours has reached a village.');
       s.pirate = a.hex;
       resolvePending(s, it);
       log(s, '{@p} moved the pirate.', { p, h: a.hex });
-      const prey = [...new Set(h.edges.map(e => s.ships[e]).filter(x => x && x.p !== p).map(x => x.p))].filter(q => hand(P(s, q)) > 0);
-      if (prey.length === 1) steal(s, p, prey[0]);
+      const prey = [...new Set(h.edges.map(e => s.ships[e]).filter(x => x && x.p !== p).map(x => x.p))].filter(q => hand(P(s, q)) > 0 || (s.villages && P(s, q).cloth > 0));
+      if (s.villages) { if (prey.length) pushPending(s, [{ type: 'steal', player: p, options: prey, cloth: true }], true); }
+      else if (prey.length === 1) steal(s, p, prey[0]);
       else if (prey.length > 1) pushPending(s, [{ type: 'steal', player: p, options: prey }], true);
       return;
     }
     if (a.hex === s.robber) fail('Move the robber to a different tile.');
+    if (h.small) fail('The robber cannot go to the small islands.');
+    if (s.board.rules && s.board.rules.noReturn && a.hex === s.robberStart) fail('The robber cannot return to his first desert.');
     if (!X.robberHexes(s, p, [a.hex]).length) fail('The robber cannot go to that tile.');
     s.robber = a.hex;
     resolvePending(s, it);
@@ -932,6 +963,14 @@ const HANDLERS = {
   steal(s, p, a) {
     const it = findPending(s, p, 'steal');
     if (!it || !it.options.includes(a.from)) fail('Choose someone next to the robber.');
+    if (it.cloth && a.cloth) {
+      if (!(P(s, a.from).cloth > 0)) fail('They have no cloth.');
+      resolvePending(s, it);
+      P(s, a.from).cloth--; P(s, p).cloth++;
+      log(s, '{@p} steals a bale of cloth from {@q}.', { p, q: a.from });
+      return;
+    }
+    if (!hand(P(s, a.from))) fail('They have no cards.');
     resolvePending(s, it);
     steal(s, p, a.from);
   },
@@ -1451,7 +1490,7 @@ const PROGRESS_FX = {
 function legalFor(s, p) {
   const L = {};
   if (s.phase === 'setup' && s.current === p) {
-    if (s.setup.need === 'road') L.setupRoads = legalSetupRoads(s);
+    if (s.setup.need === 'road') { L.setupRoads = legalSetupRoads(s); if (s.sea) L.setupShips = X.legalSetupShips(s); }
     else L.setupSpots = legalSetupSettlements(s);
     return L;
   }
@@ -1459,6 +1498,7 @@ function legalFor(s, p) {
   const pl = P(s, p);
   for (const it of activePending(s).filter(i => i.player === p)) {
     if (it.type === 'moveRobber' && s.options.robberReturn) L.leaveRobber = true;
+    if (it.type === 'moveRobber' && s.expansion === 'seafarers' && s.pirate != null && !it.bishop) L.pirateFrame = true;
     if (it.type === 'moveRobber') L.robberHexes = X.robberHexes(s, p, s.board.hexes.filter(h => !h.hidden && (h.terrain === 'sea' ? s.sea && h.id !== s.pirate : h.id !== s.robber)).map(h => h.id));
     if (it.type === 'relocateKnight') L.relocate = it.options.filter(v => !occupied(s, v));
     if (it.type === 'placeMetropolis') L.metroCities = ownCities(s, p, b => !b.metro);
@@ -1467,7 +1507,7 @@ function legalFor(s, p) {
     if (it.type === 'deserterPick') L.giveKnights = Object.keys(s.knights).filter(v => s.knights[v].p === p).map(Number);
   }
   const freeRoad = s.free.roads > 0 && p === s.current && !s.pending.length && s.step !== 'sbp';
-  if (freeRoad) L.roads = legalRoads(s, p);
+  if (freeRoad) { L.roads = legalRoads(s, p); if (s.sea) L.ships = X.legalShips(s, p); }
   if (isActor(s, p)) {
     const c = countPieces(s, p);
     if (has(pl, C.COSTS.road) && c.roads < C.PIECES.road) L.roads = legalRoads(s, p);
@@ -1523,7 +1563,7 @@ function viewFor(s, me) {
     const o = { type: it.type, player: it.player, group: it.group };
     if (it.count != null) o.count = it.count;
     if (it.to != null) o.to = it.to;
-    if (it.options && it.type === 'steal') o.options = it.options;
+    if (it.options && it.type === 'steal') { o.options = it.options; if (it.cloth) o.cloth = true; }
     if (it.track) o.track = it.track;
     if (it.level) o.level = it.level;
     if (it.target != null) o.target = it.target;
@@ -1545,7 +1585,7 @@ function viewFor(s, me) {
   const view = {
     id: s.id, mode: s.mode, kind: s.kind, expansion: s.expansion, options: s.options, version: s.version,
     phase: s.phase, step: s.step, turn: s.turn, current: s.current, me,
-    setup: s.setup && { need: s.setup.need, round: s.setup.idx < s.players.length ? 1 : 2 },
+    setup: s.setup && { need: s.setup.need, round: Math.min(3, Math.floor(s.setup.idx / s.players.length) + 1), pays: s.setup.idx >= (s.setup.payFrom ?? s.players.length) },
     board: X.viewBoard(s, {
       vertices: s.board.vertices.map(v => ({ id: v.id, x: v.x, y: v.y })),
       edges: s.board.edges.map(e => ({ id: e.id, v: e.v })),
@@ -1605,6 +1645,8 @@ function migrate(s) {
   if (s.options && s.options.knightsFree === undefined) s.options.knightsFree = s.mode !== 'knights';
   if (s.options && s.options.paired === undefined) s.options.paired = false;
   if (s.pair === undefined) s.pair = null;
+  if (!s.dynPorts) s.dynPorts = {};
+  s.players.forEach(pl => { if (!pl.harborTokens) { pl.harborTokens = []; pl.chips = 0; } });
   if (s.expansion === 'traders') X.hub.migrate(s);
   // games saved before the trail was kept: find it once so the golden road shows up
   if (s.longestRoad && s.longestRoad.p != null && !s.longestRoad.edges) s.longestRoad.edges = longestFor(s, s.longestRoad.p, true).edges;
@@ -1627,8 +1669,8 @@ function summary(s) {
 // expansion rules live in expansions.js and get the helpers they need from here
 const X = require('./expansions')({
   log, pushPending, findPending, resolvePending, P, V, E, fail, has, pay, take, hand, sum, countPieces, randomCard, moveCard, updateLongest, isRes,
-  foreignAt, requireActor, requireMain, requireTurnAny, steal, K, activePending, vp, handleSeven, finishTurn, nextTurn, checkWin, snapshot, legalRoads,
-  legalSettlements, distanceOk, occupied, handLimit, d6,
+  foreignAt, requireActor, requireMain, requireTurnAny, steal, K, activePending, vp, longestFor, handleSeven, finishTurn, nextTurn, checkWin, snapshot, legalRoads,
+  legalSettlements, distanceOk, occupied, handLimit, d6, finishSetupRoad,
 });
 Object.assign(HANDLERS, X.handlers);
 

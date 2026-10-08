@@ -7,6 +7,7 @@ const PIPS = { 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3, 11: 2, 12: 1 };
 const TRACK_COLOR = { trade: '#E0A32E', politics: '#2C6E9B', science: '#2E6B45' };
 const f = n => n.toFixed(1);
 const isLand = h => h.terrain !== 'sea' && h.terrain !== 'fog';
+const TERRAIN_GLYPH_OF = r => r;
 const g24 = (name, x, y, size, color) => `<g transform="translate(${f(x - size / 2)},${f(y - size / 2)}) scale(${f(size / 24)})" style="color:${color}">${GLYPH[name] || ''}</g>`;
 
 export const BOARD_S = () => S;
@@ -397,7 +398,7 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
   });
 
   // harbors
-  board.ports.forEach(p => {
+  [...board.ports, ...((view.gifts && view.gifts.ports) || [])].forEach(p => {
     const [a, b] = board.edges[p.edge].v;
     const hex = board.hexes.find(h => isLand(h) && h.verts.includes(a) && h.verts.includes(b));
     if (hex) out.push(harbor(board, p, hex));
@@ -467,17 +468,63 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
     out.push(`<g class="lair ${l.hp <= 0 ? 'dead' : ''}" transform="translate(${f(h.x * S)},${f(h.y * S)})">${discShade(18)}<title>${t('Pirate lair')}</title>${l.hp > 0 ? `<circle r="19" fill="#1B1511" stroke="#C9AE7C" stroke-width="2.4"/>${g24('skull', 0, -2, 22, '#F4EFE2')}${pips}` : `<circle r="16" fill="#3A3328" stroke="#8A7A5E" stroke-width="2" opacity=".7"/>${g24('skull', 0, 0, 18, '#8A7A5E')}${l.owner != null ? `<circle cx="14" cy="-14" r="9" fill="${PCOLOR[colorOf(l.owner)]}" stroke="#fff" stroke-width="2"/>${g24('star', 14, -14, 10, inkOn(colorOf(l.owner)))}` : ''}`}</g>`);
   });
 
-  // island bonus markers
+  // Seafarers scenarios: gifts of the forgotten tribe, villages with cloth, wonder chips
+  const landAt = (a, b) => board.hexes.find(h => isLand(h) && h.verts.includes(a) && h.verts.includes(b));
+  const edgeSpot = (e, off) => {
+    const [a, b] = board.edges[e].v; const A = board.vertices[a], B = board.vertices[b];
+    const h = landAt(a, b); const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+    let nx = mx - (h ? h.x : mx), ny = my - (h ? h.y : my); const l = Math.hypot(nx, ny) || 1; nx /= l; ny /= l;
+    return [(mx + nx * off) * S, (my + ny * off) * S];
+  };
+  if (view.gifts) {
+    view.gifts.chips.forEach(e => {
+      const [x, y] = edgeSpot(e, 0.28);
+      out.push(`<g class="gift" transform="translate(${f(x)},${f(y)})">${discShade(12)}<title>${t('Victory point chip: the first ship that reaches it takes it (+1 VP)')}</title><circle r="12" fill="#F6CF57" stroke="#7A520C" stroke-width="2"/>${g24('star', 0, -2, 12, '#7A520C')}<text y="9" text-anchor="middle" font-size="7.5" font-weight="800" fill="#7A520C" font-family="Inter">+1</text></g>`);
+    });
+    view.gifts.dev.forEach(e => {
+      const [x, y] = edgeSpot(e, 0.34);
+      out.push(`<g class="gift" transform="translate(${f(x)},${f(y)})"><title>${t('Development card: the first ship that reaches it takes it')}</title><rect x="-9" y="-12" width="18" height="24" rx="3" fill="#D6513A" stroke="#fff" stroke-width="1.6"/>${g24('card', 0, 0, 14, '#fff')}</g>`);
+    });
+  }
+  for (const [v, d] of Object.entries(view.dynPorts || {})) {
+    const V0 = board.vertices[v];
+    const near = board.hexes.filter(h => isLand(h) && h.verts.includes(+v));
+    let dx = 0, dy = 0; near.forEach(h => { dx += V0.x - h.x; dy += V0.y - h.y; });
+    const l = Math.hypot(dx, dy) || 1;
+    const bx = (V0.x + dx / l * 0.42) * S, by = (V0.y + dy / l * 0.42) * S;
+    const col = d.type === 'any' ? '#F4EFE2' : CARD_COLOR[d.type];
+    out.push(`<g transform="translate(${f(bx)},${f(by)})"><title>${t('Harbour')}</title><circle r="11" fill="${col}" stroke="${PCOLOR[colorOf(d.p)]}" stroke-width="3"/>${d.type === 'any' ? '' : g24(TERRAIN_GLYPH_OF(d.type), 0, -2, 11, '#fff')}<text y="${d.type === 'any' ? 3.5 : 8}" text-anchor="middle" font-size="${d.type === 'any' ? 9 : 6.5}" font-weight="800" fill="${d.type === 'any' ? '#2B1E12' : '#fff'}" font-family="Inter">${d.type === 'any' ? '3:1' : '2:1'}</text></g>`);
+  }
+  (view.villages || []).forEach(vl => {
+    const V0 = board.vertices[vl.v];
+    const bales = Array.from({ length: Math.min(vl.cloth, 6) }, (_, i) => `<rect x="${f(17 + (i % 3) * 8)}" y="${f(-9 + Math.floor(i / 3) * 8)}" width="7" height="6" rx="1.5" fill="#EADFC6" stroke="#8A7A5E" stroke-width="1"/>`).join('');
+    const dots = vl.conn.map((q, i) => `<circle cx="${f((i - (vl.conn.length - 1) / 2) * 9)}" cy="21" r="4" fill="${PCOLOR[colorOf(q)]}" stroke="#fff" stroke-width="1.4"/>`).join('');
+    out.push(`<g transform="translate(${f(V0.x * S)},${f(V0.y * S)})" class="village"><title>${t('Village of the forgotten tribe: {n} bales of cloth left', { n: vl.cloth })}</title>${discShade(14)}<circle r="14" fill="url(#tok)" stroke="#8A5A9E" stroke-width="2.4"/><text y="5" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="${vl.n === 6 || vl.n === 8 ? 16 : 15}" fill="${vl.n === 6 || vl.n === 8 ? '#C1272D' : '#2B1E12'}">${vl.n}</text>${bales}<text x="${f(17)}" y="14" font-size="9" font-weight="800" fill="#EADFC6" font-family="Inter" paint-order="stroke" stroke="#3a2a1c" stroke-width="2.4">${vl.cloth}</text>${dots}</g>`);
+  });
+  if (board.wonder) {
+    const chip = (v, kind, color) => {
+      const V0 = board.vertices[v];
+      out.push(`<g transform="translate(${f(V0.x * S)},${f(V0.y * S)})"><title>${t(kind[0])}</title><circle r="9.5" fill="${color}" stroke="#F6CF57" stroke-width="2.2"/>${g24(kind[1], 0, 0, 12, '#fff')}</g>`);
+    };
+    board.wonder.walls.forEach(v => chip(v, ['Great Wall chip', 'wall'], '#7C6A58'));
+    board.wonder.bridges.forEach(v => chip(v, ['Great Bridge chip', 'bridge'], '#4B7D96'));
+    (board.wonder.lights || []).forEach(v => chip(v, ['Lighthouse chip', 'lighthouse'], '#4A5A8C'));
+  }
+
+  // island bonus markers: the chips you earn for your first settlement on an island (everybody can take it once)
   const isl = new Map();
   board.hexes.forEach(h => { if (h.island != null && isLand(h)) { if (!isl.has(h.island)) isl.set(h.island, []); isl.get(h.island).push(h); } });
+  const bonusVp = (board.bonus && board.bonus.vp) || 1;
   isl.forEach((hs, id) => {
-    if ((board.homeIslands || []).includes(id)) return;
+    if (board.bonusIslands ? !board.bonusIslands.includes(id) : (board.homeIslands || []).includes(id)) return;
     const mx = hs.reduce((a, h) => a + h.x, 0) / hs.length, my = Math.min(...hs.map(h => h.y)) - 0.78;
-    const own = view.islandBonus && view.islandBonus[id];
-    const c = own != null ? colorOf(own) : null;
-    out.push(`<g class="isle-chip ${own != null ? 'taken' : ''}" transform="translate(${f(mx * S)},${f(my * S)})"><title>${t('New island bonus: +1 victory point for the first settlement')}</title>
+    const raw = view.islandBonus && view.islandBonus[id];
+    const owners = raw == null ? [] : Array.isArray(raw) ? raw : [raw];
+    const c = owners.length ? colorOf(owners[owners.length - 1]) : null;
+    const dots = owners.slice(0, 6).map((o, k) => `<circle cx="${f((k - (Math.min(owners.length, 6) - 1) / 2) * 9)}" cy="21" r="4" fill="${PCOLOR[colorOf(o)]}" stroke="#fff" stroke-width="1.4"/>`).join('');
+    out.push(`<g class="isle-chip ${owners.length ? 'taken' : ''}" transform="translate(${f(mx * S)},${f(my * S)})"><title>${bonusVp === 1 ? t('New island bonus: +1 victory point for the first settlement') : t('New island bonus: +{n} victory points for your first settlement on this island', { n: bonusVp })}</title>
       <circle r="13" fill="${c ? PCOLOR[c] : 'rgba(20,8,4,.55)'}" stroke="${c ? '#fff' : '#F0C24A'}" stroke-width="2" ${c ? '' : 'stroke-dasharray="4 3"'}/>
-      ${g24('star', 0, -3, 12, c ? inkOn(c) : '#F0C24A')}<text y="9" text-anchor="middle" font-size="8.5" font-weight="800" fill="${c ? inkOn(c) : '#F0C24A'}" font-family="Inter">+1</text></g>`);
+      ${g24('star', 0, -3, 12, c ? inkOn(c) : '#F0C24A')}<text y="9" text-anchor="middle" font-size="8.5" font-weight="800" fill="${c ? inkOn(c) : '#F0C24A'}" font-family="Inter">+${bonusVp}</text>${dots}</g>`);
   });
 
   if (targets.hexes) {

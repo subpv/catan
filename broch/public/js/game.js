@@ -10,6 +10,7 @@ import { openTutorial, closeTutorial, tutorialSeen } from './tutorial.js';
 import { flag } from './countries.js';
 import { createZoom } from './zoom.js';
 import { DEV_DESC, PROGRESS_INFO, PROGRESS_DECK, DECK_COLOR } from './cards.js';
+import { SCEN, WONDER } from './scen.js';
 import { chatHtml, historyHtml, graphsHtml, wireGraphs } from './feed.js';
 
 let G = null;
@@ -236,7 +237,7 @@ function statusInfo() {
   if (G.pick) return { msg: esc(G.pick.label), sub: esc(G.pick.sub || ''), mine: true, btns: `${G.pick.extra || ''}<button class="btn" data-do="cancelPick">${tx('Cancel')}</button>` };
   if (v.phase === 'setup') {
     if (mine) {
-      const msg = v.setup.need === 'road' ? t('Place a road next to it.') : v.setup.need === 'city' ? t('Place your city.') : v.setup.round === 1 ? t('Place your first settlement.') : t('Place your second settlement.');
+      const msg = v.setup.need === 'road' ? (v.legal?.setupShips?.length ? t('Place a road or a ship next to it.') : t('Place a road next to it.')) : v.setup.need === 'city' ? t('Place your city.') : v.setup.round === 1 ? t('Place your first settlement.') : v.setup.round === 2 ? t('Place your second settlement.') : t('Place your third settlement.');
       return { msg: esc(msg), sub: v.setup.need === 'road' ? tx('Tap a glowing edge.') : tx('Tap a glowing corner. Buildings need at least one empty corner between them.'), mine };
     }
     return { msg: v.setup.need === 'road' ? t('{name} is placing a road…', { name: pname(v.current) }) : t('{name} is placing a building…', { name: pname(v.current) }) };
@@ -252,6 +253,7 @@ function statusInfo() {
         give: [t('Give {name} {n} cards.', { name: v.players[mp.to]?.name, n: mp.count }), t('Wedding gift: you choose which cards.'), t('Choose cards')],
         moveRobber: [mp.bishop ? t('Move the robber (Bishop).') : isSea(v) ? t('Move the robber or the pirate.') : t('Move the robber.'), isSea(v) ? t('Tap a land tile for the robber or a sea tile for the pirate. You steal from a player next to it.') : t('Tap a tile. You steal from a player with a building there.')],
         goldPick: [t('Gold! Choose {n} resources.', { n: mp.count }), t('Take any resources the bank has.'), t('Choose cards')],
+        placeHarbor: [t('Place your harbour.'), t('Tap one of your highlighted coastal settlements.')],
         steal: [t('Choose who to steal from.'), '', t('Choose')],
         relocateKnight: [t('Your knight was displaced.'), t('Tap a glowing corner to move it there.')],
         placeMetropolis: [t('Choose a city for your metropolis ({track}).', { track: term(mp.track) }), t('Tap one of your highlighted cities.')],
@@ -268,7 +270,7 @@ function statusInfo() {
         masterMerchant: [t('Take 2 cards from their hand.'), '', t('Choose cards')],
       }[mp.type] || [t('Make your choice.'), ''];
       const rr = mp.type === 'moveRobber' && v.legal?.leaveRobber && v.step === 'main';
-      return { msg: esc(T[0]), sub: esc(rr ? t('House rule: if you end your turn now, the robber goes back to the desert.') : T[1]), mine: true, btns: `${T[2] ? `<button class="btn primary" data-do="pendingDialog">${esc(T[2])}</button>` : ''}${mp.type === 'placeFreeKnight' ? `<button class="btn" data-do="skipFreeKnight">${tx('Skip')}</button>` : ''}${rr ? `<button class="btn" data-do="forgetRobber">${tx('End turn')}</button>` : ''}` };
+      return { msg: esc(T[0]), sub: esc(rr ? t('House rule: if you end your turn now, the robber goes back to the desert.') : T[1]), mine: true, btns: `${T[2] ? `<button class="btn primary" data-do="pendingDialog">${esc(T[2])}</button>` : ''}${mp.type === 'placeFreeKnight' ? `<button class="btn" data-do="skipFreeKnight">${tx('Skip')}</button>` : ''}${mp.type === 'moveRobber' && v.legal?.pirateFrame ? `<button class="btn" data-do="pirateFrame">${tx('Pirate to the frame')}</button>` : ''}${rr ? `<button class="btn" data-do="forgetRobber">${tx('End turn')}</button>` : ''}` };
     }
     const who = [...new Set(pend.map(p => p.player))].map(pname).join(', ');
     const W = {
@@ -289,7 +291,7 @@ function statusInfo() {
     const knightReady = v.mode === 'classic' && me().dev?.some(d => d.type !== 'victoryPoint' && !d.fresh);
     return { msg: tx('Your turn. Roll the dice.'), sub: knightReady ? tx('You can play a development card before rolling.') : '', mine: true, btns: `<button class="btn primary roll-btn" data-do="roll">🎲 ${tx('Roll dice')}</button>` };
   }
-  if (v.free.roads > 0) return { msg: esc(t('Place free roads: {n}.', { n: v.free.roads })), sub: tx('Tap a glowing edge.'), mine: true, btns: `<button class="btn" data-do="skipFree">${tx('Skip')}</button>` };
+  if (v.free.roads > 0) return { msg: esc(t(isSea(v) && v.expansion === 'seafarers' ? 'Place free roads or ships: {n}.' : 'Place free roads: {n}.', { n: v.free.roads })), sub: tx('Tap a glowing edge.'), mine: true, btns: `<button class="btn" data-do="skipFree">${tx('Skip')}</button>` };
   const L0 = v.legal || {};
   const shipHint = L0.moveShips && Object.keys(L0.moveShips).length ? tx('Tap one of your pulsing ships to sail it (once per turn).') : '';
   const stone2 = v.flags.stone2;
@@ -316,7 +318,8 @@ function targets() {
   if (G.pick) return { [G.pick.kind]: G.pick.options, picked: G.pick.picked, pickedKnight: G.pick.pickedKnight };
   if (isHub(v)) { const ht = hub().targets(); if (ht) return ht; }
   if (L.setupSpots) return { vertices: L.setupSpots };
-  if (L.setupRoads) return { edges: L.setupRoads };
+  if (L.setupRoads) return { edges: [...new Set([...L.setupRoads, ...(L.setupShips || [])])] };
+  if (L.harborSpots) return { vertices: L.harborSpots };
   if (L.robberHexes) return { hexes: L.robberHexes };
   if (L.relocate) return { vertices: L.relocate };
   if (L.metroCities) return { vertices: L.metroCities };
@@ -324,7 +327,7 @@ function targets() {
   if (L.freeKnightSpots) return { vertices: L.freeKnightSpots };
   if (L.giveKnights) return { ownKnights: L.giveKnights };
   const tg = {};
-  if (v.free.roads > 0 && v.current === v.me && L.roads) tg.edges = L.roads;
+  if (v.free.roads > 0 && v.current === v.me && L.roads) tg.edges = [...new Set([...L.roads, ...(L.ships || [])])];
   if (L.knights && Object.keys(L.knights).length) tg.ownKnights = Object.keys(L.knights).map(Number);
   if (L.moveShips && Object.keys(L.moveShips).length) tg.ownShips = Object.keys(L.moveShips).map(Number);
   return tg;
@@ -341,13 +344,22 @@ function onBoardClick(e) {
   if (el.dataset.k != null) return knightMenu(id);
   if (el.dataset.s != null) return shipMenu(id);
   if (L.setupSpots) return send({ type: v.setup.need === 'city' ? 'placeCity' : 'placeSettlement', v: id });
-  if (L.setupRoads) return send({ type: 'placeRoad', e: id });
+  if (L.setupRoads) return roadOrShip(id, L.setupRoads, L.setupShips, e => send({ type: 'placeRoad', e }), e => send({ type: 'placeShip', e }));
+  if (L.harborSpots) return send({ type: 'placeHarbor', v: id });
   if (L.robberHexes) return send({ type: 'moveRobber', hex: id });
   if (L.relocate) return send({ type: 'relocateKnight', v: id });
   if (L.metroCities) return send({ type: 'placeMetropolis', v: id });
   if (L.loseCities) return send({ type: 'loseCity', v: id });
   if (L.freeKnightSpots) return send({ type: 'placeFreeKnight', v: id });
-  if (el.dataset.e != null && v.free.roads > 0) return send({ type: 'buildRoad', e: id });
+  if (el.dataset.e != null && v.free.roads > 0) return roadOrShip(id, L.roads, L.ships, e => send({ type: 'buildRoad', e }), e => send({ type: 'buildShip', e }));
+}
+
+// Seafarers: a coast edge may take a road or a ship (founding phase, Road Building card): ask when both would do
+function roadOrShip(e, roads, ships, road, ship) {
+  const r = (roads || []).includes(e), sh = (ships || []).includes(e);
+  if (r && sh) return choiceDialog(tx('Road or ship?'), tx('This edge is on the coast.'), [{ value: 'road', html: `${glyph('road', 16)} ${tx('Road')}` }, { value: 'ship', html: `${glyph('ship', 16)} ${tx('Ship')}` }], k => (k === 'road' ? road(e) : ship(e)));
+  if (sh) return ship(e);
+  if (r) return road(e);
 }
 
 function shipMenu(eid) {
@@ -425,7 +437,7 @@ function renderStatus() {
 function boardKey(tg) {
   const v = G.view;
   if (v.board !== G.boardRef) { G.boardRef = v.board; const sig = JSON.stringify(v.board.hexes); if (sig !== G.boardSig) { G.boardSig = sig; G.boardGen = (G.boardGen || 0) + 1; } }
-  return JSON.stringify([G.boardGen, v.buildings, v.roads, v.knights, v.ships, v.bridges, v.robber, v.pirate, v.merchant, v.lairs, v.islandBonus, v.longestRoad, v.mode === 'knights' ? null : v.largestArmy && v.largestArmy.p, v.fish && v.fish.boot, v.hub, v.players.map(p => p.color), tg, lang(), G.life]);
+  return JSON.stringify([G.boardGen, v.buildings, v.roads, v.knights, v.ships, v.bridges, v.robber, v.pirate, v.merchant, v.lairs, v.islandBonus, v.gifts, v.dynPorts, v.villages, v.longestRoad, v.mode === 'knights' ? null : v.largestArmy && v.largestArmy.p, v.fish && v.fish.boot, v.hub, v.players.map(p => p.color), tg, lang(), G.life]);
 }
 function renderBoardPart() {
   const host = G.app.querySelector('.board-host');
@@ -494,6 +506,7 @@ function handHtml() {
   if (isSea(v)) acts += btn('ship', t('Ship'), 'ship', COSTS.ship, free && L.ships?.length > 0, m.pieces.ships);
   if (v.rivers) acts += btn('bridge', t('Bridge'), 'bridge', COSTS.bridge, free && L.bridges?.length > 0, m.pieces.bridges);
   acts += btn('settlement', t('Settlement'), 'settlement', COSTS.settlement, free && L.settlements?.length > 0, m.pieces.settlements);
+  if (v.wonders) acts += plain('wonders', t('Wonders'), 'castle', t('Build a wonder'), true);
   acts += btn('city', t('City'), 'city', COSTS.city, free && L.cities?.length > 0, m.pieces.cities);
   if (knights) {
     acts += btn('knight', t('Knight'), 'knight', COSTS.knight, free && L.knightSpots?.length > 0, m.pieces.knights[1]);
@@ -587,6 +600,9 @@ function playersHtml() {
     if (v.gold) meta.push(`<span class="mp" title="${tx('Gold')}">${chipIcon('gold', '#C58E12')}${p.gold}${p.riverVp ? ` <b style="color:${p.riverVp > 0 ? 'var(--green)' : 'var(--red-d)'}">${p.riverVp > 0 ? '+' : ''}${p.riverVp}</b>` : ''}</span>`);
     if (v.fishing) meta.push(`<span class="mp" title="${tx('Fish tokens')}">${chipIcon('fish', '#1F7A99')}${p.fishTokens}${v.fish?.boot === i ? ' 🥾' : ''}</span>`);
     if (isHub(v)) meta.push(hub().playerMeta(v, p, i));
+    if (v.villages) meta.push(`<span class="mp" title="${tx('Bales of cloth (2 bales = 1 point)')}">${chipIcon('cloth', '#8A5A9E')}${p.cloth}</span>`);
+    if (v.gifts && (p.chips || p.harbors)) meta.push(`<span class="mp" title="${tx('Victory point chips · harbours waiting for a settlement')}">${chipIcon('star', '#C58E12')}${p.chips}${p.harbors ? ` · ${glyph('bank', 11)}${p.harbors}` : ''}</span>`);
+    if (v.wonders) { const w = Object.entries(v.wonders).find(([, x]) => x.owner === i); if (w) meta.push(`<span class="mp" title="${esc(t(WONDER[w[0]].name))}">${chipIcon(WONDER[w[0]].icon, '#B8832A')}${w[1].level}/4</span>`); }
     if (v.expansion === 'explorers') meta.push(`<span class="mp" title="${tx('Delivered fish · spice')}">${chipIcon('fish', '#1F7A99')}${p.delivered.fish}${chipIcon('spice', '#B53A2A')}${p.delivered.spice}</span>`);
     return `<div class="player ${i === v.current && v.phase !== 'over' ? 'cur' : ''} ${i === v.me ? 'me' : ''}" data-seat="${i}">
       ${houseIcon(p.color, 22)}
@@ -797,6 +813,7 @@ function doAction(what) {
     case 'cancelPick': G.pick = null; return render();
     case 'skipFree': return send({ type: 'skipFreeRoads' });
     case 'skipFreeKnight': return send({ type: 'placeFreeKnight', v: null });
+    case 'pirateFrame': return send({ type: 'moveRobber', hex: -1 });
     case 'cancelTrade': return send({ type: 'cancelTrade' });
     case 'trade': return tradeDialog();
     case 'bank': return bankDialog();
@@ -813,6 +830,7 @@ function doAction(what) {
     case 'fish': return hub().fishDialog();
     case 'goldTrade': return goldDialog();
     case 'missions': return missionsDialog();
+    case 'wonders': return wondersDialog();
     default: if (isHub(v)) hub().action(what);
   }
 }
@@ -905,6 +923,10 @@ function autoDialogs(force = false) {
       return cardPicker({ heading: tx('Gold!'), text: tx('Choose {n} resources from the bank.', { n: mp.count }), pool, count: mp.count, haveText: 'bank {n}', confirm: cards => send({ type: 'pickGold', cards }) });
     }
     case 'steal':
+      if (mp.cloth) return choiceDialog(tx('Steal from…'), tx('Take one random card or one bale of cloth.'), mp.options.map(p => ({ value: p, html: `${houseIcon(v.players[p].color)} ${esc(v.players[p].name)} · ${tx('Cards: {n}', { n: v.players[p].cards })} · ${tx('Cloth: {n}', { n: v.players[p].cloth })}` })), from => {
+        const q = v.players[from];
+        setTimeout(() => choiceDialog(tx('What do you take?'), '', [{ value: false, html: `${glyph('card', 18)} ${tx('A random resource card')}`, disabled: !q.cards }, { value: true, html: `${glyph('cloth', 18)} ${tx('A bale of cloth')}`, disabled: !q.cloth }], cloth => send({ type: 'steal', from, cloth }), false), 50);
+      }, false);
       return choiceDialog(tx('Steal from…'), tx('You take one random card.'), mp.options.map(p => ({ value: p, html: `${houseIcon(v.players[p].color)} ${esc(v.players[p].name)} · ${tx('Cards: {n}', { n: v.players[p].cards })}` })), from => send({ type: 'steal', from }), false);
     case 'chooseProgress':
       return choiceDialog(tx('Draw a progress card'), tx('Pick a deck.'), ['science', 'trade', 'politics'].map(d => ({ value: d, html: esc(term(d)), style: `background:${DECK_COLOR[d]};color:#fff;border-color:transparent` })), deck => send({ type: 'chooseProgress', deck }), false);
@@ -1201,6 +1223,24 @@ function missionsDialog() {
   });
 }
 
+function wondersDialog() {
+  const v = G.view, L = v.legal || {}, mine = Object.entries(v.wonders).find(([, w]) => w.owner === v.me);
+  const row = ([k, w]) => {
+    const W = WONDER[k], owner = w.owner != null ? v.players[w.owner] : null;
+    const lv = [1, 2, 3, 4].map(i => `<i style="display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:3px;border:2px solid #B8832A;background:${i <= w.level ? '#F6CF57' : 'transparent'}"></i>`).join('');
+    const can = L.wonders?.start?.includes(k);
+    return `<div class="mission"><span class="ic" style="background:#8A5A2A">${glyph(W.icon, 22)}</span><div style="flex:1;min-width:0"><b>${tx(W.name)}</b><small>${tx(W.cond)}</small><small>${tx('Each level:')} ${cardsHtml(v.wonderCost[k])}</small>${owner ? `<small>${houseIcon(owner.color, 14)} ${esc(owner.name)} ${lv}</small>` : ''}</div>
+      ${!owner ? `<button class="btn small gold" data-wstart="${k}" ${can ? '' : 'disabled'}>${tx('Claim')}</button>` : w.owner === v.me ? `<button class="btn small gold" data-wbuild ${L.wonders?.build && w.level < 4 ? '' : 'disabled'}>${tx('Build level {n}', { n: Math.min(4, w.level + 1) })}</button>` : ''}</div>`;
+  };
+  modal(`<h2>${tx('Wonders')}</h2><p class="muted" style="margin:0 0 8px">${tx('Meet the condition, claim a wonder and build its four levels. Finishing it wins; so does having 10 points on your turn with a higher level than everybody else.')}${mine ? '' : ' ' + tx('You can only build one wonder.')}</p>
+    ${Object.entries(v.wonders).map(row).join('')}<div class="foot"><button class="btn" data-close>${tx('Close')}</button></div>`, {
+    onMount(el, close) {
+      el.querySelectorAll('[data-wstart]').forEach(b => b.onclick = async () => { if (await send({ type: 'startWonder', wonder: b.dataset.wstart })) close(); });
+      el.querySelector('[data-wbuild]')?.addEventListener('click', async () => { if (await send({ type: 'buildWonder' })) { close(); } });
+    },
+  });
+}
+
 function costsDialog() {
   const knights = G.view.mode === 'knights';
   const rows = [[t('Road'), COSTS.road, ''], [t('Settlement'), COSTS.settlement, t('1 point')], [t('City'), COSTS.city, t('2 points, double production')]];
@@ -1213,6 +1253,7 @@ function costsDialog() {
   const house = [o.robberReturn && t('House rule: forgotten robber'), o.knightsFree && t('House rule: knights without a limit'), o.startBoth && t('House rule: starting resources for both')].filter(Boolean);
   modal(`<h2>${tx('Building costs')}</h2><button class="btn gold block tut-open" data-tut-mode>▶ ${tx('How to play: {mode}', { mode: modeLabel(G.view) })}</button><div style="margin-top:10px">${rows.map(([n, c, d]) => `<div class="row" style="padding:7px 0;border-top:1px solid var(--line)"><b style="width:140px">${esc(n)}</b><span class="spacer">${cardsHtml(c)}</span><span class="muted" style="font-size:12px;text-align:right">${esc(d)}</span></div>`).join('')}</div>
     ${isHub(G.view) ? hub().costsExtra(G.view).map(x => `<p class="muted" style="font-size:13px">${esc(x)}</p>`).join('') : ''}
+    ${G.view.expansion === 'seafarers' && SCEN[G.view.options?.scenario] ? `<h3 style="margin:12px 0 4px">${tx(SCEN[G.view.options.scenario].label)}</h3><ul class="muted" style="font-size:13px;margin:0;padding-left:18px">${SCEN[G.view.options.scenario].rules.map(r => `<li>${tx(r)}</li>`).join('')}</ul><p class="muted" style="font-size:13px;margin:6px 0 0">${tx('Win with {n} points.', { n: G.view.vpTarget ?? G.view.options.vpTarget })}</p>` : ''}
     ${knights ? `<p class="muted" style="font-size:13px">${tx('Improvements cost 1–5 commodities: cloth for trade, coin for politics, paper for science. Cities on forest, pasture and mountains yield a commodity instead of a second resource.')}</p>` : ''}
     ${!knights ? `<p class="muted" style="font-size:13px">${tx('Longest Road: 5 or more connected roads, 2 points. Largest Army: 3 or more played knights, 2 points. You may play 1 development card per turn, but not one you bought this turn.')}</p>` : ''}
     ${house.length ? `<p class="muted" style="font-size:13px"><b>${tx('House rules in this game')}:</b> ${house.map(esc).join(' · ')}</p>` : ''}

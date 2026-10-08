@@ -33,14 +33,15 @@ export function decide(v) {
     return { type: v.setup.need === 'city' ? 'placeCity' : 'placeSettlement', v: best };
   }
   if (L.goldPick) { const c = {}; for (let i = 0; i < L.goldPick.count; i++) { const k = pick(RES); c[k] = (c[k] || 0) + 1; } return { type: 'pickGold', cards: c }; }
-  if (L.setupRoads) return { type: 'placeRoad', e: pick(L.setupRoads) };
+  if (L.setupRoads) return L.setupShips?.length && Math.random() < 0.3 ? { type: 'placeShip', e: pick(L.setupShips) } : { type: 'placeRoad', e: pick(L.setupRoads) };
   const mine = v.pending.filter(p => p.group === v.activeGroup && p.player === v.me)[0];
   if (mine) {
     switch (mine.type) {
       case 'discard': return { type: 'discard', cards: cardsFrom(me, mine.count) };
       case 'give': return { type: 'give', cards: cardsFrom(me, mine.count) };
       case 'moveRobber': return { type: 'moveRobber', hex: robberHex(v) };
-      case 'steal': return { type: 'steal', from: pick(mine.options) };
+      case 'steal': return { type: 'steal', from: pick(mine.options), cloth: !!mine.cloth && Math.random() < 0.5 };
+      case 'placeHarbor': return { type: 'placeHarbor', v: pick(L.harborSpots) };
       case 'relocateKnight': return { type: 'relocateKnight', v: pick(L.relocate) };
       case 'placeMetropolis': return { type: 'placeMetropolis', v: pick(L.metroCities) };
       case 'loseCity': return { type: 'loseCity', v: pick(L.loseCities) };
@@ -104,6 +105,7 @@ export function decide(v) {
   if (v.current !== v.me) return null;
   if (v.step === 'roll') return { type: 'roll' };
   if (v.free.roads > 0) return L.roads?.length ? { type: 'buildRoad', e: pick(L.roads) } : { type: 'skipFreeRoads' };
+  if (L.wonders) { if (L.wonders.start.length) return { type: 'startWonder', wonder: pick(L.wonders.start) }; if (L.wonders.build) return { type: 'buildWonder' }; }
   if (L.cities?.length) return { type: 'buildCity', v: pick(L.cities) };
   if (L.settlements?.length) return { type: 'buildSettlement', v: pick(L.settlements) };
   if (L.improve) for (const [t, o] of Object.entries(L.improve)) if (o.ok) return { type: 'improve', track: t };

@@ -297,6 +297,7 @@ function seafarers() {
     { q: 2, r: -1, t: 'gold', n: 10, island: 1 }, { q: 3, r: -1, t: 'mountains', n: 4, island: 1 },
   ]);
   B.homeIslands = [0];
+  B.bonus = { vp: 2, mode: 'each' }; B.bonusIslands = [1];
   const home = vAt(B, 0, -1), mid = vAt(B, 0.866, -0.5), land = vAt(B, 1.732, -1);
   const s1 = eAt(B, home, mid), s2 = eAt(B, mid, land);
   const fog = hAt(B, 1, 0), gold = hAt(B, 2, -1), sea1 = hAt(B, 1, -1), south = hAt(B, 0, 1);
@@ -318,7 +319,7 @@ function seafarers() {
         await T.pay({ lumber: 1, wool: 1 }, T.edgePt(s1));
         T.ship(s1, 0);
         await T.wait(900);
-        T.say(t('Ships form a chain, like roads.'), t('The last ship of an open chain may sail to a new spot once per turn.'));
+        T.say(t('Ships form a chain, like roads.'), t('The last ship of an open chain may sail to a new spot once per turn. A chain that joins two of your settlements is closed.'));
         await T.give({ lumber: 1, wool: 1 });
         await T.pay({ lumber: 1, wool: 1 }, T.edgePt(s2));
         T.ship(s2, 0);
@@ -333,12 +334,12 @@ function seafarers() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('Settle a new island: +1 point!'), t('Tap the glowing corner.'));
+        T.say(t('Settle a new island: +2 points!'), t('Tap the glowing corner. Your first settlement on each foreign island earns the bonus.'));
         await T.tap({ vertices: [land] });
         T.build(land, 'settlement', 0);
-        T.set(v2 => { v2.islandBonus = { 1: 0 }; });
-        T.float(T.vertPt(land), '+1', '#F6CF57');
-        T.vp(4);
+        T.set(v2 => { v2.islandBonus = { 1: [0] }; });
+        T.float(T.vertPt(land), '+2', '#F6CF57');
+        T.vp(5);
         await T.wait(1500);
       },
       async T => {
@@ -350,13 +351,13 @@ function seafarers() {
         await T.wait(900);
       },
       async T => {
-        T.say(t('The pirate'), t('Ships next to his tile are blocked, and he steals. A 7 or a knight moves him.'));
+        T.say(t('The pirate'), t('Ships next to his tile are blocked, and he steals. On a 7 or with a knight you move either the robber or the pirate.'));
         T.movePirate(sea1);
         sfx.pirate();
         await T.wait(2400);
       },
       async T => {
-        T.say(t('Win with 12 to 14 points.'), t('Pick a scenario when you create the game: New Shores, Four Islands or Fog Islands.'));
+        T.say(t('Win with 10 to 14 points.'), t('Pick one of the scenarios from the rulebook, or the free game, when you create the game.'));
         await T.countVp(14);
         await T.finale();
       },

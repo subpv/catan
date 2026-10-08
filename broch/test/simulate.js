@@ -32,13 +32,15 @@ function candidates(s, p) {
   }
   if (L.setupSpots) out.push({ type: s.setup.need === 'city' ? 'placeCity' : 'placeSettlement', v: pick(L.setupSpots) });
   if (L.setupRoads) out.push({ type: 'placeRoad', e: pick(L.setupRoads) });
+  if (L.setupShips && L.setupShips.length) out.push({ type: 'placeShip', e: pick(L.setupShips) });
   const mine = s.pending.length ? _internal.activePending(s).filter(i => i.player === p) : [];
   for (const it of mine) {
     switch (it.type) {
       case 'discard': out.push({ type: 'discard', cards: cardsOf(v, it.count) }); break;
       case 'give': out.push({ type: 'give', cards: cardsOf(v, it.count) }); break;
-      case 'moveRobber': out.push({ type: 'moveRobber', hex: pick(L.robberHexes) }); if (L.leaveRobber) out.push({ type: 'leaveRobber', endTurn: Math.random() < 0.5 }); break;
-      case 'steal': out.push({ type: 'steal', from: pick(it.options) }); break;
+      case 'moveRobber': out.push({ type: 'moveRobber', hex: pick(L.robberHexes) }); if (L.pirateFrame && Math.random() < 0.15) out.push({ type: 'moveRobber', hex: -1 }); if (L.leaveRobber) out.push({ type: 'leaveRobber', endTurn: Math.random() < 0.5 }); break;
+      case 'placeHarbor': out.push({ type: 'placeHarbor', v: pick(L.harborSpots) }); break;
+      case 'steal': out.push({ type: 'steal', from: pick(it.options), cloth: it.cloth && Math.random() < 0.5 }); break;
       case 'relocateKnight': out.push({ type: 'relocateKnight', v: pick(L.relocate) }); break;
       case 'placeMetropolis': out.push({ type: 'placeMetropolis', v: pick(L.metroCities) }); break;
       case 'loseCity': out.push({ type: 'loseCity', v: pick(L.loseCities) }); break;
@@ -105,6 +107,7 @@ function candidates(s, p) {
       if (L.cities && L.cities.length) out.push({ type: 'buildCity', v: pick(L.cities) }, { type: 'buildCity', v: pick(L.cities) });
       if (L.canBuyDev) out.push({ type: 'buyDev' });
       if (L.ships && L.ships.length) out.push({ type: 'buildShip', e: pick(L.ships) }, { type: 'buildShip', e: pick(L.ships) });
+      if (L.wonders) { for (const k of L.wonders.start) out.push({ type: 'startWonder', wonder: k }); if (L.wonders.build) out.push({ type: 'buildWonder' }); }
       if (L.bridges && L.bridges.length) out.push({ type: 'buildBridge', e: pick(L.bridges) });
       if (L.knightSpots && L.knightSpots.length) out.push({ type: 'buildKnight', v: pick(L.knightSpots) });
       if (L.walls && L.walls.length) out.push({ type: 'buildWall', v: pick(L.walls) });
@@ -216,6 +219,12 @@ const CONFIGS = {
   'sea-shores': ['classic', { expansion: 'seafarers', scenario: 'shores' }],
   'sea-islands': ['classic', { expansion: 'seafarers', scenario: 'islands' }],
   'sea-fog': ['classic', { expansion: 'seafarers', scenario: 'fog' }],
+  'sea-desert': ['classic', { expansion: 'seafarers', scenario: 'desert' }],
+  'sea-cloth': ['classic', { expansion: 'seafarers', scenario: 'cloth' }],
+  'sea-newworld': ['classic', { expansion: 'seafarers', scenario: 'newworld' }],
+  'sea-wonders': ['classic', { expansion: 'seafarers', scenario: 'wonders' }],
+  'sea-tribe': ['classic', { expansion: 'seafarers', scenario: 'tribe' }],
+  'sea-variable': ['classic', { expansion: 'seafarers', scenario: 'shores', variable: true }],
   'sea-knights': ['knights', { expansion: 'seafarers', scenario: 'shores' }],
   'tb-fish': ['classic', { expansion: 'traders', variants: { fishermen: true } }],
   'tb-rivers': ['classic', { expansion: 'traders', variants: { rivers: true } }],
