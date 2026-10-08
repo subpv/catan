@@ -171,7 +171,7 @@ module.exports = function make(core, HB) {
   }
   function wagonSteps(s, p) {
     const t = tb(s), mv = t.move;
-    if (!mv || mv.placing) return [];
+    if (!mv || mv.placing != null) return [];
     const at = t.wagons[p];
     if (mv.arrived) return [];
     return V(s, at).edges.map(e => stepInfo(s, p, at, e)).filter(st => st && st.cost <= mv.mp && (!st.pays || P(s, p).gold >= 1));
@@ -202,7 +202,7 @@ module.exports = function make(core, HB) {
   // ------------------------------------------------------------ end of the turn: the wagon rolls
   function beginEnd(s, p) {
     const t = tb(s);
-    t.move = { p, mp: MOVE[t.tab[p].level - 1], start: MOVE[t.tab[p].level - 1], grain: false, arrived: false, moved: false, tried: {}, placing: false, trips: 1 };
+    t.move = { p, mp: MOVE[t.tab[p].level - 1], start: MOVE[t.tab[p].level - 1], grain: false, arrived: false, moved: false, tried: {}, placing: null, trips: 1 };
     s.hub.ending = true;
     pushPending(s, [{ type: 'moveWagon', player: p }]);
     return true;
@@ -210,6 +210,8 @@ module.exports = function make(core, HB) {
   function continueEnd(s) {
     tb(s).move = null;
     s.hub.ending = false;
+    core.checkWin(s); // "at any point during your turn": the points of a delivery win before the turn passes
+    if (s.phase !== 'play') return;
     core.finishTurn(s);
   }
 
@@ -218,7 +220,7 @@ module.exports = function make(core, HB) {
   const handlers = {
     wagonStep(s, p, a) {
       const mv = needMove(s, p);
-      if (mv.placing) fail('Place the barbarian first.');
+      if (mv.placing != null) fail('Place the barbarian first.');
       const st = wagonSteps(s, p).find(x => x.to === a.to);
       if (!st) fail('The wagon cannot go there.');
       const t = tb(s);
@@ -226,14 +228,14 @@ module.exports = function make(core, HB) {
       if (st.pays !== null) { P(s, p).gold -= 1; P(s, st.pays).gold += 1; log(s, '{@p} pays {@q} 1 gold for the road.', { p, q: st.pays }); }
       t.wagons[p] = st.to;
       const hexId = Object.entries(s.board.centers).find(([, v]) => v === st.to);
-      if (hexId) arrive(s, p, +hexId[0]);
+      if (hexId) { arrive(s, p, +hexId[0]); core.checkWin(s); }
       else if (wagonSteps(s, p).length === 0 && !mv.arrived) { /* stuck: the player ends the move */ }
     },
     wagonExpel(s, p, a) {
       const mv = needMove(s, p), t = tb(s);
       const lvl = t.tab[p].level;
       if (lvl < 2) fail('You can drive barbarians away from the second level on.');
-      if (mv.placing || mv.arrived) fail('Not allowed right now.');
+      if (mv.placing != null || mv.arrived) fail('Not allowed right now.');
       const at = t.wagons[p];
       if (!V(s, at).edges.includes(a.edge) || !t.barb[a.edge]) fail('Stand in front of a barbarian first.');
       if (mv.tried[a.edge]) fail('You already tried that barbarian this turn.');
@@ -244,10 +246,10 @@ module.exports = function make(core, HB) {
     },
     wagonBarbTo(s, p, a) {
       const mv = needMove(s, p), t = tb(s);
-      if (!mv.placing) fail('Nothing to place.');
+      if (mv.placing == null) fail('Nothing to place.');
       if (!barbEdgeOk(s, a.to) || a.to === mv.placing) fail('A barbarian cannot go there.');
       moveBarb(s, p, mv.placing, a.to); // no card is drawn from a road owner here
-      mv.placing = false;
+      mv.placing = null;
     },
     wagonGrain(s, p) {
       const mv = needMove(s, p);
@@ -260,7 +262,7 @@ module.exports = function make(core, HB) {
     },
     wagonDone(s, p) {
       const mv = needMove(s, p);
-      if (mv.placing) fail('Place the barbarian first.');
+      if (mv.placing != null) fail('Place the barbarian first.');
       resolvePending(s, findPending(s, p, 'moveWagon'));
     },
     // "Swift Journey": take the "Move your wagon" action again
@@ -303,8 +305,8 @@ module.exports = function make(core, HB) {
       if (it.type === 'moveBarb') L.barbMoves = { from: Object.keys(t.barb).map(Number), to: s.board.edges.map(e => e.id).filter(e => barbEdgeOk(s, e)) };
       if (it.type === 'moveWagon') {
         const mv = t.move;
-        L.wagon = { mp: mv.mp, level: t.tab[p].level, grain: !mv.grain && has(P(s, p), { grain: 1 }), placing: !!mv.placing, arrived: mv.arrived };
-        if (mv.placing) L.wagon.barbTargets = s.board.edges.map(e => e.id).filter(e => barbEdgeOk(s, e) && e !== mv.placing);
+        L.wagon = { mp: mv.mp, level: t.tab[p].level, grain: !mv.grain && has(P(s, p), { grain: 1 }), placing: mv.placing != null, arrived: mv.arrived };
+        if (mv.placing != null) L.wagon.barbTargets = s.board.edges.map(e => e.id).filter(e => barbEdgeOk(s, e) && e !== mv.placing);
         else {
           L.wagon.steps = wagonSteps(s, p).map(st => ({ to: st.to, edge: st.edge, cost: st.cost, pays: st.pays, barb: st.barb }));
           const lvl = t.tab[p].level;

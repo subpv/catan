@@ -273,7 +273,7 @@ const steps = (s, p) => L(s, p).wagon.steps;
     act(s, p, { type: 'wagonStep', to: c });
     assert.equal(s.players[p].gold - gold0, lvl, `a delivery pays ${lvl} gold at level ${lvl}`);
     assert.equal(t.tab[p].delivered, 1);
-    assert.equal(engine.vp(s, p) - vp0, 1 + (lvl === 5 ? 1 : 0));
+    assert.equal(engine.vp(s, p) - vp0, 1, 'a delivery is worth 1 point');
     assert(t.tab[p].ware, 'a new token is drawn after a delivery');
   }
 }
@@ -296,7 +296,9 @@ const steps = (s, p) => L(s, p).wagon.steps;
   const b = s.board;
   const id = +Object.keys(b.targets)[0];
   const c = b.centers[id];
-  assert(!engine.viewFor(s, s.current).legal.settlements.includes(c), 'no settlement in the center');
+  s.players[s.current].res = { lumber: 9, brick: 9, wool: 9, grain: 9, ore: 9 };
+  assert(!(engine.viewFor(s, s.current).legal.settlements || []).includes(c), 'no settlement in the center');
+  throws(() => act(s, s.current, { type: 'buildSettlement', v: c }), 'cannot build');
   const blocked = b.blocked[0];
   const hex = b.hexes[b.edges[blocked].hexes[0]];
   assert(hex, 'blocked edges belong to a hex');
@@ -369,11 +371,14 @@ const steps = (s, p) => L(s, p).wagon.steps;
   s.players[p].gold = 99; // gold is no victory point
   assert.equal(engine.vp(s, p), 6);
   s.players[p].dev = [];
-  s.hub.tb.tab[p].delivered = 9; // 3 + 9 + 1 (full upgrade) = 13
-  s.hub.tb.tab[p].level = 5;
+  const t = s.hub.tb;
+  t.tab[p].delivered = 8; t.tab[p].level = 5; t.tab[p].ware = 'tools'; // 3 + 8 + 1 (full upgrade) = 12
+  const hexId = +Object.keys(s.board.targets).find(id => s.board.targets[id] === 'quarry');
+  t.wagons[p] = s.board.landCorners[hexId][0];
   act(s, p, { type: 'endTurn' });
-  act(s, p, { type: 'wagonDone' });
-  assert.equal(s.phase, 'over'); assert.equal(s.winner, p);
+  assert.equal(engine.vp(s, p), 12); assert.equal(s.phase, 'play');
+  act(s, p, { type: 'wagonStep', to: s.board.centers[hexId] });
+  assert.equal(s.phase, 'over', 'the delivery that brings the 13th point wins at once'); assert.equal(s.winner, p);
 }
 
 // ---------------------------------------------------------------- 5-6 players: paired turns (5-6 book p4 and p12)

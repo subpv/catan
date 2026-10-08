@@ -460,6 +460,22 @@ function traders() {
         await T.wait(1200);
       },
       async T => {
+        T.say(t('Move your wagon'), t('At the end of your turn: 4 movement points. A path costs 2, your own road 1, another player’s road 1 and 1 gold for its owner, a barbarian on the way 2 more. 1 grain gives 2 more points, once per turn.'));
+        await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Pick up and deliver'), t('In the middle of a commodity hex you pick up a token or deliver yours: 1 point and 1 to 5 gold, by wagon level. The quarry needs tools, the glassworks sand, the castle marble and glass.'));
+        await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Barbarians'), t('From the second wagon level on, roll a die in front of a barbarian: 6 at level 2, 5–6 at level 3, 4–6 at level 4, 3–6 at level 5. A 7 or a knight card moves a barbarian; on a road you draw a card from its owner.'));
+        await T.wait(3200);
+      },
+      async T => {
+        T.say(t('Five or six players'), t('The wagon island has 37 tiles and 7 commodity hexes; five of them have six paths. The 2 and the 12 are on the board again.'));
+        await T.wait(2800);
+      },
+      async T => {
         T.say(t('Variants'), t('The friendly robber spares players with 2 points or fewer. Harbors of Catan reward settlements at harbors with a plaque worth 2 points.'));
         await T.wait(2400);
         await T.finale();
