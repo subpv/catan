@@ -27,7 +27,7 @@ const EXP_NAME = { seafarers: 'Seafarers', traders: 'Traders & Barbarians', expl
 export function modeLabel(v) {
   const base = v.mode === 'knights' ? t('Cities & Knights') : t('Classic');
   if (!v.expansion || v.expansion === 'none') return base;
-  const x = t(EXP_NAME[v.expansion]);
+  const x = `${t(EXP_NAME[v.expansion])} · Beta`;
   return v.mode === 'knights' ? `${x} + ${base}` : x;
 }
 const isSea = v => v.expansion === 'seafarers' || v.expansion === 'explorers';

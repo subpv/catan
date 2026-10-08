@@ -167,9 +167,9 @@ async function renderLobby() {
     const watch = L.playing.filter(g => !L.mine.includes(g.id));
     const seats = g => `<span class="seatdots">${g.seats.map(s => houseIcon(s.color, 14)).join('')}</span>`;
     const modeBadge = g => {
-      if (isStandalone(g.mode)) return `<span class="badge x">${tx(GAMES[g.mode].name)}${g.mode === 'explorers' && g.scenario ? ` · ${esc(g.scenario)}` : ''}</span>`;
+      if (isStandalone(g.mode)) return `<span class="badge x">${tx(GAMES[g.mode].name)}${g.mode === 'explorers' && g.scenario ? ` · ${esc(g.scenario)}` : ''} · Beta</span>`;
       const hasExp = g.expansion && g.expansion !== 'none';
-      return `${g.mode === 'knights' ? `<span class="badge k">${tx('Cities & Knights')}</span>` : hasExp ? '' : `<span class="badge">${tx('Classic')}</span>`}${hasExp ? `<span class="badge x">${tx(EXP_LABEL[g.expansion])}</span>` : ''}${g.expansion === 'seafarers' && SCEN[g.scenario] ? `<span class="badge">${tx(SCEN[g.scenario].label)}</span>` : ''}${g.big ? `<span class="badge">${tx('5–6')}</span>` : ''}${g.robberReturn || g.startBoth || g.knightsFree ? `<span class="badge h" title="${esc([g.robberReturn ? t('House rule: forgotten robber') : '', g.startBoth ? t('House rule: starting resources for both') : '', g.knightsFree ? t('House rule: knights without a limit') : ''].filter(Boolean).join(' · '))}">${tx('House rules')}</span>` : ''}`;
+      return `${g.mode === 'knights' ? `<span class="badge k">${tx('Cities & Knights')}</span>` : hasExp ? '' : `<span class="badge">${tx('Classic')}</span>`}${hasExp ? `<span class="badge x">${tx(EXP_LABEL[g.expansion])} · Beta</span>` : ''}${g.expansion === 'seafarers' && SCEN[g.scenario] ? `<span class="badge">${tx(SCEN[g.scenario].label)}</span>` : ''}${g.big ? `<span class="badge">${tx('5–6')}</span>` : ''}${g.robberReturn || g.startBoth || g.knightsFree ? `<span class="badge h" title="${esc([g.robberReturn ? t('House rule: forgotten robber') : '', g.startBoth ? t('House rule: starting resources for both') : '', g.knightsFree ? t('House rule: knights without a limit') : ''].filter(Boolean).join(' · '))}">${tx('House rules')}</span>` : ''}`;
     };
     const sub = g => `${seats(g)} ${g.seats.map(s => `${flag(s.country)} ${esc(s.name)}`).join(', ')} · ${g.seats.length}/${g.maxPlayers} · ${tx('{n} points', { n: g.vpTarget })}${g.status === 'playing' ? ` · ${tx('turn {n}', { n: g.turn })}` : ''}`;
     const gname = g => {
@@ -189,15 +189,15 @@ async function renderLobby() {
           </div>
           <div class="field"><span class="muted" style="font-size:13px">${tx('Expansion')}</span>
             <div class="mode-pick four">
-              <button class="mode-tile ${newGame.expansion === 'seafarers' ? 'on' : ''}" data-exp="seafarers" aria-pressed="${newGame.expansion === 'seafarers'}"><b>${tx('Seafarers')}</b><small>${tx('Ships and island exploration.')}</small>${help('seafarers', 'Seafarers')}</button>
+              <button class="mode-tile ${newGame.expansion === 'seafarers' ? 'on' : ''}" data-exp="seafarers" aria-pressed="${newGame.expansion === 'seafarers'}"><b>${tx('Seafarers')}</b><small>${tx('Ships and island exploration.')}</small>${help('seafarers', 'Seafarers')}<i class="beta-tag">Beta</i></button>
               <button class="mode-tile ${newGame.mode === 'knights' ? 'on' : ''}" data-exp="knights" aria-pressed="${newGame.mode === 'knights'}"><b>${tx('Cities & Knights')}</b><small>${tx('Commodities, city improvements, knights and barbarian raids.')}</small>${help('knights', 'Cities & Knights')}</button>
-              <button class="mode-tile ${newGame.expansion === 'traders' ? 'on' : ''}" data-exp="traders" aria-pressed="${newGame.expansion === 'traders'}"><b>${tx('Traders & Barbarians')}</b><small>${tx('Fishermen, rivers, merchant trains, barbarians, event cards and more.')}</small>${help('traders', 'Traders & Barbarians')}</button>
-              <button class="mode-tile ${newGame.mode === 'explorers' ? 'on' : ''}" data-exp="explorers" aria-pressed="${newGame.mode === 'explorers'}"><b>${tx('Explorers & Pirates')}</b><small>${tx('Missions across the fog.')}</small>${help('explorers', 'Explorers & Pirates')}</button>
+              <button class="mode-tile ${newGame.expansion === 'traders' ? 'on' : ''}" data-exp="traders" aria-pressed="${newGame.expansion === 'traders'}"><b>${tx('Traders & Barbarians')}</b><small>${tx('Fishermen, rivers, merchant trains, barbarians, event cards and more.')}</small>${help('traders', 'Traders & Barbarians')}<i class="beta-tag">Beta</i></button>
+              <button class="mode-tile ${newGame.mode === 'explorers' ? 'on' : ''}" data-exp="explorers" aria-pressed="${newGame.mode === 'explorers'}"><b>${tx('Explorers & Pirates')}</b><small>${tx('Missions across the fog.')}</small>${help('explorers', 'Explorers & Pirates')}<i class="beta-tag">Beta</i></button>
             </div>
           </div>
           <div class="field"><span class="muted" style="font-size:13px">${tx('Standalone games')}</span>
             <div class="mode-pick sa">
-              ${Object.values(GAMES).filter(g => !g.expansion).map(g => `<button class="mode-tile ${newGame.mode === g.id ? 'on' : ''}" data-game="${g.id}" aria-pressed="${newGame.mode === g.id}"><b>${tx(g.name)}</b><small>${tx(g.tagline)}</small>${help(g.tutorial, g.name)}</button>`).join('')}
+              ${Object.values(GAMES).filter(g => !g.expansion).map(g => `<button class="mode-tile ${newGame.mode === g.id ? 'on' : ''}" data-game="${g.id}" aria-pressed="${newGame.mode === g.id}"><b>${tx(g.name)}</b><small>${tx(g.tagline)}</small>${help(g.tutorial, g.name)}<i class="beta-tag">Beta</i></button>`).join('')}
             </div>
           </div>
           <div class="sub-opts ${(isStandalone(newGame.mode) && (GAMES[newGame.mode].lobbyOptions || []).length) || newGame.expansion === 'seafarers' ? 'tall' : ''}">${subOpts()}</div>

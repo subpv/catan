@@ -373,7 +373,7 @@ function playersHtml() {
       <div class="vpr" style="--p:${pct};--c:${ring}" title="${tx('Points: {n}', { n: p.vp })} / ${target}"><span><b>${p.vp}</b><small>/${target}</small></span></div>
     </div>`;
   }).join('');
-  return `<div class="panel"><div class="panel-h"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tx('Players')}</span><span class="spacer"></span><span style="white-space:nowrap">${esc(t(P.name))} · ${tx('turn {n}', { n: v.turn })}</span></div>${rows}</div>`;
+  return `<div class="panel"><div class="panel-h"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tx('Players')}</span><span class="spacer"></span><span style="white-space:nowrap">${esc(t(P.name))} · Beta · ${tx('turn {n}', { n: v.turn })}</span></div>${rows}</div>`;
 }
 
 // ------------------------------------------------------------ trade offers (same behaviour as game.js: one panel per offer)
@@ -614,7 +614,7 @@ function showCelebration() {
   if (!v || v.winner == null) return;
   closeModals();
   victoryScene(v, {
-    title: `${t(plugin().name)} · ${t('turn {n}', { n: v.turn })}`,
+    title: `${t(plugin().name)} · Beta · ${t('turn {n}', { n: v.turn })}`,
     actions: `<a class="btn gold" href="#/stats">${tx('See stats')}</a><a class="btn ghost" href="#/">${tx('Back to lobby')}</a>`,
   });
 }
