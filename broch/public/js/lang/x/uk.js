@@ -1018,7 +1018,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Камінь 1: {@p}. Камі�
 "−1 pollution, adds a green chip to the bag":"−1 забруднення, додає в мішок зелений жетон",
 "Experiments":"Експерименти",
 "Experiment: build anytime":"Експеримент: будувати завжди",
-"Once the dice are down, every player may build and buy development cards in any turn, not only in their own.":"Після кидка кубиків кожен може будувати й купувати карти розвитку в будь-який хід, а не лише у свій.",
+"Once the dice are down, every player may build and buy development cards in any turn, not only in their own. In Cities & Knights this includes knights, walls and improvements.":"Після кидка кубиків кожен може будувати й купувати карти розвитку в будь-який хід, а не лише у свій.",
 "Robber at {name}":"Розбійник у {name}",
 "Robber":"Розбійник",
 "How often the robber was moved onto land of each person.":"Скільки разів розбійника ставили на землю кожної людини.",

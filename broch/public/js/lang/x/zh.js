@@ -1018,7 +1018,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"石头1：{@p}。石头2：{@q}
 "−1 pollution, adds a green chip to the bag":"污染−1，向袋中加入一枚绿色筹码",
 "Experiments":"实验",
 "Experiment: build anytime":"实验：随时建造",
-"Once the dice are down, every player may build and buy development cards in any turn, not only in their own.":"掷骰之后，每位玩家在任何回合都可以建造和购买发展卡，不限于自己的回合。",
+"Once the dice are down, every player may build and buy development cards in any turn, not only in their own. In Cities & Knights this includes knights, walls and improvements.":"掷骰之后，每位玩家在任何回合都可以建造和购买发展卡，不限于自己的回合。",
 "Robber at {name}":"强盗在{name}处",
 "Robber":"强盗",
 "How often the robber was moved onto land of each person.":"强盗被移到每个人土地上的次数。",

@@ -55,3 +55,21 @@ ok('robber statistics count the owners of the land', () => {
   assert.strictEqual(s.stats.robbed[p], 0);
   assert.strictEqual(engine.summary(s).players.reduce((a, x) => a + x.robbed, 0), owners.size);
 });
+ok('on: Cities & Knights - knights, walls and improvements out of turn', () => {
+  const s = engine.createGame({ id: 'k', mode: 'knights', players: players(3), options: { expBuildAnytime: true } });
+  let g = 0;
+  while (s.phase === 'setup' && g++ < 300) {
+    const p = s.current, L = engine.viewFor(s, p).legal || {};
+    if (L.setupSpots) act(s, p, { type: s.setup.need === 'city' ? 'placeCity' : 'placeSettlement', v: L.setupSpots[0] });
+    else if (L.setupRoads) act(s, p, { type: 'placeRoad', e: L.setupRoads[0] });
+    else throw new Error('setup stuck');
+  }
+  s.pending = []; s.step = 'main';
+  const q = other(s);
+  Object.assign(s.players[q].res, { wool: 3, grain: 3, ore: 3 });
+  const spots = (engine.viewFor(s, q).legal || {}).knightSpots;
+  assert.ok(spots && spots.length, 'knight spots offered');
+  act(s, q, { type: 'buildKnight', v: spots[0] });
+  assert.ok(s.knights[spots[0]] && s.knights[spots[0]].p === q);
+  assert.throws(() => act(s, q, { type: 'moveKnight', from: spots[0], to: spots[0] }), /./, 'moving stays a turn action');
+});

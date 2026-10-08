@@ -190,7 +190,7 @@ export function createKnights(c) {
   // why an improvement cannot be bought right now (shown when the greyed button is tapped)
   function improveWhy(tr, comm) {
     const v = c.G.view, m = me();
-    const actor = v.phase === 'play' && !v.pending.length && ((v.step === 'main' && v.current === v.me) || (v.step === 'sbp' && v.sbp?.queue[0] === v.me));
+    const actor = v.phase === 'play' && !v.pending.length && ((v.step === 'main' && (v.current === v.me || v.options.expBuildAnytime)) || (v.step === 'sbp' && v.sbp?.queue[0] === v.me));
     if (!actor) return t('It is not your move right now.');
     if (!Object.values(v.buildings).some(b => b.p === v.me && b.type === 'city')) return t('You need a city first.');
     const lvl = m.improvements[tr];

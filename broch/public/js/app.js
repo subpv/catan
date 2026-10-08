@@ -225,7 +225,7 @@ async function renderLobby() {
           <div class="muted house-h">${tx('House rules')}</div>
           ${sw('robberReturn', tx('House rule: forgotten robber'), tx('If a player ends their turn without moving the robber, it goes back to the desert.'))}
           ${newGame.mode === 'classic' ? sw('knightsFree', tx('House rule: knights without a limit'), tx('Knight cards can be played as often per turn as you like. The rulebook allows only one development card per turn.')) : ''}
-          ${newGame.mode === 'classic' ? `<div class="muted house-h">${tx('Experiments')}</div>${sw('expBuildAnytime', tx('Experiment: build anytime'), tx('Once the dice are down, every player may build and buy development cards in any turn, not only in their own.'))}` : ''}
+          ${newGame.mode === 'classic' || newGame.mode === 'knights' ? `<div class="muted house-h">${tx('Experiments')}</div>${sw('expBuildAnytime', tx('Experiment: build anytime'), tx('Once the dice are down, every player may build and buy development cards in any turn, not only in their own. In Cities & Knights this includes knights, walls and improvements.'))}` : ''}
           ${sw('startBoth', tx('House rule: starting resources for both'), tx('The rulebook pays starting resources only for the second building of the setup phase. With this rule both pay. In Cities & Knights the city counts like a settlement.'))}`}
           <div class="row wrap" style="gap:18px">
             <div class="field"><span>${tx('Players')}</span><div class="stepper"><button data-np="-1" aria-label="${tx('Fewer')}">−</button><b id="np">${newGame.maxPlayers}</b><button data-np="1" aria-label="${tx('More')}">+</button></div></div>

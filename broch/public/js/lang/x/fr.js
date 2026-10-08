@@ -1018,7 +1018,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Pierre 1 : {@p}. Pierre 2 : {@q
 "−1 pollution, adds a green chip to the bag":"−1 pollution, ajoute un jeton vert dans le sac",
 "Experiments":"Expériences",
 "Experiment: build anytime":"Expérience : construire à tout moment",
-"Once the dice are down, every player may build and buy development cards in any turn, not only in their own.":"Une fois les dés lancés, chacun peut construire et acheter des cartes de développement à chaque tour, pas seulement au sien.",
+"Once the dice are down, every player may build and buy development cards in any turn, not only in their own. In Cities & Knights this includes knights, walls and improvements.":"Une fois les dés lancés, chacun peut construire et acheter des cartes de développement à chaque tour, pas seulement au sien.",
 "Robber at {name}":"Voleur chez {name}",
 "Robber":"Voleur",
 "How often the robber was moved onto land of each person.":"Combien de fois le voleur a été placé sur les terres de chaque personne.",

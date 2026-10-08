@@ -50,7 +50,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
       startBoth: !!options.startBoth,
       knightsFree: !!options.knightsFree && !knights,
       // experiment: building is allowed in every player's turn (after the dice), not only in your own
-      expBuildAnytime: !!options.expBuildAnytime && !knights,
+      expBuildAnytime: !!options.expBuildAnytime,
       big, scenario: sea ? scenario : null, variable: sea && !!options.variable, variants,
     },
     board,
