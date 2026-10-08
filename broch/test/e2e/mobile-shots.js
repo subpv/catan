@@ -119,6 +119,7 @@ async function measure(page, label) {
     report.push({ label: 'pageerrors', errors });
     await browser.close();
   } catch (e) { report.push({ error: e.stack }); process.exitCode = 1; } finally { srv.kill(); }
+  if (report.some(r => r.errors && r.errors.length)) { console.log('PAGE ERRORS:', JSON.stringify(report.find(r => r.errors && r.errors.length).errors)); process.exitCode = 1; }
   fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 1));
   console.log(JSON.stringify(report.map(r => ({ l: r.label, over: r.horizontalOverflow, small: (r.smallTargets || []).length, tiny: (r.tinyText || []).length, e: r.error || r.note || (r.errors && r.errors.length) })), null, 0));
   console.log('screenshots in', OUT);

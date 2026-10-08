@@ -9,6 +9,7 @@
     "test:bots": "node test/e2e/bots-server.js",
     "test:security": "node test/e2e/security.js",
     "test:resign": "node test/e2e/resign.js",
+    "test:browser": "NODE_PATH=$(npm root -g) node test/e2e/mobile-shots.js /tmp/broch-shots 390 844 classic knights seafarers traders big energies humankind inkas explorers",
     "dist": "node scripts/make-dist.js"
   },
   "dependencies": {

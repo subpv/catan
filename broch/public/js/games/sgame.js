@@ -65,6 +65,7 @@ export function mountSGame(app, id, mode) {
       const d = diff(prev, G.view);
       G.fresh = d.fresh;
       if (prev) Object.assign(G.fresh, plugin().fresh?.(G.view, prev) || {}); // pieces only this game has
+      const release = holdRolls(prev, d.events);
       onNewState(prev);
       plugin().afterState?.(G.view, prev, G.A); // may queue a scene, so dialogs wait for it
       render();
