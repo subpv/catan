@@ -1,3 +1,4 @@
+'use strict';
 // Very simple bot: builds what it can, sometimes accepts trades, ends its turn.
 const RES = ['lumber', 'brick', 'wool', 'grain', 'ore'];
 const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -22,7 +23,7 @@ function robberHex(v) {
   return scored[0][1];
 }
 
-export function decide(v) {
+function decide(v) {
   const L = v.legal || {}, me = v.players[v.me];
   if (v.phase === 'over') return null;
   if (L.setupSpots) {
@@ -135,3 +136,5 @@ export function decide(v) {
   }
   return { type: 'endTurn' };
 }
+
+module.exports = { decide };

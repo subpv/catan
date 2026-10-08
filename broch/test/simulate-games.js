@@ -8,7 +8,7 @@ const GAMES = Number(process.argv[2]) || 20;
 const only = process.argv[3];
 const modes = only ? [only] : engine.STANDALONE;
 const BOTS = {};
-modes.forEach(m => { BOTS[m] = require(`./bots/${m}.js`); });
+modes.forEach(m => { BOTS[m] = require(`../server/bots/fuzz-${m}.js`); });
 
 function play(mode, n, game = {}, g = 0) {
   const players = Array.from({ length: n }, (_, i) => ({ id: 'u' + i, name: 'P' + i, color: ['red', 'blue', 'orange', 'white', 'teal', 'purple'][i], country: 'DE' }));

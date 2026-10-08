@@ -1,5 +1,6 @@
+'use strict';
 // Bots for the standalone games in the demo build: one decision per call.
-import EUP_BOT from '../test/bots/explorers.js';
+const EUP_BOT = require('./fuzz-explorers.js');
 const PIPS = { 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3, 11: 2, 12: 1 };
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const RES = ['lumber', 'brick', 'wool', 'grain', 'ore'];
@@ -158,8 +159,10 @@ BOTS.explorers = function explorers(v) {
   return c.length ? pick(c) : null;
 };
 
-export function decide(v) {
+function decide(v) {
   if (v.phase === 'over') return null;
   const bot = BOTS[v.mode];
   return bot ? bot(v) : null;
 }
+
+module.exports = { decide };

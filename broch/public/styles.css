@@ -1685,3 +1685,4 @@ svg.board:not(.alive) .en-cog { animation: none !important; }
 :root[data-theme="dark"] .beta-tag { color: #F4D58A; background: #5A3E0C; }
 .mode-tile .beta-tag { position: absolute; right: 8px; bottom: 7px; margin: 0; }
 .mode-pick.four .mode-tile b { font-size: 12.8px; padding-right: 18px; letter-spacing: -.01em; }
+.seat { align-items: center; } .seat .btn { margin-left: auto; padding: 1px 8px; }

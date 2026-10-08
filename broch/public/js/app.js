@@ -216,9 +216,10 @@ async function renderLobby() {
       <div>
         ${mineRunning.length ? `<div class="card"><h3>${tx('Your games')}</h3>${mineRunning.map(g => row(g, `${g.current === me ? `<span class="badge turn">${tx('Your turn')}</span>` : ''}<a class="btn small gold" href="#/game/${g.id}">${tx('Open')}</a>`)).join('')}</div>` : ''}
         ${mineOpen.map(g => `<div class="card waiting"><div class="row"><h3 class="spacer">${gname(g)} ${modeBadge(g)}</h3></div>
-            <div class="seat-list">${g.seats.map(s => `<div class="seat">${houseIcon(s.color, 26)}<span>${flag(s.country)} ${esc(s.name)}${s.id === g.host ? ` <small class="muted">· ${tx('host')}</small>` : ''}</span></div>`).join('')}
+            <div class="seat-list">${g.seats.map(s => `<div class="seat">${houseIcon(s.color, 26)}<span>${s.bot ? '🤖' : flag(s.country)} ${esc(s.name)}${s.id === g.host ? ` <small class="muted">· ${tx('host')}</small>` : ''}${s.bot ? ` <small class="muted">· ${tx('bot')}</small>` : ''}</span>${s.bot && g.host === me ? `<button class="btn small" data-rmbot="${g.id}|${s.id}" title="${tx('Remove bot')}" aria-label="${tx('Remove bot')}">✕</button>` : ''}</div>`).join('')}
               ${Array.from({ length: g.maxPlayers - g.seats.length }, () => `<div class="seat empty-seat"><span class="ghost-house"></span><span class="muted">${tx('Free seat')}</span></div>`).join('')}</div>
             <div class="field"><span>${tx('Pick your color')}</span>${colorSwatches(g, me)}</div>
+            ${g.host === me && g.seats.length < g.maxPlayers ? `<div class="row wrap"><button class="btn small" data-addbot="${g.id}">🤖 ${tx('Add bot')}</button>${g.maxPlayers - g.seats.length > 1 ? `<button class="btn small" data-fillbots="${g.id}">${tx('Fill free seats with bots')}</button>` : ''}<span class="muted" style="font-size:12.5px">${tx('Computer players take empty seats. Games with bots do not count for the statistics.')}</span></div>` : ''}
             <div class="row wrap">${g.host === me ? `<button class="btn primary" data-start="${g.id}" ${g.seats.length < minPlayersOf(g.mode) ? 'disabled' : ''}>${tx('Start game')}</button>` : `<span class="muted" style="font-size:13px">${tx('Waiting for the host to start…')}</span>`}
               <span class="spacer"></span><button class="btn small" data-share="${g.id}">${tx('Copy invite link')}</button><button class="btn small" data-leave="${g.id}">${tx('Leave')}</button></div>
           </div>`).join('')}
@@ -284,6 +285,14 @@ async function renderLobby() {
     });
     post('join', 'join', () => sfx.place()); post('leave', 'leave');
     post('start', 'start', id => { location.hash = `#/game/${id}`; });
+    // computer players: the host adds or removes them while the game is open
+    const botCall = async (id, body) => { try { await api(`/games/${id}/bots`, { body }); sfx.place(); } catch (e) { sfx.error(); toast(e.message, 'warn'); } };
+    el.querySelectorAll('[data-addbot]').forEach(b => b.onclick = () => botCall(b.dataset.addbot, { action: 'add' }));
+    el.querySelectorAll('[data-fillbots]').forEach(b => b.onclick = async () => {
+      const g = L.open.find(x => x.id === b.dataset.fillbots);
+      for (let i = g ? g.maxPlayers - g.seats.length : 0; i > 0; i--) await botCall(b.dataset.fillbots, { action: 'add' });
+    });
+    el.querySelectorAll('[data-rmbot]').forEach(b => b.onclick = () => { const [gid, bid] = b.dataset.rmbot.split('|'); botCall(gid, { action: 'remove', id: bid }); });
     el.querySelectorAll('[data-gcolor]').forEach(b => b.onclick = async () => {
       try { await api(`/games/${b.dataset.game}/color`, { body: { color: b.dataset.gcolor } }); sfx.click(); draw(); } catch (e) { sfx.error(); toast(e.message, 'warn'); }
     });

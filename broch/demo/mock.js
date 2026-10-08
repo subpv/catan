@@ -3,8 +3,9 @@
 import engine from '../server/engine/index.js';
 import { tradersVp } from '../server/engine/constants.js';
 import { SCENARIOS as SEA_SCENARIOS } from '../server/engine/scenarios.js';
-import { decide as decideClassic } from './bots.js';
-import { decide as decideStandalone } from './bots-standalone.js';
+import { decide as decideClassic } from '../server/bots/classic.js';
+import { decide as decideStandalone } from '../server/bots/standalone.js';
+import { botName } from '../server/bots/names.js';
 const decide = v => (engine.isStandalone(v.mode) ? decideStandalone(v) : decideClassic(v));
 
 const COLORS = ['red', 'blue', 'orange', 'white', 'teal', 'purple', 'black', 'pink', 'yellow', 'brown'];
@@ -49,6 +50,8 @@ const history = [];
 
 const err = (msg, status = 400) => Object.assign(new Error(msg), { handled: true, status });
 const pub = u => ({ id: u.id, name: u.name, color: u.color, country: u.country || null, admin: !!u.admin });
+// a seat is a user of the demo or a bot of that game (meta.bots), like on the real server
+const userOf = (g, id) => (String(id).startsWith('bot_') ? { id, name: (g.meta.bots[id] || {}).name || 'Bot', country: null, color: null, bot: true } : users.find(u => u.id === id));
 const seatOf = (g, uid) => (g.state ? g.state.players.findIndex(p => p.userId === uid) : -1);
 
 function fixColors(m) {
@@ -56,7 +59,7 @@ function fixColors(m) {
   const used = new Set();
   for (const id of m.seats) {
     let c = m.colors[id];
-    if (!c || used.has(c)) { const fav = users.find(u => u.id === id).color; c = !used.has(fav) ? fav : COLORS.find(x => !used.has(x)); }
+    if (!c || used.has(c)) { const fav = (users.find(u => u.id === id) || {}).color; c = !used.has(fav) ? fav : COLORS.find(x => !used.has(x)); }
     m.colors[id] = c; used.add(c);
   }
 }
@@ -65,7 +68,7 @@ function card(g) {
   fixColors(m);
   return {
     id: m.id, name: m.name, mode: m.mode, expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, knightsFree: !!m.knightsFree, maxPlayers: m.maxPlayers, vpTarget: m.vpTarget, status: m.status, host: m.host,
-    seats: m.seats.map(id => ({ ...pub(users.find(u => u.id === id)), color: m.colors[id] })),
+    seats: m.seats.map(id => ({ ...pub(userOf(g, id)), bot: !!userOf(g, id).bot, color: m.colors[id] })),
     current: g.state && g.state.phase !== 'over' ? g.state.players[g.state.current].userId : null,
     turn: g.state ? g.state.turn : 0,
   };
@@ -158,9 +161,9 @@ async function api(path, opts = {}) {
     const big = !standalone && (typeof b.big === 'boolean' ? b.big : maxPlayers > 4);
     const defVp = standalone ? engine.defaultVp(mode, scenario) : mode === 'knights' ? (expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp + 2 : 13) : expansion === 'seafarers' ? SEA_SCENARIOS[scenario].vp : expansion === 'explorers' ? 12 : expansion === 'traders' ? tradersVp(variants) : 10;
     const id = 'demo' + (++seq);
-    // bots take the other seats straight away so you can start
-    const seats = [u.id, ...users.slice(1, maxPlayers).map(x => x.id)];
-    const g = { meta: { id, name: '', mode, expansion, scenario, variants, missions, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone && b.gameOptions ? { ...b.gameOptions } : null, maxPlayers, vpTarget: standalone && engine.fixedVp(mode) ? defVp : b.vpTarget || defVp, host: u.id, seats, status: 'open' }, state: null };
+    // the host adds bots in the lobby (or plays with friends only)
+    const seats = [u.id];
+    const g = { meta: { id, bots: {}, name: '', mode, expansion, scenario, variants, missions, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone && b.gameOptions ? { ...b.gameOptions } : null, maxPlayers, vpTarget: standalone && engine.fixedVp(mode) ? defVp : b.vpTarget || defVp, host: u.id, seats, status: 'open' }, state: null };
     games.set(id, g);
     emit({ t: 'lobby' });
     return { game: card(g) };
@@ -174,13 +177,28 @@ async function api(path, opts = {}) {
     emit({ t: 'lobby' });
     return { game: card(g) };
   }
+  if ((m = path.match(/^\/games\/(\w+)\/bots$/))) {
+    need();
+    const g = games.get(m[1]);
+    if (!g || g.meta.status !== 'open') throw err('The game already started.');
+    if (b.action === 'remove') {
+      g.meta.seats = g.meta.seats.filter(x => x !== b.id); delete g.meta.bots[b.id];
+    } else {
+      if (g.meta.seats.length >= g.meta.maxPlayers) throw err('The game is full.');
+      const id = 'bot_' + (++seq);
+      g.meta.bots[id] = { name: botName([...users.map(x => x.name), ...Object.values(g.meta.bots).map(x => x.name)]) };
+      g.meta.seats.push(id);
+    }
+    emit({ t: 'lobby' });
+    return { game: card(g) };
+  }
   if ((m = path.match(/^\/games\/(\w+)\/(join|leave|start|abandon)$/))) {
     need();
     const g = games.get(m[1]);
     if (!g) throw err('Game not found', 404);
     if (m[2] === 'start') {
       fixColors(g.meta);
-      const players = g.meta.seats.map(id => { const u = users.find(x => x.id === id); return { id, name: u.name, color: g.meta.colors[id], country: u.country }; });
+      const players = g.meta.seats.map(id => { const u = userOf(g, id); return { id, name: u.name, color: g.meta.colors[id], country: u.country }; });
       g.state = engine.createGame({ id: g.meta.id, mode: g.meta.mode, players, options: { vpTarget: g.meta.vpTarget, expansion: g.meta.expansion, scenario: g.meta.scenario, variants: g.meta.variants, missions: g.meta.missions, robberReturn: !!g.meta.robberReturn, startBoth: !!g.meta.startBoth, variable: !!g.meta.variable, knightsFree: !!g.meta.knightsFree, game: g.meta.gameOptions || {}, big: g.meta.big ?? players.length > 4 } });
       g.meta.status = 'playing';
       emit({ t: 'lobby' });

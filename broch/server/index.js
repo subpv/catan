@@ -9,6 +9,8 @@ const { db } = store;
 const engine = require('./engine');
 const { COLORS, tradersVp } = require('./engine/constants');
 const { SCENARIOS: SEA_SCENARIOS } = require('./engine/scenarios');
+const { createRunner, isBotId } = require('./bots/runner');
+const { botName } = require('./bots/names');
 
 const PORT = +process.env.PORT || 8080;
 const REGISTRATION_CODE = process.env.REGISTRATION_CODE || '';
@@ -26,6 +28,8 @@ function checkPassword(user, pw) {
   return crypto.timingSafeEqual(h, Buffer.from(user.hash, 'hex'));
 }
 const publicUser = u => u && ({ id: u.id, name: u.name, color: u.color, country: u.country || null, admin: !!u.admin });
+// a seat is a registered user or a bot of that game (meta.bots)
+const seatUser = (g, id) => (isBotId(id) ? { id, name: (g.meta.bots && g.meta.bots[id] && g.meta.bots[id].name) || 'Bot', color: null, country: null, bot: true } : publicUser(db.users.find(x => x.id === id)));
 const meUser = u => u && ({ ...publicUser(u), email: u.email, lang: u.lang || null });
 function cookies(req) {
   return Object.fromEntries((req.headers.cookie || '').split(';').map(c => c.trim().split('=')).filter(x => x[0]).map(([k, ...v]) => [k, decodeURIComponent(v.join('='))]));
@@ -121,7 +125,7 @@ function fixSeatColors(meta) {
   for (const id of meta.seats) {
     let c = meta.colors[id];
     if (!c || used.has(c) || !COLORS.includes(c)) {
-      const fav = (db.users.find(u => u.id === id) || {}).color;
+      const fav = (db.users.find(u => u.id === id) || {}).color; // (bots have none)
       c = fav && !used.has(fav) ? fav : COLORS.find(x => !used.has(x));
     }
     meta.colors[id] = c; used.add(c);
@@ -135,7 +139,7 @@ function gameCard(g) {
     expansion: m.expansion || 'none', scenario: m.scenario || null, big: !!m.big, variants: m.variants || null, missions: m.missions || null, robberReturn: !!m.robberReturn, startBoth: !!m.startBoth, variable: !!m.variable, knightsFree: !!m.knightsFree,
     host: m.host, createdAt: m.createdAt,
     seats: m.seats.map(id => {
-      const u = publicUser(db.users.find(x => x.id === id)) || { id, name: '?' };
+      const u = seatUser(g, id) || { id, name: '?' };
       const inGame = g.state && g.state.players.find(p => p.userId === id);
       return { ...u, color: inGame ? inGame.color : (m.colors && m.colors[id]) || u.color };
     }),
@@ -259,6 +263,27 @@ async function api(req, res, url) {
     broadcastLobby();
     return send(res, 200, { game: gameCard(g) });
   }
+  m = route.match(/^\/games\/([\w-]+)\/bots$/);
+  if (m && method === 'POST') {
+    const u = need(); const g = getGame(m[1]); const meta = g.meta; const b = await readBody(req);
+    if (meta.status !== 'open') throw new HttpError(400, 'The game already started.');
+    if (meta.host !== u.id) throw new HttpError(403, 'Only the host can add or remove bots.');
+    meta.bots = meta.bots || {};
+    if (b.action === 'remove') {
+      if (!isBotId(b.id) || !meta.seats.includes(b.id)) throw new HttpError(400, 'No such bot.');
+      meta.seats = meta.seats.filter(x => x !== b.id); delete meta.bots[b.id];
+    } else {
+      if (meta.seats.length >= meta.maxPlayers) throw new HttpError(400, 'The game is full.');
+      const id = 'bot_' + newId(5);
+      const taken = [...db.users.map(x => x.name), ...Object.values(meta.bots).map(x => x.name)];
+      meta.bots[id] = { name: botName(taken) };
+      meta.seats.push(id);
+    }
+    fixSeatColors(meta);
+    store.saveGame(g, true);
+    broadcastLobby();
+    return send(res, 200, { game: gameCard(g) });
+  }
   m = route.match(/^\/games\/([\w-]+)\/(join|leave|start|abandon)$/);
   if (m && method === 'POST') {
     const u = need(); const g = getGame(m[1]); const meta = g.meta;
@@ -271,18 +296,20 @@ async function api(req, res, url) {
     } else if (m[2] === 'leave') {
       if (meta.status !== 'open') throw new HttpError(400, 'You cannot leave a running game. The host can abandon it.');
       meta.seats = meta.seats.filter(x => x !== u.id);
-      if (!meta.seats.length) { store.deleteGame(meta.id); broadcastLobby(); return send(res, 200, { ok: true }); }
-      if (meta.host === u.id) meta.host = meta.seats[0];
+      if (!meta.seats.some(x => !isBotId(x))) { store.deleteGame(meta.id); broadcastLobby(); return send(res, 200, { ok: true }); }
+      if (meta.host === u.id) meta.host = meta.seats.find(x => !isBotId(x));
     } else if (m[2] === 'start') {
       if (meta.host !== u.id) throw new HttpError(403, 'Only the host can start.');
       if (meta.status !== 'open') throw new HttpError(400, 'Already started.');
       if (meta.seats.length < engine.minPlayers(meta.mode)) throw new HttpError(400, engine.minPlayers(meta.mode) > 2 ? 'This game needs more players.' : 'Wait for at least one more player.');
       fixSeatColors(meta);
-      const players = meta.seats.map(id => { const x = db.users.find(y => y.id === id); return { id, name: x.name, color: meta.colors[id], country: x.country || null }; });
+      const players = meta.seats.map(id => { const x = seatUser(g, id); return { id, name: x.name, color: meta.colors[id], country: x.country || null }; });
       g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, missions: meta.missions, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, variable: !!meta.variable, knightsFree: !!meta.knightsFree, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });
       meta.status = 'playing'; meta.startedAt = Date.now();
+      runner.schedule(g);
     } else if (m[2] === 'abandon') {
       if (meta.host !== u.id && !u.admin) throw new HttpError(403, 'Only the host can abandon the game.');
+      runner.cancel(meta.id);
       store.deleteGame(meta.id);
       broadcastGame(g, { t: 'abandoned' });
       broadcastLobby();
@@ -382,17 +409,21 @@ function broadcastState(g) {
 }
 function onlineIn(g) {
   const ids = new Set([...clients].filter(c => c.game === g.meta.id).map(c => c.user.id));
-  return g.meta.seats.filter(id => ids.has(id));
+  return g.meta.seats.filter(id => ids.has(id) || isBotId(id)); // bots are always at the table
 }
 
 function finishGame(g) {
   const sum = engine.summary(g.state);
-  if (!db.history.some(h => h.id === sum.id)) { db.history.push(sum); store.saveHistory(); }
+  // games with computer players do not count for the statistics (nobody earns a win against a bot)
+  const withBots = g.state.players.some(p => isBotId(p.userId));
+  if (!withBots && !db.history.some(h => h.id === sum.id)) { db.history.push(sum); store.saveHistory(); }
   g.meta.status = 'over'; g.meta.finishedAt = Date.now();
   store.saveGame(g, true);
   broadcastLobby();
   broadcastAll({ t: 'stats' });
 }
+
+const runner = createRunner({ engine, store, broadcastState, finishGame });
 
 wss.on('connection', (ws, req) => {
   const user = userFromReq(req);
@@ -423,6 +454,7 @@ wss.on('connection', (ws, req) => {
         store.saveGame(g);
         broadcastState(g);
         if (!wasOver && g.state.phase === 'over') finishGame(g);
+        runner.schedule(g);
         sendWs(c, { t: 'ok', rid: msg.rid });
       }
     } catch (e) {
@@ -459,5 +491,8 @@ for (const g of db.games.values()) if (g.state && g.state.phase === 'over' && g.
 function shutdown() { console.log('Saving and shutting down…'); store.saveEverythingNow(); process.exit(0); }
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
+
+// games with bots that were running when the server stopped: let the bots go on
+for (const g of db.games.values()) if (g.state && g.meta.status === 'playing') runner.schedule(g);
 
 server.listen(PORT, () => console.log(`Broch listening on :${PORT} (data in ${store.DATA_DIR})`));
