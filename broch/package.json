@@ -5,7 +5,7 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node test/simulate.js 30"
+    "test": "node test/simulate.js 30 && node test/eup-rules.js && node test/simulate-games.js 5 explorers"
   },
   "dependencies": {
     "ws": "^8.22.0"

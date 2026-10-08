@@ -634,7 +634,8 @@ function ownShip(s, p, id) {
 
 function endTurn(s) {
   if (s.completed.length) resolveConquests(s);
-  nextTurn(s);
+  checkWin(s); // points from a conquest count in the turn that ends
+  if (s.phase === 'play') nextTurn(s);
 }
 
 // ---------------------------------------------------------------- handlers
@@ -930,6 +931,8 @@ const HANDLERS = {
     ship.cargo.splice(i, 1);
     h.village.friends.push(p); h.village.bags--;
     ship.cargo.push({ t: 'S' });
+    // quick sailing helps at once: every ship of yours gets 1 more move
+    if (h.village.kind === 'fast') for (const x of shipsOf(s, p)) x.mp += 1;
     log(s, '{@p} befriends a spice village and loads a bag of spice.', { p, h: h.id });
   },
   // found a settlement from an explorer ship (the ship and the explorer go back to the supply)

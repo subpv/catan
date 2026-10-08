@@ -237,7 +237,8 @@ function statusInfo() {
   const x = P.mainStatus?.(v, A) || {};
   return {
     msg: esc(x.msg || t('Build, trade or end your turn.')), sub: esc(x.sub || ''), mine: true,
-    btns: `<button class="btn" data-do="trade">${tx('Trade')}</button><button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button>${P.mainButtons ? P.mainButtons(v, A) : ''}<button class="btn primary" data-do="endTurn">${tx('End turn')}</button>`,
+    // a game may decide which trade buttons are open (Explorers & Pirates: none while ships move, only the bank for ship 2)
+    btns: `${P.tradeButtons ? P.tradeButtons(v, A) : `<button class="btn" data-do="trade">${tx('Trade')}</button><button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button>`}${P.mainButtons ? P.mainButtons(v, A) : ''}<button class="btn primary" data-do="endTurn">${tx('End turn')}</button>`,
   };
 }
 function diceHtml() {

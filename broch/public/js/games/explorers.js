@@ -418,6 +418,11 @@ const plugin = register({
     if (v.second) return { msg: t('Ship 2: build and move'), sub: t('You trade only with the supply this turn.') };
     return { msg: t('Trade and build, then start the movement phase.'), sub: L.goodGold > 0 ? t('The gold traders buy a resource for 1 gold from you.') : '' };
   },
+  tradeButtons(v) {
+    if (v.step !== 'main') return '';
+    const bank = `<button class="btn" data-do="bank" title="${tx('Trade with the bank')}">${glyph('bank', 15)}${tx('Bank')}</button>`;
+    return v.second ? bank : `<button class="btn" data-do="trade">${tx('Trade')}</button>${bank}`;
+  },
   mainButtons(v) {
     if (v.step === 'main') return `<button class="btn gold" data-do="startMove">${glyph('ship', 15)} ${tx('Move ships')}</button>`;
     if (v.step === 'move' && (v.legal || {}).rollFish) return `<button class="btn" data-do="rollFish">${glyph('dice', 15)} ${tx('Roll a fish swarm')}</button>`;

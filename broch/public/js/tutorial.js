@@ -75,7 +75,6 @@ const CHAPTERS = [
   { id: 'knights', name: 'Cities & Knights', color: '#2C6E9B', build: knights },
   { id: 'seafarers', name: 'Seafarers', color: '#1F7A99', build: seafarers },
   { id: 'traders', name: 'Traders & Barbarians', color: '#B9851F', build: traders },
-  { id: 'explorers', name: 'Explorers & Pirates', color: '#4A3A6E', build: explorers },
   { id: 'big', name: '5–6 player expansion', color: '#2E6B45', build: big },
 ];
 export const TUTORIALS = CHAPTERS.map(c => c.id);
@@ -443,87 +442,6 @@ function traders() {
         await T.eventCard(3, 5);
         T.hit(8);
         await T.wait(1400);
-        await T.finale();
-      },
-    ],
-  };
-}
-
-function explorers() {
-  const B = geometry([
-    { q: 0, r: -1, t: 'forest', n: 8, island: 0 }, { q: -1, r: 0, t: 'hills', n: 6, island: 0 }, { q: 0, r: 0, t: 'fields', n: 9, island: 0 }, { q: -1, r: 1, t: 'pasture', n: 5, island: 0 },
-    { q: 1, r: -1, t: 'sea' }, { q: 1, r: 0, t: 'sea' }, { q: 0, r: 1, t: 'sea' }, { q: 1, r: 1, t: 'fog' }, { q: 2, r: -1, t: 'fog' }, { q: 2, r: 0, t: 'sea' }, { q: -1, r: -1, t: 'sea' },
-  ]);
-  B.homeIslands = [0, 1, 2];
-  const home = vAt(B, 0, -1), mid = vAt(B, 0.866, -0.5), far = vAt(B, 1.732, 1);
-  const s1 = eAt(B, home, mid), s2 = eAt(B, mid, vAt(B, 1.732, -1)), s3 = eAt(B, vAt(B, 0.866, 0.5), far);
-  const fogA = hAt(B, 2, -1), shoalHex = hAt(B, 1, 0), lairHex = hAt(B, 0, 1), spiceHex = hAt(B, 0, 0);
-  B.shoals = [{ id: 0, hex: shoalHex, number: 4 }];
-  B.spices = [spiceHex];
-  const v = baseView(B, { expansion: 'explorers' });
-  v.buildings[home] = { p: 0, type: 'settlement' };
-  v.buildings[vAt(B, 0.866, 0.5)] = { p: 0, type: 'settlement' };
-  v.buildings[vAt(B, -1.732, 1)] = { p: 1, type: 'settlement' };
-  v.ships[s1] = { p: 0 };
-  return {
-    view: v, vpTarget: 12,
-    steps: [
-      async T => {
-        T.say(t('Explorers & Pirates'), t('Sail into the fog, discover land and fulfil missions.'));
-        T.vp(2);
-        await T.wait(2600);
-      },
-      async T => {
-        T.say(t('Discover the fog with ships.'), t('Tap the glowing edge. New land pays you a resource.'));
-        await T.tap({ edges: [s2] });
-        T.ship(s2, 0);
-        await T.wait(600);
-        T.reveal(fogA, 'mountains', 5);
-        sfx.reveal();
-        await T.wait(700);
-        await T.gain(T.hexPt(fogA), 'ore', 1, 0);
-        await T.wait(700);
-      },
-      async T => {
-        T.say(t('Fish for Broch'), t('A ship next to a fish shoal hauls fish when its number is rolled.'));
-        T.ship(s3, 0);
-        await T.wait(500);
-        await T.roll(1, 3);
-        T.hit(4);
-        await T.gain(T.hexPt(shoalHex), 'fish', 1, 0);
-        await T.wait(900);
-      },
-      async T => {
-        T.say(t('Spice for Broch'), t('Settlements on a spice field load spice when it pays.'));
-        await T.roll(5, 4);
-        T.hit(9);
-        await T.gain(T.hexPt(spiceHex), 'spice', 1, 0, home);
-        await T.wait(900);
-      },
-      async T => {
-        T.say(t('Deliver cargo to the council.'), t('Every 2 deliveries earn 1 point, up to 3 points per mission.'));
-        await T.deliver(['fish', 'spice'], home);
-        T.vp(3);
-        await T.wait(1300);
-      },
-      async T => {
-        T.say(t('Pirate lairs'), t('Attack from a ship next to a lair for 1 ore and 1 wool. Whoever hits most when it falls earns a point.'));
-        T.set(v2 => { v2.lairs = [{ hex: lairHex, hp: 3 }]; });
-        await T.wait(900);
-        for (let hp = 2; hp >= 0; hp--) {
-          await T.give({ ore: 1, wool: 1 });
-          await T.pay({ ore: 1, wool: 1 }, T.hexPt(lairHex));
-          T.set(v2 => { v2.lairs = [{ hex: lairHex, hp, owner: hp === 0 ? 0 : undefined }]; });
-          sfx.thud();
-          await T.wait(450);
-        }
-        T.float(T.hexPt(lairHex), '+1', '#F6CF57');
-        T.vp(4);
-        await T.wait(1200);
-      },
-      async T => {
-        T.say(t('Reach 12 points to win!'), t('Settlements, cities, new islands, missions and lairs all count.'));
-        await T.countVp(12);
         await T.finale();
       },
     ],
