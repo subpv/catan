@@ -229,7 +229,7 @@ async function api(req, res, url) {
     const u = need(); const b = await readBody(req);
     const mode = b.mode === 'knights' || engine.isStandalone(b.mode) ? b.mode : 'classic';
     const standalone = engine.isStandalone(mode);
-    const maxPlayers = Math.max(engine.minPlayers(mode), Math.min(standalone ? 4 : 6, b.maxPlayers | 0 || 4));
+    const maxPlayers = Math.max(standalone ? engine.minPlayers(mode) : 2, Math.min(standalone ? engine.maxPlayers(mode) : 6, b.maxPlayers | 0 || 4));
     const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
     const scenario = expansion === 'seafarers' ? (['shores', 'islands', 'fog'].includes(b.scenario) ? b.scenario : 'shores') : null;
     const bv = b.variants || {};
@@ -274,7 +274,7 @@ async function api(req, res, url) {
     } else if (m[2] === 'start') {
       if (meta.host !== u.id) throw new HttpError(403, 'Only the host can start.');
       if (meta.status !== 'open') throw new HttpError(400, 'Already started.');
-      if (meta.seats.length < engine.minPlayers(meta.mode)) throw new HttpError(400, 'Wait for at least one more player.');
+      if (meta.seats.length < engine.minPlayers(meta.mode)) throw new HttpError(400, engine.minPlayers(meta.mode) > 2 ? 'This game needs more players.' : 'Wait for at least one more player.');
       fixSeatColors(meta);
       const players = meta.seats.map(id => { const x = db.users.find(y => y.id === id); return { id, name: x.name, color: meta.colors[id], country: x.country || null }; });
       g.state = engine.createGame({ id: meta.id, mode: meta.mode, players, options: { vpTarget: meta.vpTarget, expansion: meta.expansion, scenario: meta.scenario, variants: meta.variants, missions: meta.missions, robberReturn: !!meta.robberReturn, startBoth: !!meta.startBoth, knightsFree: !!meta.knightsFree, game: meta.gameOptions || {}, big: meta.big ?? players.length > 4 } });

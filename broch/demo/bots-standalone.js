@@ -18,23 +18,53 @@ function discardCards(v, count, keys) {
 const BOTS = {
   energies(v) {
     const L = v.legal || {}, me = v.players[v.me], res = me.res || {};
+    const CARDS = ['wood', 'clay', 'fiber', 'food', 'metal', 'research'];
     if (L.setupSpots) return { type: 'placeSettlement', v: bestSpot(v, L.setupSpots) };
     if (L.setupRoads) return { type: 'placeRoad', e: pick(L.setupRoads) };
     const mine = v.pending.filter(x => x.group === v.activeGroup && x.player === v.me)[0];
-    if (mine && mine.type === 'discard') return { type: 'discard', cards: discardCards(v, mine.count, ['lumber', 'brick', 'wool', 'grain', 'ore', 'science']) };
+    if (mine) {
+      if (mine.type === 'discard') return { type: 'discard', cards: discardCards(v, mine.count, CARDS) };
+      if (mine.type === 'inspector') {
+        const hs = Object.keys(L.inspector || {}).map(Number);
+        const theirs = hs.filter(h => (L.inspector[h] || []).length && !v.board.hexes[h].verts.some(x => v.buildings[x] && v.buildings[x].p === v.me));
+        const h = theirs.length ? pick(theirs) : pick(hs);
+        const vs = L.inspector[h] || [];
+        return { type: 'moveInspector', h, victim: vs.length ? pick(vs) : undefined };
+      }
+      if (mine.type === 'takeCard') return { type: 'takeCard', key: res.research < 3 && (L.take || []).includes('research') ? 'research' : pick(L.take || CARDS) };
+      if (mine.type === 'dropCard') { const k = CARDS.slice().sort((a, b) => (res[b] || 0) - (res[a] || 0))[0]; return { type: 'dropCard', key: k }; }
+      if (mine.type === 'placeDamage') return { type: 'placeDamage', v: pick(mine.options) };
+      if (mine.type === 'freePlant') { const sp = Object.entries(L.plantSpots || {}); if (sp.length) { const [bv, hs] = pick(sp); return { type: 'buildPlant', kind: 'brown', v: +bv, h: pick(hs) }; } return { type: 'skipPlant' }; }
+      if (mine.type === 'freeRoad') return L.roads && L.roads.length ? { type: 'buildRoad', e: pick(L.roads) } : { type: 'skipRoads' };
+      return null;
+    }
     if (v.phase !== 'play' || v.pending.length || v.current !== v.me) return null;
-    if (v.step === 'roll') return { type: 'roll' };
-    if (L.hazards && L.hazards.length && res.energy >= 2) { const h = L.hazards[0]; return { type: 'removeHazard', ...(h.plant != null ? { plant: h.plant } : { v: h.v }) }; }
+    const dev = L.dev || {};
+    if (L.playDev && L.playDev.freeSeat && !v.flags.devPlayed) {
+      if (dev.funding && dev.funding.playable) return { type: 'playDev', card: 'funding', take: v.bank.research >= 2 ? { research: 2 } : { [pick(['wood', 'clay', 'fiber', 'food', 'metal'].filter(k => v.bank[k] > 1))]: 2 } };
+      if (dev.boost && dev.boost.playable && L.playDev.greenHexes.length) return { type: 'playDev', card: 'boost', hexes: L.playDev.greenHexes.slice(0, 3) };
+      if (dev.roadBuilding && dev.roadBuilding.playable && L.playDev.roadSpots && me.pieces.roads > 3) return { type: 'playDev', card: 'roadBuilding' };
+      if (dev.protection && dev.protection.playable) {
+        if (L.playDev.damages.length) { const d = L.playDev.damages[0]; return { type: 'playDev', card: 'protection', mode: 'remove', target: d, victim: L.playDev.worse[0] }; }
+        const hs = Object.keys(L.playDev.inspector).map(Number).filter(h => L.playDev.inspector[h].length);
+        if (hs.length) { const h = pick(hs); return { type: 'playDev', card: 'protection', mode: 'move', h, victim: pick(L.playDev.inspector[h]) }; }
+      }
+    }
+    if (v.step === 'roll') return L.draw ? { type: 'drawChips' } : { type: 'roll' };
+    if (L.damages && L.damages.length && me.energy >= 1 && me.energy + 0 >= 3) return { type: 'removeDamage', ...L.damages[0] };
+    if (L.warehouse && me.energy >= 2 && me.cards >= 6) return { type: 'buyWarehouse' };
     if (L.cities && L.cities.length) return { type: 'buildCity', v: pick(L.cities) };
     if (L.settlements && L.settlements.length) return { type: 'buildSettlement', v: bestSpot(v, L.settlements) };
     const spots = Object.entries(L.plantSpots || {});
-    if (spots.length && L.plantCost) {
+    if (spots.length && L.plantLeft) {
       const [bv, hexes] = pick(spots);
-      if (hexes.length && res.science >= L.plantCost.renewable && me.renewable <= me.fossil + 1) return { type: 'buildPlant', kind: 'renewable', v: +bv, h: pick(hexes) };
-      if (hexes.length && res.science >= L.plantCost.fossil && me.fossil < 2 && Math.random() < 0.3) return { type: 'buildPlant', kind: 'fossil', v: +bv, h: pick(hexes) };
+      if (res.research >= 3 && L.plantLeft.green > 0 && (me.tab.green <= me.tab.brown + 1 || Math.random() < 0.5)) return { type: 'buildPlant', kind: 'green', v: +bv, h: pick(hexes) };
+      if (res.research >= 1 && L.plantLeft.brown > 0 && me.tab.brown < 2 && Math.random() < 0.35) return { type: 'buildPlant', kind: 'brown', v: +bv, h: pick(hexes) };
     }
-    if (L.roads && L.roads.length && me.pieces.roads > 11 && res.lumber > 1 && res.brick > 1) return { type: 'buildRoad', e: pick(L.roads) };
-    if (res.energy >= 4) return { type: 'bankTrade', give: 'energy', get: pick(RES) };
+    if (me.tab.cities >= 1 && res.metal && res.fiber && res.food && Math.random() < 0.5 && v.energies.deck > 0) return { type: 'buyDev' };
+    if (L.roads && L.roads.length && me.pieces.roads > 8 && res.wood > 1 && res.clay > 1) return { type: 'buildRoad', e: pick(L.roads) };
+    if (me.energy >= 2) return { type: 'bankTrade', give: 'energy', get: v.bank.research > 0 ? 'research' : pick(['wood', 'clay', 'fiber', 'food', 'metal'].filter(k => v.bank[k] > 0)) };
+    for (const k of ['wood', 'clay', 'fiber', 'food', 'metal']) if (res[k] >= 5 && L.ratios && L.ratios[k] <= 4 && v.bank.research > 0) return { type: 'bankTrade', give: k, get: 'research' };
     return { type: 'endTurn' };
   },
 };

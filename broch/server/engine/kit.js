@@ -152,8 +152,9 @@ function createKit(spec) {
     }
     s.longestRoad.edges = s.longestRoad.p !== null ? longestFor(s, s.longestRoad.p, true).edges : [];
     if (s.longestRoad.p !== prev) {
-      if (s.longestRoad.p !== null) log(s, '{@p} now holds the Longest Road ({n}).', { p: s.longestRoad.p, n: s.longestRoad.len });
-      else log(s, 'Nobody holds the Longest Road any more.');
+      const LL = spec.longestLog || ['{@p} now holds the Longest Road ({n}).', 'Nobody holds the Longest Road any more.'];
+      if (s.longestRoad.p !== null) log(s, LL[0], { p: s.longestRoad.p, n: s.longestRoad.len });
+      else log(s, LL[1]);
     }
   }
 

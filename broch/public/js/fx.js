@@ -522,8 +522,6 @@ const ROBBER_SVG = `<svg viewBox="-60 -80 120 170" class="fx-robber-fig"><defs><
   <circle cy="-34" r="27" fill="url(#rg)" stroke="#000" stroke-width="2"/>
   <path d="M-22 -40 Q0 -50 22 -40 L20 -32 Q0 -40 -20 -32 Z" fill="#000" opacity=".9"/>
   <circle cx="-9" cy="-36" r="3.2" fill="#F0C24A"/><circle cx="9" cy="-36" r="3.2" fill="#F0C24A"/></svg>`;
-// the games that have no robber name their own threat here: { title, moves, svg, sound } (see games/threats.js)
-export const THREAT_BY_MODE = {};
 async function robberScene(view) {
   const th = THREAT_BY_MODE[view.mode];
   (th && sfx[th.sfx || th.sound] ? sfx[th.sfx || th.sound] : sfx.robber)();

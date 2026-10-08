@@ -1,12 +1,5 @@
 // The standalone games that have no robber show their own threat on a 7 (the full-screen scene in fx.js).
 import { THREAT_BY_MODE } from '../fx.js';
-import { beastArt } from './humankind-art.js';
-
-// Dawn of Humankind: the saber-toothed tiger
-THREAT_BY_MODE.humankind = {
-  title: 'The Smilodon prowls!', moves: 'The Smilodon is on the move.', sound: 'roar',
-  svg: `<svg viewBox="-30 -24 68 44" class="fx-robber-fig">${beastArt(true, false)}</svg>`,
-};
 
 // New Energies: the environmental inspector
 THREAT_BY_MODE.energies = {

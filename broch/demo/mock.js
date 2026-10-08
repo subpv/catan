@@ -147,7 +147,7 @@ async function api(path, opts = {}) {
     const u = need();
     const mode = b.mode === 'knights' || engine.isStandalone(b.mode) ? b.mode : 'classic';
     const standalone = engine.isStandalone(mode);
-    const maxPlayers = Math.max(engine.minPlayers(mode), Math.min(standalone ? 4 : 6, b.maxPlayers | 0 || 4));
+    const maxPlayers = Math.max(standalone ? engine.minPlayers(mode) : 2, Math.min(standalone ? engine.maxPlayers(mode) : 6, b.maxPlayers | 0 || 4));
     const expansion = !standalone && ['seafarers', 'traders', 'explorers'].includes(b.expansion) ? b.expansion : 'none';
     const scenario = expansion === 'seafarers' ? (['shores', 'islands', 'fog'].includes(b.scenario) ? b.scenario : 'shores') : null;
     const bv = b.variants || {};

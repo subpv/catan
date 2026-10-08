@@ -230,7 +230,8 @@ function statusInfo() {
   if (v.current !== v.me) return { msg: v.step === 'roll' ? t('Waiting for {name} to roll…', { name: pname(v.current) }) : t('{name} is taking their turn.', { name: pname(v.current) }) };
   if (v.step === 'roll') {
     const x = P.rollStatus?.(v, A) || {};
-    return { msg: tx('Your turn. Roll the dice.'), sub: esc(x.sub || ''), mine: true, btns: `<button class="btn primary roll-btn" data-do="roll">🎲 ${tx('Roll dice')}</button>` };
+    // a game may put something before the roll (New Energies draws its event chips first): rollStatus can return { msg, sub, btns }
+    return { msg: x.msg ? esc(x.msg) : tx('Your turn. Roll the dice.'), sub: esc(x.sub || ''), mine: true, btns: x.btns != null ? x.btns : `<button class="btn primary roll-btn" data-do="roll">🎲 ${tx('Roll dice')}</button>` };
   }
   const x = P.mainStatus?.(v, A) || {};
   return {
