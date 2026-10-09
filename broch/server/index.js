@@ -83,6 +83,14 @@ function rateLimited(ip) {
   attempts.set(ip, a);
   return a.length >= 15;
 }
+// without an invite code anybody may sign up, so one address can only create a few accounts per hour (no bulk accounts from a script)
+const signups = new Map();
+const SIGNUPS_PER_HOUR = 10;
+function signupLimited(ip) {
+  const a = (signups.get(ip) || []).filter(t => Date.now() - t < 3600e3);
+  signups.set(ip, a);
+  return a.length >= SIGNUPS_PER_HOUR;
+}
 function noteFailure(ip) { (attempts.get(ip) || attempts.set(ip, []).get(ip)).push(Date.now()); }
 
 // ------------------------------------------------------------ http helpers
@@ -226,11 +234,13 @@ async function api(req, res, url) {
     const country = String(b.country || '').toUpperCase();
     if (!/^[A-Z]{2}$/.test(country)) throw new HttpError(400, 'Pick your country.');
     if (REGISTRATION_CODE && !sameSecret(b.code, REGISTRATION_CODE) && db.users.length > 0) { noteFailure(ip); throw new HttpError(403, 'Wrong invite code.'); }
+    if (signupLimited(ip)) throw new HttpError(429, 'Too many new accounts from this address. Try again in an hour.');
     if (db.users.some(u => u.email === email)) throw new HttpError(409, 'That email is already registered.');
     if (db.users.some(u => u.name.toLowerCase() === name.toLowerCase())) throw new HttpError(409, 'That name is taken.');
     const taken = db.users.map(u => u.color);
     const u = { id: newId(), email, name, country, color: COLORS.find(c => !taken.includes(c)) || COLORS[db.users.length % COLORS.length], ...hashPassword(pw), createdAt: Date.now(), admin: db.users.length === 0, colorsV: 2 };
     db.users.push(u); store.saveUsers();
+    signups.get(ip).push(Date.now());
     startSession(req, res, u);
     return send(res, 200, { user: meUser(u) });
   }
