@@ -1,6 +1,6 @@
 import { esc, toast, modal, closeModals, wsWatch, wsAct, onWs, reportProblem, houseIcon, glyph, PCOLOR, PCOLOR_DARK, RES, COMM, CARD_COLOR, resName, cardName, tf, t, isLightColor, dieHtml } from '../../core/core.js';
 import { lang } from '../../core/i18n.js';
-import { renderBoard, tapTarget, BOARD_S } from '../../core/board.js';
+import { renderBoard, tapTarget } from '../../core/board.js';
 import { mountDock, yourMoveCue, buzz } from '../../core/dock.js';
 import { isPhone, onPhoneChange } from '../../core/phone.js';
 import { hubExt } from '../traders-barbarians/hub-art.js';
@@ -103,7 +103,7 @@ export function mountGame(app, id) {
     if (msg.t === 'state' && msg.game === G?.id) {
       const prev = G.view;
       G.view = msg.state; G.online = msg.online || [];
-      if (!prev) { sea().focusOnLand(); phoneStartZoom(); setTimeout(tutNudge, 1500); }
+      if (!prev) { if (!isPhone()) sea().focusOnLand(); setTimeout(tutNudge, 1500); } // phone: the whole board (harbours too) fits at zoom 1
       const d = diff(prev, G.view);
       G.fresh = d.fresh;
       const release = holdRolls(prev, d.events);
@@ -250,17 +250,6 @@ function needsMe(v) {
 }
 
 const unreadCount = () => { const v = G.view; return v.chat.filter(c => (c.at || 0) > G.chatSeenAt && c.p !== v.me).length; };
-
-// big boards (more than 19 tiles) start a little zoomed in on the land on a phone, so the tiles stay readable
-function phoneStartZoom() {
-  const b = G.view?.board;
-  if (!isPhone() || !b || b.hexes.length <= 19 || G.zoom.z !== 1) return;
-  const land = b.hexes.filter(h => h.terrain !== 'sea' && h.terrain !== 'fog');
-  if (!land.length) return;
-  const S = BOARD_S();
-  const xs = land.map(h => h.x * S), ys = land.map(h => h.y * S);
-  G.zoom = { z: 1.25, cx: (Math.min(...xs) + Math.max(...xs)) / 2, cy: (Math.min(...ys) + Math.max(...ys)) / 2 };
-}
 
 // ------------------------------------------------------------ helpers
 const me = () => G.view.players[G.view.me];
@@ -768,7 +757,7 @@ function togglePick(key, kind, options, label, fn) {
 
 // ------------------------------------------------------------ dialogs
 // phone: tiles per row of a picker (up to 5 kinds in one row, 6 in two rows of 3, 7 to 9 in rows of 4)
-const pickCols = n => (n <= 5 ? Math.max(n, 3) : n === 6 ? 3 : 4);
+const pickCols = n => (n <= 5 ? Math.max(n, 3) : n === 6 ? 3 : n <= 8 ? 4 : 5);
 function cardPicker({ heading, text, pool, count, exact = true, confirm, dismissable = false, max, haveText = 'have {n}' }) {
   const sel = Object.fromEntries(Object.keys(pool).map(k => [k, 0]));
   const total = () => Object.values(sel).reduce((a, b) => a + b, 0);
@@ -848,9 +837,8 @@ function tradeDialog(counter) {
   modal(`<h2>${counter ? tx('Make a counter-offer') : tx('Offer a trade')}</h2><p class="muted" style="margin:0">${counter ? tx('Propose other terms. The active player decides whether to take them.') : tx('Everyone sees the offer and can accept, decline or answer with a counter-offer. You pick who to trade with.')}</p>
     <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg" style="--cols:${pickCols(types.length)}"></div>
     <div class="section-label" style="color:var(--muted)">${tx('You want')}</div><div class="picker" id="tw" style="--cols:${pickCols(types.length)}"></div>
-    <div class="dlg-sum"></div>
-    <div class="foot"><button class="btn" data-close>${tx('Cancel')}</button>${counter ? '' : `<button class="btn" id="tbank">${tx('Bank instead')}</button>`}<button class="btn primary" id="tok">${counter ? tx('Send counter-offer') : tx('Offer')}</button></div>`, {
-    dismissable: !dlgPhone(), // a stray tap beside the sheet must not throw away what was entered; Cancel is in the footer
+    <div class="foot"><div class="dlg-sum"></div><button class="btn" data-close>${tx('Cancel')}</button>${counter ? '' : `<button class="btn" id="tbank">${tx('Bank instead')}</button>`}<button class="btn primary" id="tok">${counter ? tx('Send counter-offer') : tx('Offer')}</button></div>`, {
+    backdrop: !dlgPhone(), // a stray tap beside the sheet must not throw away what was entered; Cancel and Back close it
     onMount(el, close) {
       const m = me();
       const draw = () => {

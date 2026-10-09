@@ -7,6 +7,8 @@
 import { isPhone } from './phone.js';
 
 const MIN_Z = 1, MAX_Z = 4;
+const EDGE = 4; // phone: empty margin around the fitted board (css px)
+const INSET = 17; // phone: the viewBox carries a wide empty rim (0.62 hex); the fit counts only the part beyond INSET board units
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 export function createZoom({ host, getState, setState, onChange }) {
@@ -35,24 +37,76 @@ export function createZoom({ host, getState, setState, onChange }) {
     if (isPhone() && phoneFrame(b)) {
       if (b.style.height) b.style.height = '';
       const h = b.clientHeight;
-      fit = { w, h, s1: Math.min(w / base[2], h / base[3]), base };
+      const pad = phonePads(b, base, w, h);
+      const aw = w - pad.r, ah = h - pad.t - pad.b;
+      fit = { w, h, aw, ah, pt: pad.t, ins: INSET, s1: Math.max(0.05, Math.min((aw - 2 * EDGE) / (base[2] - 2 * INSET), (ah - 2 * EDGE) / (base[3] - 2 * INSET))), base };
       return fit;
     }
     const maxH = innerWidth > 1040 ? Math.max(280, innerHeight - 200) : Infinity;
     const h = Math.round(Math.max(280, Math.min(maxH, w * base[3] / base[2])));
     if (b.style.height !== h + 'px') b.style.height = h + 'px';
-    fit = { w, h, s1: Math.min(w / base[2], h / base[3]), base };
+    fit = { w, h, aw: w, ah: h, pt: 0, s1: Math.min(w / base[2], h / base[3]), base };
     return fit;
+  }
+
+  // phone: parts that float over the board (the zoom buttons, the HUD pills) must not cover the board itself. When the board
+  // at full size would run under one of them, the board is fitted into the frame minus a strip at that side instead.
+  function phonePads(b, base, w, h) {
+    const pad = { t: 0, b: 0, r: 0 };
+    const svg = svgEl();
+    const br = b.getBoundingClientRect();
+    const obs = [];
+    const ctl = host.querySelector('.zoom-ctl');
+    if (ctl) {
+      const r = ctl.getBoundingClientRect();
+      if (r.width) { // two buttons at zoom 1 (the fit button only shows while zoomed)
+        const row = r.width > r.height || getComputedStyle(ctl).flexDirection === 'row';
+        obs.push({ r: row ? { left: r.right - 96, right: r.right, top: r.top, bottom: r.bottom } : { left: r.left, right: r.right, top: r.bottom - 96, bottom: r.bottom }, side: row ? 'b' : 'r' });
+      }
+    }
+    const hud = host.querySelector('.board-hud');
+    if (hud && hud.children.length) {
+      let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+      [...hud.children].forEach(c => { const r = c.getBoundingClientRect(); if (r.width) { x0 = Math.min(x0, r.left); x1 = Math.max(x1, r.right); y0 = Math.min(y0, r.top); y1 = Math.max(y1, r.bottom); } });
+      if (x1 > x0) obs.push({ r: { left: x0, right: x1, top: y0, bottom: y1 }, side: 't' });
+    }
+    if (!obs.length || !svg) return pad;
+    // what the board really covers (tiles and harbour boats, in board units): the empty corners of the frame may lie under a button
+    const m = svg.getScreenCTM();
+    if (!m || !m.a || !m.d) return pad;
+    const parts = [...svg.querySelectorAll(':scope > g.tile, :scope > g.boat, :scope > g[data-h]')].map(el => {
+      const r = el.getBoundingClientRect();
+      return { x0: (r.left - m.e) / m.a, x1: (r.right - m.e) / m.a, y0: (r.top - m.f) / m.d, y1: (r.bottom - m.f) / m.d };
+    });
+    if (!parts.length) return pad;
+    for (let pass = 0; pass < 4; pass++) {
+      const aw = w - pad.r, ah = h - pad.t - pad.b;
+      const s = Math.min((aw - 2 * EDGE) / (base[2] - 2 * INSET), (ah - 2 * EDGE) / (base[3] - 2 * INSET));
+      const ox = br.left + (aw - (base[2] - 2 * INSET) * s) / 2 - INSET * s - base[0] * s, oy = br.top + pad.t + (ah - (base[3] - 2 * INSET) * s) / 2 - INSET * s - base[1] * s;
+      // the cheapest strip first: making room at one side often clears the others too
+      let pick = null;
+      for (const o of obs) {
+        const T = o.side === 't' ? 10 : 3; // a few pixels under the (see-through) pills do no harm, the buttons are solid
+        const hit = parts.some(q => ox + q.x1 * s > o.r.left + T && ox + q.x0 * s < o.r.right - T && oy + q.y1 * s > o.r.top + T && oy + q.y0 * s < o.r.bottom - T);
+        if (!hit) continue;
+        const need = o.side === 'b' ? Math.round(br.bottom - o.r.top) + 4 : o.side === 't' ? Math.round(o.r.bottom - br.top) + 2 : Math.round(br.right - o.r.left) + 4;
+        if (need > pad[o.side] && (!pick || need - pad[o.side] < pick.need - pad[pick.side])) pick = { side: o.side, need };
+      }
+      if (!pick) break;
+      pad[pick.side] = pick.need;
+    }
+    return pad;
   }
 
   // size and position of the SVG for a zoom state (centre kept inside the board)
   function layout(z, cx, cy) {
-    const { w, h, s1, base: [bx, by, bw, bh] } = fit;
+    const { w, h, aw = w, ah = h, pt = 0, ins = 0, s1, base: [bx, by, bw, bh] } = fit;
     z = clamp(z, MIN_Z, MAX_Z);
-    const s = s1 * z, W = bw * s, H = bh * s;
+    const s = s1 * z, W = bw * s, H = bh * s, I = ins * s, Wc = W - 2 * I, Hc = H - 2 * I; // Wc, Hc: the board without its empty rim
     let tx = w / 2 - (cx - bx) * s, ty = h / 2 - (cy - by) * s;
-    tx = W <= w + 0.5 ? (w - W) / 2 : clamp(tx, w - W, 0);
-    ty = H <= h + 0.5 ? (h - H) / 2 : clamp(ty, h - H, 0);
+    // small enough for the free area: centred in it (the area leaves out the strips of the buttons floating over the board)
+    tx = Wc <= aw + 0.5 ? (aw - Wc) / 2 - I : Wc <= w ? -I : clamp(tx, w - W + I, -I);
+    ty = Hc <= ah + 0.5 ? pt + (ah - Hc) / 2 - I : Hc <= h ? (pt * (h - Hc)) / ((h - ah) || 1) - I : clamp(ty, h - H + I, -I);
     return { z, s, W, H, tx, ty, cx: bx + (w / 2 - tx) / s, cy: by + (h / 2 - ty) / s };
   }
   const current = () => { const st = getState(); return layout(st.z, st.cx, st.cy); };
@@ -70,8 +124,16 @@ export function createZoom({ host, getState, setState, onChange }) {
     const L = current();
     setState({ z: L.z, cx: L.cx, cy: L.cy });
     setSvg(svg, L);
+    if (isPhone()) markers(svg, L.s);
     svg.style.touchAction = L.z > 1 || isPhone() ? 'none' : 'pan-y';
     onChange && onChange(L.z);
+  }
+
+  // phone: the glowing corners and edges keep a readable size on a small board (about 9.5 px radius on screen)
+  function markers(svg, s) {
+    const k = clamp(9.5 / (14 * s), 1, 1.36); // never bigger than a third of the distance between two corners (56 units)
+    svg.style.setProperty('--hs', k.toFixed(2));
+    svg.querySelectorAll('.hl-v').forEach(c => c.setAttribute('r', (14 * k).toFixed(1)));
   }
 
   function begin() {

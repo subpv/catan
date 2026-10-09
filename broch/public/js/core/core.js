@@ -1,6 +1,6 @@
 // Shared helpers: API, websocket, toasts, modals, feedback reporting, icons.
 import { t } from './i18n.js';
-import { isPhone } from './phone.js';
+import { isPhone, isCoarse } from './phone.js';
 export { t };
 
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -306,17 +306,54 @@ function swipeToDismiss(back, box, grab, close) {
   grab.addEventListener('pointercancel', end);
 }
 
-export function modal(html, { onMount, dismissable = true } = {}) {
+// Android Back closes the top dialog instead of leaving the game: while at least one dialog is open on a touch device,
+// ONE history entry of ours sits on top of the stack. Back pops it (popstate, handled here before anybody else sees it);
+// closing the dialog by a button pops it again, one tick later, unless the app navigated in the meantime (then the entry
+// stays as a dead one and is skipped the next time Back lands on it).
+const mstack = []; // open dialogs, newest last: { back, dismissable, close }
+let mEntry = false, mSkip = 0, mPopTimer = 0, mHooked = false;
+const mState = () => { try { return history.state && history.state.broch === 'modal'; } catch { return false; } };
+const mPrune = () => { for (let i = mstack.length - 1; i >= 0; i--) if (!mstack[i].back.isConnected) mstack.splice(i, 1); };
+function mPush() { try { history.pushState({ broch: 'modal' }, ''); mEntry = true; } catch { mEntry = false; } }
+function mHook() {
+  if (mHooked) return; mHooked = true;
+  window.addEventListener('popstate', e => {
+    if (mSkip > 0) { mSkip--; e.stopImmediatePropagation(); return; } // the pop we asked for ourselves
+    mPrune();
+    if (mstack.length && mEntry) {
+      e.stopImmediatePropagation(); mEntry = false; // the user pressed Back: the entry is gone
+      const top = mstack[mstack.length - 1];
+      if (top.dismissable) top.close();
+      if (mstack.length) mPush(); // still a dialog open (or one that cannot be dismissed): keep a guard entry under it
+    } else if (!mstack.length && mState()) { mEntry = false; mSkip++; history.back(); } // landed on a dead entry of an old dialog: step over it
+  }, true);
+}
+function mClosed() {
+  mPrune();
+  if (mstack.length || !mEntry || mPopTimer) return;
+  mPopTimer = setTimeout(() => {
+    mPopTimer = 0;
+    mPrune();
+    if (mstack.length || !mEntry) return; // another dialog opened right away (trade -> bank): the entry is reused
+    mEntry = false;
+    if (mState()) { mSkip++; history.back(); } // otherwise the app navigated away meanwhile and the entry stays as a dead one
+  }, 0);
+}
+
+// dismissable: can be closed by Back, a swipe and (unless backdrop is false) a tap beside it; backdrop: false keeps entered data safe from a stray tap
+export function modal(html, { onMount, dismissable = true, backdrop = dismissable } = {}) {
   const root = document.getElementById('modal-root');
   const back = document.createElement('div');
   back.className = 'modal-back';
   // m-grab: the drag handle of the phone sheet (display:none on the desktop)
   back.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><div class="m-grab" aria-hidden="true"></div>${html}</div>`;
-  const close = () => back.remove();
   const phone = isPhone();
-  if (dismissable) back.addEventListener('click', e => { if (e.target === back) close(); });
+  const entry = { back, dismissable, close: null };
+  const close = entry.close = () => { if (!back.isConnected) return; back.remove(); const i = mstack.indexOf(entry); if (i >= 0) mstack.splice(i, 1); mClosed(); };
+  if (dismissable && backdrop) back.addEventListener('click', e => { if (e.target === back) close(); });
   back.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', close));
   root.appendChild(back);
+  if (phone || isCoarse()) { mHook(); mPrune(); mstack.push(entry); if (!mEntry) mPush(); clearTimeout(mPopTimer); mPopTimer = 0; }
   const box = back.querySelector('.modal');
   if (phone && dismissable) swipeToDismiss(back, box, box.querySelector('.m-grab'), close);
   else if (phone) box.classList.add('fixed');
@@ -326,7 +363,7 @@ export function modal(html, { onMount, dismissable = true } = {}) {
   f && f.focus({ preventScroll: true });
   return close;
 }
-export function closeModals() { document.getElementById('modal-root').innerHTML = ''; }
+export function closeModals() { document.getElementById('modal-root').innerHTML = ''; mstack.length = 0; mClosed(); }
 
 export function fmtDate(ts) { const d = new Date(ts); return `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`; }
 export function title(card) { return card.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()); }

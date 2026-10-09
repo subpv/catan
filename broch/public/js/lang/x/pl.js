@@ -1476,6 +1476,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Kamień 1: {@p}. Kamień 2: {@q
 "Games":"Partie",
 "Hottest numbers":"Najgorętsze liczby",
 "Info":"Info",
+"Whole map":"Cała mapa",
 "Password must be at least 8 characters.":"Hasło musi mieć co najmniej 8 znaków.",
 "Barbarians land on the coast; knights drive them off. 3–6 players.":"Barbarzyńcy lądują na wybrzeżu; rycerze ich przeganiają. 3–6 graczy.",
 "The die shows {n}: the {#c} paths.":"Kostka pokazuje {n}: ścieżki w kolorze {#c}.",

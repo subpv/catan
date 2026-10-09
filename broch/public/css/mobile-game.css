@@ -66,13 +66,13 @@ body[data-route="game"] .board-hud { left: 8px; right: 8px; top: 6px; flex-wrap:
 body[data-route="game"] .board-hud::-webkit-scrollbar { display: none; }
 body[data-route="game"] .board-hud > * { flex: none; pointer-events: none; }
 body[data-route="game"] .hud-pill { padding: 4px 10px; font-size: 12.5px; line-height: 1.2; white-space: nowrap; }
-body[data-route="game"] .zoom-ctl { right: 8px; bottom: 8px; gap: 8px; }
+body[data-route="game"] .zoom-ctl { right: 8px; bottom: 8px; gap: 8px; flex-direction: row; }
 body[data-route="game"] .zoom-ctl button { width: 44px; height: 44px; font-size: 24px; border-radius: 14px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 body[data-route="game"] .zoom-ctl .lifebtn { display: none; }
 body[data-route="game"] .zoom-ctl .rs { font-size: 20px; }
 /* corners and edges you can tap: bigger and with a dark outline, so they show on cream tile borders */
 body[data-route="game"] svg.board .hl-v { fill: rgba(255,246,218,.96); stroke: #2B1E12; stroke-width: 3; }
-body[data-route="game"] svg.board .hl-e { stroke-width: 12; filter: drop-shadow(0 0 1.5px rgba(43,30,18,.95)) drop-shadow(0 0 3px rgba(43,30,18,.7)); }
+body[data-route="game"] svg.board .hl-e { stroke-width: calc(12px * var(--hs, 1)); filter: drop-shadow(0 0 1.5px rgba(43,30,18,.95)) drop-shadow(0 0 3px rgba(43,30,18,.7)); }
 body[data-route="game"] svg.board .hl-h { stroke: var(--gold-2); stroke-width: 5; fill: rgba(255,246,218,.3); filter: drop-shadow(0 0 2px rgba(43,30,18,.8)); animation: m-hexglow 1.2s ease-in-out infinite; }
 @keyframes m-hexglow { 50% { fill: rgba(255,246,218,.1); stroke-opacity: .55; } }
 /* the tutorial offer: one pill at the bottom of the board (thumb), beside the zoom buttons */
@@ -81,25 +81,27 @@ body[data-route="game"] .tut-nudge .tn-go { flex: 1; min-height: 44px; padding: 
 body[data-route="game"] .tut-nudge .tn-x { flex: none; width: 44px; min-height: 44px; padding: 0; font-size: 16px; }
 
 /* ================================================================ dock */
-body[data-route="game"] .hand-host { grid-area: hand; position: relative; z-index: 1; padding: 8px 8px 0; min-width: 0; }
-body[data-route="game"] .hand { background: none; box-shadow: none; border-radius: 0; padding: 0; color: var(--ink); display: flex; flex-direction: column; gap: 5px; }
+body[data-route="game"] .hand-host { grid-area: hand; position: relative; z-index: 1; padding: 7px 8px 0; min-width: 0; }
+body[data-route="game"] .hand { background: none; box-shadow: none; border-radius: 0; padding: 0; color: var(--ink); display: flex; flex-direction: column; gap: 4px; }
 body[data-route="game"] .hand-head { display: none; }
-body[data-route="game"] .hand-head:has(.hand-count.warn) { display: flex; justify-content: flex-end; height: 22px; margin-bottom: -2px; }
+/* the warning about too many cards floats over the top edge of the dock (left side, the zoom buttons are on the right): it costs no height */
+body[data-route="game"] .hand-head:has(.hand-count.warn) { display: flex; justify-content: flex-start; position: absolute; left: 10px; top: -13px; height: 22px; margin: 0; z-index: 3; pointer-events: none; }
 body[data-route="game"] .hand-head b { display: none; }
 body[data-route="game"] .hand-count { display: none; }
 body[data-route="game"] .hand-count.warn { display: inline-block; background: #F8D9D3; color: var(--red-d); border-radius: 999px; padding: 1px 10px; font-size: 12px; font-weight: 700; }
 body[data-route="game"] .hand.watching { height: auto; min-height: 44px; justify-content: center; padding: 6px 4px 2px; font-size: 14px; }
 /* hand: one equal chip per resource */
-body[data-route="game"] .hand-cards { display: flex; gap: 4px; height: 50px; padding: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; flex: none; }
+body[data-route="game"] .hand-cards { display: flex; gap: 4px; height: 46px; padding: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; flex: none; }
 body[data-route="game"] .hand-cards::-webkit-scrollbar { display: none; }
-body[data-route="game"] .rcard { flex: 1 1 0; min-width: 40px; width: auto; height: 50px; border-radius: 12px; gap: 2px; font-size: 12px; box-shadow: 0 3px 6px -4px rgba(43,30,18,.7); touch-action: manipulation; }
+body[data-route="game"] .rcard { flex: 1 1 0; min-width: 0; width: auto; height: 46px; border-radius: 12px; gap: 2px; font-size: 12px; box-shadow: 0 3px 6px -4px rgba(43,30,18,.7); touch-action: manipulation; }
 body[data-route="game"] .rcard svg { width: 22px; height: 22px; }
 body[data-route="game"] .rcard .nm { display: none; font-size: 12px; }
 body[data-route="game"] .rcard .n { position: static; min-width: 0; height: auto; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; color: inherit; font-size: 18px; font-weight: 800; line-height: 1; }
 body[data-route="game"] .rcard.zero { opacity: .55; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 40%, transparent); }
 body[data-route="game"] .rcard.comm { border-radius: 40% 40% 12px 12px / 25% 25% 12px 12px; }
+body[data-route="game"] .hand-cards:has(> :nth-child(10)) > .rcard, body[data-route="game"] .hand-cards:has(> :nth-child(10)) > .tcard { min-width: 40px; } /* more than 9 chips: they scroll sideways */
 body[data-route="game"] .hc-sep { margin: 6px 1px; flex: none; }
-body[data-route="game"] .tcard { flex: 1 1 0; min-width: 44px; width: auto; height: 50px; gap: 0; touch-action: manipulation; }
+body[data-route="game"] .tcard { flex: 1 1 0; min-width: 0; width: auto; height: 46px; gap: 0; touch-action: manipulation; }
 body[data-route="game"] .tcard .coin { width: 32px; height: 32px; }
 body[data-route="game"] .tcard .coin svg { width: 20px; height: 20px; }
 body[data-route="game"] .tcard .nm { display: none; font-size: 12px; }
@@ -138,13 +140,13 @@ body[data-route="game"] .stat-strip:not(:has(.stat-chip:not(.dup))) { display: n
 body[data-route="game"] .stat-chip { font-size: 12px; height: 28px; }
 body[data-route="game"] .left, body[data-route="game"] .mp, body[data-route="game"] .award, body[data-route="game"] .hexbadge, body[data-route="game"] .imp-foot, body[data-route="game"] .aq-chip, body[data-route="game"] .bb { font-size: 12px; }
 /* primary row: the round chat button and the buttons of the move (the thumb never leaves the bottom) */
-body[data-route="game"] .m-more { grid-area: more; align-self: end; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 8px; width: 52px; height: 52px; margin: 6px 0 calc(var(--m-safe-b, 0px) + 8px) 8px; padding: 0; border-radius: 14px; border: 1.5px solid var(--line-2); background: var(--card-2); color: var(--ink); font-weight: 700; font-size: 14px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .m-more { grid-area: more; align-self: end; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 8px; width: 52px; height: 52px; margin: 4px 0 calc(var(--m-safe-b, 0px) + 6px) 8px; padding: 0; border-radius: 14px; border: 1.5px solid var(--line-2); background: var(--card-2); color: var(--ink); font-weight: 700; font-size: 14px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 body[data-route="game"] .m-more .mm-lbl { display: none; }
 body[data-route="game"] .m-more .unread { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; font-size: 12px; box-shadow: 0 0 0 2px var(--card); }
 body[data-route="game"] .m-more.has-unread { background: #FFF1C9; border-color: var(--gold); }
 body[data-route="game"] .game-main:has(.btns:empty) .m-more { grid-column: 1 / -1; width: auto; margin-right: 8px; }
 body[data-route="game"] .game-main:has(.btns:empty) .m-more .mm-lbl { display: inline; }
-body[data-route="game"] .status .btns { grid-area: btns; position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; width: auto; align-items: stretch; align-content: flex-end; padding: 6px 8px calc(var(--m-safe-b, 0px) + 8px) 8px; min-width: 0; }
+body[data-route="game"] .status .btns { grid-area: btns; position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; width: auto; align-items: stretch; align-content: flex-end; padding: 4px 8px calc(var(--m-safe-b, 0px) + 6px) 8px; min-width: 0; }
 body[data-route="game"] .status .btns .btn { flex: 1 1 0; width: auto; min-width: 64px; height: auto; min-height: 52px; padding: 4px 8px; display: flex; align-items: center; justify-content: center; text-align: center; white-space: normal; overflow: visible; text-overflow: clip; font-size: 15px; line-height: 1.15; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 body[data-route="game"] .status .btns .btn.primary, body[data-route="game"] .status .btns .btn.gold { flex-grow: 1.6; font-weight: 700; }
 body[data-route="game"] .status .btns .roll-btn { min-height: 56px; font-size: 18px; }
@@ -255,6 +257,12 @@ body[data-route="game"] svg.board .hl-h, body[data-route="game"] .game.move-puls
 body[data-route="game"] .game-side, body[data-route="game"] .m-scrim { transition: none; }
 }
 
+/* ---- 360x740 class phones: the slim top bar goes too (leave, language and sound are rows of the Menu tab); the board gets its 44 px */
+@media (max-width: 760px) and (max-height: 779px) {
+body[data-route="game"] { --m-gtop-h: 0px; }
+body[data-route="game"] .topbar.in-game { display: none; }
+}
+
 /* ---- short portrait screens (small phones, a browser bar that does not collapse): a little more room for the board */
 @media (max-width: 760px) and (max-height: 640px) {
 body[data-route="game"] .hand-cards, body[data-route="game"] .rcard, body[data-route="game"] .tcard { height: 44px; }
@@ -321,7 +329,29 @@ body[data-route="game"] .sgame .hand-cards .rcard { min-width: 0; }
 body[data-route="game"] .sgame .hand-cards .rcard svg { flex: none; }
 /* ---- long words (Hafensiedlung, Entwicklungskarte) break with a hyphen instead of being cut off at the edge of a button */
 body[data-route="game"] .sgame .act > span.nm, body[data-route="game"] .sgame .status .btns .btn { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; min-width: 0; }
-body[data-route="game"] .sgame .act > span.nm.lw { letter-spacing: -.05em; }
+body[data-route="game"] .sgame .act > span.nm.lw { letter-spacing: -.04em; font-size: 12px; hyphens: auto; -webkit-hyphens: auto; }
+body[data-route="game"] .sgame .act > span.nm.lw2 { overflow-wrap: anywhere; letter-spacing: -.05em; }
+/* ---- narrow phones (360): Trade, Bank and End turn share one row with the chat button; a long word (Commerce, Commercio) must fit its button */
+@media (max-width: 400px) {
+  body[data-route="game"] .sgame .status .btns { gap: 6px; padding-left: 6px; padding-right: 6px; }
+  body[data-route="game"] .sgame .status .btns .btn { padding-left: 4px; padding-right: 4px; font-size: 14px; }
+  body[data-route="game"] .sgame .status .btns .btn svg { margin-right: 2px; width: 14px; height: 14px; }
+}
+/* ---- the desktop wiggle of the Roll button (rotate + scale 1.05) pushes the full-width phone button over the edge of the screen: a moment of horizontal scroll. The phone has its own pulse. */
+body[data-route="game"] .sgame .status .btns .roll-btn { animation: none; }
+body[data-route="game"] .sgame .game-main { overflow-x: clip; }
+/* ---- the headline of the strip may take a third line when there is no hint under it (long languages) */
+body[data-route="game"] .sgame .status .msg:not(:has(.sub)) .mt { -webkit-line-clamp: 3; }
+/* ---- explorers: Sail is a build button of its own on the phone (gold, two cells wide when there is room), so Trade, Bank and End turn stay on one row */
+body[data-route="game"] .sgame .act.eup-sail { background: linear-gradient(180deg, #F2C65A, #D9A334); border-color: #B8860B; color: #2B1E12; }
+body[data-route="game"] .sgame .act.eup-sail:disabled { opacity: .5; }
+body[data-route="game"] .sgame .act.eup-sail.wide { grid-column: span 2; }
+body[data-route="game"] .sgame .act.eup-sail > span.nm { flex-direction: row; justify-content: center; gap: 6px; font-size: 15px; font-weight: 700; }
+body[data-route="game"] .sgame .act.eup-sail .ai { display: inline-flex; }
+body[data-route="game"] .sgame .act.eup-sail small.pl .pl-d { color: rgba(43,30,18,.8); }
+/* ---- wide maps (humankind, explorers) open on your own region: while zoomed in, the overview button says what it does */
+body[data-route="game"] .sgame .zoom-ctl.wide.zoomed .rs { width: auto; display: flex; align-items: center; gap: 6px; padding: 0 14px 0 12px; }
+body[data-route="game"] .sgame .zoom-ctl.wide.zoomed .rs::after { content: attr(data-lbl); font: 700 13px/1 var(--sans, system-ui, sans-serif); letter-spacing: 0; white-space: nowrap; }
 body[data-route="game"] .sgame .status .btns .btn svg { flex: none; }
 /* ---- build buttons: the second line of a plain button (what it does) wraps to two lines, never cut in the middle of a word */
 body[data-route="game"] .sgame .act small.pl { display: flex; justify-content: center; text-align: center; min-height: 0; }
@@ -445,5 +475,7 @@ body[data-route="game"] .sgame .eup-panel .panel-h > span { flex: 1 0 100%; font
 body[data-route="game"] .sgame .hand > .eup-fleet { height: 44px; }
 /* the strip grows with its text (the long prompts of these games need up to four lines in the narrow column) */
 body[data-route="game"] .sgame .status .msg { height: max-content; }
-body[data-route="game"] .sgame .status .msg .mt, body[data-route="game"] .sgame .status.st-pick .msg .mt { -webkit-line-clamp: 4; }
+/* the primary row stays at the bottom of the column while the build buttons scroll under it (Trade, Bank, End turn / Roll are always in reach) */
+body[data-route="game"] .sgame .status .btns { position: sticky; bottom: 0; z-index: 4; background: var(--card); box-shadow: 0 -8px 12px -10px rgba(43,30,18,.45); padding-bottom: calc(var(--m-safe-b, 0px) + 6px); }
+body[data-route="game"] .sgame .status .msg .mt, body[data-route="game"] .sgame .status .msg:not(:has(.sub)) .mt, body[data-route="game"] .sgame .status.st-pick .msg .mt { -webkit-line-clamp: 4; }
 }

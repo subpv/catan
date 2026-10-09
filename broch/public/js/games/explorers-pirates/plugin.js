@@ -441,6 +441,7 @@ const plugin = register({
     return v.second ? bank : `<button class="btn" data-do="trade">${tx('Trade')}</button>${bank}`;
   },
   mainButtons(v) {
+    if (v.step === 'main' && isPhone()) return ''; // phone: Sail is a build button of its own (see actions), so the primary row keeps Trade, Bank and End turn on one line
     if (v.step === 'main') return `<button class="btn gold eup-sail" data-do="startMove" title="${tx('Move ships')}">${glyph('ship', 15)} ${tx('Sail')}</button>`;
     if (v.step === 'move' && (v.legal || {}).rollFish) return `<button class="btn" data-do="rollFish">${glyph('dice', 15)} ${tx('Roll a fish swarm')}</button>`;
     return '';
@@ -470,6 +471,8 @@ const plugin = register({
       { key: 'explorer', label: t('Explorer'), icon: 'flag', cost: COSTS.explorer, enabled: !!(actor && L.explorer && L.explorer.length), left: m.pieces.explorers },
     ];
     if (v.options.units) out.push({ key: 'unit', label: t('Unit'), icon: 'sword', cost: COSTS.unit, enabled: !!(actor && L.unit && L.unit.length), left: m.pieces.units });
+    // phone only: the desktop has the gold Sail button beside End turn. Two grid cells wide when that still fits in two rows of four
+    if (v.step === 'main' && isPhone()) out.push({ key: 'startMove', label: t('Sail'), icon: 'ship', plain: true, sub: t('Move ships'), phoneOnly: true, cls: `eup-sail${out.length + (L.goodGold > 0 ? 1 : 0) <= 6 ? ' wide' : ''}`, enabled: !!actor });
     if ((L.goodGold || 0) > 0) out.push({ key: 'goodGold', label: t('Sell for gold'), icon: 'gold', plain: true, sub: t('1 resource for 1 gold'), enabled: !!actor });
     return out;
   },

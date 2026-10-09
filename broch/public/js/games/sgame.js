@@ -37,7 +37,7 @@ export function mountSGame(app, id, mode) {
         <div class="board-host"></div>
         <div class="hud-host"></div>
         <div class="trade-host"></div>
-        <div class="zoom-ctl"><button data-life class="lifebtn ${G.life ? 'on' : ''}" aria-pressed="${G.life}" title="${tx('Living board')}" aria-label="${tx('Living board')}">${glyph(P0.lifeIcon || 'wool', 18)}</button><button data-zoom="in" aria-label="${tx('Zoom in')}">+</button><button data-zoom="out" aria-label="${tx('Zoom out')}">−</button><button data-zoom="reset" class="rs" aria-label="${tx('Show the whole board')}">⤢</button></div>
+        <div class="zoom-ctl ${P0.phoneStart ? 'wide' : ''}"><button data-life class="lifebtn ${G.life ? 'on' : ''}" aria-pressed="${G.life}" title="${tx('Living board')}" aria-label="${tx('Living board')}">${glyph(P0.lifeIcon || 'wool', 18)}</button><button data-zoom="in" aria-label="${tx('Zoom in')}">+</button><button data-zoom="out" aria-label="${tx('Zoom out')}">−</button><button data-zoom="reset" class="rs" aria-label="${tx('Show the whole board')}" data-lbl="${tx('Whole map')}">⤢</button></div>
       </div>
       <div class="hand-host"></div>
     </div>
@@ -449,10 +449,10 @@ function handHtml() {
   const actor = A.actor();
   const pickOn = k => G.pick && G.pick.key === k ? 'on' : '';
   // a.phoneOnly: a build button that exists on the phone only (the desktop has the same thing elsewhere); a.phone: html that replaces the sub line on the phone
-  const lw = s => (Math.max(...String(s).split(/[\s-]+/).map(x => x.length)) >= 12 ? ' lw' : '');
+  const lw = s => { const n = Math.max(...String(s).split(/[\s-]+/).map(x => x.length)); return n >= 14 ? ' lw lw2' : n >= 12 ? ' lw' : ''; };
   const acts = (P.actions ? P.actions(v, A, actor) : []).map(a => a.plain
-    ? `<button class="act ${a.phoneOnly ? 'm-only' : ''}" data-do="${a.key}" ${a.enabled ? '' : 'disabled'} title="${esc(a.label)}"><span class="nm${lw(a.label)}"><i class="ai">${glyph(a.icon, 14)}</i>${esc(a.label)}</span><small class="pl"><span class="pl-d">${esc(a.sub || '')}</span>${a.phone != null ? `<span class="pl-m m-only">${a.phone}</span>` : ''}</small></button>`
-    : `<button class="act ${a.phoneOnly ? 'm-only' : ''} ${pickOn(a.key)}" data-do="${a.key}" ${a.enabled ? '' : 'disabled'} title="${esc(a.label)}"><span class="nm${lw(a.label)}"><i class="ai">${glyph(a.icon, 14)}</i>${esc(a.label)}</span><small><span class="cd">${costHtml(a.cost || {})}${a.costText ? `<span class="ctext">${esc(a.costText)}</span>` : ''}</span>${a.left != null ? `<span class="left">${a.left}</span>` : ''}</small></button>`).join('');
+    ? `<button class="act ${a.phoneOnly ? 'm-only' : ''} ${a.cls || ''}" data-do="${a.key}" ${a.enabled ? '' : 'disabled'} title="${esc(a.label)}"><span class="nm${lw(a.label)}"><i class="ai">${glyph(a.icon, 14)}</i>${esc(a.label)}</span><small class="pl"><span class="pl-d">${esc(a.sub || '')}</span>${a.phone != null ? `<span class="pl-m m-only">${a.phone}</span>` : ''}</small></button>`
+    : `<button class="act ${a.phoneOnly ? 'm-only' : ''} ${a.cls || ''} ${pickOn(a.key)}" data-do="${a.key}" ${a.enabled ? '' : 'disabled'} title="${esc(a.label)}"><span class="nm${lw(a.label)}"><i class="ai">${glyph(a.icon, 14)}</i>${esc(a.label)}</span><small><span class="cd">${costHtml(a.cost || {})}${a.costText ? `<span class="ctext">${esc(a.costText)}</span>` : ''}</span>${a.left != null ? `<span class="left">${a.left}</span>` : ''}</small></button>`).join('');
   const over = m.cards > m.handLimit;
   return `<div class="hand">
     <div class="hand-head"><b>${tx('Your hand')}</b><span class="hand-count ${over ? 'warn' : ''}" title="${over ? tx('More than {n} cards: a 7 costs you half of them.', { n: m.handLimit }) : ''}">${tx('Cards: {n} · limit {m}', { n: m.cards, m: m.handLimit })}</span></div>
@@ -603,7 +603,7 @@ function doAction(what) {
 
 // ------------------------------------------------------------ dialogs
 // phone: tiles per row of a picker (up to 5 kinds in one row, 6 in two rows of 3, 7 to 9 in rows of 4)
-const pickCols = n => (n <= 5 ? Math.max(n, 3) : n === 6 ? 3 : 4);
+const pickCols = n => (n <= 5 ? Math.max(n, 3) : n === 6 ? 3 : n <= 8 ? 4 : 5);
 function cardPicker({ heading, text, pool, count, exact = true, confirm, dismissable = false, max, haveText = 'have {n}' }) {
   const sel = Object.fromEntries(Object.keys(pool).map(k => [k, 0]));
   const total = () => Object.values(sel).reduce((a, b) => a + b, 0);
@@ -667,9 +667,8 @@ function tradeDialog(counter) {
   modal(`<h2>${counter ? tx('Make a counter-offer') : tx('Offer a trade')}</h2><p class="muted" style="margin:0">${counter ? tx('Propose other terms. The active player decides whether to take them.') : tx('Everyone sees the offer and can accept, decline or answer with a counter-offer. You pick who to trade with.')}</p>
     <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg" style="--cols:${pickCols(types.length)}"></div>
     <div class="section-label" style="color:var(--muted)">${tx('You want')}</div><div class="picker" id="tw" style="--cols:${pickCols(types.length)}"></div>
-    <div class="dlg-sum"></div>
-    <div class="foot"><button class="btn" data-close>${tx('Cancel')}</button>${counter ? '' : `<button class="btn" id="tbank">${tx('Bank instead')}</button>`}<button class="btn primary" id="tok">${counter ? tx('Send counter-offer') : tx('Offer')}</button></div>`, {
-    dismissable: !dlgPhone(), // a stray tap beside the sheet must not throw away what was entered; Cancel is in the footer
+    <div class="foot"><div class="dlg-sum"></div><button class="btn" data-close>${tx('Cancel')}</button>${counter ? '' : `<button class="btn" id="tbank">${tx('Bank instead')}</button>`}<button class="btn primary" id="tok">${counter ? tx('Send counter-offer') : tx('Offer')}</button></div>`, {
+    backdrop: !dlgPhone(), // a stray tap beside the sheet must not throw away what was entered; Cancel and Back close it
     onMount(el, close) {
       const m = me();
       const draw = () => {

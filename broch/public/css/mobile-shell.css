@@ -103,13 +103,16 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .ng-card .mode-pick { gap: 8px; }
   .ng-card .mode-pick .mode-tile, .ng-card .mode-pick.one .mode-tile, .ng-card .mode-pick.four .mode-tile, .ng-card .mode-pick.sa .mode-tile { height: auto; min-height: 56px; padding: 10px 12px; justify-content: center; }
   .ng-card .mode-pick .mode-tile b, .ng-card .mode-pick.four .mode-tile b, .ng-card .mode-pick.sa .mode-tile b {
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; min-height: 0; font-size: 14.5px; line-height: 1.2; padding-right: 30px; letter-spacing: 0; }
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; min-height: 0; font-size: 14.5px; line-height: 1.2; padding-right: 34px; letter-spacing: 0; }
   .ng-card .mode-tile small { display: none; }
   .ng-card .mode-tile .beta-tag { position: static; align-self: flex-start; margin: 4px 0 0; padding: 2px 6px; }
   .ng-card .mode-tile { overflow: visible; }
-  .ng-card .tile-help::after { content: ''; position: absolute; inset: -11px; }
-  .ng-card .switch .tile-help { position: relative; font-size: var(--m-font-min, 12px); }
-  .ng-card .switch .tile-help::after { inset: -12px; }
+  /* the "?" badge: the element itself is the 44x44 hit area (so it measures 44px), the small round badge is drawn by ::before */
+  .ng-card .tile-help { top: 0; right: 0; width: var(--m-tap, 44px); height: var(--m-tap, 44px); background: none !important; transform: none !important; isolation: isolate; font-size: var(--m-font-min, 12px); }
+  .ng-card .tile-help::before { content: ''; position: absolute; z-index: -1; inset: 11px; border-radius: 50%; background: rgba(43, 30, 18, .12); transition: background .15s; }
+  .ng-card .tile-help:hover::before, .ng-card .tile-help:focus-visible::before { background: var(--ink); }
+  .ng-card .tile-help:hover, .ng-card .tile-help:focus-visible { color: var(--cream); }
+  .ng-card .switch .tile-help { position: relative; top: auto; right: auto; vertical-align: middle; margin: -12px -10px -12px -4px; font-size: var(--m-font-min, 12px); }
   .sel-blurb { display: block; font-size: 13px; line-height: 1.35; color: var(--muted); margin: 10px 2px 0; }
   .sel-blurb:empty { display: none; }
   .ng-card .sub-opts, .ng-card .sub-opts.tall { height: auto; min-height: 0; overflow: visible; margin: 10px 0 4px; }
