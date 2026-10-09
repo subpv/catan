@@ -4,6 +4,8 @@
 // During a pinch or wheel zoom the painted picture is scaled with a CSS transform (cheap); when the gesture ends the
 // SVG gets its real new size and is painted sharp again. Pure drags never repaint at all.
 
+import { isPhone } from './phone.js';
+
 const MIN_Z = 1, MAX_Z = 4;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
@@ -14,8 +16,13 @@ export function createZoom({ host, getState, setState, onChange }) {
   const ptrs = new Map();
   let pan = null, pinch = null, lastType = 'mouse';
   let moved = false;
+  let touched = false;     // the person zoomed or panned by hand (the automatic zoom of a pick then leaves the view alone)
+  let lastTap = null;      // double-tap on a touch screen
+  let lastUp = null;       // where the last finger or mouse button went up (a touch screen moves the click to the nearest button: the finger is the truth)
 
   const box = () => host.querySelector('.board-host');
+  // true when the phone stylesheet gave the frame its own height (otherwise the old sizing is the fallback)
+  const phoneFrame = b => getComputedStyle(b).position === 'absolute' && b.clientHeight >= 120;
   const svgEl = () => host.querySelector('svg.board');
 
   // the frame keeps the board's proportions (capped on big screens), so the page layout never jumps
@@ -24,6 +31,13 @@ export function createZoom({ host, getState, setState, onChange }) {
     if (!svg || !b) return null;
     const base = svg.dataset.base.split(' ').map(Number);
     const w = b.clientWidth || host.clientWidth || 300;
+    // phone: the frame fills all the height the layout gives it (css: .board-host is absolute inside the board area)
+    if (isPhone() && phoneFrame(b)) {
+      if (b.style.height) b.style.height = '';
+      const h = b.clientHeight;
+      fit = { w, h, s1: Math.min(w / base[2], h / base[3]), base };
+      return fit;
+    }
     const maxH = innerWidth > 1040 ? Math.max(280, innerHeight - 200) : Infinity;
     const h = Math.round(Math.max(280, Math.min(maxH, w * base[3] / base[2])));
     if (b.style.height !== h + 'px') b.style.height = h + 'px';
@@ -56,7 +70,7 @@ export function createZoom({ host, getState, setState, onChange }) {
     const L = current();
     setState({ z: L.z, cx: L.cx, cy: L.cy });
     setSvg(svg, L);
-    svg.style.touchAction = L.z > 1 ? 'none' : 'pan-y';
+    svg.style.touchAction = L.z > 1 || isPhone() ? 'none' : 'pan-y';
     onChange && onChange(L.z);
   }
 
@@ -126,6 +140,7 @@ export function createZoom({ host, getState, setState, onChange }) {
     anim = requestAnimationFrame(step);
   }
   function zoomBy(f) {
+    touched = true;
     if (!fit) fitBox();
     if (!fit) return;
     const st = getState();
@@ -137,6 +152,7 @@ export function createZoom({ host, getState, setState, onChange }) {
   const onBoard = e => e.target.closest && e.target.closest('svg.board');
   host.addEventListener('wheel', e => {
     if (!onBoard(e)) return;
+    touched = true;
     e.preventDefault();
     if (!begin()) return;
     const st = getState();
@@ -163,7 +179,7 @@ export function createZoom({ host, getState, setState, onChange }) {
       const [a, b] = [...ptrs.values()];
       const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
       pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, z: getState().z, P: toBoard(mx, my) };
-      pan = null; moved = true;
+      pan = null; moved = true; touched = true;
     }
   });
 
@@ -184,7 +200,7 @@ export function createZoom({ host, getState, setState, onChange }) {
     const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
     if (!pan.started) {
       if (Math.hypot(dx, dy) < 8 || getState().z <= 1) return;
-      pan.started = true; moved = true;
+      pan.started = true; moved = true; touched = true;
       host.classList.add('dragging');
     }
     if (!begin()) return;
@@ -195,6 +211,7 @@ export function createZoom({ host, getState, setState, onChange }) {
   });
 
   const up = e => {
+    if (e.type === 'pointerup') lastUp = { x: e.clientX, y: e.clientY, t: performance.now(), type: e.pointerType };
     if (!ptrs.has(e.pointerId)) return;
     ptrs.delete(e.pointerId);
     if (ptrs.size < 2 && pinch) {
@@ -205,12 +222,55 @@ export function createZoom({ host, getState, setState, onChange }) {
     if (ptrs.size) return;
     host.classList.remove('dragging');
     const p = pan; pan = null;
+    if (e.type === 'pointerup' && e.pointerType === 'touch' && !moved && !(p && p.started)) doubleTap(e);
+    else lastTap = null;
     if (p && p.started && p.hist.length >= 2 && e.type === 'pointerup') return startGlide(p);
     end();
     if (moved) setTimeout(() => { moved = false; }, 60);
   };
   host.addEventListener('pointerup', up);
   host.addEventListener('pointercancel', up);
+
+  // two quick taps (300 ms, 24 px) on an empty spot of the board: zoom in there, or back out
+  function doubleTap(e) {
+    const now = performance.now();
+    if (!onBoard(e) || e.target.closest('[data-v],[data-e],[data-h],[data-k],[data-s],[data-hub]')) { lastTap = null; return; }
+    const prev = lastTap;
+    lastTap = { t: now, x: e.clientX, y: e.clientY };
+    if (!prev || now - prev.t > 300 || Math.hypot(e.clientX - prev.x, e.clientY - prev.y) > 24) return;
+    lastTap = null;
+    touched = true;
+    if (!fit) fitBox();
+    const st = getState();
+    if (st.z > 1.5) return zoomTo(1);
+    const z = 2.2;
+    const c = centreFor(toBoard(e.clientX, e.clientY), e.clientX, e.clientY, z);
+    zoomTo(z, c.cx, c.cy);
+  }
+
+  // zoom by a factor around a point of the screen (a tap that was too close to call zooms in instead of guessing)
+  function zoomAt(X, Y, f) {
+    if (!fit) fitBox();
+    if (!fit) return;
+    const st = getState();
+    const z = clamp(st.z * f, MIN_Z, MAX_Z);
+    const c = centreFor(toBoard(X, Y), X, Y, z);
+    zoomTo(z, c.cx, c.cy);
+  }
+
+  // zoom to show a set of board points ({x,y} in board units, as in the SVG viewBox). Only when that is worth it:
+  // the box must fit at zoom >= minZ, otherwise the view stays as it is. Returns true when it zoomed.
+  function focusPoints(points, { minZ = 1.6, margin = 46, maxZ = 2.4 } = {}) {
+    if (!points || !points.length) return false;
+    if (!fit) fitBox();
+    if (!fit) return false;
+    const xs = points.map(p => p.x), ys = points.map(p => p.y);
+    const x0 = Math.min(...xs) - margin, x1 = Math.max(...xs) + margin, y0 = Math.min(...ys) - margin, y1 = Math.max(...ys) + margin;
+    const fz = Math.min(fit.w / fit.s1 / (x1 - x0), fit.h / fit.s1 / (y1 - y0));
+    if (fz < minZ) return false;
+    zoomTo(Math.min(maxZ, fz), (x0 + x1) / 2, (y0 + y1) / 2);
+    return true;
+  }
 
   // a short glide after a quick drag, slowing down like on a phone map
   function startGlide(p) {
@@ -247,10 +307,24 @@ export function createZoom({ host, getState, setState, onChange }) {
   let rz = 0;
   const onResize = () => { clearTimeout(rz); rz = setTimeout(() => { if (!g) { fit = null; commit(); } }, 120); };
   window.addEventListener('resize', onResize);
+  // phone: the frame changes size by itself (browser bar, rotation, the dock growing): fit the board again
+  let ro = null, roRaf = 0, roSize = '';
+  if (typeof ResizeObserver === 'function' && box()) {
+    ro = new ResizeObserver(() => {
+      if (!isPhone()) return;
+      const b = box(); if (!b) return;
+      const size = b.clientWidth + 'x' + b.clientHeight;
+      if (size === roSize) return;
+      roSize = size;
+      cancelAnimationFrame(roRaf);
+      roRaf = requestAnimationFrame(() => { if (!g && !glide && !anim) { fit = null; commit(); } });
+    });
+    ro.observe(box());
+  }
 
   return {
     zoomBy, zoomTo,
-    reset: () => zoomTo(1),
+    reset: () => { touched = true; zoomTo(1); },
     // call after the board was redrawn: size the new SVG for the current zoom
     apply: () => {
       if (g) { if (g.raf) cancelAnimationFrame(g.raf); g = null; host.classList.remove('gesturing'); }
@@ -258,8 +332,14 @@ export function createZoom({ host, getState, setState, onChange }) {
       commit();
       if (ptrs.size) begin(); // fingers still down: continue the gesture on the new board
     },
+    zoomAt, focusPoints,
+    // where a tap really was: the pointer position of the last lift within 800 ms of now, else null
+    lastPoint: () => (lastUp && performance.now() - lastUp.t < 800 ? lastUp : null),
+    // has the person zoomed or panned by hand since clearTouched()?
+    touched: () => touched,
+    clearTouched: () => { touched = false; },
     wasDrag: () => moved,
     busy: () => !!g || ptrs.size > 0,
-    destroy: () => window.removeEventListener('resize', onResize),
+    destroy: () => { window.removeEventListener('resize', onResize); ro && ro.disconnect(); cancelAnimationFrame(roRaf); clearTimeout(rz); clearTimeout(wheelTimer); stopGlide(); stopAnim(); },
   };
 }

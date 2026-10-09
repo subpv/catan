@@ -1,1 +1,307 @@
-/* Phone layout (game). Everything here sits inside @media (max-width: 760px) or another phone query, so the desktop stays as it is. */
+/* Phone layout (game). Everything here sits inside @media (max-width: 760px) or another phone query, so the desktop stays as it is.
+   Portrait phone: page that never scrolls: status strip, player strip, the board (all remaining height), the dock in the thumb zone.
+   Chat, log, stats, players and the menu live in a bottom sheet (.game-side). The landscape section is at the END of this file.
+   Joint rules for the classic family (screen.js) and the standalone games (sgame.js): same DOM, same classes. */
+
+/* ---- new elements: hidden on the desktop, shown inside the phone query */
+.m-only { display: none; }
+
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+
+/* ================================================================ page frame */
+body[data-route="game"] { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; overscroll-behavior: none; }
+body[data-route="game"] { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .stripe { height: 3px; flex: none; }
+body[data-route="game"] #app { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+body[data-route="game"] .topbar { flex: none; }
+body[data-route="game"] .game { flex: 1 1 auto; min-height: 0; display: block; padding: 0; margin: 0; max-width: none; position: relative; }
+body[data-route="game"] .game-main { display: grid; height: 100%; min-height: 0; gap: 0; position: relative;
+  grid-template-columns: auto minmax(0, 1fr) max-content;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  grid-template-areas: "msg msg dice" "pstrip pstrip pstrip" "board board board" "hand hand hand" "more btns btns"; }
+body[data-route="game"] .m-only { display: revert; }
+/* the status bar turns into a strip: its three parts sit in the grid of .game-main */
+body[data-route="game"] .status { display: contents; }
+body[data-route="game"] .game-main::after { content: ''; grid-area: 1 / 1 / 2 / -1; background: var(--card); z-index: 0; box-shadow: inset 0 -3px 0 transparent; transition: box-shadow .3s; pointer-events: none; }
+body[data-route="game"] .game-main:has(.status.mine)::after { box-shadow: inset 0 -3px 0 var(--gold); }
+body[data-route="game"] .game-main::before { content: ''; grid-area: 4 / 1 / 6 / -1; background: var(--card); z-index: 0; border-radius: 18px 18px 0 0; box-shadow: 0 -8px 20px -10px rgba(0,0,0,.65); pointer-events: none; }
+
+/* ---- status strip */
+body[data-route="game"] .status .msg { grid-area: msg; position: relative; z-index: 1; padding: 8px 12px; min-height: var(--m-strip-h, 56px); max-height: none; font-size: 15px; font-weight: 700; line-height: 1.2; display: flex; flex-direction: column; justify-content: center; min-width: 0; color: var(--ink); overflow: visible; }
+body[data-route="game"] .status .msg .mt { -webkit-line-clamp: 2; }
+body[data-route="game"] .status .msg .sub { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; white-space: normal; overflow: hidden; font-size: 12.5px; line-height: 1.3; margin-top: 2px; }
+body[data-route="game"] .who-ic { display: inline-block; vertical-align: -4px; margin-right: 6px; line-height: 0; }
+body[data-route="game"] .status .dice-slot { grid-area: dice; position: relative; z-index: 1; width: auto; min-width: 0; height: auto; padding: 0 12px 0 0; align-self: center; justify-self: end; }
+body[data-route="game"] .status .dice-slot:empty { display: none; }
+body[data-route="game"] .pdie { width: 32px; height: 32px; padding: 5px; }
+body[data-route="game"] .pdie i { width: 5.5px; height: 5.5px; }
+body[data-route="game"] .dice .dsum { font-size: 18px; }
+body[data-route="game"] .dice .die.event { width: 30px; height: 30px; font-size: 14px; }
+body[data-route="game"] .dice .evcard { height: 40px; min-width: 48px; }
+body[data-route="game"] .dice .evcard .evt { font-size: 12px; max-width: 76px; letter-spacing: 0; }
+body[data-route="game"] .game-main .status.fx-nudge { animation: none; }
+
+/* ---- player strip */
+body[data-route="game"] .pstrip-host { grid-area: pstrip; position: relative; z-index: 1; display: flex; align-items: center; gap: 4px; height: var(--m-pstrip-h, 44px); padding: 0 var(--m-gutter, 12px); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-x: contain;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 14px), transparent); }
+body[data-route="game"] .pstrip-host::-webkit-scrollbar { display: none; }
+body[data-route="game"] .pc { flex: none; position: relative; isolation: isolate; height: 44px; display: inline-flex; align-items: center; gap: 5px; padding: 0 10px 0 7px; border: 0; background: none; color: var(--cream); font-size: 12.5px; font-weight: 600; white-space: nowrap; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .pc::before { content: ''; position: absolute; inset: 5px 0; border-radius: 999px; background: rgba(255,243,220,.12); box-shadow: inset 0 0 0 1.5px rgba(255,243,220,.16); z-index: -1; }
+body[data-route="game"] .pc.cur { color: var(--ink); }
+body[data-route="game"] .pc.cur::before { background: linear-gradient(180deg, var(--gold-2), var(--gold)); box-shadow: 0 2px 0 #A8741C; }
+body[data-route="game"] .pc.me .pc-nm { font-weight: 800; }
+body[data-route="game"] .pc .house { width: 20px; height: 22px; flex: none; }
+body[data-route="game"] .pc-vp { font-family: var(--serif); font-size: 16px; font-weight: 800; line-height: 1; min-width: 14px; text-align: center; }
+body[data-route="game"] .pc-n { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; opacity: .85; }
+body[data-route="game"] .pc-n .stk { margin-right: 1px; }
+body[data-route="game"] .pc-n.warn { opacity: 1; color: #FFD9D2; }
+body[data-route="game"] .pc.cur .pc-n.warn { color: var(--red-d); }
+
+/* ---- board */
+body[data-route="game"] .board-wrap { grid-area: board; position: relative; z-index: 1; min-height: 0; border-radius: 0; box-shadow: none; }
+body[data-route="game"] .board-host { position: absolute; inset: 0; min-height: 0; height: auto !important; }
+body[data-route="game"] svg.board { touch-action: none !important; }
+body[data-route="game"] .hud-host { position: static; }
+body[data-route="game"] .board-hud { left: 8px; right: 8px; top: 6px; flex-wrap: nowrap; gap: 6px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; pointer-events: none; z-index: 5; }
+body[data-route="game"] .board-hud::-webkit-scrollbar { display: none; }
+body[data-route="game"] .board-hud > * { flex: none; pointer-events: none; }
+body[data-route="game"] .hud-pill { padding: 4px 10px; font-size: 12.5px; line-height: 1.2; white-space: nowrap; }
+body[data-route="game"] .zoom-ctl { right: 8px; bottom: 8px; gap: 8px; }
+body[data-route="game"] .zoom-ctl button { width: 44px; height: 44px; font-size: 24px; border-radius: 14px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .zoom-ctl .lifebtn { display: none; }
+body[data-route="game"] .zoom-ctl .rs { font-size: 20px; }
+/* corners and edges you can tap: bigger and with a dark outline, so they show on cream tile borders */
+body[data-route="game"] svg.board .hl-v { fill: rgba(255,246,218,.96); stroke: #2B1E12; stroke-width: 3; }
+body[data-route="game"] svg.board .hl-e { stroke-width: 12; filter: drop-shadow(0 0 1.5px rgba(43,30,18,.95)) drop-shadow(0 0 3px rgba(43,30,18,.7)); }
+body[data-route="game"] svg.board .hl-h { stroke: var(--gold-2); stroke-width: 5; fill: rgba(255,246,218,.3); filter: drop-shadow(0 0 2px rgba(43,30,18,.8)); animation: m-hexglow 1.2s ease-in-out infinite; }
+@keyframes m-hexglow { 50% { fill: rgba(255,246,218,.1); stroke-opacity: .55; } }
+/* the tutorial offer: one pill at the bottom of the board (thumb), beside the zoom buttons */
+body[data-route="game"] .tut-nudge { left: 8px; right: 64px; bottom: 8px; max-width: none; }
+body[data-route="game"] .tut-nudge .tn-go { flex: 1; min-height: 44px; padding: 0 12px 0 14px; font-size: 13px; }
+body[data-route="game"] .tut-nudge .tn-x { flex: none; width: 44px; min-height: 44px; padding: 0; font-size: 16px; }
+
+/* ================================================================ dock */
+body[data-route="game"] .hand-host { grid-area: hand; position: relative; z-index: 1; padding: 8px 8px 0; min-width: 0; }
+body[data-route="game"] .hand { background: none; box-shadow: none; border-radius: 0; padding: 0; color: var(--ink); display: flex; flex-direction: column; gap: 5px; }
+body[data-route="game"] .hand-head { display: none; }
+body[data-route="game"] .hand-head:has(.hand-count.warn) { display: flex; justify-content: flex-end; height: 22px; margin-bottom: -2px; }
+body[data-route="game"] .hand-head b { display: none; }
+body[data-route="game"] .hand-count { display: none; }
+body[data-route="game"] .hand-count.warn { display: inline-block; background: #F8D9D3; color: var(--red-d); border-radius: 999px; padding: 1px 10px; font-size: 12px; font-weight: 700; }
+body[data-route="game"] .hand.watching { height: auto; min-height: 44px; justify-content: center; padding: 6px 4px 2px; font-size: 14px; }
+/* hand: one equal chip per resource */
+body[data-route="game"] .hand-cards { display: flex; gap: 4px; height: 50px; padding: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; flex: none; }
+body[data-route="game"] .hand-cards::-webkit-scrollbar { display: none; }
+body[data-route="game"] .rcard { flex: 1 1 0; min-width: 40px; width: auto; height: 50px; border-radius: 12px; gap: 2px; font-size: 12px; box-shadow: 0 3px 6px -4px rgba(43,30,18,.7); touch-action: manipulation; }
+body[data-route="game"] .rcard svg { width: 22px; height: 22px; }
+body[data-route="game"] .rcard .nm { display: none; font-size: 12px; }
+body[data-route="game"] .rcard .n { position: static; min-width: 0; height: auto; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; color: inherit; font-size: 18px; font-weight: 800; line-height: 1; }
+body[data-route="game"] .rcard.zero { opacity: .55; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 40%, transparent); }
+body[data-route="game"] .rcard.comm { border-radius: 40% 40% 12px 12px / 25% 25% 12px 12px; }
+body[data-route="game"] .hc-sep { margin: 6px 1px; flex: none; }
+body[data-route="game"] .tcard { flex: 1 1 0; min-width: 44px; width: auto; height: 50px; gap: 0; touch-action: manipulation; }
+body[data-route="game"] .tcard .coin { width: 32px; height: 32px; }
+body[data-route="game"] .tcard .coin svg { width: 20px; height: 20px; }
+body[data-route="game"] .tcard .nm { display: none; font-size: 12px; }
+body[data-route="game"] .tcard .n { top: 0; right: 0; min-width: 20px; height: 20px; font-size: 12px; }
+/* build buttons: four to a row, two rows at most */
+body[data-route="game"] .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); gap: 6px; height: auto; margin: 0; overflow: visible; }
+body[data-route="game"] .act { width: auto; min-width: 0; height: auto; min-height: 48px; padding: 4px 2px 4px; align-items: center; justify-content: center; gap: 3px; text-align: center; font-size: 12.5px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .act > span.nm { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; height: auto; line-height: 1.15; white-space: normal; overflow-wrap: break-word; text-overflow: clip; font-size: 12px; letter-spacing: -.01em; }
+body[data-route="game"] .act .ai { display: none; }
+body[data-route="game"] .act small, body[data-route="game"] .act small:has(.left) { display: flex; justify-content: center; height: auto; min-height: 10px; padding: 0; font-size: 12px; overflow: visible; }
+body[data-route="game"] .act small .cd { justify-content: center; }
+body[data-route="game"] .act small .left { position: absolute; right: 4px; top: 3px; bottom: auto; font-size: 12px; line-height: 14px; padding: 0 4px; }
+body[data-route="game"] .act[data-do="bank"] { display: none; }
+body[data-route="game"] .act.m-only { display: flex; }
+body[data-route="game"] .dock-tall .actions { max-height: var(--m-acts-max, 54px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 12px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 12px), transparent); }
+/* cards row: one scrolling row of chips, only when there are cards (buying is a build button on the phone). The hidden row keeps its place: the buy animation flies to it */
+body[data-route="game"] .devrow { display: block; height: auto; margin: 0; }
+body[data-route="game"] .devrow:not(:has(.dcard:not(.buy):not(.slot))) { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; visibility: hidden; pointer-events: none; overflow: hidden; }
+body[data-route="game"] .devrow .dcard.buy { display: none; }
+body[data-route="game"] .devrow:not(:has(.dcard:not(.buy):not(.slot))) .dcard.buy { display: flex; }
+body[data-route="game"] .devrow .lbl { display: none; }
+body[data-route="game"] .dcards { display: flex; gap: 6px; height: 44px; padding: 0 8px; margin: 0 -8px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; align-items: center; justify-content: flex-start;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(90deg, transparent 0, #000 8px, #000 calc(100% - 14px), transparent); }
+body[data-route="game"] .dcards::-webkit-scrollbar { display: none; }
+body[data-route="game"] .dcard { flex: none; width: auto; height: 44px; min-height: 44px; min-width: 0; padding: 0 12px 0 6px; gap: 6px; touch-action: manipulation; }
+body[data-route="game"] .dcard .dc-nm { flex: none; max-width: 112px; font-size: 12px !important; line-height: 1.12; }
+body[data-route="game"] .dcard .n { position: static; min-width: 22px; height: 22px; margin: 0 0 0 2px; border: 0; font-size: 12px; flex: none; }
+body[data-route="game"] .dcard .dc-new { position: static; transform: none; margin: 0 0 0 2px; font-size: 12px; padding: 0 6px; flex: none; }
+body[data-route="game"] .dcard.buy { padding: 0 10px 0 8px; }
+body[data-route="game"] .dcard.slot { min-width: 56px; padding: 0; }
+body[data-route="game"] .stat-strip { display: flex; gap: 6px; height: 32px; margin: 0; align-items: center; overflow-x: auto; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 14px), transparent); }
+body[data-route="game"] .stat-strip::-webkit-scrollbar { display: none; }
+body[data-route="game"] .stat-chip.dup { display: none; }
+body[data-route="game"] .stat-strip:not(:has(.stat-chip:not(.dup))) { display: none; }
+body[data-route="game"] .stat-chip { font-size: 12px; height: 28px; }
+body[data-route="game"] .left, body[data-route="game"] .mp, body[data-route="game"] .award, body[data-route="game"] .hexbadge, body[data-route="game"] .imp-foot, body[data-route="game"] .aq-chip, body[data-route="game"] .bb { font-size: 12px; }
+/* primary row: the round chat button and the buttons of the move (the thumb never leaves the bottom) */
+body[data-route="game"] .m-more { grid-area: more; align-self: end; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 8px; width: 52px; height: 52px; margin: 6px 0 calc(var(--m-safe-b, 0px) + 8px) 8px; padding: 0; border-radius: 14px; border: 1.5px solid var(--line-2); background: var(--card-2); color: var(--ink); font-weight: 700; font-size: 14px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .m-more .mm-lbl { display: none; }
+body[data-route="game"] .m-more .unread { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; font-size: 12px; box-shadow: 0 0 0 2px var(--card); }
+body[data-route="game"] .m-more.has-unread { background: #FFF1C9; border-color: var(--gold); }
+body[data-route="game"] .game-main:has(.btns:empty) .m-more { grid-column: 1 / -1; width: auto; margin-right: 8px; }
+body[data-route="game"] .game-main:has(.btns:empty) .m-more .mm-lbl { display: inline; }
+body[data-route="game"] .status .btns { grid-area: btns; position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; width: auto; align-items: stretch; align-content: flex-end; padding: 6px 8px calc(var(--m-safe-b, 0px) + 8px) 8px; min-width: 0; }
+body[data-route="game"] .status .btns .btn { flex: 1 1 0; width: auto; min-width: 64px; height: auto; min-height: 52px; padding: 4px 8px; display: flex; align-items: center; justify-content: center; text-align: center; white-space: normal; overflow: visible; text-overflow: clip; font-size: 15px; line-height: 1.15; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .status .btns .btn.primary, body[data-route="game"] .status .btns .btn.gold { flex-grow: 1.6; font-weight: 700; }
+body[data-route="game"] .status .btns .roll-btn { min-height: 56px; font-size: 18px; }
+body[data-route="game"] .status .btns > :only-child { grid-column: auto; }
+body[data-route="game"] .status .btns:has(> :nth-child(4)) > .primary { flex: 1 0 100%; }
+body[data-route="game"] .status .btns .btn svg { margin-right: 3px; }
+@keyframes m-pulse { 0%, 100% { box-shadow: 0 3px 0 #8E1B16, 0 0 0 0 rgba(240,194,74,0); } 35% { box-shadow: 0 3px 0 #8E1B16, 0 0 0 9px rgba(240,194,74,.7); } }
+body[data-route="game"] .game.move-pulse .status .btns .btn.primary { animation: m-pulse .8s ease-out 2; }
+
+/* ================================================================ bottom sheet (.game-side) */
+body[data-route="game"] .m-scrim { position: fixed; inset: 0; z-index: 38; background: rgba(20,8,4,.55); opacity: 0; visibility: hidden; transition: opacity .2s, visibility 0s .2s; }
+body[data-route="game"] .game.sheet-open .m-scrim { opacity: 1; visibility: visible; transition: opacity .2s; }
+body[data-route="game"] .game-side { position: fixed; left: 0; right: 0; bottom: var(--m-kb, 0px); z-index: 40; display: flex; flex-direction: column; gap: 0; min-width: 0; height: 82vh; height: min(82dvh, calc(var(--m-vvh, 100dvh) - var(--m-safe-t, 0px) - 8px)); background: var(--card); color: var(--ink); border-radius: 20px 20px 0 0; box-shadow: 0 -12px 34px -10px rgba(0,0,0,.7); overflow: hidden;
+  transform: translateY(104%); visibility: hidden; transition: transform .2s ease-out, visibility 0s .2s; }
+body[data-route="game"] .game[data-sheet="graphs"] .game-side { height: 90vh; height: min(90dvh, calc(var(--m-vvh, 100dvh) - var(--m-safe-t, 0px) - 8px)); }
+body[data-route="game"] .game.sheet-open .game-side { transform: none; visibility: visible; transition: transform .2s ease-out; }
+body[data-route="game"] .game-side.dragging { transition: none; }
+body[data-route="game"] .game-side > .players-host, body[data-route="game"] .game-side > .imp-host, body[data-route="game"] .game-side > .feed, body[data-route="game"] .game-side > .m-menu { display: none; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+body[data-route="game"] .game[data-sheet="players"] .players-host { display: block; }
+body[data-route="game"] .game[data-sheet="side"] .imp-host { display: block; }
+body[data-route="game"] .game[data-sheet="chat"] .feed, body[data-route="game"] .game[data-sheet="log"] .feed, body[data-route="game"] .game[data-sheet="graphs"] .feed { display: flex; flex-direction: column; overflow: hidden; }
+body[data-route="game"] .game[data-sheet="menu"] .m-menu { display: block; }
+body[data-route="game"] .game-side .panel { background: none; box-shadow: none; border-radius: 0; }
+body[data-route="game"] .game-side .panel-h { font-size: 12.5px; padding: 10px 14px; }
+body[data-route="game"] .m-sheetbar { flex: none; position: relative; display: flex; align-items: stretch; gap: 2px; padding: 14px 4px 0 2px; border-bottom: 1px solid var(--line); touch-action: none; user-select: none; -webkit-user-select: none; }
+body[data-route="game"] .m-pill { position: absolute; top: 6px; left: 50%; width: 40px; height: 5px; margin-left: -20px; border-radius: 3px; background: var(--line-2); }
+body[data-route="game"] .m-tabs { display: flex; flex: 1; min-width: 0; gap: 2px; }
+body[data-route="game"] .m-tab { flex: 1 1 0; min-width: 0; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 2px 0; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .m-tab.on { color: var(--ink); border-bottom-color: var(--red); }
+body[data-route="game"] .m-tl { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body[data-route="game"] .m-tab .unread { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 18px; height: 18px; font-size: 12px; }
+body[data-route="game"] .m-close { flex: none; align-self: center; width: 44px; height: 44px; margin-left: 2px; border: 0; border-radius: 50%; background: var(--card-2); color: var(--ink); display: grid; place-items: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+/* feed inside the sheet */
+body[data-route="game"] .feed .tabbar { display: none; }
+body[data-route="game"] .feed-body { flex: 1 1 auto; height: auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+body[data-route="game"] .feed-body.chat, body[data-route="game"] .feed-body.log, body[data-route="game"] .feed-body.graphs { padding: 10px 12px 14px; }
+body[data-route="game"] .feed-body.log { background: #F6EACB; }
+body[data-route="game"] .feed-empty { min-height: 200px; font-size: 14px; }
+body[data-route="game"] .bub { font-size: 14.5px; max-width: 86%; }
+body[data-route="game"] .bub-who { font-size: 12px; }
+body[data-route="game"] .chat-form { flex: none; display: flex; gap: 8px; padding: 8px 8px calc(var(--m-safe-b, 0px) + 8px); border-top: 1px solid var(--line); background: var(--card); }
+body[data-route="game"] .chat-form[hidden] { display: none; }
+body[data-route="game"] .chat-form .input { flex: 1; min-width: 0; height: 48px; padding: 0 12px; font-size: 16px; }
+body[data-route="game"] .chat-form .btn { flex: none; height: 48px; min-width: 72px; padding: 0 16px; font-size: 15px; }
+/* players, log */
+body[data-route="game"] .player { height: auto; min-height: 62px; padding: 6px 14px; }
+body[data-route="game"] .player .meta { height: auto; flex-wrap: wrap; row-gap: 4px; overflow: visible; font-size: 12px; }
+body[data-route="game"] .player .nm { font-size: 15px; flex-wrap: wrap; }
+body[data-route="game"] .vpr small { display: none; font-size: 12px; }
+body[data-route="game"] .vpr { --sz: 44px; }
+body[data-route="game"] .vpr b { font-size: 18px; }
+body[data-route="game"] .mp { height: 24px; font-size: 12px; }
+body[data-route="game"] .award { font-size: 12px; }
+body[data-route="game"] .turn-card { font-size: 13px; }
+body[data-route="game"] .th-turn, body[data-route="game"] .ev.sys, body[data-route="game"] .ev.loss .why, body[data-route="game"] .pchip.sm, body[data-route="game"] .bchip, body[data-route="game"] .gx-sub, body[data-route="game"] .gx-legend { font-size: 12px; }
+body[data-route="game"] .mc b { font-size: 12px; min-width: 16px; height: 16px; line-height: 16px; }
+/* improvements (C&K) */
+body[data-route="game"] .imp-host .panel { background: none; }
+body[data-route="game"] .lane { height: 64px; grid-template-columns: 70px minmax(0, 1fr) 30px 48px; }
+body[data-route="game"] .lane:not(:has(.metro)) { grid-template-columns: 70px minmax(0, 1fr) 0 48px; }
+body[data-route="game"] .imp-btn { width: 48px; height: 48px; touch-action: manipulation; }
+body[data-route="game"] .imp-btn span, body[data-route="game"] .imp-btn b { font-size: 12px; }
+body[data-route="game"] .imp-btn b { font-size: 17px; }
+body[data-route="game"] .lane-l b { font-size: 12px; }
+body[data-route="game"] .step { font-size: 12px; }
+body[data-route="game"] .imp-warn { font-size: 13px; }
+body[data-route="game"] .aq-chip { height: 32px; font-size: 12px; }
+body[data-route="game"] .aq-chip::after, body[data-route="game"] .stat-chip.btnish::after { content: ''; position: absolute; inset: -8px -6px; }
+body[data-route="game"] .stat-chip.btnish { position: relative; }
+/* menu */
+body[data-route="game"] .m-menu-in { padding: 10px 12px calc(var(--m-safe-b, 0px) + 14px); display: flex; flex-direction: column; gap: 8px; }
+body[data-route="game"] .m-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 0 14px; border-radius: 14px; border: 1.5px solid var(--line); background: #FFFBEE; color: var(--ink); font-size: 15px; font-weight: 600; text-align: left; text-decoration: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+body[data-route="game"] .m-row .mr-ic { flex: none; width: 26px; display: grid; place-items: center; color: var(--muted); }
+body[data-route="game"] .m-row .mr-ic svg { color: var(--muted) !important; }
+body[data-route="game"] .m-row .mr-t { flex: 1; min-width: 0; }
+body[data-route="game"] .m-row .mr-go { color: var(--muted); font-size: 22px; line-height: 1; }
+body[data-route="game"] .m-row .mr-v { color: var(--muted); font-weight: 700; font-size: 13px; }
+body[data-route="game"] .m-row .mr-sw { flex: none; width: 44px; height: 26px; border-radius: 13px; background: rgba(43,30,18,.2); position: relative; transition: background .15s; }
+body[data-route="game"] .m-row .mr-sw::after { content: ''; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.4); transition: transform .15s; }
+body[data-route="game"] .m-row.on .mr-sw { background: var(--green); }
+body[data-route="game"] .m-row.on .mr-sw::after { transform: translateX(18px); }
+body[data-route="game"] .m-row.danger { background: #8E2F25; border-color: transparent; color: #fff; margin-top: 6px; }
+body[data-route="game"] .m-row.danger .mr-ic { color: #fff; }
+
+/* ================================================================ charts in the sheet */
+body[data-route="game"] .gx-plot .ax { font-size: 12px; }
+body[data-route="game"] .gx-plot .lb { font-size: 12px; }
+body[data-route="game"] .gx h4 { font-size: 14px; }
+body[data-route="game"] .tiles { gap: 6px; }
+body[data-route="game"] .tile-s { padding: 6px 8px; }
+body[data-route="game"] .tile-s small { font-size: 12px; }
+body[data-route="game"] .tile-s b { font-size: 18px; }
+body[data-route="game"] .gx-legend .lg b { font-weight: 800; margin-left: 2px; }
+body[data-route="game"] .gx-legend .lg { padding: 2px 0; }
+body[data-route="game"] .gx-cap { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; min-height: 26px; font-size: 12.5px; color: var(--ink); margin: 2px 0 4px; }
+body[data-route="game"] .gx-cap b { font-weight: 800; }
+body[data-route="game"] .gx-cap .cp { display: inline-flex; align-items: center; gap: 5px; }
+body[data-route="game"] .gx-plot .hit.sel { fill: rgba(43,30,18,.08); }
+body[data-route="game"] .tiles.rob .tile-s small { overflow: visible; text-overflow: clip; }
+body[data-route="game"] .gx-plot svg { touch-action: pan-y; }
+body[data-route="game"] .tiles.rob { display: flex; overflow-x: auto; scrollbar-width: none; }
+body[data-route="game"] .tiles.rob .tile-s { flex: none; min-width: 110px; }
+body[data-route="game"] .gx-tip { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+body[data-route="game"] svg.board .hl-h, body[data-route="game"] .game.move-pulse .status .btns .btn.primary { animation: none; }
+body[data-route="game"] .game-side, body[data-route="game"] .m-scrim { transition: none; }
+}
+
+/* ---- short portrait screens (small phones, a browser bar that does not collapse): a little more room for the board */
+@media (max-width: 760px) and (max-height: 640px) {
+body[data-route="game"] .hand-cards, body[data-route="game"] .rcard, body[data-route="game"] .tcard { height: 44px; }
+body[data-route="game"] .rcard svg { width: 20px; height: 20px; }
+body[data-route="game"] .rcard .n { font-size: 16px; }
+body[data-route="game"] .hand-host { padding-top: 6px; }
+body[data-route="game"] .status .btns { padding-top: 4px; }
+body[data-route="game"] .m-more { margin-top: 4px; }
+body[data-route="game"] .status .msg { min-height: 52px; padding-top: 6px; padding-bottom: 6px; }
+body[data-route="game"] .status .btns .roll-btn { min-height: 52px; }
+}
+
+/* ================================================================ LANDSCAPE PHONE (keep this section last: it wins over the rules above)
+   Left: the board at full height. Right column (min(36vw, 340px)): status and dice, player strip, hand chips and build buttons, primary row.
+   The column scrolls inside if it has to (the board stays where it is); the sheet becomes a drawer from the right. */
+@media (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+body[data-route="game"] .game-main { grid-template-columns: minmax(0, 1fr) min(36vw, 340px); grid-template-rows: auto auto auto auto minmax(0, 1fr); grid-template-areas: none; height: 100%; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: none; padding-left: var(--m-safe-l, 0px); padding-right: var(--m-safe-r, 0px); }
+body[data-route="game"] .game-main::-webkit-scrollbar { display: none; }
+body[data-route="game"] .game-main::after { display: none; }
+body[data-route="game"] .game-main::before { grid-area: 1 / 2 / -1 / 3; border-radius: 0; box-shadow: -8px 0 20px -10px rgba(0,0,0,.65); min-height: 100%; }
+body[data-route="game"] .board-wrap { grid-area: 1 / 1 / -1 / 2; position: sticky; top: 0; align-self: start; height: calc(100vh - 3px); height: calc(100dvh - 3px); z-index: 1; }
+body[data-route="game"] .status .msg { grid-area: 1 / 2; padding: 8px 12px; min-height: 48px; font-size: 15px; }
+body[data-route="game"] .game-main:has(.dice-slot:not(:empty)) .status .msg { padding-right: 124px; }
+body[data-route="game"] .game-main:has(.die.event) .status .msg, body[data-route="game"] .game-main:has(.evcard) .status .msg { padding-right: 168px; }
+body[data-route="game"] .status .dice-slot { grid-area: 1 / 2; justify-self: end; padding-right: 10px; }
+body[data-route="game"] .pstrip-host { grid-area: 2 / 2; padding: 0 10px; background: none; }
+body[data-route="game"] .pc { color: var(--ink); }
+body[data-route="game"] .pc::before { background: rgba(43,30,18,.08); box-shadow: inset 0 0 0 1.5px rgba(43,30,18,.1); }
+body[data-route="game"] .pc.cur::before { background: linear-gradient(180deg, var(--gold-2), var(--gold)); box-shadow: 0 2px 0 #A8741C; }
+body[data-route="game"] .pc-n.warn { color: var(--red-d); }
+body[data-route="game"] .hand-host { grid-area: 3 / 2; padding: 4px 8px 0; }
+body[data-route="game"] .m-more { grid-area: 1 / 1 / -1 / 2; justify-self: end; align-self: start; position: sticky; top: 8px; margin: 8px 8px 0 0; z-index: 6; box-shadow: 0 4px 12px -4px rgba(0,0,0,.6); }
+body[data-route="game"] .status .btns { grid-area: 4 / 2; padding: 6px 8px 8px; align-self: start; }
+body[data-route="game"] .game-main:has(.btns:empty) .m-more { grid-column: 1; width: 52px; margin-right: 8px; }
+body[data-route="game"] .game-main:has(.btns:empty) .m-more .mm-lbl { display: none; }
+body[data-route="game"] .status .msg .mt { -webkit-line-clamp: 3; }
+body[data-route="game"] .status .btns .btn { min-height: 48px; }
+body[data-route="game"] .status .btns .roll-btn { min-height: 52px; }
+body[data-route="game"] .zoom-ctl { flex-direction: column; }
+body[data-route="game"] .tut-nudge { right: 64px; }
+/* the sheet: a drawer from the right */
+body[data-route="game"] .game-side { left: auto; right: 0; top: 0; bottom: 0; width: min(46vw, 420px); height: 100vh; height: 100dvh; border-radius: 20px 0 0 20px; transform: translateX(104%); padding-right: var(--m-safe-r, 0px); }
+body[data-route="game"] .game[data-sheet="graphs"] .game-side { height: 100vh; height: 100dvh; }
+body[data-route="game"] .game.sheet-open .game-side { transform: none; }
+body[data-route="game"] .m-sheetbar { padding: 8px 4px 0 6px; }
+body[data-route="game"] .m-pill { display: none; }
+body[data-route="game"] .m-tab { min-height: 48px; }
+body[data-route="game"] .chat-form { padding-bottom: 8px; }
+body[data-route="game"] .m-menu-in { padding-bottom: 14px; }
+}

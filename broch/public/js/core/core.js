@@ -1,5 +1,6 @@
 // Shared helpers: API, websocket, toasts, modals, feedback reporting, icons.
 import { t } from './i18n.js';
+import { isPhone } from './phone.js';
 export { t };
 
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -262,22 +263,57 @@ export function toast(msg, kind = '') {
   const el = document.createElement('div');
   el.className = 'toast ' + kind;
   el.textContent = msg;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(() => el.remove(), kind === 'warn' ? 4200 : 3000);
+  const host = document.getElementById('toasts');
+  // phone: a short stack of at most two, a new one pushes the oldest out
+  const phone = isPhone();
+  if (phone) while (host.children.length >= 2) host.firstElementChild.remove();
+  host.appendChild(el);
+  setTimeout(() => el.remove(), phone ? (kind === 'warn' ? 3600 : 2600) : (kind === 'warn' ? 4200 : 3000));
+}
+
+// Phone: every dialog is a bottom sheet (css/mobile-dialogs.css). The grab zone at its top (hidden on the desktop) drags it down to dismiss.
+function swipeToDismiss(back, box, grab, close) {
+  let y0 = 0, t0 = 0, dy = 0, id = null;
+  const end = e => {
+    if (id == null || (e && e.pointerId !== id)) return;
+    id = null;
+    const fast = dy > 24 && dy / Math.max(1, performance.now() - t0) > 0.6;
+    box.style.transition = 'transform .18s ease-out';
+    if (dy > 80 || fast) { box.style.transform = 'translateY(105%)'; back.style.transition = 'opacity .18s'; back.style.opacity = '0'; setTimeout(close, 170); }
+    else { box.style.transform = ''; setTimeout(() => { box.style.transition = ''; }, 200); }
+  };
+  grab.addEventListener('pointerdown', e => {
+    id = e.pointerId; y0 = e.clientY; t0 = performance.now(); dy = 0;
+    try { grab.setPointerCapture(id); } catch { /* synthetic event */ }
+    box.style.transition = 'none'; box.style.animation = 'none';
+  });
+  grab.addEventListener('pointermove', e => {
+    if (e.pointerId !== id) return;
+    dy = Math.max(0, e.clientY - y0);
+    box.style.transform = `translateY(${dy}px)`;
+  });
+  grab.addEventListener('pointerup', end);
+  grab.addEventListener('pointercancel', end);
 }
 
 export function modal(html, { onMount, dismissable = true } = {}) {
   const root = document.getElementById('modal-root');
   const back = document.createElement('div');
   back.className = 'modal-back';
-  back.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${html}</div>`;
+  // m-grab: the drag handle of the phone sheet (display:none on the desktop)
+  back.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><div class="m-grab" aria-hidden="true"></div>${html}</div>`;
   const close = () => back.remove();
+  const phone = isPhone();
   if (dismissable) back.addEventListener('click', e => { if (e.target === back) close(); });
   back.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', close));
   root.appendChild(back);
-  onMount && onMount(back.querySelector('.modal'), close);
-  const f = back.querySelector('input, button.primary');
-  f && f.focus();
+  const box = back.querySelector('.modal');
+  if (phone && dismissable) swipeToDismiss(back, box, box.querySelector('.m-grab'), close);
+  else if (phone) box.classList.add('fixed');
+  onMount && onMount(box, close);
+  // a phone never auto-focuses a text field (the keyboard would cover the sheet)
+  const f = back.querySelector(phone ? 'button.primary' : 'input, button.primary');
+  f && f.focus({ preventScroll: true });
   return close;
 }
 export function closeModals() { document.getElementById('modal-root').innerHTML = ''; }

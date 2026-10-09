@@ -23,6 +23,9 @@ import { isMuted, setMuted, sfx } from './core/fx.js';
 import { flag, countrySelect, guessCountry } from './core/countries.js';
 import { openTutorial } from './core/tutorial.js';
 import { SCEN, SCEN_KEYS } from './games/seafarers/scen.js';
+import { watchViewport, onPhoneChange, isPhone } from './core/phone.js';
+
+watchViewport(); // --m-vvh / --m-kb / html.kb-open for the phone layout
 
 const app = document.getElementById('app');
 export const session = { user: null, config: {} };
@@ -31,46 +34,73 @@ const tx = (k, p) => esc(t(k, p));
 
 const SPEAKER = on => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/>${on ? '<path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>' : '<path d="M17 9l5 6M22 9l-5 6"/>'}</svg>`;
 
+// inline icons of the phone tab bar and the in-game bar (hidden on the desktop by css)
+const ICO = (body, cls) => `<svg class="${cls}" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+const NV_ICON = {
+  play: ICO('<path d="M12 2.8l7.8 4.5v9.4L12 21.2l-7.8-4.5V7.3z"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/>', 'nv-i'),
+  stats: ICO('<path d="M5 20V11M12 20V4M19 20v-6"/>', 'nv-i'),
+  profile: ICO('<circle cx="12" cy="8" r="3.6"/><path d="M4.8 20.5c.8-3.8 3.7-5.8 7.2-5.8s6.4 2 7.2 5.8"/>', 'nv-i'),
+};
+const LEAVE_ICON = ICO('<path d="M9.5 3.5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h3.5"/><path d="M15 7.5l4.5 4.5L15 16.5M19.5 12H9.5"/>', 'lv-i');
+
 function topbar(active) {
-  return `<header class="topbar">
-    <a class="brand" href="#/">${logoSvg()}BROCH</a>
+  const inGame = location.hash.startsWith('#/game/');
+  const link = (href, key, label) => `<a href="${href}" class="${active === key ? 'on' : ''}" ${active === key ? 'aria-current="page"' : ''}>${NV_ICON[key]}<span class="nv-l">${label}</span></a>`;
+  return `<header class="topbar${inGame ? ' in-game' : ''}">
+    <a class="brand" href="#/">${logoSvg()}<span class="wm">BROCH</span></a>
     <nav class="nav">
-      <a href="#/" class="${active === 'play' ? 'on' : ''}">${tx('Play')}</a>
-      <a href="#/stats" class="${active === 'stats' ? 'on' : ''}">${tx('Stats')}</a>
-      <a href="#/profile" class="${active === 'profile' ? 'on' : ''}">${esc(session.user?.name || t('Profile'))}</a>
-      ${location.hash.startsWith('#/game/') ? `<button class="iconbtn" data-leavegame title="${tx('Leave this game')}" aria-label="${tx('Leave this game')}">⎋</button>` : ''}
+      <span class="nav-links">${link('#/', 'play', tx('Play'))}${link('#/stats', 'stats', tx('Stats'))}${link('#/profile', 'profile', esc(session.user?.name || t('Profile')))}</span>
+      <span class="nav-acts">${inGame ? `<button class="iconbtn" data-leavegame title="${tx('Leave this game')}" aria-label="${tx('Leave this game')}"><span class="lv-g">⎋</span>${LEAVE_ICON}</button>` : ''}
       <button class="iconbtn" data-lang-pick title="${tx('Language')}" aria-label="${tx('Language')}">${lang().toUpperCase()}</button>
-      <button class="iconbtn" data-mute title="${isMuted() ? tx('Sound off') : tx('Sound on')}" aria-label="${isMuted() ? tx('Sound off') : tx('Sound on')}">${SPEAKER(!isMuted())}</button>
+      <button class="iconbtn" data-mute aria-pressed="${!isMuted()}" title="${isMuted() ? tx('Sound off') : tx('Sound on')}" aria-label="${isMuted() ? tx('Sound off') : tx('Sound on')}">${SPEAKER(!isMuted())}</button></span>
     </nav>
   </header>`;
 }
-const footer = () => `<div class="footer">${tx('Something not working, or have an idea?')} <a href="${esc(getFeedbackUrl())}" target="_blank" rel="noopener">${tx('Send feedback')}</a>${window.BROCH_BUILD ? ` · <span title="Build">${esc(window.BROCH_BUILD)}</span>` : ''}</div>`;
+const footer = () => `<div class="footer">${tx('Something not working, or have an idea?')} <a href="${esc(getFeedbackUrl())}" target="_blank" rel="noopener">${tx('Send feedback')}</a>${window.BROCH_BUILD ? `<span class="build"> · <span title="Build">${esc(window.BROCH_BUILD)}</span></span>` : ''}</div>`;
 export { topbar, footer };
 
-// topbar buttons work on every page
+// topbar buttons work on every page (the game menu on phones carries the same data-attributes)
+// a sound button is either the plain icon button of the top bar or a labelled one (.mute-ic + .mute-lbl) in a menu
+function paintMute(b) {
+  const on = !isMuted(), label = on ? t('Sound on') : t('Sound off');
+  const ic = b.querySelector('.mute-ic'), lb = b.querySelector('.mute-lbl');
+  if (ic || lb) { if (ic) ic.innerHTML = SPEAKER(on); if (lb) lb.textContent = label; } else b.innerHTML = SPEAKER(on);
+  b.title = label; b.setAttribute('aria-pressed', String(on));
+}
 document.addEventListener('click', e => {
   if (e.target.closest('[data-lang-pick]')) return langDialog();
   if (e.target.closest('[data-leavegame]')) return leaveDialog(location.hash.split('/')[2]);
   const m = e.target.closest('[data-mute]');
-  if (m) { setMuted(!isMuted()); m.innerHTML = SPEAKER(!isMuted()); m.title = isMuted() ? t('Sound off') : t('Sound on'); if (!isMuted()) sfx.turn(); }
+  if (m) { setMuted(!isMuted()); document.querySelectorAll('[data-mute]').forEach(paintMute); if (!isMuted()) sfx.turn(); }
 });
 
 function leaveDialog(id) {
   modal(`<h2>${tx('Leave this game')}</h2><p class="muted">${tx('Resign: a bot takes over your seat and the game goes on without statistics.')}</p>
-    <div class="foot"><button class="btn" data-close>${tx('Keep playing')}</button><button class="btn" data-do="resign">${tx('Resign')}</button><button class="btn danger" data-do="abandon" title="${tx('Close the game for everyone (host only)')}">${tx('Close game')}</button></div>
+    <div class="foot"><button class="btn m-main" data-close>${tx('Keep playing')}</button><button class="btn" data-do="resign">${tx('Resign')}</button><button class="btn danger" data-do="abandon" data-arm title="${tx('Close the game for everyone (host only)')}">${tx('Close game')}</button></div>
     <p class="muted" style="font-size:12px;margin:8px 0 0">${tx('Close the game for everyone (host only)')}</p>`, {
     onMount(el, close) {
-      el.querySelectorAll('[data-do]').forEach(b => { b.onclick = async () => {
-        b.disabled = true;
-        try { await api(`/games/${id}/${b.dataset.do}`, { body: {} }); close(); if (b.dataset.do === 'resign') toast(t('You left the game. A bot plays on for you.')); location.hash = '#/'; } catch (err) { toast(err.message, 'warn'); b.disabled = false; }
-      }; });
+      el.querySelectorAll('[data-do]').forEach(b => {
+        const label = b.textContent;
+        let timer = 0;
+        b.onclick = async () => {
+          // closing the game for everybody needs a second tap within 3 seconds
+          if (b.hasAttribute('data-arm') && !b.dataset.armed) {
+            b.dataset.armed = '1'; b.textContent = t('Tap again to confirm');
+            timer = setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = label; } }, 3000);
+            return;
+          }
+          clearTimeout(timer);
+          b.disabled = true;
+          try { await api(`/games/${id}/${b.dataset.do}`, { body: {} }); close(); if (b.dataset.do === 'resign') toast(t('You left the game. A bot plays on for you.')); location.hash = '#/'; } catch (err) { toast(err.message, 'warn'); b.disabled = false; delete b.dataset.armed; b.textContent = label; }
+        };
+      });
     },
   });
 }
 
 function langDialog() {
   modal(`<h2>${tx('Language')}</h2><div class="lang-grid">${LANGS.map(([c, n]) => `<button class="chip ${c === lang() ? 'on' : ''}" data-l="${c}">${esc(n)}</button>`).join('')}</div>
-    <div class="foot"><button class="btn" data-close>${tx('Close')}</button></div>`, {
+    <div class="foot"><button class="btn m-main" data-close>${tx('Close')}</button></div>`, {
     onMount(el, close) {
       el.querySelectorAll('[data-l]').forEach(b => b.onclick = async () => {
         await setLang(b.dataset.l);
@@ -83,7 +113,9 @@ function langDialog() {
 }
 
 // ------------------------------------------------------------ auth
+const EYE = off => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>${off ? '<path d="M4 4l16 16"/>' : ''}</svg>`;
 function renderAuth(mode = 'login') {
+  document.body.dataset.route = 'auth';
   const reg = mode === 'register';
   app.innerHTML = `<div class="page narrow">
     <div class="row" style="justify-content:flex-end;padding-top:12px"><button class="iconbtn" data-lang-pick>${esc(LANGS.find(l => l[0] === lang())[1])}</button></div>
@@ -94,7 +126,7 @@ function renderAuth(mode = 'login') {
         ${reg ? `<label class="field"><span>${tx('Display name')}</span><input class="input" name="name" id="f-name" maxlength="24" autocomplete="nickname" required></label>` : ''}
         ${reg ? `<label class="field"><span>${tx('Country')}</span>${countrySelect('f-country', guessCountry())}</label>` : ''}
         <label class="field"><span>${tx('Email')}</span><input class="input" name="email" id="f-email" type="email" autocomplete="email" required></label>
-        <label class="field"><span>${tx('Password')}</span><input class="input" name="password" id="f-pw" type="password" minlength="8" autocomplete="${reg ? 'new-password' : 'current-password'}" required></label>
+        <label class="field pw-field"><span>${tx('Password')}</span><input class="input" name="password" id="f-pw" type="password" minlength="8" autocomplete="${reg ? 'new-password' : 'current-password'}" required><button type="button" class="pw-eye" data-eye aria-pressed="false" title="${tx('Show password')}" aria-label="${tx('Show password')}">${EYE(false)}</button></label>
         ${reg && session.config.needsCode && !session.config.firstUser ? `<label class="field"><span>${tx('Invite code (ask whoever runs this server)')}</span><input class="input" name="code" id="f-code" required></label>` : ''}
         ${reg && session.config.firstUser ? `<p class="muted" style="font-size:13px">${tx("You're the first player, so this account becomes the admin.")}</p>` : ''}
         <button class="btn primary block" style="margin-top:6px">${reg ? tx('Create account') : tx('Log in')}</button>
@@ -104,6 +136,12 @@ function renderAuth(mode = 'login') {
     ${footer()}
   </div>`;
   app.querySelectorAll('[data-m]').forEach(b => b.onclick = () => renderAuth(b.dataset.m));
+  app.querySelector('[data-eye]').onclick = e => {
+    const b = e.currentTarget, pw = app.querySelector('#f-pw'), show = pw.type === 'password';
+    pw.type = show ? 'text' : 'password'; b.innerHTML = EYE(show); b.setAttribute('aria-pressed', String(show));
+    b.title = b.ariaLabel = show ? t('Hide password') : t('Show password');
+    pw.focus();
+  };
   app.querySelector('#authf').onsubmit = async e => {
     e.preventDefault();
     const fd = Object.fromEntries(new FormData(e.target));
@@ -124,6 +162,8 @@ function renderAuth(mode = 'login') {
 
 // ------------------------------------------------------------ lobby
 const newGame = { mode: 'classic', expansion: 'none', scenario: 'shores', variants: { fishermen: true, rivers: false, caravans: false, barbarians: false, traders: false, events: false, friendly: false, harbors: false }, escen: 2, big: false, variable: false, robberReturn: false, startBoth: false, knightsFree: true, vpAtOnce: false, expBuildAnytime: false, expExtraStart: false, gameOptions: {}, maxPlayers: 4, vpTarget: 10, vpTouched: false };
+let ngOpen = null; // phones: is the new-game form unfolded? null = decide by whether the user has games
+const grpOpen = { house: false, exp: false }; // phones: unfolded switch groups
 const minPlayersOf = mode => (isStandalone(mode) && GAMES[mode].minPlayers) || 2;
 const BIG3 = ['caravans', 'barbarians', 'traders'];
 const NO56 = []; // every big scenario now has a 5–6 player layout
@@ -152,6 +192,7 @@ async function renderLobby() {
   app.innerHTML = `${topbar('play')}<div class="page"><h1 class="page-title">${tx('Play')}</h1>
     ${session.user.country ? '' : `<div class="card country-nudge" id="cnudge"><span class="spacer">${tx('Where are you from? Your flag is shown next to your name.')}</span>${countrySelect('nudge-country', guessCountry())}<button class="btn primary small" id="cnsave">${tx('Save')}</button></div>`}
     <div id="lobby" class="grid2"></div>${footer()}</div>`;
+  document.body.dataset.route = 'lobby';
   app.querySelector('#cnsave')?.addEventListener('click', async () => {
     const c = app.querySelector('#nudge-country').value;
     if (!c) return;
@@ -191,17 +232,32 @@ async function renderLobby() {
       const hasExp = g.expansion && g.expansion !== 'none';
       return `${g.mode === 'knights' ? `<span class="badge k">${tx('Cities & Knights')}</span>` : hasExp ? '' : `<span class="badge">${tx('Classic')}</span>`}${hasExp ? `<span class="badge x">${tx(EXP_LABEL[g.expansion])} · Beta</span>` : ''}${g.expansion === 'seafarers' && SCEN[g.scenario] ? `<span class="badge">${tx(SCEN[g.scenario].label)}</span>` : ''}${g.big ? `<span class="badge">${tx('5–6')}</span>` : ''}${g.robberReturn || g.startBoth || g.knightsFree ? `<span class="badge h" title="${esc([g.robberReturn ? t('House rule: forgotten robber') : '', g.startBoth ? t('House rule: starting resources for both') : '', g.knightsFree ? t('House rule: knights without a limit') : ''].filter(Boolean).join(' · '))}">${tx('House rules')}</span>` : ''}`;
     };
-    const sub = g => `${seats(g)} ${g.seats.map(s => `${flag(s.country)} ${esc(s.name)}`).join(', ')} · ${g.seats.length}/${g.maxPlayers} · ${tx('{n} points', { n: g.vpTarget })}${g.status === 'playing' ? ` · ${tx('turn {n}', { n: g.turn })}` : ''}`;
+    const sub = g => `${seats(g)} <span class="names">${g.seats.map(s => `${flag(s.country)} ${esc(s.name)}`).join(', ')}</span><span class="nsep"> · </span><span class="meta">${g.seats.length}/${g.maxPlayers} · ${tx('{n} points', { n: g.vpTarget })}${g.status === 'playing' ? ` · ${tx('turn {n}', { n: g.turn })}` : ''}</span>`;
     const gname = g => {
       if (g.name && !g.name.endsWith("'s game")) return esc(g.name);
       const host = g.seats.find(s => s.id === g.host);
       return esc(t("{name}'s game", { name: host ? host.name : g.name.slice(0, -7) }));
     };
-    const row = (g, btns) => `<div class="game-row"><div class="info"><div class="title">${gname(g)} ${modeBadge(g)}</div><div class="sub">${sub(g)}</div></div>${btns}</div>`;
+    const row = (g, btns, kind = 'mine') => `<div class="game-row r-${kind}${kind === 'mine' && g.current === me ? ' my-turn' : ''}"><div class="info"><div class="title"><span class="gn">${gname(g)}</span> <span class="badges">${modeBadge(g)}</span></div><div class="sub">${sub(g)}</div></div>${btns}</div>`;
+    // phones: the new-game form folds into one summary line once the user has games
+    const hasGames = mineRunning.length + mineOpen.length > 0;
+    const open = ngOpen ?? !hasGames;
+    const ph = isPhone();
+    const modeName = () => {
+      const m = newGame.mode, x = newGame.expansion;
+      const base = m === 'explorers' ? t('Explorers & Pirates') : isStandalone(m) ? t(GAMES[m].name) : m === 'knights' ? t('Cities & Knights') : x !== 'none' ? t(EXP_LABEL[x]) : t('Classic');
+      return `${base}${m === 'knights' && x !== 'none' ? ` + ${t(EXP_LABEL[x])}` : ''}${newGame.big && !isStandalone(m) && m !== 'explorers' ? ` ${t('5–6')}` : ''}`;
+    };
+    const grpHead = (g, label, keys) => {
+      const n = keys.filter(k => newGame[k]).length;
+      return `<div class="muted house-h" data-grp="${g}" data-n="${n}" ${n ? `data-cnt="${esc(t('{n} on', { n }))}"` : ''} ${ph ? `role="button" tabindex="0" aria-expanded="${!!grpOpen[g]}"` : ''}>${label}</div>`;
+    };
     el.innerHTML = `
-      <div>
-        <div class="card">
-          <div class="ng-head"><h2>${tx('New game')}</h2><button class="btn small howto" data-tut-open>▶ ${tx('How to play')}</button></div>
+      <div class="lob-col">
+        <div class="card ng-card${open ? '' : ' ng-collapsed'}">
+          <div class="ng-head"><h2>${tx('New game')}</h2><button class="btn small howto" data-tut-open>▶ ${tx('How to play')}</button><button class="ng-fold" data-ng-fold title="${tx('Close')}" aria-label="${tx('Close')}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
+          <div class="ng-sum"><span class="ng-sum-t">${tx('{mode} · {players} players · {points} points', { mode: modeName(), players: newGame.maxPlayers, points: newGame.vpTarget })}</span><button class="btn" data-ng-open>${tx('Change')}</button></div>
+          <div class="ng-body">
           <div class="field"><span class="muted" style="font-size:13px">${tx('Version')}</span>
             <div class="mode-pick one">
               <button class="mode-tile ${newGame.mode === 'classic' && newGame.expansion === 'none' ? 'on' : ''}" data-exp="none" aria-pressed="${newGame.mode === 'classic' && newGame.expansion === 'none'}"><b>${tx('Classic')}</b><small>${tx('Settle, trade, build. Development cards, Longest Road, Largest Army.')}</small>${help('classic', 'Classic')}</button>
@@ -220,35 +276,48 @@ async function renderLobby() {
               ${Object.values(GAMES).filter(g => !g.expansion).map(g => `<button class="mode-tile ${newGame.mode === g.id ? 'on' : ''}" data-game="${g.id}" aria-pressed="${newGame.mode === g.id}"><b>${tx(g.name)}</b><small>${tx(g.tagline)}</small>${help(g.tutorial, g.name)}${g.beta ? '<i class="beta-tag">Beta</i>' : ''}</button>`).join('')}
             </div>
           </div>
+          <div class="sel-blurb"></div>
           <div class="sub-opts ${(isStandalone(newGame.mode) && (GAMES[newGame.mode].lobbyOptions || []).length) || newGame.expansion === 'seafarers' ? 'tall' : ''}">${subOpts()}</div>
           ${isStandalone(newGame.mode) ? '' : `${bigScenario() ? '' : sw('big', `${tx('5–6 player expansion')} ${help('big', '5–6 player expansion')}`, tx(newGame.variants.traders ? 'Larger island with 37 tiles and 7 commodity hexes. From 5 players on it is always used, and two players share every turn (stone 1 and stone 2).' : 'Larger board with 30 tiles. From 5 players on it is always used, and two players share every turn (stone 1 and stone 2).'))}
-          <div class="muted house-h">${tx('House rules')}</div>
+          ${grpHead('house', tx('House rules'), ['robberReturn', ...(newGame.mode === 'classic' ? ['knightsFree', 'vpAtOnce'] : []), 'startBoth'])}
+          <div class="grp${grpOpen.house ? ' open' : ''}">
           ${sw('robberReturn', tx('House rule: forgotten robber'), tx('If a player ends their turn without moving the robber, it goes back to the desert.'))}
           ${newGame.mode === 'classic' ? sw('knightsFree', tx('House rule: knights without a limit'), tx('Knight cards can be played as often per turn as you like. The rulebook allows only one development card per turn.')) : ''}
           ${newGame.mode === 'classic' ? sw('vpAtOnce', tx('House rule: show victory point cards at once'), tx('A bought victory point card is revealed immediately and counts for everybody, instead of staying hidden until the win.')) : ''}
           ${sw('startBoth', tx('House rule: starting resources for both'), tx('The rulebook pays starting resources only for the second building of the setup phase. With this rule both pay. In Cities & Knights the city counts like a settlement.'))}
-          ${newGame.mode === 'classic' || newGame.mode === 'knights' ? `<div class="muted house-h">${tx('Experiments')}</div>${sw('expBuildAnytime', tx('Experiment: build anytime'), tx('Once the dice are down, every player may build and buy development cards in any turn, not only in their own. In Cities & Knights this includes knights, walls and improvements.'))}${newGame.expansion === 'traders' ? '' : sw('expExtraStart', tx('Experiment: bigger start'), tx(newGame.mode === 'knights' ? 'Everybody starts with 1 settlement and 2 cities instead of 1 settlement and 1 city (a third setup round).' : 'Everybody starts with 2 settlements and 1 city instead of 2 settlements (a third setup round).'))}` : ''}`}
-          <div class="row wrap" style="gap:18px">
+          </div>
+          ${newGame.mode === 'classic' || newGame.mode === 'knights' ? `${grpHead('exp', tx('Experiments'), ['expBuildAnytime', ...(newGame.expansion === 'traders' ? [] : ['expExtraStart'])])}<div class="grp${grpOpen.exp ? ' open' : ''}">${sw('expBuildAnytime', tx('Experiment: build anytime'), tx('Once the dice are down, every player may build and buy development cards in any turn, not only in their own. In Cities & Knights this includes knights, walls and improvements.'))}${newGame.expansion === 'traders' ? '' : sw('expExtraStart', tx('Experiment: bigger start'), tx(newGame.mode === 'knights' ? 'Everybody starts with 1 settlement and 2 cities instead of 1 settlement and 1 city (a third setup round).' : 'Everybody starts with 2 settlements and 1 city instead of 2 settlements (a third setup round).'))}</div>` : ''}`}
+          <div class="row wrap ng-steps" style="gap:18px">
             <div class="field"><span>${tx('Players')}</span><div class="stepper"><button data-np="-1" aria-label="${tx('Fewer')}">−</button><b id="np">${newGame.maxPlayers}</b><button data-np="1" aria-label="${tx('More')}">+</button></div></div>
             ${isStandalone(newGame.mode) && GAMES[newGame.mode].fixedVp ? '' : `<div class="field"><span>${tx('Points to win')}</span><div class="stepper"><button data-vp="-1" aria-label="${tx('Fewer')}">−</button><b id="vpt">${newGame.vpTarget}</b><button data-vp="1" aria-label="${tx('More')}">+</button></div></div>`}
           </div>
-          <button class="btn primary block" id="create">${tx('Create game')}</button>
+          <div class="m-sticky ng-create"><button class="btn primary block" id="create">${tx('Create game')}</button></div>
+          </div>
         </div>
       </div>
-      <div>
-        ${mineRunning.length ? `<div class="card"><h3>${tx('Your games')}</h3>${mineRunning.map(g => row(g, `${g.current === me ? `<span class="badge turn">${tx('Your turn')}</span>` : ''}<a class="btn small gold" href="#/game/${g.id}">${tx('Open')}</a>`)).join('')}</div>` : ''}
+      <div class="lob-col">
+        ${mineRunning.length ? `<div class="card mine-games"><h3>${tx('Your games')}</h3>${mineRunning.map(g => row(g, `${g.current === me ? `<span class="badge turn">${tx('Your turn')}</span>` : ''}<a class="btn small gold" href="#/game/${g.id}">${tx('Open')}</a>`)).join('')}</div>` : ''}
         ${mineOpen.map(g => `<div class="card waiting"><div class="row"><h3 class="spacer">${gname(g)} ${modeBadge(g)}</h3></div>
             <div class="seat-list">${g.seats.map(s => `<div class="seat">${houseIcon(s.color, 26)}<span>${s.bot ? '🤖' : flag(s.country)} ${esc(s.name)}${s.id === g.host ? ` <small class="muted">· ${tx('host')}</small>` : ''}${s.bot ? ` <small class="muted">· ${tx('bot')}</small>` : ''}</span>${s.bot && g.host === me ? `<button class="btn small" data-rmbot="${g.id}|${s.id}" title="${tx('Remove bot')}" aria-label="${tx('Remove bot')}">✕</button>` : ''}</div>`).join('')}
               ${Array.from({ length: g.maxPlayers - g.seats.length }, () => `<div class="seat empty-seat"><span class="ghost-house"></span><span class="muted">${tx('Free seat')}</span></div>`).join('')}</div>
             <div class="field"><span>${tx('Pick your color')}</span>${colorSwatches(g, me)}</div>
-            ${g.host === me && g.seats.length < g.maxPlayers ? `<div class="row wrap"><button class="btn small" data-addbot="${g.id}">🤖 ${tx('Add bot')}</button>${g.maxPlayers - g.seats.length > 1 ? `<button class="btn small" data-fillbots="${g.id}">${tx('Fill free seats with bots')}</button>` : ''}<span class="muted" style="font-size:12.5px">${tx('Computer players take empty seats. Games with bots do not count for the statistics.')}</span></div>` : ''}
-            <div class="row wrap">${g.host === me ? `<button class="btn primary" data-start="${g.id}" ${g.seats.length < minPlayersOf(g.mode) ? 'disabled' : ''}>${tx('Start game')}</button>` : `<span class="muted" style="font-size:13px">${tx('Waiting for the host to start…')}</span>`}
+            ${g.host === me && g.seats.length < g.maxPlayers ? `<div class="row wrap wr-bots"><button class="btn small" data-addbot="${g.id}">🤖 ${tx('Add bot')}</button>${g.maxPlayers - g.seats.length > 1 ? `<button class="btn small" data-fillbots="${g.id}">${tx('Fill free seats with bots')}</button>` : ''}<span class="muted" style="font-size:12.5px">${tx('Computer players take empty seats. Games with bots do not count for the statistics.')}</span></div>` : ''}
+            <div class="row wrap wr-foot">${g.host === me ? `<button class="btn primary" data-start="${g.id}" ${g.seats.length < minPlayersOf(g.mode) ? 'disabled' : ''}>${tx('Start game')}</button>` : `<span class="muted" style="font-size:13px">${tx('Waiting for the host to start…')}</span>`}
               <span class="spacer"></span><button class="btn small" data-share="${g.id}">${tx('Copy invite link')}</button><button class="btn small" data-leave="${g.id}">${tx('Leave')}</button></div>
           </div>`).join('')}
-        <div class="card"><h3>${tx('Open games')}</h3>${others.length ? others.map(g => row(g, `<button class="btn small gold" data-join="${g.id}" ${g.seats.length >= g.maxPlayers ? 'disabled' : ''}>${tx('Join')}</button>`)).join('') : `<div class="empty">${tx('No open games. Create one and invite your friends.')}</div>`}</div>
-        ${watch.length ? `<div class="card"><h3>${tx('Watch')}</h3>${watch.map(g => row(g, `<a class="btn small" href="#/game/${g.id}">${tx('Watch')}</a>`)).join('')}</div>` : ''}
+        <div class="card open-games"><h3>${tx('Open games')}</h3>${others.length ? others.map(g => row(g, `<button class="btn small gold" data-join="${g.id}" ${g.seats.length >= g.maxPlayers ? 'disabled' : ''}>${tx('Join')}</button>`, 'open')).join('') : `<div class="empty">${tx('No open games. Create one and invite your friends.')}</div>`}</div>
+        ${watch.length ? `<div class="card watch-games"><h3>${tx('Watch')}</h3>${watch.map(g => row(g, `<a class="btn small" href="#/game/${g.id}">${tx('Watch')}</a>`, 'watch')).join('')}</div>` : ''}
       </div>`;
     const reVp = () => { if (!newGame.vpTouched) newGame.vpTarget = defaultVp(); };
+    // phones: the description of the picked mode is shown once under the tiles (the tiles themselves only carry the name)
+    const blurb = el.querySelector('.sel-blurb');
+    if (blurb && !isStandalone(newGame.mode)) blurb.textContent = [...el.querySelectorAll('.mode-tile.on small')].map(x => x.textContent.trim()).join(' ');
+    el.querySelector('[data-ng-open]').onclick = () => { ngOpen = true; sfx.click(); draw(false); };
+    el.querySelector('[data-ng-fold]').onclick = () => { ngOpen = false; sfx.click(); draw(false); };
+    el.querySelectorAll('[data-grp]').forEach(h => {
+      const flip = () => { if (!isPhone()) return; grpOpen[h.dataset.grp] = !grpOpen[h.dataset.grp]; sfx.click(); draw(false); };
+      h.onclick = flip; h.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } };
+    });
     el.querySelectorAll('[data-game]').forEach(b => b.onclick = () => {
       newGame.mode = b.dataset.game; newGame.expansion = 'none'; newGame.big = false;
       newGame.maxPlayers = Math.max(minPlayersOf(newGame.mode), Math.min(newGame.maxPlayers, GAMES[newGame.mode].maxPlayers || 4)); newGame.gameOptions = {};
@@ -298,7 +367,7 @@ async function renderLobby() {
     });
     el.querySelectorAll('[data-vp]').forEach(b => b.onclick = () => { newGame.vpTarget = Math.max(5, Math.min(20, newGame.vpTarget + +b.dataset.vp)); newGame.vpTouched = true; sfx.click(); draw(false); });
     el.querySelector('#create').onclick = async () => {
-      try { const { vpTouched, ...body } = newGame; await api('/games', { body }); sfx.place(); toast(t('Game created. Pick your color and invite your friends.')); } catch (e) { toast(e.message, 'warn'); }
+      try { const { vpTouched, ...body } = newGame; await api('/games', { body }); sfx.place(); ngOpen = false; if (isPhone()) window.scrollTo({ top: 0, behavior: 'smooth' }); toast(t('Game created. Pick your color and invite your friends.')); } catch (e) { toast(e.message, 'warn'); }
     };
     const post = (sel, verb, after) => el.querySelectorAll(`[data-${sel}]`).forEach(b => b.onclick = async () => {
       b.disabled = true;
@@ -335,11 +404,13 @@ async function renderLobby() {
     } catch { /* ignore */ }
   });
   api('/lobby').then(L => { known = L.playing.filter(g => L.mine.includes(g.id)).map(g => g.id); }).catch(() => {});
-  cleanup = () => { off(); };
+  const offPhone = onPhoneChange(() => draw(false)); // grouped switches and the folded form only exist on phones
+  cleanup = () => { off(); offPhone(); };
 }
 
 // ------------------------------------------------------------ profile
 function renderProfile() {
+  document.body.dataset.route = 'profile';
   const u = session.user;
   app.innerHTML = `${topbar('profile')}<div class="page narrow"><h1 class="page-title">${flag(u.country, 'lg')} ${tx('Profile')}</h1>
     <div class="card">
@@ -347,8 +418,8 @@ function renderProfile() {
       <div class="field"><span>${tx('Favorite color (used in games when it is free, and on the stats page)')}</span>
         <div class="swatches">${COLOR_KEYS.map(c => `<button class="swatch ${u.color === c ? 'on' : ''}" data-color="${c}" title="${esc(colorName(c))}" style="--c:${PCOLOR[c]};--d:${PCOLOR_DARK[c]};--ink:${inkOn(c)}">${u.color === c ? '<span>✓</span>' : ''}</button>`).join('')}</div></div>
       <label class="field"><span>${tx('Country')}</span>${countrySelect('pcountry', u.country || guessCountry())}</label>
-      <div class="field"><span>${tx('Language')}</span><button class="btn small" data-lang-pick>${esc(LANGS.find(l => l[0] === lang())[1])}</button></div>
-      <button class="btn primary" id="psave">${tx('Save')}</button>
+      <div class="field"><span>${tx('Language')}</span><button class="btn small lang-row" data-lang-pick><span>${esc(LANGS.find(l => l[0] === lang())[1])}</span><i class="lr-chev" aria-hidden="true">›</i></button></div>
+      <div class="m-sticky ps-save"><button class="btn primary" id="psave">${tx('Save')}</button></div>
       <p class="muted" style="font-size:13px;margin:10px 0 0">${tx('Signed in as {email}', { email: u.email })}${u.admin ? ` · ${tx('admin')}` : ''}</p>
     </div>
     <div class="card"><h3>${tx('Change password')}</h3>
@@ -395,11 +466,13 @@ async function route(keepScroll) {
       // standalone games have their own screen; ask which game this is before building the page
       let mode = 'classic';
       try { mode = (await api(`/games/${m[1]}`)).game.mode; } catch { /* a missing game opens the normal screen, which reports it */ }
+      document.body.dataset.route = 'game';
       cleanup = isStandalone(mode) ? mountSGame(app, m[1], mode) : mountGame(app, m[1]);
       return;
     }
-    if (h.startsWith('/stats')) { cleanup = await mountStats(app); return; }
-    if (h.startsWith('/profile')) return renderProfile();
+    if (h.startsWith('/stats')) { document.body.dataset.route = 'stats'; cleanup = await mountStats(app); return; }
+    if (h.startsWith('/profile')) { document.body.dataset.route = 'profile'; return renderProfile(); }
+    document.body.dataset.route = 'lobby';
     await renderLobby();
   } catch (e) {
     if (!e.handled) throw e;

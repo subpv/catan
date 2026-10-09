@@ -10,7 +10,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="/icon.svg">
-<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Broch">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=Noto+Color+Emoji&display=swap">
 <link rel="stylesheet" href="/styles.css">
@@ -19,6 +21,8 @@
 <link rel="stylesheet" href="/css/mobile-dialogs.css">
 <!-- fetch every module at once instead of one import level at a time -->
 <link rel="modulepreload" href="/js/core/core.js">
+<link rel="modulepreload" href="/js/core/phone.js">
+<link rel="modulepreload" href="/js/core/dock.js">
 <link rel="modulepreload" href="/js/core/i18n.js">
 <link rel="modulepreload" href="/js/games/classic/screen.js">
 <link rel="modulepreload" href="/js/core/board.js">

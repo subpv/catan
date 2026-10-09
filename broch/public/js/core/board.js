@@ -1,5 +1,6 @@
 import { PCOLOR, PCOLOR_DARK, TERRAIN_COLOR, CARD_COLOR, GLYPH, inkOn, isLightColor, t, resName } from './core.js';
 import { planBuilds, jobsByKey, jobCss, jobOverlay, animOf } from './builder.js';
+import { isPhone } from './phone.js';
 
 const S = 56; // pixels per unit (hex radius)
 export const TERRAIN_GLYPH = { forest: 'lumber', hills: 'brick', pasture: 'wool', fields: 'grain', mountains: 'ore', gold: 'gold' };
@@ -640,7 +641,7 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
   if (targets.vertices) {
     targets.vertices.forEach(id => {
       const v = board.vertices[id];
-      out.push(`<circle class="hl-v" data-v="${id}" cx="${f(v.x * S)}" cy="${f(v.y * S)}" r="9"/>`);
+      out.push(`<circle class="hl-v" data-v="${id}" cx="${f(v.x * S)}" cy="${f(v.y * S)}" r="${isPhone() ? 14 : 9}"/>`);
       out.push(`<circle data-v="${id}" cx="${f(v.x * S)}" cy="${f(v.y * S)}" r="22" fill="transparent" style="cursor:pointer"/>`);
     });
   }
@@ -649,3 +650,21 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
 }
 
 export { isLightColor };
+
+// Which tappable thing did a finger mean? The hit shapes ([data-v] corners, [data-e] edges, [data-k] knights, [data-s] ships)
+// are small and overlap their neighbours, so on a phone the tap is resolved by distance instead of by what lies under the finger.
+// Returns { best, near }: best = the nearest candidate within maxPx { el, kind, id, d } (null when none), near = how many
+// candidates are within closePx (26) of the tap, best included. Hexes ([data-h]) and hub pieces keep native hit testing.
+export function tapTarget(svg, clientX, clientY, maxPx = 30, closePx = 26) {
+  const seen = new Map();
+  svg.querySelectorAll('[data-v],[data-e],[data-k],[data-s]').forEach(el => {
+    const kind = el.dataset.v != null ? 'v' : el.dataset.e != null ? 'e' : el.dataset.k != null ? 'k' : 's';
+    const key = kind + el.dataset[kind];
+    if (seen.has(key)) return; // the glowing marker and its bigger invisible hit shape share one id
+    const r = el.getBoundingClientRect();
+    if (!r.width && !r.height) return;
+    seen.set(key, { el, kind, id: +el.dataset[kind], d: Math.hypot(r.left + r.width / 2 - clientX, r.top + r.height / 2 - clientY) });
+  });
+  const list = [...seen.values()].sort((a, b) => a.d - b.d);
+  return { best: list.length && list[0].d <= maxPx ? list[0] : null, near: list.filter(c => c.d <= closePx).length, second: list[1] || null };
+}

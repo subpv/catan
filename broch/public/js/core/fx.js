@@ -2,6 +2,7 @@
 import { t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, glyph, cardName, inkOn, tf, houseIcon, pipsHtml, term } from './core.js';
 import { cardDesc, deckOf } from './cards.js';
 import { findJob, jobAge, buildersBusyFor } from './builder.js';
+import { isPhone } from './phone.js';
 
 const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -128,7 +129,7 @@ function layer(cls, html, { skippable = true } = {}) {
   document.body.appendChild(el);
   let done;
   const p = new Promise(r => { done = r; });
-  if (skippable) el.addEventListener('click', () => done());
+  if (skippable) { el.addEventListener('click', () => done()); if (isPhone()) el.dataset.hint = t('Tap to continue'); } // phone: a small hint appears after a second (css)
   return { el, skipped: p };
 }
 async function hold(sc, ms) {

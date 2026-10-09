@@ -4,6 +4,7 @@
 import { t, esc, PCOLOR, PCOLOR_DARK, GLYPH, houseIcon, isLightColor } from './core.js';
 import { flag } from './countries.js';
 import { sfx } from './fx.js';
+import { isPhone } from './phone.js';
 import { metroTowerInner } from './board.js';
 import { GAMES } from '../games/registry.js';
 
@@ -44,6 +45,7 @@ export function victoryScene(view, { actions = '', title = '' } = {}) {
   const letters = Array.from(w.name).map((ch, i) => `<span class="ch" style="animation-delay:${(0.62 + i * 0.045).toFixed(3)}s">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('');
   const chips = breakdownChips(view, w);
   el.innerHTML = `<canvas class="vic-canvas" aria-hidden="true"></canvas>
+    <button class="vic-x" data-vic-close aria-label="${tx('Look at the board')}">✕</button>
     <div class="vic-scroll"><div class="vic-card">
       <div class="vic-ribbon ${won ? '' : 'plain'}"><span>${won ? tx('Victory!') : tx('Game over')}</span></div>
       <div class="vic-trophy"><div class="vic-rays"></div>${emblem(w.color)}<i class="vic-shock"></i><i class="vic-shock b"></i></div>
@@ -61,7 +63,7 @@ export function victoryScene(view, { actions = '', title = '' } = {}) {
     </div></div>`;
   document.body.appendChild(el);
 
-  const stopFx = reduced() ? () => {} : fireworks(el.querySelector('.vic-canvas'), [pc, '#F6CF57', '#FFF3DC', '#FF8A5B', '#7FD3FF', '#B6F07A'], won ? 7600 : 3800);
+  const stopFx = reduced() ? () => {} : fireworks(el.querySelector('.vic-canvas'), [pc, '#F6CF57', '#FFF3DC', '#FF8A5B', '#7FD3FF', '#B6F07A'], isPhone() ? 4000 : won ? 7600 : 3800); // phone: the confetti stops after 4 seconds
   const timers = [];
   const later = (ms, fn) => timers.push(setTimeout(fn, reduced() ? Math.min(ms, 200) : ms));
   // the soundtrack

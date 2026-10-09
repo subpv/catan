@@ -92,7 +92,7 @@ export function openTutorial(id = 'classic') {
       <div class="tut-layer"></div>
     </div>
     <div class="tut-cap"><b class="tut-say"></b><span class="tut-small"></span></div>
-    <div class="tut-ctl"><button class="tut-btn" data-tut-prev aria-label="${tx('Back')}">◀</button><button class="tut-btn play" data-tut-play aria-label="${tx('Pause')}">❚❚</button><button class="tut-btn" data-tut-next aria-label="${tx('Next')}">▶</button><div class="tut-steps"></div></div>
+    <div class="tut-ctl"><button class="tut-btn" data-tut-prev aria-label="${tx('Back')}">◀</button><button class="tut-btn play" data-tut-play aria-label="${tx('Pause')}">❚❚</button><button class="tut-btn" data-tut-next aria-label="${tx('Next')}">▶</button><div class="tut-steps"></div><div class="tut-prog"><span class="tut-stepn"></span><i class="tut-bar"><b></b></i></div></div>
   </div>`;
   document.body.appendChild(el);
   const P = new Player(el);
@@ -149,6 +149,7 @@ class Player {
     this.el.querySelector(`.tut-tab[data-ch="${ch.id}"]`)?.scrollIntoView({ block: 'nearest', inline: 'center' });
     this.el.style.setProperty('--cc', ch.color);
     this.el.querySelector('.tut-steps').innerHTML = spec.steps.map((_, i) => `<i data-step="${i}"></i>`).join('') + '<i class="end"></i>';
+    this.stepProg(0);
     this.goto(0);
   }
   freshState(spec) { return { hand: {}, vp: null, vpTarget: spec.vpTarget, barb: null, imp: null, dice: null, turn: null, extra: null }; }
@@ -221,8 +222,16 @@ class Player {
     const idx = CHAPTERS.findIndex(c => c.id === this.ch.id);
     this.load(CHAPTERS[(idx + 1) % CHAPTERS.length].id);
   }
+  // phone: "Step 3 of 8" and a thin bar replace the dots (css hides one or the other)
+  stepProg(k) {
+    const n = this.spec ? this.spec.steps.length : 0;
+    const txt = this.el.querySelector('.tut-stepn'), bar = this.el.querySelector('.tut-bar b');
+    if (txt) txt.textContent = n ? t('Step {n} of {m}', { n: Math.min(k, n), m: n }) : '';
+    if (bar) bar.style.width = n ? Math.min(100, (k / n) * 100) + '%' : '0';
+  }
   markSteps() {
     this.ended = false;
+    this.stepProg(this.i + 1);
     this.el.querySelectorAll('.tut-steps i').forEach((d, k) => { d.classList.toggle('done', k < this.i); d.classList.toggle('on', k === this.i); });
   }
   end() {
@@ -231,6 +240,7 @@ class Player {
     const tab = this.el.querySelector(`.tut-tab[data-ch="${this.ch.id}"]`);
     if (tab && !tab.querySelector('i')) tab.insertAdjacentHTML('beforeend', ' <i>✓</i>');
     this.el.querySelectorAll('.tut-steps i').forEach(d => { d.classList.add('done'); d.classList.remove('on'); });
+    this.stepProg(this.spec.steps.length);
     const idx = CHAPTERS.findIndex(c => c.id === this.ch.id);
     const nx = CHAPTERS[(idx + 1) % CHAPTERS.length];
     const box = document.createElement('div');

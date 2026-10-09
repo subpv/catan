@@ -65,7 +65,8 @@ export function createSeafarers(c) {
   // ---------------------------------------------------------------- hand, pills and players
   const shipButton = (btn, free, L, m) => btn('ship', t('Ship'), 'ship', COSTS.ship, free && L.ships?.length > 0, m.pieces.ships);
   const wondersButton = (plain, v) => (v.wonders ? plain('wonders', t('Wonders'), 'castle', t('Build a wonder'), true) : '');
-  const shipChip = m => `<span class="stat-chip" title="${tx('Pieces left')}">${chipIcon('ship', '#2C5F7A')}${tx('{n} left', { n: m.pieces.ships })}</span>`;
+  // (phone: the Ship button already shows how many are left, so this chip is hidden there: class dup)
+  const shipChip = m => `<span class="stat-chip dup" title="${tx('Pieces left')}">${chipIcon('ship', '#2C5F7A')}${tx('{n} left', { n: m.pieces.ships })}</span>`;
   function playerMeta(v, p, i) {
     const out = [];
     if (v.villages) out.push(`<span class="mp" title="${tx('Bales of cloth (2 bales = 1 point)')}">${chipIcon('cloth', '#8A5A9E')}${p.cloth}</span>`);

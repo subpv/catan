@@ -1,6 +1,7 @@
 // The side feed: chat, a visual game history (one card per turn) and graphs.
 import { esc, t, tf, glyph, houseIcon, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, cardName, term, isLightColor, inkOn } from './core.js';
 import { GAMES } from '../games/registry.js';
+import { isPhone } from './phone.js';
 
 const tx = (k, p) => esc(t(k, p));
 const EXTRA_COLOR = { fish: '#1F7A99', spice: '#B53A2A', gold: '#C58E12' };
@@ -112,14 +113,15 @@ function turnCard(v, tr, pname, newest) {
 // every series is also named in the legend and at the line end, and the tooltip lists the values.
 export function graphsHtml(v, width) {
   const tr = v.track || [];
-  const W = Math.max(260, Math.round(width || 340));
+  const phone = isPhone();
+  const W = Math.max(phone ? 250 : 260, Math.round(width || 340));
   const rolls = v.stats?.rolls || {};
   const totalRolls = Object.values(rolls).reduce((a, b) => a + b, 0);
   const tiles = statTiles(v, rolls, totalRolls);
   if (tr.length < 2 && !totalRolls) return `${tiles}<div class="feed-empty">${glyph('dice', 28)}<span>${tx('The graphs fill up once the first turns are played.')}</span></div>`;
   return `${tiles}
-    <section class="gx"><h4>${tx('Victory points over time')}</h4>${legend(v)}<div class="gx-plot" data-chart="vp">${vpChart(v, tr, W)}</div></section>
-    <section class="gx"><h4>${tx('Dice rolls')}</h4><p class="gx-sub">${tx('Bars: rolled · line: expected after {n} rolls', { n: totalRolls })}</p><div class="gx-plot" data-chart="dice">${diceChart(rolls, totalRolls, W)}</div></section>
+    <section class="gx"><h4>${tx('Victory points over time')}</h4>${legend(v, phone)}${phone ? '<div class="gx-cap" data-cap="vp"></div>' : ''}<div class="gx-plot" data-chart="vp">${vpChart(v, tr, W, phone)}</div></section>
+    <section class="gx"><h4>${tx('Dice rolls')}</h4><p class="gx-sub">${tx('Bars: rolled · line: expected after {n} rolls', { n: totalRolls })}</p>${phone ? '<div class="gx-cap" data-cap="dice"></div>' : ''}<div class="gx-plot" data-chart="dice">${diceChart(rolls, totalRolls, W)}</div></section>
     <section class="gx"><h4>${tx('Resources received')}</h4><div class="gx-plot" data-chart="gain">${gainChart(v, W)}</div></section>`;
 }
 
@@ -130,18 +132,20 @@ function statTiles(v, rolls, total) {
   const tile = (label, value) => `<div class="tile-s"><small>${esc(label)}</small><b>${esc(String(value))}</b></div>`;
   const robbed = v.stats?.robbed;
   const rob = robbed && robbed.some(n => n > 0)
-    ? `<div class="tiles">${v.players.map((p, i) => ({ p, n: robbed[i] || 0 })).sort((a, b) => b.n - a.n).map(x => tile(t('Robber at {name}', { name: x.p.name }), `${x.n}×`)).join('')}</div>` : '';
+    ? `<div class="tiles rob">${v.players.map((p, i) => ({ p, n: robbed[i] || 0 })).sort((a, b) => b.n - a.n).map(x => tile(t('Robber at {name}', { name: x.p.name }), `${x.n}×`)).join('')}</div>` : '';
   return `<div class="tiles">${tile(t('Rolls'), total)}${tile(t('Most rolled'), hot)}${tile(t('Sevens'), sevens)}</div>${rob}`;
 }
 
-function legend(v) {
-  return `<div class="gx-legend">${v.players.map((p, i) => `<span class="lg" data-seat="${i}"><i class="key" style="--c:${lineColor(p.color)}"></i>${esc(p.name)}</span>`).join('')}</div>`;
+function legend(v, phone) {
+  // phone: the legend carries the current points (the labels at the line ends are gone there)
+  const last = phone && v.track && v.track.length ? v.track[v.track.length - 1].vp : null;
+  return `<div class="gx-legend">${v.players.map((p, i) => `<span class="lg" data-seat="${i}"><i class="key" style="--c:${lineColor(p.color)}"></i>${esc(p.name)}${last ? ` <b>${last[i]}</b>` : ''}</span>`).join('')}</div>`;
 }
 
 const SURF = '#FBF3DD', GRID = '#E3D2A4', INK = '#2B1E12', MUTED = '#7C6B4E';
 
-function vpChart(v, tr, W) {
-  const H = 170, L = 26, R = 66, T = 10, B = 22;
+function vpChart(v, tr, W, phone = false) {
+  const H = 170, L = 26, R = phone ? 14 : 66, T = 10, B = 22;
   const pw = W - L - R, ph = H - T - B;
   const target = v.options?.vpTarget || 10;
   const maxV = Math.max(target, ...tr.map(s => Math.max(...s.vp)));
@@ -160,14 +164,20 @@ function vpChart(v, tr, W) {
   ticks.forEach(i => { g += `<text x="${x(i).toFixed(1)}" y="${H - 6}" text-anchor="middle" class="ax">${tr[i].t}</text>`; });
   // lines (step after: points change at the end of a turn)
   const ends = [];
+  // phone: lines that share a value at a turn are pushed 1.5px apart so every colour stays visible
+  const nudge = (s, pi) => {
+    if (!phone) return 0;
+    const same = v.players.map((_, k) => k).filter(k => s.vp[k] === s.vp[pi]);
+    return (same.indexOf(pi) - (same.length - 1) / 2) * 1.5;
+  };
   v.players.forEach((p, pi) => {
     let d = '';
-    tr.forEach((s, i) => { const X = x(i).toFixed(1), Y = y(s.vp[pi]).toFixed(1); d += i === 0 ? `M${X} ${Y}` : ` H${X} V${Y}`; });
+    tr.forEach((s, i) => { const X = x(i).toFixed(1), Y = (y(s.vp[pi]) + nudge(s, pi)).toFixed(1); d += i === 0 ? `M${X} ${Y}` : ` H${X} V${Y}`; });
     const c = PCOLOR[p.color];
     if (isLightColor(p.color)) g += `<path d="${d}" fill="none" stroke="${PCOLOR_DARK[p.color]}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" class="ln-draw"/>`;
     g += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" class="ln-draw"/>`;
     const last = tr[n - 1].vp[pi];
-    ends.push({ pi, y: y(last), val: last, p });
+    ends.push({ pi, y: y(last) + nudge(tr[n - 1], pi), val: last, p });
   });
   // end labels with leader lines when they would overlap
   ends.sort((a, b) => a.y - b.y);
@@ -178,9 +188,9 @@ function vpChart(v, tr, W) {
   if (over > 0) ends.forEach(e => { e.ly = Math.max(T + 4, e.ly - over); });
   ends.forEach(e => {
     const X = x(n - 1);
-    if (Math.abs(e.ly - e.y) > 1) g += `<path d="M${(X + 5).toFixed(1)} ${e.y.toFixed(1)} L${(X + 10).toFixed(1)} ${e.ly.toFixed(1)}" stroke="${MUTED}" stroke-width="1" fill="none"/>`;
+    if (!phone && Math.abs(e.ly - e.y) > 1) g += `<path d="M${(X + 5).toFixed(1)} ${e.y.toFixed(1)} L${(X + 10).toFixed(1)} ${e.ly.toFixed(1)}" stroke="${MUTED}" stroke-width="1" fill="none"/>`;
     g += `<circle cx="${X.toFixed(1)}" cy="${e.y.toFixed(1)}" r="4.5" fill="${PCOLOR[e.p.color]}" stroke="${isLightColor(e.p.color) ? PCOLOR_DARK[e.p.color] : SURF}" stroke-width="2"/>`;
-    g += `<text x="${(X + 12).toFixed(1)}" y="${(e.ly + 4).toFixed(1)}" class="lb"><tspan font-weight="700">${e.val}</tspan> ${esc(e.p.name.slice(0, 7))}</text>`;
+    if (!phone) g += `<text x="${(X + 12).toFixed(1)}" y="${(e.ly + 4).toFixed(1)}" class="lb"><tspan font-weight="700">${e.val}</tspan> ${esc(e.p.name.slice(0, 7))}</text>`;
   });
   // hover layer
   g += `<line class="xh" x1="0" x2="0" y1="${T}" y2="${T + ph}" stroke="${INK}" stroke-width="1" opacity="0"/>`;
@@ -239,10 +249,17 @@ function gainChart(v, W) {
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${tx('Resources received')}">${g}</svg>`;
 }
 
-// hover: crosshair + one tooltip for every series on the points chart, per-bar tooltips on the dice
+// hover: crosshair + one tooltip for every series on the points chart, per-bar tooltips on the dice.
+// Touch screens have no hover: a tap or a drag along the chart shows the same numbers in a fixed caption line above
+// the plot (.gx-cap), and they stay until the next tap somewhere else.
 export function wireGraphs(root, v) {
   const tip = root.querySelector('.gx-tip') || (() => { const d = document.createElement('div'); d.className = 'gx-tip'; root.appendChild(d); return d; })();
   const hide = () => { tip.style.opacity = '0'; root.querySelectorAll('.xh').forEach(l => l.setAttribute('opacity', '0')); };
+  const cap = name => root.querySelector(`[data-cap="${name}"]`);
+  if (!root._gxTap) {
+    root._gxTap = true;
+    root.addEventListener('pointerdown', e => { if (e.pointerType === 'touch' && !e.target.closest('.gx-plot')) { root.querySelectorAll('.gx-cap').forEach(c => { c.textContent = ''; }); root.querySelectorAll('.xh').forEach(l => l.setAttribute('opacity', '0')); } });
+  }
   const place = (e) => {
     const r = root.getBoundingClientRect();
     const x = Math.min(r.width - tip.offsetWidth - 6, Math.max(6, e.clientX - r.left + 12));
@@ -251,17 +268,34 @@ export function wireGraphs(root, v) {
   const vp = root.querySelector('[data-chart="vp"] svg');
   if (vp) {
     const n = +vp.dataset.n, L = +vp.dataset.l, pw = +vp.dataset.pw;
-    vp.addEventListener('pointermove', e => {
+    const at = e => {
       const box = vp.getBoundingClientRect();
       const sx = vp.viewBox.baseVal.width / box.width;
       const px = (e.clientX - box.left) * sx;
       const i = Math.max(0, Math.min(n - 1, Math.round((px - L) / pw * (n - 1))));
       const X = L + (n <= 1 ? pw : (i / (n - 1)) * pw);
       const xh = vp.querySelector('.xh'); xh.setAttribute('x1', X); xh.setAttribute('x2', X); xh.setAttribute('opacity', '.35');
-      const s = v.track[i];
+      return v.track[i];
+    };
+    const rows = s => v.players.map((p, pi) => ({ p, val: s.vp[pi] })).sort((a, b) => b.val - a.val);
+    const caption = (e, touch) => {
+      const s = at(e);
+      if (touch) {
+        const c = cap('vp');
+        if (!c) return;
+        c.textContent = '';
+        const h = document.createElement('b'); h.textContent = s.t ? t('turn {n}', { n: s.t }) : t('Setup phase'); c.appendChild(h);
+        rows(s).forEach(({ p, val }) => {
+          const k = document.createElement('span'); k.className = 'cp';
+          const key = document.createElement('i'); key.className = 'key'; key.style.setProperty('--c', lineColor(p.color));
+          const b = document.createElement('b'); b.textContent = val;
+          k.append(key, b); c.appendChild(k);
+        });
+        return;
+      }
       tip.textContent = '';
       const h = document.createElement('div'); h.className = 'tt-h'; h.textContent = s.t ? t('turn {n}', { n: s.t }) : t('Setup phase'); tip.appendChild(h);
-      v.players.map((p, pi) => ({ p, val: s.vp[pi] })).sort((a, b) => b.val - a.val).forEach(({ p, val }) => {
+      rows(s).forEach(({ p, val }) => {
         const row = document.createElement('div'); row.className = 'tt-r';
         const key = document.createElement('i'); key.className = 'key'; key.style.setProperty('--c', lineColor(p.color));
         const b = document.createElement('b'); b.textContent = val;
@@ -269,17 +303,32 @@ export function wireGraphs(root, v) {
         row.append(key, b, nm); tip.appendChild(row);
       });
       place(e);
-    });
-    vp.addEventListener('pointerleave', hide);
+    };
+    vp.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { try { vp.setPointerCapture(e.pointerId); } catch { /* ignore */ } caption(e, true); } });
+    vp.addEventListener('pointermove', e => { if (e.pointerType === 'touch') { if (vp.hasPointerCapture && vp.hasPointerCapture(e.pointerId)) caption(e, true); } else caption(e, false); });
+    vp.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') hide(); });
   }
   root.querySelectorAll('[data-chart="dice"] .hit').forEach(hit => {
+    hit.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'touch') return;
+      const c = cap('dice');
+      if (!c) return;
+      root.querySelectorAll('[data-chart="dice"] .hit.sel').forEach(h => h.classList.remove('sel'));
+      hit.classList.add('sel');
+      c.textContent = '';
+      const h = document.createElement('b'); h.textContent = hit.dataset.k;
+      const a = document.createElement('span'); a.textContent = `${hit.dataset.val} ${t('rolled')}`;
+      const b = document.createElement('span'); b.textContent = `${hit.dataset.exp} ${t('expected')}`;
+      c.append(h, a, b);
+    });
     hit.addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch') return;
       tip.textContent = '';
       const h = document.createElement('div'); h.className = 'tt-h'; h.textContent = hit.dataset.k; tip.appendChild(h);
       const r1 = document.createElement('div'); r1.className = 'tt-r'; const b1 = document.createElement('b'); b1.textContent = hit.dataset.val; const s1 = document.createElement('span'); s1.textContent = t('rolled'); r1.append(b1, s1);
       const r2 = document.createElement('div'); r2.className = 'tt-r'; const b2 = document.createElement('b'); b2.textContent = hit.dataset.exp; const s2 = document.createElement('span'); s2.textContent = t('expected'); r2.append(b2, s2);
       tip.append(r1, r2); place(e);
     });
-    hit.addEventListener('pointerleave', hide);
+    hit.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') hide(); });
   });
 }

@@ -12,6 +12,8 @@ import { createZoom } from '../core/zoom.js';
 import { chatHtml, historyHtml, graphsHtml, wireGraphs } from '../core/feed.js';
 import { GAMES } from './registry.js';
 
+import { cardListText } from '../core/core.js';
+import { isPhone as dlgPhone } from '../core/phone.js';
 let G = null;
 const tx = (k, p) => esc(t(k, p));
 const plugin = () => GAMES[G.view?.mode] || GAMES[G.mode];
@@ -400,6 +402,16 @@ function renderTrade() {
   const host = G.app.querySelector('.trade-host');
   if (!host) return;
   const html = tradeHtml();
+  if (!host.dataset.tbMin) { // phone: a tap on the header folds the offer to one line (delegated, the panel itself is replaced for every offer)
+    host.dataset.tbMin = '1';
+    host.addEventListener('click', e => {
+      const h = e.target.closest('.board-trade .panel-h');
+      if (!h || !dlgPhone()) return;
+      const bt = h.closest('.board-trade');
+      bt.classList.toggle('min');
+      if (G) G.tradeMin = { id: bt.dataset.tid, v: bt.classList.contains('min') };
+    });
+  }
   if (G.html.trade === html) return;
   const cur = host.querySelector('.board-trade');
   const tid = G.view.trade && G.view.trade.id;
@@ -423,17 +435,18 @@ function tradeHtml() {
   const mineOffer = tr.from === v.me;
   let body = `<div class="trade-line">${t('{name} gives', { name: pname(tr.from) })} ${cardsHtml(tr.give)}</div><div class="trade-line" style="margin-top:4px">${tx('and wants')} ${cardsHtml(tr.get)}</div>`;
   if (mineOffer) {
-    const rows = v.players.map((p, i) => i === v.me ? '' : `<div class="row" style="margin-top:6px"><span class="spacer">${pname(i)}</span>${tr.responses[i] === 'accept' ? `<button class="btn small gold" data-confirm="${i}">${tx('Trade with {name}', { name: p.name })}</button>` : tr.responses[i] === 'counter' && tr.counters && tr.counters[i] ? `<div class="trade-counter" style="flex:1 1 100%"><div class="trade-line">${tx('Counter-offer: you give')} ${cardsHtml(tr.counters[i].give)}</div><div class="trade-line" style="margin-top:4px">${tx('and get')} ${cardsHtml(tr.counters[i].get)}</div><button class="btn small gold" style="margin-top:6px" data-confirm="${i}">${tx('Accept the counter-offer of {name}', { name: p.name })}</button></div>` : `<span class="muted" style="font-size:13px">${tr.responses[i] === 'reject' ? tx('Declined') : tx('Thinking…')}</span>`}</div>`).join('');
-    body += rows + `<div class="row" style="margin-top:10px"><button class="btn small" data-do="cancelTrade">${tx('Withdraw offer')}</button></div>`;
+    const rows = v.players.map((p, i) => i === v.me ? '' : `<div class="row tb-row" style="margin-top:6px"><span class="spacer">${pname(i)}</span>${tr.responses[i] === 'accept' ? `<button class="btn small gold" data-confirm="${i}">${tx('Trade with {name}', { name: p.name })}</button>` : tr.responses[i] === 'counter' && tr.counters && tr.counters[i] ? `<div class="trade-counter" style="flex:1 1 100%"><div class="trade-line">${tx('Counter-offer: you give')} ${cardsHtml(tr.counters[i].give)}</div><div class="trade-line" style="margin-top:4px">${tx('and get')} ${cardsHtml(tr.counters[i].get)}</div><button class="btn small gold" style="margin-top:6px" data-confirm="${i}">${tx('Accept the counter-offer of {name}', { name: p.name })}</button></div>` : `<span class="muted tb-state" style="font-size:13px">${tr.responses[i] === 'reject' ? tx('Declined') : tx('Thinking…')}</span>`}</div>`).join('');
+    body += rows + `<div class="row tb-wd" style="margin-top:10px"><button class="btn small" data-do="cancelTrade">${tx('Withdraw offer')}</button></div>`;
   } else if (isMine()) {
     const r = tr.responses[v.me];
     const can = has(tr.get);
-    body += r ? `<div class="muted" style="margin-top:8px;font-size:13px">${r === 'accept' ? tx('You accepted. Waiting for them to confirm.') : r === 'counter' ? tx('You made a counter-offer. Waiting for them to confirm.') : tx('You declined.')}</div>`
-      : `<div class="row" style="margin-top:10px"><button class="btn small gold" data-respond="1" ${can ? '' : 'disabled'}>${tx('Accept')}</button><button class="btn small" data-counter="1">${tx('Counter-offer')}</button><button class="btn small" data-respond="0">${tx('Decline')}</button>${can ? '' : `<span class="muted" style="font-size:12px">${tx('You lack the cards.')}</span>`}</div>`;
+    body += r ? `<div class="muted tb-wait" style="margin-top:8px;font-size:13px">${r === 'accept' ? tx('You accepted. Waiting for them to confirm.') : r === 'counter' ? tx('You made a counter-offer. Waiting for them to confirm.') : tx('You declined.')}</div>`
+      : `<div class="row tb-ans" style="margin-top:10px"><button class="btn small gold" data-respond="1" ${can ? '' : 'disabled'}>${tx('Accept')}</button><button class="btn small" data-counter="1">${tx('Counter-offer')}</button><button class="btn small" data-respond="0">${tx('Decline')}</button>${can ? '' : `<span class="muted tb-need" style="font-size:12px">${tx('You lack the cards.')}</span>`}</div>`;
   }
   const first = G.tradeSeen !== tr.id;
   G.tradeSeen = tr.id;
-  return `<div class="board-trade ${first ? 'fx-slide' : ''} ${allNo ? 'trade-out' : ''}" data-tid="${tr.id}"><div class="panel-h">${tx('Trade offer')}</div><div class="trade-box">${body}</div></div>`;
+  const min = G.tradeMin && G.tradeMin.id === tr.id && G.tradeMin.v; // phone: the person folded the window to see the board
+  return `<div class="board-trade ${first ? 'fx-slide' : ''} ${allNo ? 'trade-out' : ''} ${min ? 'min' : ''}" data-tid="${tr.id}"><div class="panel-h">${tx('Trade offer')}</div><div class="trade-box">${body}</div></div>`;
 }
 
 // ------------------------------------------------------------ feed
@@ -502,10 +515,12 @@ function doAction(what) {
 }
 
 // ------------------------------------------------------------ dialogs
+// phone: tiles per row of a picker (up to 5 kinds in one row, 6 in two rows of 3, 7 to 9 in rows of 4)
+const pickCols = n => (n <= 5 ? Math.max(n, 3) : n === 6 ? 3 : 4);
 function cardPicker({ heading, text, pool, count, exact = true, confirm, dismissable = false, max, haveText = 'have {n}' }) {
   const sel = Object.fromEntries(Object.keys(pool).map(k => [k, 0]));
   const total = () => Object.values(sel).reduce((a, b) => a + b, 0);
-  modal(`<h2>${heading}</h2><p class="muted" style="margin:0">${text}</p><div class="picker" id="pk"></div>
+  modal(`<h2>${heading}</h2><p class="muted" style="margin:0">${text}</p>${exact ? '<div class="dlg-need"></div>' : ''}<div class="picker" id="pk" style="--cols:${pickCols(Object.keys(pool).length)}"></div>
     <div class="foot">${dismissable ? `<button class="btn" data-close>${tx('Cancel')}</button>` : ''}<button class="btn primary" id="pkok">${tx('Confirm')}</button></div>`, {
     dismissable,
     onMount(el, close) {
@@ -523,6 +538,8 @@ function cardPicker({ heading, text, pool, count, exact = true, confirm, dismiss
         const ok = el.querySelector('#pkok');
         ok.disabled = exact ? total() !== count : total() === 0;
         ok.textContent = exact ? `${t('Confirm')} (${total()}/${count})` : t('Confirm');
+        const need = el.querySelector('.dlg-need'); // phone: "Choose 2 more" chip above the cards
+        if (need) { const left = count - total(); need.textContent = left > 0 ? t('Choose {n} more', { n: left }) : `✓ ${total()}/${count}`; need.classList.toggle('done', left <= 0); }
       };
       draw();
       el.querySelector('#pkok').onclick = async () => { if (await confirm(Object.fromEntries(Object.entries(sel).filter(([, n]) => n)))) close(); };
@@ -530,7 +547,7 @@ function cardPicker({ heading, text, pool, count, exact = true, confirm, dismiss
   });
 }
 function choiceDialog(heading, text, options, onChoose, dismissable = true) {
-  modal(`<h2>${heading}</h2>${text ? `<p class="muted" style="margin:0 0 10px">${text}</p>` : ''}<div style="display:flex;flex-direction:column;gap:8px">${options.map((o, i) => `<button class="btn ${o.cls || ''}" data-i="${i}" ${o.disabled ? 'disabled' : ''} style="${o.style || ''}">${o.html}</button>`).join('')}</div>
+  modal(`<h2>${heading}</h2>${text ? `<p class="muted" style="margin:0 0 10px">${text}</p>` : ''}<div class="choice-list" style="display:flex;flex-direction:column;gap:8px">${options.map((o, i) => `<button class="btn ${o.cls || ''}" data-i="${i}" ${o.disabled ? 'disabled' : ''} style="${o.pc ? `--pc:${o.pc};` : ''}${o.style || ''}">${o.html}</button>`).join('')}</div>
     ${dismissable ? `<div class="foot"><button class="btn" data-close>${tx('Cancel')}</button></div>` : ''}`, {
     dismissable,
     onMount(el, close) { el.querySelectorAll('[data-i]').forEach(b => b.onclick = async () => { const r = await onChoose(options[+b.dataset.i].value); if (r !== false) close(); }); },
@@ -544,7 +561,9 @@ function autoDialogs(force = false) {
   const key = `${mp.type}-${mp.group}`;
   if (G.opened.has(key) && !force) return;
   if (document.querySelector('.modal-back')) return;
-  if (window.BROCH_FX_BUSY && !force) { setTimeout(() => { if (G && G.view === v) autoDialogs(); }, 400); return; }
+  // phone: a loot panel alone does not hold the dialog back (a full-screen scene still does)
+  const lootOnly = dlgPhone() && document.querySelector('.fx-loot') && !document.querySelector('.fx-scene, .fx-banner, .fx-dice');
+  if (window.BROCH_FX_BUSY && !force && !lootOnly) { setTimeout(() => { if (G && G.view === v) autoDialogs(); }, 400); return; }
   G.opened.add(key);
   if (mp.type === 'discard') {
     const pool = {};
@@ -557,21 +576,25 @@ function tradeDialog(counter) {
   const v = G.view, P = plugin();
   const types = P.tradeKeys || v.cards;
   const give = counter ? { ...counter.get } : {}, get = counter ? { ...counter.give } : {}; // a counter starts from the offer, turned around
+  const clean = o => Object.fromEntries(Object.entries(o).filter(([, n]) => n));
   modal(`<h2>${counter ? tx('Make a counter-offer') : tx('Offer a trade')}</h2><p class="muted" style="margin:0">${counter ? tx('Propose other terms. The active player decides whether to take them.') : tx('Everyone sees the offer and can accept, decline or answer with a counter-offer. You pick who to trade with.')}</p>
-    <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg"></div>
-    <div class="section-label" style="color:var(--muted)">${tx('You want')}</div><div class="picker" id="tw"></div>
+    <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg" style="--cols:${pickCols(types.length)}"></div>
+    <div class="section-label" style="color:var(--muted)">${tx('You want')}</div><div class="picker" id="tw" style="--cols:${pickCols(types.length)}"></div>
+    <div class="dlg-sum"></div>
     <div class="foot"><button class="btn" data-close>${tx('Cancel')}</button>${counter ? '' : `<button class="btn" id="tbank">${tx('Bank instead')}</button>`}<button class="btn primary" id="tok">${counter ? tx('Send counter-offer') : tx('Offer')}</button></div>`, {
+    dismissable: !dlgPhone(), // a stray tap beside the sheet must not throw away what was entered; Cancel is in the footer
     onMount(el, close) {
       const m = me();
       const draw = () => {
-        const cell = (sel, k, have) => `<div class="pick ${sel[k] ? 'on' : ''}"><div class="rcard" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div>
-          <div class="have">${have != null ? tx('have {n}', { n: have }) : esc(resName(k))}</div><div class="ctr"><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="-1">−</button><b>${sel[k] || 0}</b><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="1">+</button></div></div>`;
+        const cell = (sel, k, have) => `<div class="pick ${sel[k] ? 'on' : ''} ${have === 0 ? 'dim' : ''}"><div class="rcard" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div>
+          <div class="have">${have != null ? tx('have {n}', { n: have }) : esc(resName(k))}</div><div class="ctr"><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="-1" aria-label="${tx('Less')}">−</button><b>${sel[k] || 0}</b><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="1" aria-label="${tx('More')}">+</button></div></div>`;
         el.querySelector('#tg').innerHTML = types.map(k => cell(give, k, m.res[k] || 0)).join('');
         el.querySelector('#tw').innerHTML = types.map(k => cell(get, k, null)).join('');
         el.querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
           const sel = b.dataset.s === 'g' ? give : get, k = b.dataset.k, d = +b.dataset.d;
+          const have = m.res[k] || 0;
           const nv = Math.max(0, (sel[k] || 0) + d);
-          if (sel === give && nv > (m.res[k] || 0)) return;
+          if (sel === give && nv > have) return;
           if (nv > 9) return;
           sel[k] = nv;
           if (nv && sel === give) get[k] = 0;
@@ -580,11 +603,12 @@ function tradeDialog(counter) {
         });
         const sum = o => Object.values(o).reduce((a, b) => a + b, 0);
         el.querySelector('#tok').disabled = !sum(give) || !sum(get);
+        // phone: one sentence above the footer says what the offer is
+        el.querySelector('.dlg-sum').textContent = sum(give) || sum(get) ? t('You give {a} and get {b}', { a: cardListText(clean(give)), b: cardListText(clean(get)) }) : t('Tap a card to add one');
       };
       draw();
       if (!counter) el.querySelector('#tbank').onclick = () => { close(); bankDialog(); };
       el.querySelector('#tok').onclick = async () => {
-        const clean = o => Object.fromEntries(Object.entries(o).filter(([, n]) => n));
         if (await send(counter ? { type: 'counterTrade', id: counter.id, give: clean(give), get: clean(get) } : { type: 'offerTrade', give: clean(give), get: clean(get) })) close();
       };
     },
@@ -594,12 +618,13 @@ function bankDialog() {
   const v = G.view, L = v.legal || {}, P = plugin();
   if (P.bankDialog) return P.bankDialog(G.A); // a game with other trading rules brings its own dialog
   const ratios = L.ratios || {};
-  const types = Object.keys(ratios).filter(k => ratios[k]);
   const buys = P.bankBuys || v.cards;
+  const types = Object.keys(ratios).filter(k => ratios[k]);
+  if (dlgPhone()) types.sort((a, b) => buys.indexOf(a) - buys.indexOf(b)); // phone: same order as the Get row
   let give = null, get = null;
   modal(`<h2>${tx('Trade with the bank')}</h2><p class="muted" style="margin:0">${esc(t(P.bankText || 'Your rates come from your harbors.'))}</p>
-    <div class="section-label" style="color:var(--muted)">${tx('Give')}</div><div class="picker" id="bg"></div>
-    <div class="section-label" style="color:var(--muted)">${tx('Get 1')}</div><div class="picker" id="bw"></div>
+    <div class="section-label" style="color:var(--muted)">${tx('Give')}</div><div class="picker" id="bg" style="--cols:${pickCols(types.length)}"></div>
+    <div class="section-label" style="color:var(--muted)">${tx('Get 1')}</div><div class="picker" id="bw" style="--cols:${pickCols(buys.length)}"></div>
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button><button class="btn primary" id="bok" disabled>${tx('Trade')}</button></div>`, {
     onMount(el) {
       const have = k => (me().res[k] || 0);
@@ -612,7 +637,8 @@ function bankDialog() {
         el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { get = b.dataset.w; sfx.click(); draw(); });
         const ok = el.querySelector('#bok');
         ok.disabled = !give || !get;
-        ok.textContent = give && get ? t('Trade {n} {a} for 1 {b}', { n: ratios[give], a: resName(give), b: resName(get) }) : t('Trade');
+        // phone: a disabled button names what is missing instead of sitting there dead
+        ok.textContent = give && get ? t('Trade {n} {a} for 1 {b}', { n: ratios[give], a: resName(give), b: resName(get) }) : dlgPhone() ? t(!give ? 'Choose what you give' : 'Choose what you get') : t('Trade');
       };
       draw();
       el.querySelector('#bok').onclick = async () => {
@@ -621,11 +647,24 @@ function bankDialog() {
     },
   });
 }
+// phone: the long rules text of the costs dialog sits in a fold-out under the cost rows
+function costRulesToggle(el) {
+  el.addEventListener('click', e => {
+    const b = e.target.closest('[data-cost-rules]');
+    if (!b) return;
+    const open = el.querySelector('.cost-rules').classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+}
+
 function costsDialog() {
   const P = plugin();
-  modal(`<h2>${tx('Building costs')}</h2><button class="btn gold block tut-open" data-tut-mode>▶ ${tx('How to play: {mode}', { mode: t(P.name) })}</button><div style="margin-top:10px">${P.costsHtml ? P.costsHtml(G.view, G.A) : ''}</div>
+  modal(`<h2>${tx('Building costs')}</h2><button class="btn gold block tut-open" data-tut-mode>▶ ${tx('How to play: {mode}', { mode: t(P.name) })}</button><div class="cost-list" style="margin-top:10px">${P.costsHtml ? P.costsHtml(G.view, G.A) : ''}</div>
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button></div>`, {
-    onMount: el => el.querySelector('[data-tut-mode]')?.addEventListener('click', () => { closeModals(); openTutorial(P.tutorial); }),
+    onMount: el => {
+      el.querySelector('[data-tut-mode]')?.addEventListener('click', () => { closeModals(); openTutorial(P.tutorial); });
+      costRulesToggle(el);
+    },
   });
 }
 function showCelebration() {
@@ -634,7 +673,7 @@ function showCelebration() {
   closeModals();
   victoryScene(v, {
     title: `${t(plugin().name)}${plugin().beta ? ' · Beta' : ''} · ${t('turn {n}', { n: v.turn })}`,
-    actions: `<a class="btn gold" href="#/stats">${tx('See stats')}</a><a class="btn ghost" href="#/">${tx('Back to lobby')}</a>`,
+    actions: `<a class="btn gold" href="#/stats">${tx('See stats')}</a><a class="btn ghost m-main" href="#/">${tx('Back to lobby')}</a>`,
   });
 }
 function celebrateWhenCalm(tries = 0) {

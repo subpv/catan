@@ -1,6 +1,8 @@
 import { esc, toast, modal, closeModals, wsWatch, wsAct, onWs, reportProblem, houseIcon, glyph, PCOLOR, PCOLOR_DARK, RES, COMM, CARD_COLOR, resName, cardName, tf, t, isLightColor, dieHtml } from '../../core/core.js';
 import { lang } from '../../core/i18n.js';
-import { renderBoard } from '../../core/board.js';
+import { renderBoard, tapTarget, BOARD_S } from '../../core/board.js';
+import { mountDock, yourMoveCue, buzz } from '../../core/dock.js';
+import { isPhone, onPhoneChange } from '../../core/phone.js';
 import { hubExt } from '../traders-barbarians/hub-art.js';
 import { createHub } from '../traders-barbarians/hub.js';
 import { topbar } from '../../app.js';
@@ -14,6 +16,8 @@ import { createKnights } from '../knights/ui.js';
 import { createSeafarers } from '../seafarers/ui.js';
 import { chatHtml, historyHtml, graphsHtml, wireGraphs } from '../../core/feed.js';
 
+import { cardListText } from '../../core/core.js';
+import { isPhone as dlgPhone } from '../../core/phone.js';
 let G = null;
 const ZOOM0 = () => ({ z: 1, cx: 0, cy: 0 });
 
@@ -40,8 +44,9 @@ export function mountGame(app, id) {
   G = {
     id, view: null, online: [], pick: null, tab: 'chat', opened: new Set(), celebrated: false, app, fresh: null, zoom: ZOOM0(), prevImp: null,
     html: {}, boardKey: null, boardRef: null, boardSig: '', chatSeenAt: 0, unread: 0, newestTurn: null,
-    life: lifePref(),
+    life: lifePref(), sheet: null, dock: null, preZoom: null, tgSig: '',
   };
+  document.body.dataset.route = 'game';
   app.innerHTML = `${topbar('play')}<div class="game">
     <div class="game-main">
       <div class="status"><div class="msg"><span class="mt">${esc(t('Loading game…'))}</span></div></div>
@@ -77,6 +82,19 @@ export function mountGame(app, id) {
   });
   G.onClick = onClick;
   app.addEventListener('click', G.onClick);
+  // phone: player strip, chat/menu button, bottom sheet (core/dock.js); hidden by css on the desktop
+  G.dock = mountDock(app, {
+    getView: () => G && G.view,
+    onTab: tab => { if (!G || !G.view) return; G.tab = tab; G.html.feed = null; renderFeed(); requestAnimationFrame(() => { if (!G) return; if (tab === 'graphs') { G.html.feed = null; renderFeed(); } else if (tab === 'chat') { const b = G.app.querySelector('.feed-body'); if (b) b.scrollTop = b.scrollHeight; } }); },
+    unread: () => (G && G.view ? unreadCount() : 0),
+    hasSide: () => !!(G && G.html.imp),
+    sideLabel: 'Improve',
+    costs: () => costsDialog(),
+    howto: () => openTutorial(tutorialFor(G.view)),
+    life: () => !!(G && G.life),
+    onSheet: name => { if (!G) return; G.sheet = name; if (!name && !document.hidden) document.title = 'Broch'; if (name === 'chat') renderFeed(); },
+  });
+  const offPhone = onPhoneChange(() => { if (G && G.view) { G.html = {}; G.boardKey = null; render(); } });
   const cf = app.querySelector('.chat-form');
   cf.addEventListener('submit', e => { e.preventDefault(); const tt = cf.t.value.trim(); if (tt) { send({ type: 'chat', text: tt }); cf.t.value = ''; } });
   if (!G.view) cf.hidden = true;
@@ -85,7 +103,7 @@ export function mountGame(app, id) {
     if (msg.t === 'state' && msg.game === G?.id) {
       const prev = G.view;
       G.view = msg.state; G.online = msg.online || [];
-      if (!prev) { sea().focusOnLand(); setTimeout(tutNudge, 1500); }
+      if (!prev) { sea().focusOnLand(); phoneStartZoom(); setTimeout(tutNudge, 1500); }
       const d = diff(prev, G.view);
       G.fresh = d.fresh;
       const release = holdRolls(prev, d.events);
@@ -97,7 +115,7 @@ export function mountGame(app, id) {
     }
   });
   wsWatch(id);
-  const key = e => { if (e.key === 'Escape' && G?.pick) { G.pick = null; render(); } };
+  const key = e => { if (e.key === 'Escape' && G?.pick && !G.dock?.isOpen()) { G.pick = null; render(); } };
   document.addEventListener('keydown', key);
   const vis = () => { if (!document.hidden) document.title = 'Broch'; };
   document.addEventListener('visibilitychange', vis);
@@ -106,6 +124,7 @@ export function mountGame(app, id) {
   window.addEventListener('resize', resize);
   return () => {
     off(); app.removeEventListener('click', G?.onClick || onClick);
+    offPhone(); G?.dock?.();
     G?.zoomer?.destroy();
     document.removeEventListener('keydown', key); document.removeEventListener('visibilitychange', vis); window.removeEventListener('resize', resize);
   };
@@ -136,20 +155,20 @@ function lifePref() {
 function toggleLife() {
   G.life = !G.life;
   try { localStorage.setItem('broch_life', G.life ? '1' : '0'); } catch { /* storage blocked */ }
-  const b = G.app.querySelector('[data-life]');
-  if (b) { b.classList.toggle('on', G.life); b.setAttribute('aria-pressed', G.life); }
+  G.app.querySelectorAll('[data-life]').forEach(b => { b.classList.toggle('on', G.life); b.setAttribute('aria-pressed', G.life); });
   toast(G.life ? t('Living board: on') : t('Living board: off'));
   G.boardKey = null; renderBoardPart();
 }
 
 export function unmountGame() {
   if (!G) return;
+  G.dock?.();
   G.zoomer?.destroy();
   closeVictory();
   closeTutorial();
   wsWatch(null); G = null; closeModals(); document.title = 'Broch';
 }
-export function rerenderGame() { if (G && G.view) { G.html = {}; G.boardKey = null; render(); } }
+export function rerenderGame() { if (G && G.view) { G.html = {}; G.boardKey = null; G.dock?.refresh(); render(); } }
 
 async function send(action) {
   try { await wsAct(G.id, action); sfx.click(); return true; } catch (e) {
@@ -157,7 +176,7 @@ async function send(action) {
     else {
       sfx.error();
       toast(htmlToText(tf(e.message, e.params || {})), 'warn');
-      const st = document.querySelector('.status'); if (st) { st.classList.remove('fx-nudge'); void st.offsetWidth; st.classList.add('fx-nudge'); }
+      const st = document.querySelector(isPhone() ? '.status .msg' : '.status'); if (st) { st.classList.remove('fx-nudge'); void st.offsetWidth; st.classList.add('fx-nudge'); }
     }
     return false;
   }
@@ -187,10 +206,13 @@ function onNewState(prev) {
   G.lastChatAt = lastAt;
   if (G.tab === 'chat' && feedVisible()) G.chatSeenAt = lastAt;
   if (G.pick && G.pick.version !== undefined && G.pick.version !== v.version) G.pick = null;
-  if (needsMe(v) && document.hidden) document.title = `● ${t('Your move')} · Broch`;
+  if (needsMe(v) && (document.hidden || G.dock?.isOpen())) document.title = `● ${t('Your move')} · Broch`;
   // a beep whenever the move passes to me (not only at the dice), and when someone answers my trade with a counter-offer
   if (prev && prev.phase !== 'over' && !needsMe(prev) && needsMe(v)) sfx.turn();
+  // phone: a buzz and a pulse of the primary button when the move passes to me (also on the very first state)
+  yourMoveCue(G.app, !!prev && prev.phase !== 'over' && needsMe(prev), needsMe(v));
   const tr = v.trade, ptr = prev && prev.trade;
+  if (tr && tr.from !== v.me && isMine() && !tr.responses?.[v.me] && (!ptr || ptr.id !== tr.id)) buzz(30);
   if (tr && tr.from === v.me && tr.responses) {
     const was = ptr && ptr.id === tr.id ? ptr.responses : {};
     const who = Object.keys(tr.responses).filter(i => tr.responses[i] === 'counter' && was[i] !== 'counter');
@@ -203,6 +225,7 @@ function onNewState(prev) {
   G.app.querySelector('.chat-form').hidden = !isMine() || G.tab !== 'chat';
 }
 function feedVisible() {
+  if (isPhone() && G.dock) return G.dock.isOpen('chat'); // phone: the chat is on screen while the sheet shows its tab
   const el = G.app.querySelector('.feed-body');
   if (!el) return false;
   const r = el.getBoundingClientRect();
@@ -224,6 +247,19 @@ function needsMe(v) {
   if (v.pending.length) return v.pending.some(p => p.group === v.activeGroup && p.player === v.me);
   if (v.step === 'sbp') return v.sbp?.queue[0] === v.me;
   return v.current === v.me;
+}
+
+const unreadCount = () => { const v = G.view; return v.chat.filter(c => (c.at || 0) > G.chatSeenAt && c.p !== v.me).length; };
+
+// big boards (more than 19 tiles) start a little zoomed in on the land on a phone, so the tiles stay readable
+function phoneStartZoom() {
+  const b = G.view?.board;
+  if (!isPhone() || !b || b.hexes.length <= 19 || G.zoom.z !== 1) return;
+  const land = b.hexes.filter(h => h.terrain !== 'sea' && h.terrain !== 'fog');
+  if (!land.length) return;
+  const S = BOARD_S();
+  const xs = land.map(h => h.x * S), ys = land.map(h => h.y * S);
+  G.zoom = { z: 1.25, cx: (Math.min(...xs) + Math.max(...xs)) / 2, cy: (Math.min(...ys) + Math.max(...ys)) / 2 };
 }
 
 // ------------------------------------------------------------ helpers
@@ -339,7 +375,18 @@ function targets() {
 }
 
 function onBoardClick(e) {
-  const el = e.target.closest('[data-v],[data-e],[data-h],[data-k],[data-s],[data-hub]');
+  let el = e.target.closest('[data-v],[data-e],[data-h],[data-k],[data-s],[data-hub]');
+  if (isPhone()) {
+    // a finger is wider than the little hit shapes: the nearest corner, edge, knight or ship within reach is the one meant.
+    // When two are about equally close the tap zooms in instead of guessing, so the next tap is clear.
+    const svg = e.target.closest('svg.board');
+    const lp = G.zoomer.lastPoint(), px = lp ? lp.x : e.clientX, py = lp ? lp.y : e.clientY; // not the click: the browser moves it to the nearest target
+    const r = svg && tapTarget(svg, px, py);
+    if (r && r.best && !(el && el.dataset.h != null && r.best.d > 14)) {
+      if (r.near >= 2 && r.best.d > 11 && G.zoom.z < 3) { G.zoomer.zoomAt(px, py, 2); return; }
+      el = r.best.el;
+    } else if (r && !r.best && lp && el && el.dataset.h == null) { /* nothing within reach: the browser's guess is not trusted */ el = null; }
+  }
   if (!el) return;
   const v = G.view, L = v.legal || {};
   const id = +(el.dataset.v ?? el.dataset.e ?? el.dataset.h ?? el.dataset.k ?? el.dataset.s);
@@ -359,7 +406,7 @@ function startPick(kind, options, label, onPick, extra = {}) {
   if (!options || !options.length) { toast(t('There is nowhere to do that right now.'), 'warn'); return; }
   G.pick = { kind, options, label, onPick: async id => { const keep = await onPick(id); if (!keep) { G.pick = null; render(); } }, version: G.view.version, ...extra };
   render();
-  document.querySelector('.board-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (!isPhone()) document.querySelector('.board-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // the phone page never scrolls
 }
 
 
@@ -376,6 +423,7 @@ function render() {
   setHtml(G.app.querySelector('.players-host'), 'players', playersHtml());
   if (setHtml(G.app.querySelector('.imp-host'), 'imp', G.view.mode === 'knights' ? kn().improveHtml() : '')) kn().animateImprovements();
   renderFeed();
+  G.dock?.update();
   autoDialogs();
   kn().aqueductPrompt();
   syncLoops(G.app);
@@ -401,7 +449,11 @@ function renderStatus() {
   const st = statusInfo();
   const cls = `status ${st.mine ? 'mine' : ''}`;
   if (el.className !== cls) el.className = cls;
-  setHtml(el, 'status', `<div class="msg"><span class="mt">${st.msg}</span>${st.sub ? `<span class="sub">${st.sub}</span>` : ''}</div>
+  // phone: while somebody else plays, their house shows in front of the headline
+  const v = G.view;
+  const wait = st.mine || v.phase === 'over' || G.pick ? null : v.pending.length ? v.pending.find(p => p.group === v.activeGroup && p.player !== v.me)?.player : v.step === 'sbp' ? v.sbp?.queue[0] : v.current;
+  const who = wait != null && wait !== v.me && v.players[wait] ? `<span class="who-ic m-only">${houseIcon(v.players[wait].color, 20)}</span>` : '';
+  setHtml(el, 'status', `<div class="msg"><span class="mt">${who}${st.msg}</span>${st.sub ? `<span class="sub">${st.sub}</span>` : ''}</div>
     <div class="dice-slot">${diceHtml()}</div><div class="btns">${st.btns || ''}</div>`);
 }
 
@@ -421,11 +473,33 @@ function renderBoardPart() {
   G.boardKey = key;
   host.innerHTML = renderBoard(G.view, tg, G.fresh, G.zoom, G.life, true, hubExt(G.view));
   G.zoomer.apply();
+  phoneTargetZoom(tg);
   syncLoops(host);
   if (freshAny) {
     clearTimeout(G.fxClean);
     G.fxClean = setTimeout(() => host.querySelectorAll('.fx-flash,.fx-roadglow,.fx-light,.fx-dust,.fx-splash').forEach(el => el.remove()), 2600);
   }
+}
+
+// phone: when a few corners or edges glow, zoom to them (the finger needs room); afterwards go back to where the board was
+// unless the person zoomed by hand in between
+function phoneTargetZoom(tg) {
+  if (!isPhone() || !G.zoomer) return;
+  const n = (tg.vertices?.length || 0) + (tg.edges?.length || 0);
+  const sig = n ? JSON.stringify([tg.vertices, tg.edges]) : '';
+  if (sig === G.tgSig) return;
+  G.tgSig = sig;
+  if (!n) {
+    const pre = G.preZoom; G.preZoom = null;
+    if (pre && !G.zoomer.touched()) G.zoomer.zoomTo(pre.z, pre.cx, pre.cy);
+    return;
+  }
+  if (n > 12) return;
+  const svg = G.app.querySelector('svg.board');
+  if (!svg) return;
+  const pts = [...svg.querySelectorAll('.hl-v, .hl-e')].map(el => { const b = el.getBBox(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });
+  const before = { ...G.zoom };
+  if (G.zoomer.focusPoints(pts) && !G.preZoom) { G.preZoom = before; G.zoomer.clearTouched(); }
 }
 
 function hudHtml() {
@@ -443,7 +517,7 @@ const chipIcon = (name, bg) => `<span class="ic" style="background:${bg}">${glyp
 // ------------------------------------------------------------ your hand
 const DEV_ORDER = ['knight', 'roadBuilding', 'yearOfPlenty', 'monopoly', 'goodTrip', 'victoryPoint'];
 // font size for a card name in a tile (~110px for text): long single words get smaller instead of breaking mid-word
-const nameSize = name => { const w = Math.max(...String(name).split(/[\s-]+/).map(x => x.length)); return w <= 12 ? 11.5 : w <= 15 ? 10.5 : w <= 18 ? 9.3 : 8.3; };
+const nameSize = name => { if (isPhone()) return 12; const w = Math.max(...String(name).split(/[\s-]+/).map(x => x.length)); return w <= 12 ? 11.5 : w <= 15 ? 10.5 : w <= 18 ? 9.3 : 8.3; };
 const nameSpan = name => `<span class="dc-nm" style="font-size:${nameSize(name)}px">${esc(name)}</span>`;
 function handHtml() {
   const v = G.view, m = me(), L = v.legal || {};
@@ -469,7 +543,9 @@ function handHtml() {
   acts += btn('settlement', t('Settlement'), 'settlement', COSTS.settlement, free && L.settlements?.length > 0, m.pieces.settlements);
   acts += sea().wondersButton(plain, v);
   acts += btn('city', t('City'), 'city', COSTS.city, free && L.cities?.length > 0, m.pieces.cities);
-  if (knights) acts += kn().buttons(btn, free, L, m);
+  // phone: buying a development card is a build button (the desktop keeps its chip in the cards row)
+  if (!knights) acts += btn('buyDev', t('Dev card'), 'card', COSTS.dev, free && L.canBuyDev).replace('class="act ', 'class="act m-only ');
+  if (knights) acts += kn().buttons(btn, free, L, m) + `<button class="act m-only" data-sheet-open="side" title="${tx('Improve')}"><span class="nm"><i class="ai">${glyph('city', 14)}</i>${tx('Improve')}</span><small><span class="cd"><i class="cost-dot" style="background:#E0A32E"></i><i class="cost-dot" style="background:#2C6E9B"></i><i class="cost-dot" style="background:#2E6B45"></i></span></small></button>`;
   acts += plain('bank', t('Bank trade'), 'bank', t('4:1 or better'), mainTurn);
   if (isHub(v)) acts += hub().actions(v, m, L, { free, mainTurn, plain });
 
@@ -550,6 +626,16 @@ function renderTrade() {
   const host = G.app.querySelector('.trade-host');
   if (!host) return;
   const html = tradeHtml();
+  if (!host.dataset.tbMin) { // phone: a tap on the header folds the offer to one line (delegated, the panel itself is replaced for every offer)
+    host.dataset.tbMin = '1';
+    host.addEventListener('click', e => {
+      const h = e.target.closest('.board-trade .panel-h');
+      if (!h || !dlgPhone()) return;
+      const bt = h.closest('.board-trade');
+      bt.classList.toggle('min');
+      if (G) G.tradeMin = { id: bt.dataset.tid, v: bt.classList.contains('min') };
+    });
+  }
   if (G.html.trade === html) return;
   const cur = host.querySelector('.board-trade');
   const tid = G.view.trade && G.view.trade.id;
@@ -575,18 +661,19 @@ function tradeHtml() {
   const mineOffer = tr.from === v.me;
   let body = `<div class="trade-line">${t('{name} gives', { name: pname(tr.from) })} ${cardsHtml(tr.give)}</div><div class="trade-line" style="margin-top:4px">${tx('and wants')} ${cardsHtml(tr.get)}</div>`;
   if (mineOffer) {
-    const rows = v.players.map((p, i) => i === v.me ? '' : `<div class="row" style="margin-top:6px"><span class="spacer">${pname(i)}</span>${tr.responses[i] === 'accept' ? `<button class="btn small gold" data-confirm="${i}">${tx('Trade with {name}', { name: p.name })}</button>` : tr.responses[i] === 'counter' && tr.counters && tr.counters[i] ? `<div class="trade-counter" style="flex:1 1 100%"><div class="trade-line">${tx('Counter-offer: you give')} ${cardsHtml(tr.counters[i].give)}</div><div class="trade-line" style="margin-top:4px">${tx('and get')} ${cardsHtml(tr.counters[i].get)}</div><button class="btn small gold" style="margin-top:6px" data-confirm="${i}">${tx('Accept the counter-offer of {name}', { name: p.name })}</button></div>` : `<span class="muted" style="font-size:13px">${tr.responses[i] === 'reject' ? tx('Declined') : tx('Thinking…')}</span>`}</div>`).join('');
-    body += rows + `<div class="row" style="margin-top:10px"><button class="btn small" data-do="cancelTrade">${tx('Withdraw offer')}</button></div>`;
+    const rows = v.players.map((p, i) => i === v.me ? '' : `<div class="row tb-row" style="margin-top:6px"><span class="spacer">${pname(i)}</span>${tr.responses[i] === 'accept' ? `<button class="btn small gold" data-confirm="${i}">${tx('Trade with {name}', { name: p.name })}</button>` : tr.responses[i] === 'counter' && tr.counters && tr.counters[i] ? `<div class="trade-counter" style="flex:1 1 100%"><div class="trade-line">${tx('Counter-offer: you give')} ${cardsHtml(tr.counters[i].give)}</div><div class="trade-line" style="margin-top:4px">${tx('and get')} ${cardsHtml(tr.counters[i].get)}</div><button class="btn small gold" style="margin-top:6px" data-confirm="${i}">${tx('Accept the counter-offer of {name}', { name: p.name })}</button></div>` : `<span class="muted tb-state" style="font-size:13px">${tr.responses[i] === 'reject' ? tx('Declined') : tx('Thinking…')}</span>`}</div>`).join('');
+    body += rows + `<div class="row tb-wd" style="margin-top:10px"><button class="btn small" data-do="cancelTrade">${tx('Withdraw offer')}</button></div>`;
   } else if (isMine()) {
     const r = tr.responses[v.me];
     const can = has(tr.get);
-    body += r ? `<div class="muted" style="margin-top:8px;font-size:13px">${r === 'accept' ? tx('You accepted. Waiting for them to confirm.') : r === 'counter' ? tx('You made a counter-offer. Waiting for them to confirm.') : tx('You declined.')}</div>`
-      : `<div class="row" style="margin-top:10px"><button class="btn small gold" data-respond="1" ${can ? '' : 'disabled'}>${tx('Accept')}</button><button class="btn small" data-counter="1">${tx('Counter-offer')}</button><button class="btn small" data-respond="0">${tx('Decline')}</button>${can ? '' : `<span class="muted" style="font-size:12px">${tx('You lack the cards.')}</span>`}</div>`;
+    body += r ? `<div class="muted tb-wait" style="margin-top:8px;font-size:13px">${r === 'accept' ? tx('You accepted. Waiting for them to confirm.') : r === 'counter' ? tx('You made a counter-offer. Waiting for them to confirm.') : tx('You declined.')}</div>`
+      : `<div class="row tb-ans" style="margin-top:10px"><button class="btn small gold" data-respond="1" ${can ? '' : 'disabled'}>${tx('Accept')}</button><button class="btn small" data-counter="1">${tx('Counter-offer')}</button><button class="btn small" data-respond="0">${tx('Decline')}</button>${can ? '' : `<span class="muted tb-need" style="font-size:12px">${tx('You lack the cards.')}</span>`}</div>`;
   }
   // slide in once per offer; later answers only change the text (a fresh slide on every answer looked like a new window)
   const first = G.tradeSeen !== tr.id;
   G.tradeSeen = tr.id;
-  return `<div class="board-trade ${first ? 'fx-slide' : ''} ${allNo ? 'trade-out' : ''}" data-tid="${tr.id}"><div class="panel-h">${tx('Trade offer')}</div><div class="trade-box">${body}</div></div>`;
+  const min = G.tradeMin && G.tradeMin.id === tr.id && G.tradeMin.v; // phone: the person folded the window to see the board
+  return `<div class="board-trade ${first ? 'fx-slide' : ''} ${allNo ? 'trade-out' : ''} ${min ? 'min' : ''}" data-tid="${tr.id}"><div class="panel-h">${tx('Trade offer')}</div><div class="trade-box">${body}</div></div>`;
 }
 
 
@@ -598,8 +685,7 @@ function renderFeed() {
   tabs.forEach(b => b.classList.toggle('on', b.dataset.tab === G.tab));
   if (G.tab === 'chat' && feedVisible()) G.chatSeenAt = v.chat.length ? v.chat[v.chat.length - 1].at || 0 : 0;
   const unread = v.chat.filter(c => (c.at || 0) > G.chatSeenAt && c.p !== v.me).length;
-  const u = G.app.querySelector('.feed .unread');
-  if (u) { u.hidden = !unread; u.textContent = unread > 9 ? '9+' : unread; }
+  G.app.querySelectorAll('.unread').forEach(u => { u.hidden = !unread; u.textContent = unread > 9 ? '9+' : unread; });
   G.app.querySelector('.chat-form').hidden = !isMine() || G.tab !== 'chat';
   // charts animate when the tab is opened, not on every update while you look at them
   body.className = `feed-body ${G.tab}${G.tab === 'graphs' && G.html.feedTab !== 'graphs' ? ' anim' : ''}`;
@@ -681,10 +767,12 @@ function togglePick(key, kind, options, label, fn) {
 
 
 // ------------------------------------------------------------ dialogs
+// phone: tiles per row of a picker (up to 5 kinds in one row, 6 in two rows of 3, 7 to 9 in rows of 4)
+const pickCols = n => (n <= 5 ? Math.max(n, 3) : n === 6 ? 3 : 4);
 function cardPicker({ heading, text, pool, count, exact = true, confirm, dismissable = false, max, haveText = 'have {n}' }) {
   const sel = Object.fromEntries(Object.keys(pool).map(k => [k, 0]));
   const total = () => Object.values(sel).reduce((a, b) => a + b, 0);
-  modal(`<h2>${heading}</h2><p class="muted" style="margin:0">${text}</p><div class="picker" id="pk"></div>
+  modal(`<h2>${heading}</h2><p class="muted" style="margin:0">${text}</p>${exact ? '<div class="dlg-need"></div>' : ''}<div class="picker" id="pk" style="--cols:${pickCols(Object.keys(pool).length)}"></div>
     <div class="foot">${dismissable ? `<button class="btn" data-close>${tx('Cancel')}</button>` : ''}<button class="btn primary" id="pkok">${tx('Confirm')}</button></div>`, {
     dismissable,
     onMount(el, close) {
@@ -702,6 +790,8 @@ function cardPicker({ heading, text, pool, count, exact = true, confirm, dismiss
         const ok = el.querySelector('#pkok');
         ok.disabled = exact ? total() !== count : total() === 0;
         ok.textContent = exact ? `${t('Confirm')} (${total()}/${count})` : t('Confirm');
+        const need = el.querySelector('.dlg-need'); // phone: "Choose 2 more" chip above the cards
+        if (need) { const left = count - total(); need.textContent = left > 0 ? t('Choose {n} more', { n: left }) : `✓ ${total()}/${count}`; need.classList.toggle('done', left <= 0); }
       };
       draw();
       el.querySelector('#pkok').onclick = async () => { if (await confirm(Object.fromEntries(Object.entries(sel).filter(([, n]) => n)))) close(); };
@@ -710,7 +800,7 @@ function cardPicker({ heading, text, pool, count, exact = true, confirm, dismiss
 }
 
 function choiceDialog(heading, text, options, onChoose, dismissable = true) {
-  modal(`<h2>${heading}</h2>${text ? `<p class="muted" style="margin:0 0 10px">${text}</p>` : ''}<div style="display:flex;flex-direction:column;gap:8px">${options.map((o, i) => `<button class="btn ${o.cls || ''}" data-i="${i}" ${o.disabled ? 'disabled' : ''} style="${o.style || ''}">${o.html}</button>`).join('')}</div>
+  modal(`<h2>${heading}</h2>${text ? `<p class="muted" style="margin:0 0 10px">${text}</p>` : ''}<div class="choice-list" style="display:flex;flex-direction:column;gap:8px">${options.map((o, i) => `<button class="btn ${o.cls || ''}" data-i="${i}" ${o.disabled ? 'disabled' : ''} style="${o.pc ? `--pc:${o.pc};` : ''}${o.style || ''}">${o.html}</button>`).join('')}</div>
     ${dismissable ? `<div class="foot"><button class="btn" data-close>${tx('Cancel')}</button></div>` : ''}`, {
     dismissable,
     onMount(el, close) { el.querySelectorAll('[data-i]').forEach(b => b.onclick = async () => { const r = await onChoose(options[+b.dataset.i].value); if (r !== false) close(); }); },
@@ -734,7 +824,9 @@ function autoDialogs(force = false) {
   if (G.opened.has(key) && !force) return;
   if (document.querySelector('.modal-back')) return;
   // let the full-screen moment (robber, barbarians) finish first
-  if (window.BROCH_FX_BUSY && !force) { setTimeout(() => { if (G && G.view === v) autoDialogs(); }, 400); return; }
+  // phone: a loot panel alone does not hold the dialog back (a full-screen scene still does)
+  const lootOnly = dlgPhone() && document.querySelector('.fx-loot') && !document.querySelector('.fx-scene, .fx-banner, .fx-dice');
+  if (window.BROCH_FX_BUSY && !force && !lootOnly) { setTimeout(() => { if (G && G.view === v) autoDialogs(); }, 400); return; }
   G.opened.add(key);
   if (isHub(v) && hub().dialog(mp)) return;
   if (kn().dialog(mp) || sea().dialog(mp)) return;
@@ -744,7 +836,7 @@ function autoDialogs(force = false) {
     case 'give':
       return cardPicker({ heading: mp.good ? tx('Good neighbors: a gift for {name}', { name: v.players[mp.to].name }) : tx('Wedding gift for {name}', { name: v.players[mp.to].name }), text: tx('Choose {n} cards to give.', { n: mp.count }), pool: handPool(), count: mp.count, confirm: cards => send({ type: 'give', cards }) });
     case 'steal':
-      return choiceDialog(tx('Steal from…'), tx('You take one random card.'), mp.options.map(p => ({ value: p, html: `${houseIcon(v.players[p].color)} ${esc(v.players[p].name)} · ${tx('Cards: {n}', { n: v.players[p].cards })}` })), from => send({ type: 'steal', from }), false);
+      return choiceDialog(tx('Steal from…'), tx('You take one random card.'), mp.options.map(p => ({ value: p, pc: PCOLOR[v.players[p].color], html: `${houseIcon(v.players[p].color)} ${esc(v.players[p].name)} · ${tx('Cards: {n}', { n: v.players[p].cards })}` })), from => send({ type: 'steal', from }), false);
   }
 }
 
@@ -752,15 +844,18 @@ function tradeDialog(counter) {
   const v = G.view;
   const types = [...RES, ...(v.mode === 'knights' ? COMM : []), ...(v.gold ? ['gold'] : [])];
   const give = counter ? { ...counter.get } : {}, get = counter ? { ...counter.give } : {}; // a counter starts from the offer, turned around
+  const clean = o => Object.fromEntries(Object.entries(o).filter(([, n]) => n));
   modal(`<h2>${counter ? tx('Make a counter-offer') : tx('Offer a trade')}</h2><p class="muted" style="margin:0">${counter ? tx('Propose other terms. The active player decides whether to take them.') : tx('Everyone sees the offer and can accept, decline or answer with a counter-offer. You pick who to trade with.')}</p>
-    <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg"></div>
-    <div class="section-label" style="color:var(--muted)">${tx('You want')}</div><div class="picker" id="tw"></div>
+    <div class="section-label" style="color:var(--muted)">${tx('You give')}</div><div class="picker" id="tg" style="--cols:${pickCols(types.length)}"></div>
+    <div class="section-label" style="color:var(--muted)">${tx('You want')}</div><div class="picker" id="tw" style="--cols:${pickCols(types.length)}"></div>
+    <div class="dlg-sum"></div>
     <div class="foot"><button class="btn" data-close>${tx('Cancel')}</button>${counter ? '' : `<button class="btn" id="tbank">${tx('Bank instead')}</button>`}<button class="btn primary" id="tok">${counter ? tx('Send counter-offer') : tx('Offer')}</button></div>`, {
+    dismissable: !dlgPhone(), // a stray tap beside the sheet must not throw away what was entered; Cancel is in the footer
     onMount(el, close) {
       const m = me();
       const draw = () => {
-        const cell = (sel, k, have) => `<div class="pick ${sel[k] ? 'on' : ''}"><div class="rcard ${COMM.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div>
-          <div class="have">${have != null ? tx('have {n}', { n: have }) : esc(resName(k))}</div><div class="ctr"><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="-1">−</button><b>${sel[k] || 0}</b><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="1">+</button></div></div>`;
+        const cell = (sel, k, have) => `<div class="pick ${sel[k] ? 'on' : ''} ${have === 0 ? 'dim' : ''}"><div class="rcard ${COMM.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div>
+          <div class="have">${have != null ? tx('have {n}', { n: have }) : esc(resName(k))}</div><div class="ctr"><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="-1" aria-label="${tx('Less')}">−</button><b>${sel[k] || 0}</b><button data-s="${sel === give ? 'g' : 'w'}" data-k="${k}" data-d="1" aria-label="${tx('More')}">+</button></div></div>`;
         el.querySelector('#tg').innerHTML = types.map(k => cell(give, k, (k === 'gold' ? m.gold : RES.includes(k) ? m.res[k] : m.comm[k]) || 0)).join('');
         el.querySelector('#tw').innerHTML = types.map(k => cell(get, k, null)).join('');
         el.querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
@@ -776,11 +871,12 @@ function tradeDialog(counter) {
         });
         const sum = o => Object.values(o).reduce((a, b) => a + b, 0);
         el.querySelector('#tok').disabled = !sum(give) || !sum(get);
+        // phone: one sentence above the footer says what the offer is
+        el.querySelector('.dlg-sum').textContent = sum(give) || sum(get) ? t('You give {a} and get {b}', { a: cardListText(clean(give)), b: cardListText(clean(get)) }) : t('Tap a card to add one');
       };
       draw();
       if (!counter) el.querySelector('#tbank').onclick = () => { close(); bankDialog(); };
       el.querySelector('#tok').onclick = async () => {
-        const clean = o => Object.fromEntries(Object.entries(o).filter(([, n]) => n));
         if (await send(counter ? { type: 'counterTrade', id: counter.id, give: clean(give), get: clean(get) } : { type: 'offerTrade', give: clean(give), get: clean(get) })) close();
       };
     },
@@ -790,24 +886,26 @@ function tradeDialog(counter) {
 function bankDialog() {
   const v = G.view, L = v.legal || {};
   const ratios = L.ratios || {};
-  const types = Object.keys(ratios);
+  const buys = [...RES, ...(v.mode === 'knights' ? COMM : []), ...(v.gold ? ['gold'] : [])];
+  const types = dlgPhone() ? Object.keys(ratios).sort((a, b) => buys.indexOf(a) - buys.indexOf(b)) : Object.keys(ratios); // phone: same order as the Get row
   let give = null, get = null;
   modal(`<h2>${tx('Trade with the bank')}</h2><p class="muted" style="margin:0">${v.mode === 'knights' ? tx('Your rates come from your harbors and improvements.') : tx('Your rates come from your harbors.')}</p>
-    <div class="section-label" style="color:var(--muted)">${tx('Give')}</div><div class="picker" id="bg"></div>
-    <div class="section-label" style="color:var(--muted)">${tx('Get 1')}</div><div class="picker" id="bw"></div>
+    <div class="section-label" style="color:var(--muted)">${tx('Give')}</div><div class="picker" id="bg" style="--cols:${pickCols(types.length)}"></div>
+    <div class="section-label" style="color:var(--muted)">${tx('Get 1')}</div><div class="picker" id="bw" style="--cols:${pickCols(buys.length)}"></div>
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button><button class="btn primary" id="bok" disabled>${tx('Trade')}</button></div>`, {
     onMount(el) {
       const have = k => { const m = me(); return (RES.includes(k) ? m.res[k] : m.comm[k]) || 0; };
       const draw = () => {
         el.querySelector('#bg').innerHTML = types.map(k => `<button class="pick ${give === k ? 'on' : ''}" data-g="${k}" ${have(k) < ratios[k] ? 'disabled style="opacity:.4"' : ''}>
           <div class="rcard ${COMM.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div><b>${ratios[k]}:1</b><span class="have">${tx('have {n}', { n: have(k) })}</span></button>`).join('');
-        el.querySelector('#bw').innerHTML = [...RES, ...(v.mode === 'knights' ? COMM : []), ...(v.gold ? ['gold'] : [])].map(k => `<button class="pick ${get === k ? 'on' : ''}" data-w="${k}" ${k === give || (RES.includes(k) && !G.view.bank[k]) ? 'disabled style="opacity:.4"' : ''}>
+        el.querySelector('#bw').innerHTML = buys.map(k => `<button class="pick ${get === k ? 'on' : ''}" data-w="${k}" ${k === give || (RES.includes(k) && !G.view.bank[k]) ? 'disabled style="opacity:.4"' : ''}>
           <div class="rcard ${COMM.includes(k) ? 'comm' : ''}" style="background:${CARD_COLOR[k]};width:38px;height:50px">${glyph(k, 20)}</div><span class="have">${esc(resName(k))}</span></button>`).join('');
         el.querySelectorAll('[data-g]').forEach(b => b.onclick = () => { give = b.dataset.g; if (get === give) get = null; sfx.click(); draw(); });
         el.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { get = b.dataset.w; sfx.click(); draw(); });
         const ok = el.querySelector('#bok');
         ok.disabled = !give || !get;
-        ok.textContent = give && get ? t('Trade {n} {a} for 1 {b}', { n: ratios[give], a: resName(give), b: resName(get) }) : t('Trade');
+        // phone: a disabled button names what is missing instead of sitting there dead
+        ok.textContent = give && get ? t('Trade {n} {a} for 1 {b}', { n: ratios[give], a: resName(give), b: resName(get) }) : dlgPhone() ? t(!give ? 'Choose what you give' : 'Choose what you get') : t('Trade');
       };
       draw();
       el.querySelector('#bok').onclick = async () => {
@@ -851,6 +949,16 @@ function classicRules() {
   return parts.join(' ');
 }
 
+// phone: the long rules text of the costs dialog sits in a fold-out under the cost rows
+function costRulesToggle(el) {
+  el.addEventListener('click', e => {
+    const b = e.target.closest('[data-cost-rules]');
+    if (!b) return;
+    const open = el.querySelector('.cost-rules').classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+}
+
 function costsDialog() {
   const knights = G.view.mode === 'knights';
   const rows = [[t('Road'), COSTS.road, ''], [t('Settlement'), COSTS.settlement, t('1 point')], [t('City'), COSTS.city, t('2 points, double production')]];
@@ -860,15 +968,19 @@ function costsDialog() {
   else rows.push(...kn().costRows());
   const o = G.view.options || {};
   const house = [o.robberReturn && t('House rule: forgotten robber'), o.knightsFree && t('House rule: knights without a limit'), o.startBoth && t('House rule: starting resources for both')].filter(Boolean);
-  modal(`<h2>${tx('Building costs')}</h2><button class="btn gold block tut-open" data-tut-mode>▶ ${tx('How to play: {mode}', { mode: modeLabel(G.view) })}</button><div style="margin-top:10px">${rows.map(([n, c, d]) => `<div class="row" style="padding:7px 0;border-top:1px solid var(--line)"><b style="width:140px">${esc(n)}</b><span class="spacer">${cardsHtml(c)}</span><span class="muted" style="font-size:12px;text-align:right">${esc(d)}</span></div>`).join('')}</div>
+  modal(`<h2>${tx('Building costs')}</h2><button class="btn gold block tut-open" data-tut-mode>▶ ${tx('How to play: {mode}', { mode: modeLabel(G.view) })}</button><div style="margin-top:10px">${rows.map(([n, c, d]) => `<div class="row cost-row" style="padding:7px 0;border-top:1px solid var(--line)"><b class="cost-name" style="width:140px">${esc(n)}</b><span class="spacer">${cardsHtml(c)}</span><span class="muted cost-desc" style="font-size:12px;text-align:right">${esc(d)}</span></div>`).join('')}</div>
+    <button class="btn cost-rules-h" data-cost-rules aria-expanded="false">${tx('Rules and bonuses')}</button><div class="cost-rules">
     ${isHub(G.view) ? hub().costsExtra(G.view).map(x => `<p class="muted" style="font-size:13px">${esc(x)}</p>`).join('') : ''}
     ${sea().scenarioRules(G.view)}
     ${knights ? kn().costsText() : ''}
     ${!knights ? `<p class="muted" style="font-size:13px">${isHub(G.view) ? (hub().awardsText(G.view) ? esc(hub().awardsText(G.view)) : tx('Longest Road: 5 or more connected roads, 2 points. Largest Army: 3 or more played knights, 2 points. You may play 1 development card per turn, but not one you bought this turn.')) : classicRules()}</p>` : kn().rules()}
-    ${G.view.pair ? `<p class="muted" style="font-size:13px">${tx('Five or six players: stone 1 rolls, trades and builds; stone 2 follows without dice and trades only with the bank. If both reach the goal in one turn, stone 1 wins.')}</p>` : ''}
+    ${G.view.pair ? `<p class="muted" style="font-size:13px">${tx('Five or six players: stone 1 rolls, trades and builds; stone 2 follows without dice and trades only with the bank. If both reach the goal in one turn, stone 1 wins.')}</p>` : ''}</div>
     ${house.length ? `<p class="muted" style="font-size:13px"><b>${tx('House rules in this game')}:</b> ${house.map(esc).join(' · ')}</p>` : ''}
     <div class="foot"><button class="btn" data-close>${tx('Close')}</button></div>`, {
-    onMount: el => el.querySelector('[data-tut-mode]')?.addEventListener('click', () => { closeModals(); openTutorial(tutorialFor(G.view)); }),
+    onMount: el => {
+      el.querySelector('[data-tut-mode]')?.addEventListener('click', () => { closeModals(); openTutorial(tutorialFor(G.view)); });
+      costRulesToggle(el);
+    },
   });
 }
 
@@ -878,7 +990,7 @@ function showCelebration() {
   closeModals();
   victoryScene(v, {
     title: `${modeLabel(v)} · ${t('turn {n}', { n: v.turn })}`,
-    actions: `<a class="btn gold" href="#/stats">${tx('See stats')}</a><a class="btn ghost" href="#/">${tx('Back to lobby')}</a>`,
+    actions: `<a class="btn gold" href="#/stats">${tx('See stats')}</a><a class="btn ghost m-main" href="#/">${tx('Back to lobby')}</a>`,
   });
 }
 // the last move's animations (a city, a revealed card) play first, then the victory

@@ -3,6 +3,7 @@ import { fmtDateLocal } from './i18n.js';
 import { topbar, footer, session } from '../app.js';
 import { sfx, celebrateSound } from './fx.js';
 import { flag } from './countries.js';
+import { isPhone, onPhoneChange } from './phone.js';
 
 const tx = (k, p) => esc(t(k, p));
 const EXP_NAMES = { seafarers: 'Seafarers', traders: 'Traders & Barbarians', explorers: 'Explorers & Pirates' };
@@ -20,13 +21,19 @@ function podiumHtml(played) {
       <div class="who">${houseIcon(x.color, 30)}<b>${flag(x.country)} ${esc(x.name)}</b></div>
       <div class="col" style="--c:${PCOLOR[x.color]};--d:${PCOLOR_DARK[x.color]};--m:${medal[i]}"><span class="rank">${i + 1}</span><span class="w"><b>${x.wins}</b><small>${tx('Wins')}</small></span></div></div>`; }).join('')}</div>`;
 }
-function standingRow(x, i) {
+function standingRow(x, i, nameOf, colorOf) {
   const pips = Math.min(x.wins, 14);
   const rate = Math.round(x.rate * 100);
-  return `<div class="lb-row ${x.games ? '' : 'idle'}"><span class="pos">${i + 1}</span>${houseIcon(x.color, 22)}<div style="flex:1;min-width:0">
-      <div class="nm"><span>${flag(x.country)} ${esc(x.name)}<small>${x.games ? `${tx('Games: {n}', { n: x.games })}${x.online ? ` · ⌀ ${(x.vp / x.online).toFixed(1)} ${tx('pts')}` : ''}` : tx('No games yet')}</small></span><span class="wn">${x.wins}</span></div>
-      <div class="pips">${Array.from({ length: pips }, (_, k) => hexPip(x.color, k)).join('')}${x.wins > 14 ? `<small>+${x.wins - 14}</small>` : ''}${!x.wins ? `<small class="muted">${x.games ? '·' : ''}</small>` : ''}</div></div>
-      <div class="wring" style="--p:${rate};--c:${PCOLOR[x.color]}" title="${rate}%"><b>${rate}</b></div></div>`;
+  const open = S.lbOpen === x.id;
+  const phone = isPhone();
+  // phone: a tap on the row unfolds the facts that the desktop shows as separate player cards
+  const detail = x.games ? `<div class="lb-detail"><dl>${[
+    [t('Wins'), `${x.wins} / ${x.games}`], [t('Best streak'), x.bestStreak], [t('Current streak'), x.streak ? `🔥 ${x.streak}` : '–'], [t('Favorite version'), x.favMode ? modeLabel(x.favMode) : '–'],
+  ].map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>${x.nemesis ? `<div class="nemesis">${houseIcon(colorOf(x.nemesis.id), 14)} ${tx('Nemesis: {name} ({n}×)', { name: nameOf(x.nemesis.id), n: x.nemesis.n })}</div>` : ''}</div>` : '';
+  return `<div class="lb-item${open && x.games ? ' open' : ''}"><div class="lb-row ${x.games ? '' : 'idle'}" ${x.games ? `data-lb="${esc(x.id)}" ${phone ? `role="button" tabindex="0" aria-expanded="${open}"` : ''}` : ''}><span class="pos">${i + 1}</span>${houseIcon(x.color, 22)}<div style="flex:1;min-width:0">
+      <div class="nm"><span class="nm-t"><span class="nmn">${flag(x.country)} ${esc(x.name)}</span><small>${x.games ? `${tx('Games: {n}', { n: x.games })}${x.online ? ` · ⌀ ${(x.vp / x.online).toFixed(1)} ${tx('pts')}` : ''}` : tx('No games yet')}</small></span><span class="wn">${x.wins}</span></div>
+      <div class="pips${x.wins ? '' : ' nowins'}">${Array.from({ length: pips }, (_, k) => hexPip(x.color, k).replace('class="pip"', k >= 8 ? 'class="pip x"' : 'class="pip"')).join('')}${x.wins > 14 ? `<small class="pn-d">+${x.wins - 14}</small>` : ''}${x.wins > 8 ? `<small class="pn-p">+${x.wins - 8}</small>` : ''}${!x.wins ? `<small class="muted ph">${x.games ? '·' : ''}</small>` : ''}</div></div>
+      <div class="wring" style="--p:${rate};--c:${PCOLOR[x.color]}" title="${rate}%"><b>${rate}</b></div>${x.games ? '<i class="lb-chev" aria-hidden="true"></i>' : ''}</div>${detail}</div>`;
 }
 const HEX_CLUSTER = ['#93B86A', '#B4482A', '#2E6B45', '#6E7F8D', '#2E6B45', '#E0A32E'];
 const lineColor = c => (c === 'white' ? '#C9B98F' : PCOLOR[c]);
@@ -68,7 +75,8 @@ export function celebrate({ name, color, country, sub, scores = [], actions = ''
 }
 
 // ------------------------------------------------------------ stats page
-const S = { year: new Date().getFullYear(), tab: 'all', open: null, data: null, manual: { players: [], winner: null, mode: 'classic', date: new Date().toISOString().slice(0, 10) } };
+const SECTIONS = [['standings', 'Standings'], ['history', 'History'], ['duels', 'Duels'], ['records', 'Records'], ['games', 'Games']];
+const S = { year: new Date().getFullYear(), tab: 'all', open: null, data: null, sec: 'standings', lbOpen: null, hl: null, histAll: false, manual: { players: [], winner: null, mode: 'classic', date: new Date().toISOString().slice(0, 10) } };
 
 export async function mountStats(app) {
   app.innerHTML = `${topbar('stats')}<div class="page narrow" id="stats"><h1 class="page-title">Siedlermeister</h1><div class="muted">${tx('Loading…')}</div></div>`;
@@ -76,7 +84,16 @@ export async function mountStats(app) {
     try { S.data = await api('/stats'); draw(app); } catch (e) { toast(e.message, 'warn'); }
   };
   await load();
-  return onWs(m => { if (m.t === 'stats') load(); });
+  // phones: the charts are drawn at the real pixel width, so they are drawn again when the window changes
+  let lastW = app.querySelector('#stats')?.clientWidth || 0, timer = 0;
+  const onResize = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { const w = app.querySelector('#stats')?.clientWidth || 0; if (S.data && isPhone() && Math.abs(w - lastW) > 2) { lastW = w; draw(app); } }, 180);
+  };
+  window.addEventListener('resize', onResize); window.addEventListener('orientationchange', onResize);
+  const offPhone = onPhoneChange(() => S.data && draw(app));
+  const offWs = onWs(m => { if (m.t === 'stats') load(); });
+  return () => { offWs && offWs(); offPhone(); clearTimeout(timer); window.removeEventListener('resize', onResize); window.removeEventListener('orientationchange', onResize); };
 }
 
 function computeTallies(games, users) {
@@ -108,9 +125,14 @@ function computeTallies(games, users) {
   return T;
 }
 
+// one piece of the page; on phones only the piece of the picked section is shown (the desktop shows everything, the wrapper has no box there)
+const sec = (name, html, extra = '') => (html ? `<div class="st-sec${extra}" data-sec="${name}">${html}</div>` : '');
+
 function draw(app) {
   const root = app.querySelector('#stats');
   if (!root) return;
+  const scrollY = window.scrollY;
+  const phone = isPhone();
   const { history, users } = S.data;
   const U = Object.fromEntries(users.map(u => [u.id, u]));
   const nameOf = (id, fallback) => U[id]?.name || fallback || t('Someone');
@@ -130,54 +152,79 @@ function draw(app) {
     const top = played.length && played[0].wins ? played.filter(x => x.wins === played[0].wins) : [];
   const leader = top.length === 1 ? { name: top[0].name, color: top[0].color, country: top[0].country, wins: top[0].wins }
     : top.length > 1 ? { name: top.map(x => x.name).join(' & '), color: null, wins: top[0].wins, tie: true } : null;
+  if (!SECTIONS.some(([k]) => k === S.sec)) S.sec = 'standings';
+  // the width the charts are drawn at: the page column minus the card padding
+  const cw = Math.max(240, Math.floor(root.clientWidth - 20));
+  const nothing = `<div class="card st-only"><div class="empty">${tx('Nothing recorded yet.')}</div></div>`;
 
+  const seg = `<div class="st-seg" role="tablist">${SECTIONS.map(([k, l]) => `<button class="chip st-b${S.sec === k ? ' on' : ''}" role="tab" aria-selected="${S.sec === k}" data-sec-go="${k}">${tx(l)}</button>`).join('')}</div>`;
+  const dueling = played.length >= 2 ? `<div class="section-label">${tx('Head to head')}</div><div class="card h2h-wrap">${headToHead(games, played)}<p class="muted" style="font-size:12px;margin:8px 0 0">${tx('Each number shows how often the player in the row beat the player in the column.')}</p></div>` : '';
+  const hist = games.slice().reverse();
+
+  root.dataset.sec = S.sec;
   root.innerHTML = `
-    <h1 class="page-title">Siedlermeister</h1>
+    <div class="st-top"><h1 class="page-title">Siedlermeister</h1>
     <div class="year-sel"><button data-y="-1" ${yIdx <= 0 ? 'disabled' : ''} aria-label="${tx('Previous year')}">‹</button>
       <div class="y"><b>${S.year}</b><small>${S.year === nowY ? tx('IN PROGRESS') : tx('FINAL')}</small></div>
-      <button data-y="1" ${yIdx >= years.length - 1 ? 'disabled' : ''} aria-label="${tx('Next year')}">›</button></div>
+      <button data-y="1" ${yIdx >= years.length - 1 ? 'disabled' : ''} aria-label="${tx('Next year')}">›</button></div></div>
     <div class="hextabs" style="margin-top:14px">${[['all', t('All games')], ['classic', t('Classic')], ['expansion', t('Expansions')]].map(([k, l]) => `<button class="hextab ${S.tab === k ? 'on' : ''}" data-tab="${k}">${esc(l)}</button>`).join('')}</div>
+    ${seg}
 
-    <div class="card" style="margin-top:14px"><div class="leader">${clusterSvg(leader && !leader.tie ? leader.color : null)}
+    ${sec('standings', `<div class="card" style="margin-top:14px"><div class="leader">${clusterSvg(leader && !leader.tie ? leader.color : null)}
       <div style="min-width:0"><div class="lbl">${S.year === nowY ? tx('LEADING RIGHT NOW') : tx('CHAMPION {year}', { year: S.year })}</div><div class="who">${leader ? `${leader.tie ? '' : flag(leader.country)} ${esc(leader.name)}` : tx('Nobody yet')}</div>
         <div class="row" style="margin-top:8px"><div class="wins-coin">${leader ? leader.wins : '–'}</div><div class="muted" style="font-size:13px;line-height:1.3">${tx('Wins')}<br>${tx('Games: {n}', { n: games.length })}</div></div>
         ${leader && !leader.tie ? `<button class="btn dark small" style="margin-top:10px" data-celebrate>♛ ${tx('Watch the victory celebration')}</button>` : ''}
-      </div></div></div>
+      </div></div></div>`)}
 
-    <div class="section-label">${tx('Standings {year}', { year: S.year })}</div>
+    ${sec('standings', `<div class="section-label">${tx('Standings {year}', { year: S.year })}</div>
     ${podiumHtml(played.length ? board : [])}
-    <div class="card">${board.length ? board.map(standingRow).join('') : `<div class="empty">${tx('No players yet.')}</div>`}</div>
+    <div class="card">${board.length ? board.map((x, i) => standingRow(x, i, nameOf, colorOf)).join('') : `<div class="empty">${tx('No players yet.')}</div>`}</div>`)}
 
-    <div class="section-label">${tx('Over time')}</div>
-    <div class="card" style="padding:14px 10px 8px">${chartSvg(games, played)}</div>
+    ${sec('history', `<div class="section-label">${tx('Over time')}</div>
+    <div class="card" style="padding:14px 10px 8px">${chartSvg(games, played, phone ? cw : 0)}</div>`)}
 
-    ${played.length ? `<div class="section-label">${tx('Players')}</div><div class="pcards">${board.map(x => playerCard(x, nameOf, colorOf)).join('')}</div>` : ''}
+    ${played.length ? sec('standings', `<div class="section-label">${tx('Players')}</div><div class="pcards">${board.map(x => playerCard(x, nameOf, colorOf)).join('')}</div>`, ' st-desk') : ''}
 
-    ${played.length >= 2 ? `<div class="section-label">${tx('Head to head')}</div><div class="card h2h-wrap">${headToHead(games, played)}<p class="muted" style="font-size:12px;margin:8px 0 0">${tx('Each number shows how often the player in the row beat the player in the column.')}</p></div>` : ''}
+    ${sec('duels', dueling) || sec('duels', nothing)}
 
-    ${recordsHtml(games, nameOf)}
-    ${diceHtml(games)}
+    ${recordsHtml(games, nameOf) || sec('records', nothing)}
+    ${diceHtml(games, phone ? cw : 0)}
     ${robberHtml(games, nameOf)}
 
-    <div class="section-label">${tx('Log a game played at the table')}</div>
-    <div class="card">${manualForm(users)}</div>
+    ${sec('games', `<div class="section-label">${tx('Log a game played at the table')}</div>
+    <div class="card">${manualForm(users)}</div>`)}
 
-    <div class="section-label">${tx('All games {year}', { year: S.year })}</div>
-    <div class="card" style="padding:0">${games.length ? games.slice().reverse().map(g => histRow(g, nameOf, colorOf)).join('') : `<div class="empty" style="padding:16px">${tx('Nothing recorded yet.')}</div>`}</div>
+    ${sec('games', `<div class="section-label">${tx('All games {year}', { year: S.year })}</div>
+    <div class="card hist-list${S.histAll ? ' all' : ''}" style="padding:0">${games.length ? hist.map((g, i) => histRow(g, nameOf, colorOf, i >= 5)).join('') + (games.length > 5 ? `<button class="hist-more st-only" data-hist-all>${S.histAll ? tx('Show less') : tx('Show all')}</button>` : '') : `<div class="empty" style="padding:16px">${tx('Nothing recorded yet.')}</div>`}</div>`)}
     ${footer()}`;
 
   root.querySelectorAll('[data-y]').forEach(b => b.onclick = () => { S.year = years[yIdx + +b.dataset.y]; sfx.click(); draw(app); });
   root.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { S.tab = b.dataset.tab; sfx.click(); draw(app); });
+  root.querySelectorAll('[data-sec-go]').forEach(b => b.onclick = () => { S.sec = b.dataset.secGo; sfx.click(); draw(app); window.scrollTo(0, 0); });
   root.querySelector('[data-celebrate]')?.addEventListener('click', () => {
     celebrateSound();
     celebrate({ name: leader.name, color: leader.color, country: leader.country, sub: t('Win number {n} in {year}', { n: leader.wins, year: S.year }), scores: played.slice(0, 6).map(x => [x.name, t('Wins: {n}', { n: x.wins })]) });
   });
   root.querySelectorAll('[data-hist]').forEach(r => r.onclick = e => { if (e.target.closest('[data-del]')) return; S.open = S.open === r.dataset.hist ? null : r.dataset.hist; draw(app); });
-  root.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
-    if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = t('Delete?'); b.classList.add('primary'); setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = '×'; b.classList.remove('primary'); } }, 3000); return; }
-    try { await api(`/stats/${b.dataset.del}`, { method: 'DELETE' }); toast(t('Deleted.')); } catch (e) { toast(e.message, 'warn'); }
+  root.querySelectorAll('[data-del]').forEach(b => {
+    const label = b.textContent;
+    b.onclick = async () => {
+      if (!b.dataset.armed) { b.dataset.armed = '1'; b.textContent = t('Delete?'); b.classList.add('primary'); setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = label; b.classList.remove('primary'); } }, 3000); return; }
+      try { await api(`/stats/${b.dataset.del}`, { method: 'DELETE' }); toast(t('Deleted.')); } catch (e) { toast(e.message, 'warn'); }
+    };
   });
+  root.querySelectorAll('[data-lb]').forEach(r => {
+    const flip = () => { if (!isPhone()) return; const item = r.parentElement; const on = !item.classList.contains('open'); root.querySelectorAll('.lb-item.open').forEach(x => { x.classList.remove('open'); x.querySelector('[data-lb]')?.setAttribute('aria-expanded', 'false'); }); item.classList.toggle('open', on); r.setAttribute('aria-expanded', String(on)); S.lbOpen = on ? r.dataset.lb : null; };
+    r.onclick = flip; r.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } };
+  });
+  root.querySelector('[data-hist-all]')?.addEventListener('click', () => { S.histAll = !S.histAll; draw(app); });
+  root.querySelectorAll('.h2h-scroll').forEach(sc => {
+    const box = sc.parentElement, upd = () => box.classList.toggle('end', sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2);
+    sc.addEventListener('scroll', upd, { passive: true }); upd();
+  });
+  if (phone) wireChart(root);
   wireManual(root, app);
+  window.scrollTo(0, scrollY);
 }
 
 function ring(rate, color) {
@@ -210,25 +257,29 @@ function headToHead(games, players) {
   });
   const max = Math.max(1, ...Object.values(beat));
   const head = `<tr><th></th>${players.map(p => `<th title="${esc(p.name)}">${houseIcon(p.color, 16)}<span>${esc(p.name.slice(0, 6))}</span></th>`).join('')}</tr>`;
-  const rows = players.map(r => `<tr><th>${houseIcon(r.color, 16)} ${flag(r.country)} ${esc(r.name)}</th>${ids.map(c => {
+  const rows = players.map(r => `<tr><th>${houseIcon(r.color, 16)} ${flag(r.country)} <span class="nm-f">${esc(r.name)}</span><span class="nm-s">${esc(r.name.slice(0, 7))}</span></th>${ids.map(c => {
     if (c === r.id) return '<td class="self"></td>';
     const n = beat[r.id + '>' + c] || 0;
     return `<td style="background:rgba(210,53,42,${(n / max * 0.55).toFixed(2)})">${n || ''}</td>`;
   }).join('')}</tr>`).join('');
-  return `<div class="h2h-scroll"><table class="h2h">${head}${rows}</table></div>`;
+  return `<div class="h2h-box"><div class="h2h-scroll"><table class="h2h">${head}${rows}</table></div><i class="h2h-fade" aria-hidden="true"></i></div>`;
 }
 
-function histRow(g, nameOf, colorOf) {
+function histRow(g, nameOf, colorOf, extra) {
   const w = g.players.find(p => p.userId === g.winner);
   const canDel = session.user.admin || (g.manual && g.createdBy === session.user.id);
   const open = S.open === g.id;
-  const detail = open ? `<div class="hist-detail">
+  const xc = extra ? ' hr-x' : '';
+  const badges = `<span class="badge ${g.mode === 'knights' ? 'k' : ''}">${STANDALONE[g.mode] ? tx(STANDALONE[g.mode]) : g.mode === 'knights' ? tx('Cities & Knights') : tx('Classic')}</span>${g.expansion && g.expansion !== 'none' ? ` <span class="badge x">${tx(EXP_NAMES[g.expansion] || g.expansion)}</span>` : ''}${g.manual ? ` <span class="badge">${tx('Table')}</span>` : ''}`;
+  const detail = open ? `<div class="hist-detail${xc}">
+      <div class="hd-b">${badges}</div>
       <div style="margin-bottom:4px">${esc(gameLabel(g))}${g.manual ? ` · ${tx('played at the table')}` : ` · ${tx('Turns: {n}', { n: g.turns })} · ${tx('{n} min', { n: Math.round((g.finishedAt - g.startedAt) / 60000) })}`}</div>
       ${g.players.slice().sort((a, b) => (b.vp || 0) - (a.vp || 0)).map(p => `<div class="sc"><span>${houseIcon(colorOf(p.userId, p.color), 13)} ${esc(nameOf(p.userId, p.name))}${p.userId === g.winner ? ' ♛' : ''}</span><span>${p.vp != null ? tx('Points: {n}', { n: p.vp }) : ''}${p.breakdown?.longestRoad ? ` · ${tx('Longest Road')}` : ''}${p.breakdown?.largestArmy ? ` · ${tx('Largest Army')}` : ''}</span></div>`).join('')}
+      ${canDel ? `<button class="btn del-d" data-del="${esc(g.id)}">${tx('Delete')}</button>` : ''}
     </div>` : '';
-  return `<div class="hist-row" data-hist="${esc(g.id)}">${houseIcon(colorOf(g.winner, w?.color), 18)}<span class="d">${esc(fmtDateLocal(g.finishedAt))}</span>
-    <span class="w">${esc(nameOf(g.winner, w?.name))} <span class="badge ${g.mode === 'knights' ? 'k' : ''}">${STANDALONE[g.mode] ? tx(STANDALONE[g.mode]) : g.mode === 'knights' ? tx('Cities & Knights') : tx('Classic')}</span>${g.expansion && g.expansion !== 'none' ? ` <span class="badge x">${tx(EXP_NAMES[g.expansion] || g.expansion)}</span>` : ''}${g.manual ? ` <span class="badge">${tx('Table')}</span>` : ''}</span>
-    ${canDel ? `<button class="btn small" style="padding:2px 8px" data-del="${esc(g.id)}" aria-label="${tx('Delete')}">×</button>` : ''}</div>${detail}`;
+  return `<div class="hist-row${xc}" data-hist="${esc(g.id)}">${houseIcon(colorOf(g.winner, w?.color), 18)}<span class="d"><span class="d-l">${esc(fmtDateLocal(g.finishedAt))}</span><span class="d-s">${esc(fmtDateLocal(g.finishedAt, { day: 'numeric', month: 'numeric' }))}</span></span>
+    <span class="w">${esc(nameOf(g.winner, w?.name))} <span class="hb">${badges}</span></span>
+    ${canDel ? `<button class="btn small del-r" style="padding:2px 8px" data-del="${esc(g.id)}" aria-label="${tx('Delete')}">×</button>` : ''}</div>${detail}`;
 }
 
 function recordsHtml(games, nameOf) {
@@ -245,7 +296,7 @@ function recordsHtml(games, nameOf) {
   if (rich) recs.push([t('Most cards harvested'), t('{n} in one game', { n: rich.n }), nameOf(rich.id, rich.name)]);
   const longest = online.filter(g => g.startedAt).sort((a, b) => (b.finishedAt - b.startedAt) - (a.finishedAt - a.startedAt))[0];
   if (longest) recs.push([t('Longest game'), t('{n} min', { n: Math.round((longest.finishedAt - longest.startedAt) / 60000) }), fmtDateLocal(longest.finishedAt)]);
-  return `<div class="section-label">${tx('Records')}</div><div class="card"><div class="records">${recs.map(([l, v, w]) => `<div class="record"><small>${esc(l)}</small><b>${esc(v)}</b><span>${esc(w)}</span></div>`).join('')}</div></div>`;
+  return sec('records', `<div class="section-label">${tx('Records')}</div><div class="card"><div class="records">${recs.map(([l, v, w]) => `<div class="record"><small>${esc(l)}</small><b>${esc(v)}</b><span>${esc(w)}</span></div>`).join('')}</div></div>`);
 }
 
 // how often the robber sat on each person's land, over all games
@@ -254,40 +305,51 @@ function robberHtml(games, nameOf) {
   games.filter(g => !g.manual).forEach(g => g.players.forEach(p => { if (p.robbed && p.userId) by.set(p.userId, { n: (by.get(p.userId)?.n || 0) + p.robbed, name: p.name }); }));
   if (!by.size) return '';
   const rows = [...by.entries()].sort((a, b) => b[1].n - a[1].n);
-  return `<div class="section-label">${tx('Robber')}</div><div class="card"><p class="muted" style="font-size:12px;margin:0 0 6px">${tx('How often the robber was moved onto land of each person.')}</p>
-    <div class="records">${rows.map(([id, x]) => `<div class="record"><small>${esc(nameOf(id, x.name))}</small><b>${x.n}×</b></div>`).join('')}</div></div>`;
+  const max = rows[0][1].n || 1;
+  return sec('records', `<div class="section-label">${tx('Robber')}</div><div class="card"><p class="muted" style="font-size:12px;margin:0 0 6px">${tx('How often the robber was moved onto land of each person.')}</p>
+    <div class="records st-desk">${rows.map(([id, x]) => `<div class="record"><small>${esc(nameOf(id, x.name))}</small><b>${x.n}×</b></div>`).join('')}</div>
+    <div class="rob-list st-only">${rows.map(([id, x]) => `<div class="rob-r"><span class="rn">${esc(nameOf(id, x.name))}</span><span class="rbar"><i style="width:${Math.max(4, Math.round(x.n / max * 100))}%"></i></span><b>${x.n}×</b></div>`).join('')}</div></div>`);
 }
 
-function diceHtml(games) {
+function diceHtml(games, realW) {
   const rolls = {};
   games.filter(g => !g.manual).forEach(g => Object.entries(g.rolls || {}).forEach(([k, n]) => { rolls[k] = (rolls[k] || 0) + n; }));
   const total = Object.values(rolls).reduce((a, b) => a + b, 0);
   if (!total) return '';
-  const W = 400, H = 170, padB = 22, padT = 18, padL = 8, padR = 8;
+  const ph = realW > 0;
+  const W = ph ? realW : 400, H = ph ? 190 : 170, padB = ph ? 26 : 22, padT = ph ? 22 : 18, padL = 8, padR = 8;
   const sums = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const expected = s => (6 - Math.abs(7 - s)) / 36;
   const maxShare = Math.max(...sums.map(s => Math.max((rolls[s] || 0) / total, expected(s))));
   const bw = (W - padL - padR) / sums.length;
   const y = v => padT + (1 - v / maxShare) * (H - padT - padB);
+  // phones label only the three hottest numbers and 6, 7 and 8 (the others would collide at 12px)
+  const top3 = sums.slice().sort((a, b) => (rolls[b] || 0) - (rolls[a] || 0)).slice(0, 3);
+  const labelled = s => !ph || top3.includes(s) || s === 6 || s === 7 || s === 8;
   const bars = sums.map((s, i) => {
     const share = (rolls[s] || 0) / total;
     const x = padL + i * bw;
     const hot = s === 6 || s === 8;
     return `<rect x="${(x + bw * 0.18).toFixed(1)}" y="${y(share).toFixed(1)}" width="${(bw * 0.64).toFixed(1)}" height="${(H - padB - y(share)).toFixed(1)}" rx="3" fill="${s === 7 ? '#2B1E12' : hot ? '#C1272D' : '#C98A1F'}"/>
-      <text x="${(x + bw / 2).toFixed(1)}" y="${y(share) - 4}" text-anchor="middle" font-size="9.5" fill="#7C6B4E">${rolls[s] || 0}</text>
-      <text x="${(x + bw / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="11" font-weight="700" fill="#2B1E12">${s}</text>`;
+      ${labelled(s) ? `<text x="${(x + bw / 2).toFixed(1)}" y="${y(share) - 4}" text-anchor="middle" font-size="${ph ? 12 : 9.5}" fill="#7C6B4E">${rolls[s] || 0}</text>` : ''}
+      <text x="${(x + bw / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="${ph ? 13 : 11}" font-weight="700" fill="#2B1E12">${s}</text>`;
   }).join('');
   const exp = sums.map((s, i) => `${i ? 'L' : 'M'}${(padL + i * bw + bw / 2).toFixed(1)} ${y(expected(s)).toFixed(1)}`).join(' ');
   const hot = Object.entries(rolls).sort((a, b) => b[1] - a[1])[0];
-  return `<div class="section-label">${tx('Dice')}</div><div class="card" style="padding:12px 10px 8px">
+  return sec('history', `<div class="section-label">${tx('Dice')}</div><div class="card" style="padding:12px 10px 8px">
     <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="${tx('How often each number was rolled')}">${bars}
       <path d="${exp}" fill="none" stroke="#2C6E9B" stroke-width="2" stroke-dasharray="4 3"/></svg>
-    <p class="muted" style="font-size:12px;margin:4px 8px 2px">${tx('Bars: rolls this year. Dashed line: what the odds predict. Hottest number: {n} ({m} of {total} rolls).', { n: hot[0], m: hot[1], total })}</p></div>`;
+    ${ph ? `<div class="hot3"><span>${tx('Hottest numbers')}</span>${top3.map(s => `<b>${s}<small>${rolls[s] || 0}×</small></b>`).join('')}</div>` : ''}
+    <p class="muted" style="font-size:12px;margin:4px 8px 2px">${tx('Bars: rolls this year. Dashed line: what the odds predict. Hottest number: {n} ({m} of {total} rolls).', { n: hot[0], m: hot[1], total })}</p></div>`);
 }
 
-function chartSvg(games, board) {
+// geometry of the phone chart, kept for the touch crosshair
+let CH = null;
+// realW > 0: phone, drawn at the real pixel width of the card (text stays 12px); 0: the desktop drawing, scaled by its viewBox
+function chartSvg(games, board, realW) {
   if (!games.length) return `<div class="empty" style="text-align:center;padding:40px 10px">${tx('The chart fills in as games are played.')}</div>`;
-  const W = 400, H = 200, padL = 26, padB = 22, padT = 8, padR = 10;
+  const ph = realW > 0;
+  const W = ph ? realW : 400, H = ph ? 230 : 200, padL = ph ? 30 : 26, padB = ph ? 28 : 22, padT = ph ? 12 : 8, padR = ph ? 16 : 10, fs = ph ? 12 : 10;
   const players = board.slice(0, 8);
   const n = games.length;
   const maxY = Math.max(1, ...players.map(p => p.wins));
@@ -295,13 +357,21 @@ function chartSvg(games, board) {
   const y = v => padT + (1 - v / maxY) * (H - padT - padB);
   const grid = [];
   const step = Math.max(1, Math.ceil(maxY / 4));
-  for (let v = 0; v <= maxY; v += step) grid.push(`<line x1="${padL}" x2="${W - padR}" y1="${y(v)}" y2="${y(v)}" stroke="#E3D2A4"/><text x="${padL - 6}" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="#7C6B4E">${v}</text>`);
+  for (let v = 0; v <= maxY; v += step) grid.push(`<line x1="${padL}" x2="${W - padR}" y1="${y(v)}" y2="${y(v)}" stroke="#E3D2A4"/><text x="${padL - 6}" y="${y(v) + 4}" text-anchor="end" font-size="${fs}" fill="#7C6B4E">${v}</text>`);
   const labels = [];
-  const every = Math.max(1, Math.ceil(n / 5));
-  games.forEach((g, i) => { if (i % every === 0 || i === n - 1) labels.push(`<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#7C6B4E">${esc(fmtDateLocal(g.finishedAt, { day: 'numeric', month: 'numeric' }))}</text>`); });
+  const shortDate = g => esc(fmtDateLocal(g.finishedAt, { day: 'numeric', month: 'numeric' }));
+  if (ph) {
+    // first, middle and last date only: five labels would touch each other at 12px
+    [...new Set([0, Math.floor((n - 1) / 2), n - 1])].forEach(i => labels.push(`<text x="${x(i)}" y="${H - 8}" text-anchor="${i === 0 && n > 1 ? 'start' : i === n - 1 && n > 1 ? 'end' : 'middle'}" font-size="12" fill="#7C6B4E">${shortDate(games[i])}</text>`));
+  } else {
+    const every = Math.max(1, Math.ceil(n / 5));
+    games.forEach((g, i) => { if (i % every === 0 || i === n - 1) labels.push(`<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#7C6B4E">${shortDate(g)}</text>`); });
+  }
+  const cum = {};
   const lines = players.map(p => {
     let c = 0;
-    const pts = games.map((g, i) => { if (g.winner === p.id) c++; return [x(i), y(c)]; });
+    cum[p.id] = games.map(g => (g.winner === p.id ? ++c : c));
+    const pts = games.map((g, i) => [x(i), y(cum[p.id][i])]);
     if (n === 1) pts.unshift([padL, y(0)]);
     let d = `M${pts[0][0]},${pts[0][1]}`;
     for (let i = 1; i < pts.length; i++) {
@@ -310,12 +380,57 @@ function chartSvg(games, board) {
       d += ` C${mx},${y0} ${mx},${y1} ${x1},${y1}`;
     }
     const last = pts[pts.length - 1];
-    return `<path class="chart-line" d="${d}" fill="none" stroke="${lineColor(p.color)}" stroke-width="2.6" stroke-linecap="round" pathLength="100"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="${lineColor(p.color)}"/>`;
+    // the white and beige lines get a dark casing so they stay visible on the parchment
+    const casing = ph && (p.color === 'white' || p.color === 'yellow') ? `<path d="${d}" fill="none" stroke="#2B1E12" stroke-opacity=".55" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>` : '';
+    const line = `<path class="chart-line" d="${d}" fill="none" stroke="${lineColor(p.color)}" stroke-width="${ph ? 3 : 2.6}" stroke-linecap="round" pathLength="100"/><circle cx="${last[0]}" cy="${last[1]}" r="${ph ? 4.5 : 3.5}" fill="${lineColor(p.color)}"${ph && casing ? ' stroke="#2B1E12" stroke-opacity=".55" stroke-width="1.5"' : ''}/>`;
+    return ph ? `<g class="ln" data-p="${esc(p.id)}">${casing}${line}</g>` : line;
   });
-  const legend = players.map(p => `<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:12px">${houseIcon(p.color, 12)}${esc(p.name)}</span>`).join('');
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="${tx('Cumulative wins over the year')}">
+  if (!ph) {
+    const legend = players.map(p => `<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:12px">${houseIcon(p.color, 12)}${esc(p.name)}</span>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="${tx('Cumulative wins over the year')}">
     ${grid.join('')}<line x1="${padL}" x2="${padL}" y1="${padT}" y2="${H - padB}" stroke="#C9AE7C"/>${labels.join('')}${lines.join('')}</svg>
     <div style="padding:4px 8px 2px">${legend}</div>`;
+  }
+  CH = { games, players, cum, n, W, H, padL, padR, padT, padB, x, y };
+  const legend = players.map(p => `<button class="chip ch-leg${S.hl === p.id ? ' on' : ''}" data-hl="${esc(p.id)}" aria-pressed="${S.hl === p.id}">${houseIcon(p.color, 14)}<span>${esc(p.name)}</span></button>`).join('');
+  return `<div class="ch-wrap"><svg class="ch-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="width:100%;height:auto;display:block;touch-action:pan-y" role="img" aria-label="${tx('Cumulative wins over the year')}">
+    ${grid.join('')}<line x1="${padL}" x2="${padL}" y1="${padT}" y2="${H - padB}" stroke="#C9AE7C"/>${labels.join('')}${lines.join('')}
+    <g class="ch-cross" visibility="hidden"><line y1="${padT}" y2="${H - padB}" stroke="#2B1E12" stroke-opacity=".5" stroke-dasharray="3 3"/><g class="ch-dots"></g></g></svg>
+    <div class="ch-tip" hidden></div></div>
+    <div class="ch-legend">${legend}</div>`;
+}
+
+// phones: legend chips highlight one line; touching the chart shows a crosshair with the standings at that game
+function wireChart(root) {
+  const wrap = root.querySelector('.ch-wrap');
+  if (!wrap || !CH) return;
+  const svg = wrap.querySelector('svg'), cross = svg.querySelector('.ch-cross'), dots = svg.querySelector('.ch-dots'), tip = wrap.querySelector('.ch-tip');
+  const paint = () => {
+    svg.querySelectorAll('.ln').forEach(g => { g.style.opacity = S.hl && g.dataset.p !== S.hl ? '.16' : ''; });
+    root.querySelectorAll('[data-hl]').forEach(b => { const on = b.dataset.hl === S.hl; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+  };
+  root.querySelectorAll('[data-hl]').forEach(b => b.onclick = () => { S.hl = S.hl === b.dataset.hl ? null : b.dataset.hl; sfx.click(); paint(); });
+  paint();
+  let hideT = 0;
+  const show = ev => {
+    const r = svg.getBoundingClientRect(), k = CH.W / r.width;
+    const px = (ev.clientX - r.left) * k;
+    const i = CH.n === 1 ? 0 : Math.max(0, Math.min(CH.n - 1, Math.round((px - CH.padL) / (CH.W - CH.padL - CH.padR) * (CH.n - 1))));
+    const gx = CH.x(i);
+    cross.setAttribute('visibility', 'visible');
+    cross.querySelector('line').setAttribute('x1', gx); cross.querySelector('line').setAttribute('x2', gx);
+    dots.innerHTML = CH.players.filter(p => !S.hl || p.id === S.hl).map(p => `<circle cx="${gx}" cy="${CH.y(CH.cum[p.id][i])}" r="4" fill="${lineColor(p.color)}" stroke="#2B1E12" stroke-width="1.5"/>`).join('');
+    const g = CH.games[i];
+    const rows = CH.players.filter(p => !S.hl || p.id === S.hl).map(p => [p, CH.cum[p.id][i]]).sort((a, b) => b[1] - a[1]);
+    tip.innerHTML = `<b>${esc(fmtDateLocal(g.finishedAt, { day: 'numeric', month: 'numeric' }))}</b>${rows.map(([p, c]) => `<span>${houseIcon(p.color, 12)} ${esc(p.name.slice(0, 8))} <b>${c}</b></span>`).join('')}`;
+    tip.hidden = false;
+    const wpx = wrap.clientWidth, tw = tip.offsetWidth;
+    tip.style.left = Math.max(0, Math.min(wpx - tw, gx / k - tw / 2)) + 'px';
+    clearTimeout(hideT);
+  };
+  const hide = () => { clearTimeout(hideT); hideT = setTimeout(() => { cross.setAttribute('visibility', 'hidden'); tip.hidden = true; }, 1800); };
+  svg.addEventListener('pointerdown', show); svg.addEventListener('pointermove', ev => { if (ev.buttons || ev.pointerType === 'touch') show(ev); });
+  svg.addEventListener('pointerup', hide); svg.addEventListener('pointercancel', hide); svg.addEventListener('pointerleave', hide);
 }
 
 function manualForm(users) {
@@ -324,7 +439,7 @@ function manualForm(users) {
     <div class="field"><span>${tx('Version')}</span><div class="chips">${['classic', 'knights'].map(m => `<button class="chip ${M.mode === m ? 'on' : ''}" data-mmode="${m}">${esc(modeLabel(m))}</button>`).join('')}</div></div>
     <div class="field"><span>${tx('Who played')}</span><div class="chips">${users.map(u => `<button class="chip ${M.players.includes(u.id) ? 'on' : ''}" data-mp="${u.id}">${houseIcon(u.color)} ${flag(u.country)} ${esc(u.name)}</button>`).join('')}</div></div>
     <div class="field"><span>${tx('Who won')}</span><div class="chips">${M.players.length ? users.filter(u => M.players.includes(u.id)).map(u => `<button class="chip ${M.winner === u.id ? 'on' : ''}" data-mw="${u.id}">${houseIcon(u.color)} ${esc(u.name)}</button>`).join('') : `<span class="muted" style="font-size:13px">${tx('Pick the players first.')}</span>`}</div></div>
-    <button class="btn primary block" id="msave" ${M.winner && M.players.includes(M.winner) ? '' : 'disabled'}>${tx('Save game')}</button>`;
+    <div class="${M.winner && M.players.includes(M.winner) ? 'm-sticky ' : ''}st-save"><button class="btn primary block" id="msave" ${M.winner && M.players.includes(M.winner) ? '' : 'disabled'}>${tx('Save game')}</button></div>`;
 }
 
 function wireManual(root, app) {
