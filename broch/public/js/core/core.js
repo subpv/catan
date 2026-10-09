@@ -267,6 +267,12 @@ export function toast(msg, kind = '') {
   // phone: a short stack of at most two, a new one pushes the oldest out
   const phone = isPhone();
   if (phone) while (host.children.length >= 2) host.firstElementChild.remove();
+  // phone, portrait game: the stack sits just below the status and player strips (their real height varies), never over them
+  if (phone) {
+    const strip = document.body.dataset.route === 'game' && !window.matchMedia('(orientation: landscape) and (max-height: 500px)').matches && document.querySelector('.pstrip-host');
+    const r = strip && strip.getBoundingClientRect();
+    host.style.top = r && r.height > 0 ? Math.round(r.bottom + 8) + 'px' : '';
+  }
   host.appendChild(el);
   setTimeout(() => el.remove(), phone ? (kind === 'warn' ? 3600 : 2600) : (kind === 'warn' ? 4200 : 3000));
 }

@@ -118,6 +118,8 @@
   .board-trade { left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 58%; border-radius: 16px; z-index: 6; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
   .board-wrap:has(.board-trade) .zoom-ctl, .board-wrap:has(.board-trade) .tut-nudge { display: none; }
   .board-trade .trade-box { max-height: none; overflow: visible; padding: 6px 14px 12px; }
+  .board-trade:has(.tb-row) { max-height: 72%; } /* my own offer: a row per player and maybe a counter-offer to accept */
+  .board-trade:has(.trade-counter) { max-height: 84%; }
   .board-trade .panel-h { position: sticky; top: 0; z-index: 1; background: var(--card); min-height: var(--m-tap, 44px); padding: 0 14px; font-size: 14px; cursor: pointer; touch-action: manipulation; }
   .board-trade .panel-h::after { content: '▾'; margin-left: auto; padding-left: 12px; font-size: 16px; }
   .board-trade.min .panel-h::after { content: '▴'; }
