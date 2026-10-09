@@ -7,6 +7,7 @@ import { decide as decideClassic } from '../server/bots/classic.js';
 import { decide as decideStandalone } from '../server/bots/standalone.js';
 import { botName } from '../server/bots/names.js';
 import PROGRESS from './progress-data.js';
+import { t } from '../public/js/core/i18n.js';
 const decide = v => (engine.isStandalone(v.mode) ? decideStandalone(v) : decideClassic(v));
 
 const COLORS = ['red', 'blue', 'orange', 'white', 'teal', 'purple', 'black', 'pink', 'yellow', 'brown'];
@@ -23,6 +24,8 @@ let emit = () => {};
 let watching = null;
 let seq = 0;
 const games = new Map();
+// the public demo (served at /demo on the real site): no developer button, a slim banner instead of the small tag, no login/logout
+const PUBLIC = () => !!window.BROCH_PUBLIC_DEMO;
 const BOT_DELAY = window.BROCH_BOT_DELAY || 550;
 
 // a few sample results so the stats page has something to show
@@ -125,7 +128,7 @@ async function api(path, opts = {}) {
   const need = () => { if (!me) throw err('Please log in.', 401); return me; };
   let m;
   if (path === '/config') return { feedbackUrl: 'https://feedback.maidev.dk/', needsCode: false, colors: COLORS, firstUser: false };
-  if (path === '/me' && method === 'GET') return { user: me && { ...pub(me), email: me.email } };
+  if (path === '/me' && method === 'GET') { if (PUBLIC() && me && !me.named) { me.named = true; me.name = t('You'); } return { user: me && { ...pub(me), email: me.email } }; }
   if (path === '/me' && method === 'PATCH') {
     const u = need();
     if (b.name != null) { if (!String(b.name).trim()) throw err('Name cannot be empty.'); u.name = String(b.name).trim().slice(0, 24); }
@@ -141,7 +144,7 @@ async function api(path, opts = {}) {
     if (b.country) me.country = b.country;
     return { user: { ...pub(me), email: me.email } };
   }
-  if (path === '/logout') { me = null; return { ok: true }; }
+  if (path === '/logout') { if (PUBLIC()) { setTimeout(() => location.assign('/'), 0); return { ok: true }; } me = null; return { ok: true }; } // public demo: leaving goes to the real site
   if (path === '/users') return { users: users.map(pub) };
   if (path === '/client-error') return { ok: true };
   if (path === '/lobby') {
@@ -255,6 +258,7 @@ window.BROCH_MOCK = { api, connect, watch, act, _games: games }; // _games: test
 
 // the progress overview (button at the bottom left)
 window.addEventListener('DOMContentLoaded', () => {
+  if (PUBLIC()) return; // visitors of the public demo do not see the developer overview
   const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const btn = document.createElement('button');
   btn.textContent = 'Fortschritt';
@@ -271,8 +275,33 @@ window.addEventListener('DOMContentLoaded', () => {
   document.body.append(btn, box);
 });
 
+// public demo: a slim banner (text, "Create account" -> /#/register, small "Back" link), styled by demo.css; the texts follow the language
+function publicBanner() {
+  const bar = document.createElement('div');
+  bar.className = 'demo-bar';
+  bar.setAttribute('role', 'note');
+  const msg = document.createElement('p');
+  const cta = document.createElement('a');
+  cta.className = 'demo-cta';
+  cta.href = '/#/register';
+  const back = document.createElement('a');
+  back.className = 'demo-back';
+  back.href = '/';
+  msg.onclick = () => bar.classList.toggle('open'); // in a game the sentence is one cut-off line: a tap shows all of it
+  const fill = () => {
+    msg.textContent = t('This is a demo against computer players. Nothing is saved. Create an account to play with your friends.');
+    cta.textContent = t('Create account');
+    back.textContent = t('Back');
+  };
+  fill();
+  bar.append(msg, cta, back);
+  document.body.prepend(bar);
+  new MutationObserver(fill).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] }); // setLang() sets <html lang> once the texts are loaded
+}
+
 // small marker so it's obvious this is the demo
 window.addEventListener('DOMContentLoaded', () => {
+  if (PUBLIC()) return publicBanner();
   const tag = document.createElement('div');
   tag.textContent = 'Demo · bots';
   tag.style.cssText = 'position:fixed;right:10px;bottom:10px;z-index:40;background:rgba(20,8,4,.8);color:#F0C24A;font:600 12px Inter,system-ui;padding:6px 10px;border-radius:999px;pointer-events:none';

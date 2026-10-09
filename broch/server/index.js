@@ -137,9 +137,27 @@ function loadStatic(file) {
   staticCache.set(file, entry);
   return entry;
 }
+// The origin the visitor used (protocol + host), for the absolute urls in index.html. The protocol comes from x-forwarded-proto only with TRUST_PROXY=1, else from the connection.
+// The Host header is visitor input and ends up in an html attribute: anything that is not a plain host[:port] is replaced.
+function originOf(req) {
+  const host = String(req.headers.host || '').toLowerCase();
+  return `${isHttps(req) || req.socket.encrypted ? 'https' : 'http'}://${/^(\[[0-9a-f:.]+\]|[a-z0-9.-]+)(:\d{1,5})?$/.test(host) ? host : 'localhost:' + PORT}`;
+}
+// index.html with __ORIGIN__ replaced; one copy per origin (a visitor can send any Host, so at most 8 are kept and the rest is built per request)
+function withOrigin(e, origin) {
+  e.origins = e.origins || new Map();
+  let v = e.origins.get(origin);
+  if (v) return v;
+  const buf = Buffer.from(e.buf.toString().split('__ORIGIN__').join(origin));
+  v = { type: e.type, buf, etag: '"' + crypto.createHash('sha1').update(buf).digest('base64url').slice(0, 20) + '"', br: buf.length > 1024 ? zlib.brotliCompressSync(buf, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5 } }) : null, gz: buf.length > 1024 ? zlib.gzipSync(buf, { level: 9 }) : null };
+  if (e.origins.size < 8) e.origins.set(origin, v);
+  return v;
+}
 function serveStatic(req, res) {
   let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-  if (p === '/' || !path.extname(p)) p = '/index.html';
+  // the public demo (node demo/build.js --public writes it to public/demo/): /demo and /demo/ are its page, its files live below /demo/. A checkout without a built demo answers 404.
+  if (p === '/demo' || p === '/demo/') p = '/demo/index.html';
+  else if (p === '/' || (!path.extname(p) && !p.startsWith('/demo/'))) p = '/index.html';
   const file = path.join(PUBLIC, path.normalize(p).replace(/^(\.\.[/\\])+/, ''));
   if (!file.startsWith(PUBLIC)) { res.writeHead(403); return res.end(); }
   let e = loadStatic(file);
@@ -148,6 +166,7 @@ function serveStatic(req, res) {
   if (path.basename(file) === 'index.html' && e.buf.includes('name="broch-build" content=""')) {
     if (!e.stamped) { const buf = Buffer.from(e.buf.toString().replace('name="broch-build" content=""', `name="broch-build" content="${BUILD_ID}"`)); e = staticCache.get(file); e.buf = buf; e.etag = '"' + crypto.createHash('sha1').update(buf).digest('base64url').slice(0, 20) + '"'; e.br = e.gz = null; e.stamped = true; }
   }
+  if (path.basename(file) === 'index.html' && e.buf.includes('__ORIGIN__')) e = withOrigin(e, originOf(req)); // link previews need absolute urls (og:url, og:image, canonical)
   // private + no-cache: browsers revalidate with the ETag (cheap 304), and Cloudflare or any other shared cache never keeps a copy (it would serve old scripts after an update)
   const headers = { 'Content-Type': e.type, 'Cache-Control': 'private, no-cache', 'CDN-Cache-Control': 'no-store', ETag: e.etag, Vary: 'Accept-Encoding' };
   if (req.headers['if-none-match'] === e.etag) { res.writeHead(304, headers); return res.end(); }

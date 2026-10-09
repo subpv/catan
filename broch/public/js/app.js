@@ -114,13 +114,31 @@ function langDialog() {
 
 // ------------------------------------------------------------ auth
 const EYE = off => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>${off ? '<path d="M4 4l16 16"/>' : ''}</svg>`;
-function renderAuth(mode = 'login') {
+// landing page for visitors without a session: what the app offers, the no-account demo, then the sign-in form
+const LP_ICO = d => `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const LP_FEATURES = [
+  [LP_ICO('<path d="M8 3.5l4 2.3v4.6L8 12.7 4 10.4V5.8zM16 3.5l4 2.3v4.6l-4 2.3-4-2.3V5.8zM12 11.8l4 2.3v4.6l-4 2.3-4-2.3v-4.6z"/>'), '8 ways to play', 'Classic, Cities & Knights, Seafarers, Traders & Barbarians, Explorers & Pirates and three more.'],
+  [LP_ICO('<circle cx="8.5" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.4"/><path d="M2.8 19c.5-3.4 2.8-5 5.7-5s5.2 1.6 5.7 5M15 14.3c3 0 5 1.4 5.5 4.3"/>'), 'Play together live', 'In real time with your friends, on any phone, tablet or computer.'],
+  [LP_ICO('<rect x="5" y="8" width="14" height="10" rx="3"/><path d="M12 8V4.5M9 13h.01M15 13h.01M9.5 16h5M3 12v2M21 12v2"/><circle cx="12" cy="4" r="1"/>'), 'Bots included', 'Practise against bots, or let them fill the empty seats.'],
+  [LP_ICO('<path d="M5 20V11M12 20V4M19 20v-6"/>'), 'Your table, your rules', 'House rules, experiments and statistics, in {n} languages.'],
+];
+function renderAuth(mode = 'login', opts = {}) {
   document.body.dataset.route = 'auth';
   const reg = mode === 'register';
-  app.innerHTML = `<div class="page narrow">
-    <div class="row" style="justify-content:flex-end;padding-top:12px"><button class="iconbtn" data-lang-pick>${esc(LANGS.find(l => l[0] === lang())[1])}</button></div>
-    <div class="auth-hero">${logoSvg('logo-big')}<h1>Broch</h1><p>${tx('Settle, trade and build with your friends.')}</p></div>
-    <div class="card">
+  app.innerHTML = `<div class="page landing">
+    <div class="row lp-lang"><button class="iconbtn" data-lang-pick>${esc(LANGS.find(l => l[0] === lang())[1])}</button></div>
+    <div class="lp-grid">
+    <section class="lp-hero">
+      <div class="lp-brand">${logoSvg('logo-big')}<h1>Broch</h1></div>
+      <p class="lp-promise">${tx('Settle, trade and build with your friends.')}</p>
+      <ul class="lp-feats">${LP_FEATURES.map(([ico, h, p]) => `<li>${ico}<span><b>${tx(h)}</b><small>${tx(p, { n: LANGS.length })}</small></span></li>`).join('')}</ul>
+      <div class="lp-cta">
+        <a class="btn gold block lp-try" href="/demo/">${tx('Try it now (no account)')}</a>
+        <p class="lp-note">${tx('Plays right in your browser against bots. Nothing is saved.')}</p>
+        <div class="lp-sec"><button type="button" class="btn ghost" data-go="register">${tx('Create account')}</button><button type="button" class="btn ghost" data-go="login">${tx('Log in')}</button></div>
+      </div>
+    </section>
+    <div class="card lp-form" id="lp-form">
       <div class="tabs2"><button data-m="login" class="${reg ? '' : 'on'}">${tx('Log in')}</button><button data-m="register" class="${reg ? 'on' : ''}">${tx('Create account')}</button></div>
       <form id="authf">
         ${reg ? `<label class="field"><span>${tx('Display name')}</span><input class="input" name="name" id="f-name" maxlength="24" autocomplete="nickname" required></label>` : ''}
@@ -133,9 +151,12 @@ function renderAuth(mode = 'login') {
         <div class="err-text" id="autherr"></div>
       </form>
     </div>
+    </div>
     ${footer()}
   </div>`;
   app.querySelectorAll('[data-m]').forEach(b => b.onclick = () => renderAuth(b.dataset.m));
+  app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => renderAuth(b.dataset.go, { focus: true }));
+  if (opts.focus) { const form = app.querySelector('#lp-form'); form.scrollIntoView({ block: 'start', behavior: 'smooth' }); app.querySelector(reg ? '#f-name' : '#f-email').focus({ preventScroll: true }); }
   app.querySelector('[data-eye]').onclick = e => {
     const b = e.currentTarget, pw = app.querySelector('#f-pw'), show = pw.type === 'password';
     pw.type = show ? 'text' : 'password'; b.innerHTML = EYE(show); b.setAttribute('aria-pressed', String(show));
@@ -451,7 +472,7 @@ async function route(keepScroll) {
   const h = location.hash.replace(/^#/, '') || '/';
   if (!session.user) {
     if (h.startsWith('/join/')) { try { sessionStorage.setItem('broch_join', h.split('/')[2]); } catch { /* storage blocked */ } }
-    return renderAuth();
+    return renderAuth(h.startsWith('/register') ? 'register' : 'login'); // the demo banner and shared links open #/register
   }
   let pendingJoin = null;
   try { pendingJoin = sessionStorage.getItem('broch_join'); } catch { /* storage blocked */ }
