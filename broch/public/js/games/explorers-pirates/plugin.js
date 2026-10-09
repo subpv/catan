@@ -391,17 +391,7 @@ const plugin = register({
   blurb: 'Five scenarios from the book: discover the fog with ships, found settlements with explorers, upgrade them to harbor settlements, fight pirate lairs, catch fish and trade spices.',
   tokenKeys: ['gold'], limited: RES, bankBuys: ['lumber', 'brick', 'wool', 'grain', 'ore', 'gold'], tradeKeys: ['lumber', 'brick', 'wool', 'grain', 'ore', 'gold'],
   bankText: 'Trade 3 identical resources for 1 other resource or 1 gold with the supply. 2 gold buy 1 resource, twice per turn.',
-  // phone: the map opens zoomed in on your own settlements and ships (the whole-map button shows all of it)
-  phoneStart(v) {
-    const pts = [], at = id => { const p = v.board.vertices[id]; if (p) pts.push({ x: p.x * S, y: p.y * S }); };
-    const who = v.me >= 0 ? v.me : v.current; // a spectator starts with the player whose turn it is
-    if (who >= 0) {
-      Object.entries(v.buildings || {}).forEach(([id, b]) => { if (b.p === who) at(id); });
-      Object.values((v.exp && v.exp.ships) || {}).forEach(sh => { if (sh.p === who && v.board.edges[sh.e]) v.board.edges[sh.e].v.forEach(at); });
-    }
-    if (!pts.length && v.legal && v.legal.setupSpots) v.legal.setupSpots.forEach(at);
-    return pts.length ? { points: pts, margin: 120, minZ: 1.5, maxZ: 2.4 } : null;
-  },
+  wideMap: true, // phone: the map is wide, so the first view carries a zoom hint (see games/sgame.js)
   phoneExtra: v => (v.step === 'move' ? 'dock' : 'sheet'), // phone: the fleet row replaces the build buttons while ships move, otherwise it lives in the Overview tab
   ext, boardKey: v => JSON.stringify([v.exp && v.exp.ships, v.exp && v.exp.pirate, v.exp && v.exp.neutral, v.step, v.current]),
 

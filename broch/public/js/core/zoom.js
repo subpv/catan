@@ -39,7 +39,7 @@ export function createZoom({ host, getState, setState, onChange }) {
       const h = b.clientHeight;
       const pad = phonePads(b, base, w, h);
       const aw = w - pad.r, ah = h - pad.t - pad.b;
-      fit = { w, h, aw, ah, pt: pad.t, ins: INSET, s1: Math.max(0.05, Math.min((aw - 2 * EDGE) / (base[2] - 2 * INSET), (ah - 2 * EDGE) / (base[3] - 2 * INSET))), base };
+      fit = { w, h, aw, ah, pt: pad.t, ins: INSET, s1: Math.max(0.05, Math.min((aw - 2 * EDGE) / (base[2] - 2 * INSET), (ah - 2 * EDGE) / (base[3] - 2 * INSET))), base, ...floatRims(b) };
       return fit;
     }
     const maxH = innerWidth > 1040 ? Math.max(280, innerHeight - 200) : Infinity;
@@ -47,6 +47,27 @@ export function createZoom({ host, getState, setState, onChange }) {
     if (b.style.height !== h + 'px') b.style.height = h + 'px';
     fit = { w, h, aw: w, ah: h, pt: 0, s1: Math.min(w / base[2], h / base[3]), base };
     return fit;
+  }
+
+  // phone: how far the zoom buttons (bottom edge, or right edge in landscape) and the HUD pills (top edge) reach into the frame.
+  // While zoomed in, the board may be pushed this far past its own edge, so every tile and target can be moved out from under them.
+  function floatRims(b) {
+    const rim = { rt: 0, rb: 0, rr: 0 }, br = b.getBoundingClientRect();
+    const ctl = host.querySelector('.zoom-ctl');
+    if (ctl) {
+      const r = ctl.getBoundingClientRect();
+      if (r.width && r.height) {
+        const row = r.width > r.height || getComputedStyle(ctl).flexDirection === 'row';
+        if (row) rim.rb = Math.max(0, Math.round(br.bottom - r.top) + 4); else rim.rr = Math.max(0, Math.round(br.right - r.left) + 4);
+      }
+    }
+    const hud = host.querySelector('.board-hud');
+    if (hud && hud.children.length) {
+      let y1 = -1e9;
+      [...hud.children].forEach(c => { const r = c.getBoundingClientRect(); if (r.width) y1 = Math.max(y1, r.bottom); });
+      if (y1 > br.top) rim.rt = Math.round(y1 - br.top) + 2;
+    }
+    return rim;
   }
 
   // phone: parts that float over the board (the zoom buttons, the HUD pills) must not cover the board itself. When the board
@@ -100,13 +121,13 @@ export function createZoom({ host, getState, setState, onChange }) {
 
   // size and position of the SVG for a zoom state (centre kept inside the board)
   function layout(z, cx, cy) {
-    const { w, h, aw = w, ah = h, pt = 0, ins = 0, s1, base: [bx, by, bw, bh] } = fit;
+    const { w, h, aw = w, ah = h, pt = 0, ins = 0, rt = 0, rb = 0, rr = 0, s1, base: [bx, by, bw, bh] } = fit;
     z = clamp(z, MIN_Z, MAX_Z);
     const s = s1 * z, W = bw * s, H = bh * s, I = ins * s, Wc = W - 2 * I, Hc = H - 2 * I; // Wc, Hc: the board without its empty rim
     let tx = w / 2 - (cx - bx) * s, ty = h / 2 - (cy - by) * s;
     // small enough for the free area: centred in it (the area leaves out the strips of the buttons floating over the board)
-    tx = Wc <= aw + 0.5 ? (aw - Wc) / 2 - I : Wc <= w ? -I : clamp(tx, w - W + I, -I);
-    ty = Hc <= ah + 0.5 ? pt + (ah - Hc) / 2 - I : Hc <= h ? (pt * (h - Hc)) / ((h - ah) || 1) - I : clamp(ty, h - H + I, -I);
+    tx = Wc <= aw + 0.5 ? (aw - Wc) / 2 - I : Wc <= w ? -I : clamp(tx, w - W + I - rr, -I);
+    ty = Hc <= ah + 0.5 ? pt + (ah - Hc) / 2 - I : Hc <= h ? (pt * (h - Hc)) / ((h - ah) || 1) - I : clamp(ty, h - H + I - rb, -I + rt);
     return { z, s, W, H, tx, ty, cx: bx + (w / 2 - tx) / s, cy: by + (h / 2 - ty) / s };
   }
   const current = () => { const st = getState(); return layout(st.z, st.cx, st.cy); };
@@ -320,17 +341,28 @@ export function createZoom({ host, getState, setState, onChange }) {
     zoomTo(z, c.cx, c.cy);
   }
 
-  // zoom to show a set of board points ({x,y} in board units, as in the SVG viewBox). Only when that is worth it:
-  // the box must fit at zoom >= minZ, otherwise the view stays as it is. Returns true when it zoomed.
-  function focusPoints(points, { minZ = 1.6, margin = 46, maxZ = 2.4 } = {}) {
-    if (!points || !points.length) return false;
+  // the view (zoom and centre) that shows a set of board points ({x,y} in board units) inside the part of the frame that is not covered
+  // by the zoom buttons or the HUD pills. null when the box would need a zoom below minZ.
+  function viewFor(points, { minZ = 1.6, margin = 46, maxZ = 2.4 } = {}) {
+    if (!points || !points.length) return null;
     if (!fit) fitBox();
-    if (!fit) return false;
+    if (!fit) return null;
+    const { rt = 0, rb = 0, rr = 0 } = fit;
     const xs = points.map(p => p.x), ys = points.map(p => p.y);
     const x0 = Math.min(...xs) - margin, x1 = Math.max(...xs) + margin, y0 = Math.min(...ys) - margin, y1 = Math.max(...ys) + margin;
-    const fz = Math.min(fit.w / fit.s1 / (x1 - x0), fit.h / fit.s1 / (y1 - y0));
-    if (fz < minZ) return false;
-    zoomTo(Math.min(maxZ, fz), (x0 + x1) / 2, (y0 + y1) / 2);
+    const fw = fit.w - rr, fh = fit.h - rt - rb;
+    const fz = Math.min(fw / fit.s1 / (x1 - x0), fh / fit.s1 / (y1 - y0));
+    if (fz < minZ) return null;
+    const z = Math.min(maxZ, fz), s = fit.s1 * z;
+    // the box goes to the middle of the free area, not of the frame
+    return { z, cx: (x0 + x1) / 2 + rr / (2 * s), cy: (y0 + y1) / 2 + (rb - rt) / (2 * s) };
+  }
+  // zoom to show a set of board points. Only when that is worth it: the box must fit at zoom >= minZ, otherwise the view stays
+  // as it is. Returns true when it zoomed.
+  function focusPoints(points, opts) {
+    const v = viewFor(points, opts);
+    if (!v) return false;
+    zoomTo(v.z, v.cx, v.cy);
     return true;
   }
 
@@ -394,7 +426,7 @@ export function createZoom({ host, getState, setState, onChange }) {
       commit();
       if (ptrs.size) begin(); // fingers still down: continue the gesture on the new board
     },
-    zoomAt, focusPoints,
+    zoomAt, focusPoints, viewFor,
     // where a tap really was: the pointer position of the last lift within 800 ms of now, else null
     lastPoint: () => (lastUp && performance.now() - lastUp.t < 800 ? lastUp : null),
     // has the person zoomed or panned by hand since clearTouched()?

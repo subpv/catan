@@ -25,7 +25,7 @@ export function mountSGame(app, id, mode) {
   G = {
     id, mode, view: null, online: [], pick: null, tab: 'chat', opened: new Set(), celebrated: false, app, fresh: null, zoom: { z: 1, cx: 0, cy: 0 },
     html: {}, boardKey: null, boardRef: null, boardSig: '', chatSeenAt: 0, newestTurn: null, life: lifePref(), A: null,
-    sheet: null, dock: null, preZoom: null, tgSig: '', startZoom: true,
+    sheet: null, dock: null, preZoom: null, tgSig: '', zoomHinted: false,
   };
   document.body.dataset.route = 'game';
   G.A = api();
@@ -37,7 +37,7 @@ export function mountSGame(app, id, mode) {
         <div class="board-host"></div>
         <div class="hud-host"></div>
         <div class="trade-host"></div>
-        <div class="zoom-ctl ${P0.phoneStart ? 'wide' : ''}"><button data-life class="lifebtn ${G.life ? 'on' : ''}" aria-pressed="${G.life}" title="${tx('Living board')}" aria-label="${tx('Living board')}">${glyph(P0.lifeIcon || 'wool', 18)}</button><button data-zoom="in" aria-label="${tx('Zoom in')}">+</button><button data-zoom="out" aria-label="${tx('Zoom out')}">−</button><button data-zoom="reset" class="rs" aria-label="${tx('Show the whole board')}" data-lbl="${tx('Whole map')}">⤢</button></div>
+        <div class="zoom-ctl"><button data-life class="lifebtn ${G.life ? 'on' : ''}" aria-pressed="${G.life}" title="${tx('Living board')}" aria-label="${tx('Living board')}">${glyph(P0.lifeIcon || 'wool', 18)}</button><button data-zoom="in" aria-label="${tx('Zoom in')}">+</button><button data-zoom="out" aria-label="${tx('Zoom out')}">−</button><button data-zoom="reset" class="rs" aria-label="${tx('Show the whole board')}" data-lbl="${tx('Whole map')}">⤢</button></div>
       </div>
       <div class="hand-host"></div>
     </div>
@@ -355,8 +355,8 @@ function renderBoardPart() {
   G.boardKey = key;
   const P = plugin();
   host.innerHTML = P.board ? P.board(G.view, tg, G.fresh, G.zoom, G.life, G.A) : renderBoard(G.view, tg, G.fresh, G.zoom, G.life, true, P.ext && P.ext(G.view, G.A));
-  phoneStartZoom(host);
   G.zoomer.apply();
+  phoneZoomHint(host);
   phoneTargetZoom(tg);
   syncLoops(host);
   if (freshAny) {
@@ -364,25 +364,23 @@ function renderBoardPart() {
     G.fxClean = setTimeout(() => host.querySelectorAll('.fx-flash,.fx-roadglow,.fx-light,.fx-dust,.fx-splash').forEach(el => el.remove()), 2600);
   }
 }
-// phone: wide maps (Dawn of Humankind, Explorers & Pirates) open zoomed in on the player's own region, so the tiles are big enough
-// to read; the whole-map button goes back to the overview. A plugin says where: phoneStart(view, A) returns
-// { points: [{ x, y }] (board units), margin, minZ, maxZ } or null. Runs once, on the first drawing of the board.
-function phoneStartZoom(host) {
-  if (!G.startZoom || !isPhone()) return;
-  const P = plugin(), svg = host.querySelector('svg.board');
-  if (!P.phoneStart || !svg || !svg.dataset.base) { G.startZoom = false; return; }
-  const w = host.clientWidth, h = host.clientHeight;
-  if (w < 100 || h < 120) return; // not laid out yet: try again with the next drawing
-  G.startZoom = false;
-  const s = P.phoneStart(G.view, G.A);
-  if (!s || !s.points || !s.points.length || G.zoom.z !== 1) return;
-  const [, , bw, bh] = svg.dataset.base.split(' ').map(Number);
-  const s1 = Math.min(w / bw, h / bh), m = s.margin == null ? 70 : s.margin;
-  const xs = s.points.map(p => p.x), ys = s.points.map(p => p.y);
-  const x0 = Math.min(...xs) - m, x1 = Math.max(...xs) + m, y0 = Math.min(...ys) - m, y1 = Math.max(...ys) + m;
-  const fz = Math.min(w / s1 / (x1 - x0), h / s1 / (y1 - y0));
-  const z = Math.max(s.minZ || 1.6, Math.min(s.maxZ || 2.6, fz));
-  G.zoom = { z, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+// phone: every map opens fitted whole (zoom 1, like the classic board). The wide maps (Dawn of Humankind, Explorers & Pirates)
+// are small at that size, so the first time a person sees one a short hint says how to zoom in. Zooming into picks is automatic (phoneTargetZoom).
+function phoneZoomHint(host) {
+  if (!isPhone() || G.zoomHinted) return;
+  const P = plugin();
+  if (!P.wideMap || G.zoom.z !== 1 || host.clientWidth < 100) return;
+  G.zoomHinted = true;
+  let seen = false;
+  try { seen = localStorage.getItem('broch_zoom_hint') === '1'; localStorage.setItem('broch_zoom_hint', '1'); } catch { /* storage blocked */ }
+  const wrap = G.app.querySelector('.board-wrap');
+  if (seen || !wrap || wrap.querySelector('.zoom-hint')) return;
+  const el = document.createElement('div');
+  el.className = 'zoom-hint m-only';
+  el.setAttribute('role', 'status');
+  el.textContent = tx('Pinch or double-tap to zoom in');
+  wrap.appendChild(el);
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 500); }, 6000);
 }
 // phone: when a few corners or edges glow, zoom to them (the finger needs room); afterwards go back to where the board was
 // unless the person zoomed by hand in between

@@ -1477,6 +1477,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"石头1：{@p}。石头2：{@q}
 "Hottest numbers":"最热数字",
 "Info":"信息",
 "Whole map":"全图",
+"Pinch or double-tap to zoom in":"双指张开或双击即可放大",
 "Password must be at least 8 characters.":"密码至少需要 8 个字符。",
 "Barbarians land on the coast; knights drive them off. 3–6 players.":"野蛮人在海岸登陆，骑士将其驱逐。3–6名玩家。",
 "The die shows {n}: the {#c} paths.":"骰子显示{n}：{#c}小路。",

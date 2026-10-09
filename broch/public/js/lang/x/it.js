@@ -1477,6 +1477,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Pietra 1: {@p}. Pietra 2: {@q}.
 "Hottest numbers":"Numeri più caldi",
 "Info":"Info",
 "Whole map":"Mappa intera",
+"Pinch or double-tap to zoom in":"Pizzica o tocca due volte per ingrandire",
 "Password must be at least 8 characters.":"La password deve avere almeno 8 caratteri.",
 "Barbarians land on the coast; knights drive them off. 3–6 players.":"I barbari sbarcano sulla costa; i cavalieri li scacciano. 3–6 giocatori.",
 "The die shows {n}: the {#c} paths.":"Il dado mostra {n}: sentieri di colore {#c}.",

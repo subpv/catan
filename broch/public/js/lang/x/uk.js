@@ -1477,6 +1477,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Камінь 1: {@p}. Камі�
 "Hottest numbers":"Найгарячіші числа",
 "Info":"Інфо",
 "Whole map":"Уся мапа",
+"Pinch or double-tap to zoom in":"Розведіть пальці або торкніться двічі, щоб збільшити",
 "Password must be at least 8 characters.":"Пароль має містити щонайменше 8 символів.",
 "Barbarians land on the coast; knights drive them off. 3–6 players.":"Варвари висаджуються на узбережжі; лицарі їх проганяють. 3–6 гравців.",
 "The die shows {n}: the {#c} paths.":"Кубик показує {n}: стежки кольору {#c}.",

@@ -58,7 +58,7 @@ const costDots = cost => Object.entries(cost).map(([k, n]) => Array.from({ lengt
 THREAT_BY_MODE.humankind = {
   title: 'The threats stir!',
   sub: (view, discards) => [discards ? t('Players holding too many cards must discard half.') : t('Nobody has to discard.'), t('The roller moves the Neanderthal or the Saber-toothed tiger.')].join(' '),
-  svg: `<svg viewBox="-70 -70 140 130" class="fx-robber-fig" style="width:330px"><g transform="translate(-34,36) scale(1.9)">${art.neanderthal(false, false)}</g><g transform="translate(38,36) scale(1.35)">${art.sabertooth(false, false)}</g></svg>`,
+  svg: `<svg viewBox="-68 -22 156 100" class="fx-robber-fig" style="width:min(368px,90vw,calc(46vh * 1.56));overflow:visible"><g transform="translate(-34,36) scale(1.9)">${art.neanderthal(false, false)}</g><g transform="translate(38,36) scale(1.35)">${art.sabertooth(false, false)}</g></svg>`,
   sfx: 'roar',
 };
 
@@ -207,17 +207,7 @@ const plugin = register({
   bankText: 'Trade 3 equal cards for 1 card of your choice.',
   threat: { name: 'Neanderthal', icon: 'neanderthal' },
   boardKey, fresh,
-  // phone: the map opens zoomed in on your own camps and explorer (the whole-map button shows all of it)
-  phoneStart(v) {
-    const pts = [], at = id => { const p = v.board.vertices[id]; if (p) pts.push({ x: p.x * 56, y: p.y * 56 }); };
-    const who = v.me >= 0 ? v.me : v.current; // a spectator starts with the player whose turn it is
-    if (who >= 0) {
-      Object.entries(v.buildings || {}).forEach(([id, b]) => { if (b.p === who) at(id); });
-      ((v.humankind && v.humankind.explorers) || []).forEach(e => { if (e.p === who) at(e.v); });
-    }
-    if (!pts.length && v.legal && v.legal.setupCamps) v.legal.setupCamps.forEach(at);
-    return pts.length ? { points: pts, margin: 130, minZ: 1.8, maxZ: 2.6 } : null;
-  },
+  wideMap: true, // phone: the map is wide, so the first view carries a zoom hint (see games/sgame.js)
   board: (view, targets, fr, zoom, life) => renderWorld(view, targets, fr, zoom, life),
   targets(v) {
     const L = v.legal || {};

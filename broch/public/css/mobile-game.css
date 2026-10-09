@@ -320,6 +320,7 @@ body[data-route="game"] .m-menu-in { padding-bottom: 14px; }
    Rules outside a media query style new classes only and hide them on the desktop; the landscape block is the last one. */
 .sgame .en-tn { display: none; }          /* energies: the name beside a seat tab (phone only) */
 .sgame .en-slotsw { display: contents; }  /* energies: wrapper around a long row of slots (the phone shows a counter instead) */
+.sgame .zoom-hint { display: none; }          /* wide maps: one-time hint how to zoom in (phone only) */
 
 @media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
 
@@ -328,8 +329,16 @@ body[data-route="game"] .sgame .hand-cards { overflow: hidden; }
 body[data-route="game"] .sgame .hand-cards .rcard { min-width: 0; }
 body[data-route="game"] .sgame .hand-cards .rcard svg { flex: none; }
 /* ---- long words (Hafensiedlung, Entwicklungskarte) break with a hyphen instead of being cut off at the edge of a button */
-body[data-route="game"] .sgame .act > span.nm, body[data-route="game"] .sgame .status .btns .btn { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; min-width: 0; }
-body[data-route="game"] .sgame .act > span.nm.lw { letter-spacing: -.04em; font-size: 12px; hyphens: auto; -webkit-hyphens: auto; }
+body[data-route="game"] .sgame .act > span.nm, body[data-route="game"] .sgame .status .btns .btn { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: anywhere; min-width: 0; }
+/* build buttons: always four columns (the shared rule above lets a wide phone fit five narrow ones, and "Hafensiedlung" no longer fits); landscape keeps its own grid */
+@media (max-width: 760px) and (min-height: 501px) {
+  body[data-route="game"] .sgame .actions { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+body[data-route="game"] .sgame .act > span.nm.lw { letter-spacing: -.045em; font-size: 12px; hyphens: auto; -webkit-hyphens: auto; }
+@media (max-width: 400px) {
+  body[data-route="game"] .sgame .act:has(> span.nm.lw) { padding-left: 0; padding-right: 0; }
+  body[data-route="game"] .sgame .act > span.nm.lw { letter-spacing: -.06em; }
+}
 body[data-route="game"] .sgame .act > span.nm.lw2 { overflow-wrap: anywhere; letter-spacing: -.05em; }
 /* ---- narrow phones (360): Trade, Bank and End turn share one row with the chat button; a long word (Commerce, Commercio) must fit its button */
 @media (max-width: 400px) {
@@ -342,6 +351,10 @@ body[data-route="game"] .sgame .status .btns .roll-btn { animation: none; }
 body[data-route="game"] .sgame .game-main { overflow-x: clip; }
 /* ---- the headline of the strip may take a third line when there is no hint under it (long languages) */
 body[data-route="game"] .sgame .status .msg:not(:has(.sub)) .mt { -webkit-line-clamp: 3; }
+/* ---- wide maps (humankind, explorers) start fitted whole: a one-time pill above the zoom buttons says how to zoom in, then fades */
+body[data-route="game"] .sgame .zoom-hint { display: flex; align-items: center; justify-content: center; position: absolute; z-index: 6; left: 50%; bottom: 64px; transform: translateX(-50%); max-width: calc(100% - 32px); min-height: var(--m-tap, 44px); padding: 8px 18px; border-radius: 999px; background: rgba(28,20,14,.86); color: #FFF3DC; font: 600 14px/1.25 var(--sans, system-ui, sans-serif); text-align: center; pointer-events: none; box-shadow: 0 6px 22px rgba(0,0,0,.4); animation: m-hint-pop .35s ease-out both; transition: opacity .5s; }
+body[data-route="game"] .sgame .zoom-hint.out { opacity: 0; }
+@keyframes m-hint-pop { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 /* ---- explorers: Sail is a build button of its own on the phone (gold, two cells wide when there is room), so Trade, Bank and End turn stay on one row */
 body[data-route="game"] .sgame .act.eup-sail { background: linear-gradient(180deg, #F2C65A, #D9A334); border-color: #B8860B; color: #2B1E12; }
 body[data-route="game"] .sgame .act.eup-sail:disabled { opacity: .5; }
@@ -349,9 +362,7 @@ body[data-route="game"] .sgame .act.eup-sail.wide { grid-column: span 2; }
 body[data-route="game"] .sgame .act.eup-sail > span.nm { flex-direction: row; justify-content: center; gap: 6px; font-size: 15px; font-weight: 700; }
 body[data-route="game"] .sgame .act.eup-sail .ai { display: inline-flex; }
 body[data-route="game"] .sgame .act.eup-sail small.pl .pl-d { color: rgba(43,30,18,.8); }
-/* ---- wide maps (humankind, explorers) open on your own region: while zoomed in, the overview button says what it does */
-body[data-route="game"] .sgame .zoom-ctl.wide.zoomed .rs { width: auto; display: flex; align-items: center; gap: 6px; padding: 0 14px 0 12px; }
-body[data-route="game"] .sgame .zoom-ctl.wide.zoomed .rs::after { content: attr(data-lbl); font: 700 13px/1 var(--sans, system-ui, sans-serif); letter-spacing: 0; white-space: nowrap; }
+/* ---- wide maps: the overview button is a plain 44px icon (like the other zoom buttons), so the row of zoom buttons stays small; core/zoom.js also lets the board be pushed clear of the buttons and the HUD pills */
 body[data-route="game"] .sgame .status .btns .btn svg { flex: none; }
 /* ---- build buttons: the second line of a plain button (what it does) wraps to two lines, never cut in the middle of a word */
 body[data-route="game"] .sgame .act small.pl { display: flex; justify-content: center; text-align: center; min-height: 0; }
