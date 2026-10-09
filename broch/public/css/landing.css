@@ -18,16 +18,27 @@
 .lp-feats b { display: block; font-size: 15.5px; font-weight: 700; color: var(--cream); line-height: 1.25; }
 .lp-feats small { display: block; margin-top: 3px; font-size: 13.5px; line-height: 1.4; color: var(--cream-dim); }
 
+/* the board picture: a taste of the game before anyone has an account */
+.lp-shot { display: block; margin-top: 22px; line-height: 0; border-radius: 20px; overflow: hidden; box-shadow: 0 0 0 2px rgba(255, 243, 220, .75), 0 14px 34px rgba(0, 0, 0, .45); max-width: 300px; width: 100%; }
+.lp-shot img { display: block; width: 100%; height: auto; }
+
 /* buttons */
 .lp-cta { margin-top: 28px; width: 100%; max-width: 440px; }
 .lp-try { min-height: 58px; font-size: 18px; font-family: var(--serif); font-weight: 800; letter-spacing: .005em; text-align: center; line-height: 1.2; padding: 10px 18px; }
 .lp-note { margin: 10px 2px 0; font-size: 13.5px; color: var(--cream-dim); text-align: center; }
-.lp-sec { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-.lp-sec .btn { min-height: 48px; }
 
 /* form column */
 .lp-form { width: 100%; }
 .lp-form .tabs2 { margin-bottom: 10px; }
+
+/* ---- desktop: the picture sits left of the feature list ---------------------------------------------------------- */
+@media (min-width: 941px) {
+  .lp-hero { display: grid; grid-template-columns: 250px minmax(0, 1fr); column-gap: 28px; align-items: start; }
+  .lp-brand, .lp-promise { grid-column: 1 / -1; }
+  .lp-shot { grid-column: 1; grid-row: 3 / span 2; margin-top: 26px; max-width: 250px; }
+  .lp-feats { grid-column: 2; grid-row: 3; grid-template-columns: minmax(0, 1fr); margin-top: 26px; gap: 14px; }
+  .lp-cta { grid-column: 2; grid-row: 4; margin-top: 22px; align-self: end; }
+}
 
 /* ---- phone, portrait: hero first and compact, the form right below ------------------------------------------------ */
 @media (max-width: 760px) {
@@ -39,7 +50,11 @@
   .lp-brand .logo-big { width: 52px; height: 52px; }
   .lp-brand h1 { font-size: 40px; }
   .lp-promise { font-size: 19px; text-align: center; margin: 8px auto 0; max-width: 20em; }
+  .lp-shot { order: 1; max-width: none; height: 150px; margin-top: 12px; border-radius: 16px; }
+  .lp-shot img { height: 100%; object-fit: cover; object-position: 50% 46%; }
   .lp-cta { order: 2; margin-top: 14px; max-width: none; }
+  /* arriving from the demo banner with #/register: the sign-in form is what they came for */
+  .lp-arrived .lp-cta { display: none; }
   .lp-feats { order: 3; margin-top: 14px; gap: 8px; }
   .lp-feats li { align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: rgba(255, 243, 220, .07); border: 1px solid rgba(255, 243, 220, .12); }
   .lp-feats svg { width: 20px; height: 20px; padding: 0; border: 0; background: none; }
@@ -47,8 +62,6 @@
   .lp-feats small { display: none; }
   .lp-try { min-height: var(--m-tap-lg, 52px); font-size: 17px; }
   .lp-note { font-size: 12.5px; margin-top: 8px; }
-  .lp-sec { margin-top: 10px; gap: 8px; }
-  .lp-sec .btn { min-height: var(--m-tap, 44px); font-size: 15px; }
   .lp-form { margin-top: 2px; scroll-margin-top: 8px; }
   /* with the on-screen keyboard up only the form matters */
   html.kb-open .lp-hero { display: none; }
@@ -57,6 +70,7 @@
 /* short phones (360x740): the sign-in form comes before the feature list, which moves below it */
 @media (max-width: 760px) and (max-height: 760px) {
   .lp-hero { display: contents; }
+  .lp-shot { height: 84px; margin-top: 0; }
   .lp-brand { order: 0; } .lp-promise { order: 1; margin-top: -4px; } .lp-cta { order: 2; margin-top: 0; } .lp-form { order: 3; } .lp-feats { order: 4; margin: 4px 0 6px; }
   .lp-brand .logo-big { width: 44px; height: 44px; }
   .lp-brand h1 { font-size: 34px; }
@@ -65,6 +79,8 @@
 
 /* ---- tablet-ish desktop windows: stack, but keep the wide grid for features ----------------------------------- */
 @media (min-width: 761px) and (max-width: 940px) {
+  .lp-hero { align-items: center; text-align: left; }
+  .lp-arrived .lp-cta { display: none; }
   .lp-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .lp-form { max-width: 480px; margin: 0 auto; }
 }
@@ -79,12 +95,10 @@
   .lp-brand .logo-big { width: 40px; height: 40px; }
   .lp-brand h1 { font-size: 32px; }
   .lp-promise { font-size: 16px; text-align: left; margin: 6px 0 0; }
-  .lp-feats { display: none; }
+  .lp-feats, .lp-shot { display: none; }
   .lp-cta { margin-top: 12px; max-width: none; order: 0; }
   .lp-try { min-height: var(--m-tap, 44px); font-size: 16px; padding: 6px 14px; }
   .lp-note { display: none; }
-  .lp-sec { margin-top: 8px; }
-  .lp-sec .btn { min-height: var(--m-tap, 44px); }
   .lp-form { margin-top: 0; padding: 12px 14px; }
   .lp-form .field { margin-bottom: 8px; }
   html.kb-open .lp-grid { grid-template-columns: minmax(0, 1fr); }

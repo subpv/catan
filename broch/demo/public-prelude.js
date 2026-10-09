@@ -2,6 +2,9 @@
 // The demo must never leave anything behind that the real app could read: only the language and the sound preference are shared with it,
 // every other key of localStorage / sessionStorage (tutorial hints, view switches, pending invites ...) lives in memory and is gone with the tab.
 window.BROCH_PUBLIC_DEMO = true;
+document.documentElement.classList.add('is-demo'); // demo.css hides what makes no sense without accounts
+// a first-time visitor should not wait: builders, dice, loot flights and banners play at about half length (fx.js, builder.js)
+if (!window.BROCH_FX_SCALE) window.BROCH_FX_SCALE = 0.55;
 
 const SHARED = new Set(['broch_lang', 'broch_muted']);
 try {

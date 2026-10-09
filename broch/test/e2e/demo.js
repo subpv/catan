@@ -69,12 +69,12 @@ function get(port, url, headers = {}) {
 
     // ---- a real browser
     browser = await chromium.launch({ executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
-    async function visit(opts, fn) {
+    async function visit({ realPace, ...opts }, fn) {
       const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, ...opts });
       const page = await ctx.newPage();
       const log = { problems: [], requests: [], sockets: 0 };
+      if (!realPace) await page.addInitScript(() => { window.BROCH_BOT_DELAY = 1; });
       await page.addInitScript(() => {
-        window.BROCH_BOT_DELAY = 1;
         document.addEventListener('securitypolicyviolation', e => console.error('CSP violation: ' + e.violatedDirective + ' ' + e.blockedURI));
       });
       page.on('console', m => { if (m.type() === 'error' && (!m.location().url || m.location().url.startsWith(`http://localhost:${PORT}`))) log.problems.push(m.text()); });
@@ -84,13 +84,9 @@ function get(port, url, headers = {}) {
       await page.goto(`http://localhost:${PORT}/demo/`, { waitUntil: 'networkidle' });
       try { await fn(page, log); } finally { await ctx.close(); }
     }
-    const setup = async page => { // start a classic game against bots from the lobby
+    const setup = async page => { // one click: "Play now" creates the game, seats the bots, deals and opens the board
       await page.waitForSelector('#create');
       await page.click('#create');
-      await page.waitForSelector('[data-addbot]');
-      await page.click('[data-addbot]'); // one computer player keeps the test short
-      await page.waitForFunction(() => document.querySelector('[data-start]') && !document.querySelector('[data-start]').disabled);
-      await page.click('[data-start]');
       await page.waitForSelector('svg.board');
     };
 
@@ -100,7 +96,25 @@ function get(port, url, headers = {}) {
       assert(await page.getAttribute('.demo-cta', 'href') === '/#/register' && await page.getAttribute('.demo-back', 'href') === '/', 'banner: "Create account" -> /#/register, "Back" -> /');
       assert(!(await page.$('text=Fortschritt')), 'no developer "Fortschritt" button');
       assert(/^You$/.test((await page.textContent('.nav-links a[href="#/profile"]')).trim()), 'the demo player is called "You"');
+      // lobby: one visible click starts a game, nothing about accounts, invitations or house rules
+      const lob = await page.evaluate(() => {
+        const vis = s => [...document.querySelectorAll(s)].filter(e => e.offsetParent !== null);
+        const b = document.querySelector('#qs-play').getBoundingClientRect();
+        return { playBottom: b.bottom, h: innerHeight, rules: vis('[data-sw]').length, share: vis('[data-share]').length, open: vis('.open-games').length, nudge: vis('#cnudge').length };
+      });
+      assert(lob.playBottom <= lob.h, '"Play now" is visible without scrolling at 1280x800');
+      assert(lob.rules === 0 && lob.share === 0 && lob.open === 0 && lob.nudge === 0, 'lobby: no house-rule switches, no invite link, no open-games card, no country nudge');
+      assert(await page.evaluate(() => window.BROCH_FX_SCALE < 1), 'the demo plays animations shorter (BROCH_FX_SCALE)');
+      // profile: no fake account UI
+      await page.click('.nav-links a[href="#/profile"]');
+      await page.waitForSelector('.demo-account');
+      const prof = await page.evaluate(() => ({ text: document.querySelector('.page').textContent, flag: !!document.querySelector('.page-title .flag'), pw: !!document.querySelector('#pwsave, #logout, #pcountry'), cta: document.querySelector('.demo-account a').getAttribute('href') }));
+      assert(!/Signed in as|admin|you@broch\.demo/.test(prof.text) && !prof.flag && !prof.pw, 'profile: no e-mail / admin line, no flag, no password or log-out card');
+      assert(prof.cta === '/#/register', 'profile: "Create account" card points to /#/register');
+      await page.click('.nav-links a[href="#/"]');
+      await page.waitForSelector('#create');
       await setup(page);
+      assert(await page.evaluate(() => [...window.BROCH_MOCK._games.values()].every(g => g.state && g.state.players.length === 4 && g.state.players.filter(p => String(p.userId).startsWith('bot_')).length === 3)), 'one click: 3 bots at the table and the game is dealt');
       let rolled = false;
       for (let i = 0; i < 240 && !rolled; i++) {
         if (await page.$('.roll-btn')) { await page.click('.roll-btn'); rolled = true; break; }
@@ -118,6 +132,19 @@ function get(port, url, headers = {}) {
       assert(!log.requests.some(u => u.startsWith('/api/')) && log.sockets === 0, 'the demo never calls /api and never opens a WebSocket');
       const keys = await page.evaluate(() => ({ local: Object.keys(localStorage), session: Object.keys(sessionStorage), cookie: document.cookie }));
       assert(keys.local.every(k => ['broch_lang', 'broch_muted'].includes(k)) && !keys.session.length && !keys.cookie, 'nothing but language / sound preferences is stored: ' + JSON.stringify(keys));
+    });
+
+    // the real bot pace: the whole setup (the bots place 6 pieces, the visitor 4) is over a few seconds after the click, not a minute
+    await visit({ locale: 'en-US', realPace: true }, async page => {
+      const t0 = Date.now();
+      await setup(page);
+      let secs = 99;
+      for (let i = 0; i < 160; i++) {
+        const done = await page.evaluate(() => { const c = el => el.dispatchEvent(new MouseEvent('click', { bubbles: true })); const g = [...window.BROCH_MOCK._games.values()][0]; if (g.state.phase !== 'setup') return true; const v = document.querySelector('.hl-v') || document.querySelector('.hl-e'); if (v) c(v); return false; });
+        if (done) { secs = (Date.now() - t0) / 1000; break; }
+        await sleep(200);
+      }
+      assert(secs < 12, `the setup (visitor and 3 bots) is finished ${secs.toFixed(1)} s after "Play now"`);
     });
 
     await visit({ locale: 'de-DE', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, async (page, log) => {

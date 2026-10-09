@@ -33,3 +33,16 @@
   .demo-back { min-height: 30px; }
   .demo-back::before { content: none; }
 }
+
+/* ---- the lobby of the demo: one click to play. No house rules / experiments (the defaults are the rules of the book), no waiting room,
+   no invitations (nobody can join a demo game), no folding of the form */
+.is-demo .ng-card [data-sw], .is-demo .ng-card .house-h, .is-demo .ng-card .grp, .is-demo .ng-fold { display: none; }
+.demo-hero { display: grid; gap: 8px; margin-bottom: 14px; }
+.demo-hero h2 { margin: 0; }
+.demo-hero p { margin: 0; color: var(--muted, #7C6B4E); }
+.demo-hero .btn { min-height: 54px; font-size: 19px; margin-top: 4px; }
+.demo-hero small { font-size: 13px; }
+.demo-account { display: grid; gap: 8px; justify-items: start; }
+.demo-account h3, .demo-account p { margin: 0; }
+/* on a phone the red "Play now" button of the form sticks to the bottom of the screen, so the extra card would only push the tiles down */
+@media (max-width: 760px) { .demo-hero { display: none; } }

@@ -121,7 +121,7 @@ function enqueue(fn) {
   queue = queue.then(afterBuilders).catch(() => {}).finally(() => { busy--; if (!busy) window.BROCH_FX_BUSY = false; });
   return queue;
 }
-const wait = ms => new Promise(r => setTimeout(r, ms));
+const wait = ms => new Promise(r => setTimeout(r, ms * (window.BROCH_FX_SCALE || 1))); // BROCH_FX_SCALE < 1: the public demo plays every pause shorter
 function layer(cls, html, { skippable = true } = {}) {
   const el = document.createElement('div');
   el.className = 'fx-scene ' + cls;

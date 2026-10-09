@@ -19,6 +19,7 @@ const users = [
   { id: 'u4', name: 'Ada', color: 'teal', country: 'KR' },
   { id: 'u5', name: 'Mads', color: 'purple', country: 'DK' },
 ];
+if (window.BROCH_PUBLIC_DEMO) Object.assign(users[0], { country: null, email: undefined, admin: false }); // a visitor has no account: no flag, no address, no admin
 let me = users[0];
 let emit = () => {};
 let watching = null;
@@ -26,7 +27,10 @@ let seq = 0;
 const games = new Map();
 // the public demo (served at /demo on the real site): no developer button, a slim banner instead of the small tag, no login/logout
 const PUBLIC = () => !!window.BROCH_PUBLIC_DEMO;
-const BOT_DELAY = window.BROCH_BOT_DELAY || 550;
+const BOT_DELAY = window.BROCH_BOT_DELAY || (PUBLIC() ? 600 : 550);
+// the public demo never makes a visitor wait for an animation: in the setup the bots place at once (their builders work side by side),
+// later a bot waits for the scene that is playing for at most this long
+const FX_WAIT_CAP = 1500;
 
 // a few sample results so the stats page has something to show
 const DAY = 864e5;
@@ -92,10 +96,11 @@ function finish(g) {
 }
 
 // ---------------------------------------------------------------- bots
-function botTick(g) {
+function botTick(g, waited = 0) {
   clearTimeout(g.timer);
-  // wait while a full-screen animation is playing so you can follow along
-  g.timer = setTimeout(() => (window.BROCH_FX_BUSY ? botTick(g) : runBots(g)), BOT_DELAY);
+  const quick = PUBLIC() && g.state && g.state.phase === 'setup';
+  // wait while a full-screen animation is playing so you can follow along (the public demo: not for long, and not in the setup)
+  g.timer = setTimeout(() => (window.BROCH_FX_BUSY && !quick && (!PUBLIC() || waited < FX_WAIT_CAP) ? botTick(g, waited + BOT_DELAY) : runBots(g)), quick ? Math.round(BOT_DELAY * 0.55) : BOT_DELAY);
 }
 function runBots(g) {
   const s = g.state;
@@ -118,6 +123,20 @@ function runBots(g) {
       }
     }
   }
+}
+
+function startGame(g) {
+  fixColors(g.meta);
+  const players = g.meta.seats.map(id => { const u = userOf(g, id); return { id, name: u.name, color: g.meta.colors[id], country: u.country }; });
+  g.state = engine.createGame({ id: g.meta.id, mode: g.meta.mode, players, options: { vpTarget: g.meta.vpTarget, expansion: g.meta.expansion, scenario: g.meta.scenario, variants: g.meta.variants, robberReturn: !!g.meta.robberReturn, startBoth: !!g.meta.startBoth, variable: !!g.meta.variable, knightsFree: !!g.meta.knightsFree, game: g.meta.gameOptions || {}, big: g.meta.big ?? players.length > 4 } });
+  g.meta.status = 'playing';
+  emit({ t: 'lobby' });
+  botTick(g);
+}
+function addBot(g) {
+  const id = 'bot_' + (++seq);
+  g.meta.bots[id] = { name: botName([...users.map(x => x.name), ...Object.values(g.meta.bots).map(x => x.name)]) };
+  g.meta.seats.push(id);
 }
 
 // ---------------------------------------------------------------- API
@@ -168,6 +187,7 @@ async function api(path, opts = {}) {
     const seats = [u.id];
     const g = { meta: { id, bots: {}, name: '', mode, expansion, scenario, variants, big, variable: expansion === 'seafarers' && !!b.variable, robberReturn: !!b.robberReturn, startBoth: !!b.startBoth, knightsFree: !!b.knightsFree && b.mode !== 'knights', gameOptions: standalone && b.gameOptions ? { ...b.gameOptions } : null, maxPlayers, vpTarget: standalone && engine.fixedVp(mode) ? defVp : b.vpTarget || defVp, host: u.id, seats, status: 'open' }, state: null };
     games.set(id, g);
+    if (b.quick) { while (seats.length < maxPlayers) addBot(g); startGame(g); return { game: card(g) }; } // the public demo: create, fill the seats with bots and deal in one step
     emit({ t: 'lobby' });
     return { game: card(g) };
   }
@@ -188,25 +208,18 @@ async function api(path, opts = {}) {
       g.meta.seats = g.meta.seats.filter(x => x !== b.id); delete g.meta.bots[b.id];
     } else {
       if (g.meta.seats.length >= g.meta.maxPlayers) throw err('The game is full.');
-      const id = 'bot_' + (++seq);
-      g.meta.bots[id] = { name: botName([...users.map(x => x.name), ...Object.values(g.meta.bots).map(x => x.name)]) };
-      g.meta.seats.push(id);
+      addBot(g);
     }
     emit({ t: 'lobby' });
     return { game: card(g) };
   }
-  if ((m = path.match(/^\/games\/(\w+)\/(join|leave|start|abandon)$/))) {
+  if ((m = path.match(/^\/games\/(\w+)\/(join|leave|start|abandon|resign)$/))) {
     need();
     const g = games.get(m[1]);
     if (!g) throw err('Game not found', 404);
     if (m[2] === 'start') {
-      fixColors(g.meta);
-      const players = g.meta.seats.map(id => { const u = userOf(g, id); return { id, name: u.name, color: g.meta.colors[id], country: u.country }; });
-      g.state = engine.createGame({ id: g.meta.id, mode: g.meta.mode, players, options: { vpTarget: g.meta.vpTarget, expansion: g.meta.expansion, scenario: g.meta.scenario, variants: g.meta.variants, robberReturn: !!g.meta.robberReturn, startBoth: !!g.meta.startBoth, variable: !!g.meta.variable, knightsFree: !!g.meta.knightsFree, game: g.meta.gameOptions || {}, big: g.meta.big ?? players.length > 4 } });
-      g.meta.status = 'playing';
-      emit({ t: 'lobby' });
-      botTick(g);
-    } else if (m[2] === 'leave' || m[2] === 'abandon') {
+      startGame(g);
+    } else if (m[2] === 'leave' || m[2] === 'abandon' || m[2] === 'resign') {
       clearTimeout(g.timer); games.delete(m[1]); emit({ t: 'lobby' });
       if (m[2] === 'abandon') emit({ t: 'abandoned' });
     }

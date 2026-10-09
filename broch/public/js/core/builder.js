@@ -138,6 +138,13 @@ function timeline(points, work) {
   return { pos, face, phase, hits, grow, arrive, work0, done, total: t + 40 };
 }
 
+// the same timeline played k times as long (k < 1 = faster); every time stamp is the first number of its entry
+function scaled(tl, k) {
+  if (k === 1) return tl;
+  const at = list => list.map(e => [e[0] * k, ...e.slice(1)]);
+  return { pos: at(tl.pos), face: at(tl.face), phase: tl.phase.map(([a, b]) => [a * k, b * k]), hits: tl.hits.map(h => ({ ...h, t: h.t * k })), grow: at(tl.grow), arrive: tl.arrive * k, work0: tl.work0 * k, done: tl.done * k, total: tl.total * k };
+}
+
 // ---------------------------------------------------------------- jobs
 
 function makeJob(view, kind, key, p, opts) {
@@ -183,7 +190,7 @@ function makeJob(view, kind, key, p, opts) {
   return finish({ kind, key, p, color, v, prev: opts.prev, site, points, work });
 
   function finish(job) {
-    const tl = timeline(job.points, job.work);
+    const tl = scaled(timeline(job.points, job.work), window.BROCH_FX_SCALE || 1); // the public demo sets BROCH_FX_SCALE < 1: the builders work faster
     Object.assign(job, tl, { id: ++SEQ, game: view.id, start: clock() });
     return job;
   }

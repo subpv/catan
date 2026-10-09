@@ -31,6 +31,7 @@ const app = document.getElementById('app');
 export const session = { user: null, config: {} };
 let cleanup = null;
 const tx = (k, p) => esc(t(k, p));
+const DEMO = !!window.BROCH_PUBLIC_DEMO; // the public demo at /demo (demo/public-prelude.js): no account, no friends, one click to play against bots
 
 const SPEAKER = on => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/>${on ? '<path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>' : '<path d="M17 9l5 6M22 9l-5 6"/>'}</svg>`;
 
@@ -75,9 +76,9 @@ document.addEventListener('click', e => {
 });
 
 function leaveDialog(id) {
-  modal(`<h2>${tx('Leave this game')}</h2><p class="muted">${tx('Resign: a bot takes over your seat and the game goes on without statistics.')}</p>
-    <div class="foot"><button class="btn m-main" data-close>${tx('Keep playing')}</button><button class="btn" data-do="resign">${tx('Resign')}</button><button class="btn danger" data-do="abandon" data-arm title="${tx('Close the game for everyone (host only)')}">${tx('Close game')}</button></div>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">${tx('Close the game for everyone (host only)')}</p>`, {
+  modal(`<h2>${tx('Leave this game')}</h2><p class="muted">${tx(DEMO ? 'Leave this demo game and go back to the lobby.' : 'Resign: a bot takes over your seat and the game goes on without statistics.')}</p>
+    <div class="foot"><button class="btn m-main" data-close>${tx('Keep playing')}</button><button class="btn" data-do="resign">${tx('Resign')}</button>${DEMO ? '' : `<button class="btn danger" data-do="abandon" data-arm title="${tx('Close the game for everyone (host only)')}">${tx('Close game')}</button>`}</div>
+    ${DEMO ? '' : `<p class="muted" style="font-size:12px;margin:8px 0 0">${tx('Close the game for everyone (host only)')}</p>`}`, {
     onMount(el, close) {
       el.querySelectorAll('[data-do]').forEach(b => {
         const label = b.textContent;
@@ -91,7 +92,7 @@ function leaveDialog(id) {
           }
           clearTimeout(timer);
           b.disabled = true;
-          try { await api(`/games/${id}/${b.dataset.do}`, { body: {} }); close(); if (b.dataset.do === 'resign') toast(t('You left the game. A bot plays on for you.')); location.hash = '#/'; } catch (err) { toast(err.message, 'warn'); b.disabled = false; delete b.dataset.armed; b.textContent = label; }
+          try { await api(`/games/${id}/${b.dataset.do}`, { body: {} }); close(); if (b.dataset.do === 'resign') toast(t(DEMO ? 'You left the demo game.' : 'You left the game. A bot plays on for you.')); location.hash = '#/'; } catch (err) { toast(err.message, 'warn'); b.disabled = false; delete b.dataset.armed; b.textContent = label; }
         };
       });
     },
@@ -120,22 +121,22 @@ const LP_FEATURES = [
   [LP_ICO('<path d="M8 3.5l4 2.3v4.6L8 12.7 4 10.4V5.8zM16 3.5l4 2.3v4.6l-4 2.3-4-2.3V5.8zM12 11.8l4 2.3v4.6l-4 2.3-4-2.3v-4.6z"/>'), '8 ways to play', 'Classic, Cities & Knights, Seafarers, Traders & Barbarians, Explorers & Pirates and three more.'],
   [LP_ICO('<circle cx="8.5" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.4"/><path d="M2.8 19c.5-3.4 2.8-5 5.7-5s5.2 1.6 5.7 5M15 14.3c3 0 5 1.4 5.5 4.3"/>'), 'Play together live', 'In real time with your friends, on any phone, tablet or computer.'],
   [LP_ICO('<rect x="5" y="8" width="14" height="10" rx="3"/><path d="M12 8V4.5M9 13h.01M15 13h.01M9.5 16h5M3 12v2M21 12v2"/><circle cx="12" cy="4" r="1"/>'), 'Bots included', 'Practise against bots, or let them fill the empty seats.'],
-  [LP_ICO('<path d="M5 20V11M12 20V4M19 20v-6"/>'), 'Your table, your rules', 'House rules, experiments and statistics, in {n} languages.'],
+  [LP_ICO('<path d="M4 8h13M13.5 4.5L17 8l-3.5 3.5M20 16H7M10.5 12.5L7 16l3.5 3.5"/>'), 'Trade with friends', 'Offer, counter-offer and bargain with every player, or trade with the bank.'],
 ];
 function renderAuth(mode = 'login', opts = {}) {
   document.body.dataset.route = 'auth';
   const reg = mode === 'register';
-  app.innerHTML = `<div class="page landing">
+  app.innerHTML = `<div class="page landing${opts.focus ? ' lp-arrived' : ''}">
     <div class="row lp-lang"><button class="iconbtn" data-lang-pick>${esc(LANGS.find(l => l[0] === lang())[1])}</button></div>
     <div class="lp-grid">
     <section class="lp-hero">
       <div class="lp-brand">${logoSvg('logo-big')}<h1>Broch</h1></div>
       <p class="lp-promise">${tx('Settle, trade and build with your friends.')}</p>
+      <a class="lp-shot" href="/demo/" tabindex="-1"><img src="/landing-board.png" width="504" height="496" alt="${esc(tx('A Broch game board with hexagon tiles, roads, settlements and harbors'))}" decoding="async"></a>
       <ul class="lp-feats">${LP_FEATURES.map(([ico, h, p]) => `<li>${ico}<span><b>${tx(h)}</b><small>${tx(p, { n: LANGS.length })}</small></span></li>`).join('')}</ul>
       <div class="lp-cta">
         <a class="btn gold block lp-try" href="/demo/">${tx('Try it now (no account)')}</a>
         <p class="lp-note">${tx('Plays right in your browser against bots. Nothing is saved.')}</p>
-        <div class="lp-sec"><button type="button" class="btn ghost" data-go="register">${tx('Create account')}</button><button type="button" class="btn ghost" data-go="login">${tx('Log in')}</button></div>
       </div>
     </section>
     <div class="card lp-form" id="lp-form">
@@ -155,7 +156,6 @@ function renderAuth(mode = 'login', opts = {}) {
     ${footer()}
   </div>`;
   app.querySelectorAll('[data-m]').forEach(b => b.onclick = () => renderAuth(b.dataset.m));
-  app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => renderAuth(b.dataset.go, { focus: true }));
   if (opts.focus) { const form = app.querySelector('#lp-form'); form.scrollIntoView({ block: 'start', behavior: 'smooth' }); app.querySelector(reg ? '#f-name' : '#f-email').focus({ preventScroll: true }); }
   app.querySelector('[data-eye]').onclick = e => {
     const b = e.currentTarget, pw = app.querySelector('#f-pw'), show = pw.type === 'password';
@@ -211,7 +211,7 @@ function colorSwatches(g, meId) {
 
 async function renderLobby() {
   app.innerHTML = `${topbar('play')}<div class="page"><h1 class="page-title">${tx('Play')}</h1>
-    ${session.user.country ? '' : `<div class="card country-nudge" id="cnudge"><span class="spacer">${tx('Where are you from? Your flag is shown next to your name.')}</span>${countrySelect('nudge-country', guessCountry())}<button class="btn primary small" id="cnsave">${tx('Save')}</button></div>`}
+    ${session.user.country || DEMO ? '' : `<div class="card country-nudge" id="cnudge"><span class="spacer">${tx('Where are you from? Your flag is shown next to your name.')}</span>${countrySelect('nudge-country', guessCountry())}<button class="btn primary small" id="cnsave">${tx('Save')}</button></div>`}
     <div id="lobby" class="grid2"></div>${footer()}</div>`;
   document.body.dataset.route = 'lobby';
   app.querySelector('#cnsave')?.addEventListener('click', async () => {
@@ -262,7 +262,7 @@ async function renderLobby() {
     const row = (g, btns, kind = 'mine') => `<div class="game-row r-${kind}${kind === 'mine' && g.current === me ? ' my-turn' : ''}"><div class="info"><div class="title"><span class="gn">${gname(g)}</span> <span class="badges">${modeBadge(g)}</span></div><div class="sub">${sub(g)}</div></div>${btns}</div>`;
     // phones: the new-game form folds into one summary line once the user has games
     const hasGames = mineRunning.length + mineOpen.length > 0;
-    const open = ngOpen ?? !hasGames;
+    const open = DEMO || (ngOpen ?? !hasGames);
     const ph = isPhone();
     const modeName = () => {
       const m = newGame.mode, x = newGame.expansion;
@@ -275,8 +275,11 @@ async function renderLobby() {
     };
     el.innerHTML = `
       <div class="lob-col">
+        ${DEMO ? `<div class="card demo-hero"><h2>${tx('Ready to try it?')}</h2><p>${tx('Start right away against computer players, or pick another game below.')}</p>
+          <button class="btn primary block" id="qs-play">${tx('Play now')}</button>
+          <small class="muted">${tx('{mode} · {players} players · {points} points', { mode: modeName(), players: newGame.maxPlayers, points: newGame.vpTarget })}</small></div>` : ''}
         <div class="card ng-card${open ? '' : ' ng-collapsed'}">
-          <div class="ng-head"><h2>${tx('New game')}</h2><button class="btn small howto" data-tut-open>▶ ${tx('How to play')}</button><button class="ng-fold" data-ng-fold title="${tx('Close')}" aria-label="${tx('Close')}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
+          <div class="ng-head"><h2>${tx(DEMO ? 'Pick another game' : 'New game')}</h2><button class="btn small howto" data-tut-open>▶ ${tx('How to play')}</button><button class="ng-fold" data-ng-fold title="${tx('Close')}" aria-label="${tx('Close')}"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
           <div class="ng-sum"><span class="ng-sum-t">${tx('{mode} · {players} players · {points} points', { mode: modeName(), players: newGame.maxPlayers, points: newGame.vpTarget })}</span><button class="btn" data-ng-open>${tx('Change')}</button></div>
           <div class="ng-body">
           <div class="field"><span class="muted" style="font-size:13px">${tx('Version')}</span>
@@ -312,7 +315,7 @@ async function renderLobby() {
             <div class="field"><span>${tx('Players')}</span><div class="stepper"><button data-np="-1" aria-label="${tx('Fewer')}">−</button><b id="np">${newGame.maxPlayers}</b><button data-np="1" aria-label="${tx('More')}">+</button></div></div>
             ${isStandalone(newGame.mode) && GAMES[newGame.mode].fixedVp ? '' : `<div class="field"><span>${tx('Points to win')}</span><div class="stepper"><button data-vp="-1" aria-label="${tx('Fewer')}">−</button><b id="vpt">${newGame.vpTarget}</b><button data-vp="1" aria-label="${tx('More')}">+</button></div></div>`}
           </div>
-          <div class="m-sticky ng-create"><button class="btn primary block" id="create">${tx('Create game')}</button></div>
+          <div class="m-sticky ng-create"><button class="btn primary block" id="create">${tx(DEMO ? 'Play now' : 'Create game')}</button></div>
           </div>
         </div>
       </div>
@@ -324,9 +327,9 @@ async function renderLobby() {
             <div class="field"><span>${tx('Pick your color')}</span>${colorSwatches(g, me)}</div>
             ${g.host === me && g.seats.length < g.maxPlayers ? `<div class="row wrap wr-bots"><button class="btn small" data-addbot="${g.id}">🤖 ${tx('Add bot')}</button>${g.maxPlayers - g.seats.length > 1 ? `<button class="btn small" data-fillbots="${g.id}">${tx('Fill free seats with bots')}</button>` : ''}<span class="muted" style="font-size:12.5px">${tx('Computer players take empty seats. Games with bots do not count for the statistics.')}</span></div>` : ''}
             <div class="row wrap wr-foot">${g.host === me ? `<button class="btn primary" data-start="${g.id}" ${g.seats.length < minPlayersOf(g.mode) ? 'disabled' : ''}>${tx('Start game')}</button>` : `<span class="muted" style="font-size:13px">${tx('Waiting for the host to start…')}</span>`}
-              <span class="spacer"></span><button class="btn small" data-share="${g.id}">${tx('Copy invite link')}</button><button class="btn small" data-leave="${g.id}">${tx('Leave')}</button></div>
+              <span class="spacer"></span>${DEMO ? '' : `<button class="btn small" data-share="${g.id}">${tx('Copy invite link')}</button>`}<button class="btn small" data-leave="${g.id}">${tx('Leave')}</button></div>
           </div>`).join('')}
-        <div class="card open-games"><h3>${tx('Open games')}</h3>${others.length ? others.map(g => row(g, `<button class="btn small gold" data-join="${g.id}" ${g.seats.length >= g.maxPlayers ? 'disabled' : ''}>${tx('Join')}</button>`, 'open')).join('') : `<div class="empty">${tx('No open games. Create one and invite your friends.')}</div>`}</div>
+        ${DEMO ? '' : `<div class="card open-games"><h3>${tx('Open games')}</h3>${others.length ? others.map(g => row(g, `<button class="btn small gold" data-join="${g.id}" ${g.seats.length >= g.maxPlayers ? 'disabled' : ''}>${tx('Join')}</button>`, 'open')).join('') : `<div class="empty">${tx('No open games. Create one and invite your friends.')}</div>`}</div>`}
         ${watch.length ? `<div class="card watch-games"><h3>${tx('Watch')}</h3>${watch.map(g => row(g, `<a class="btn small" href="#/game/${g.id}">${tx('Watch')}</a>`, 'watch')).join('')}</div>` : ''}
       </div>`;
     const reVp = () => { if (!newGame.vpTouched) newGame.vpTarget = defaultVp(); };
@@ -387,7 +390,13 @@ async function renderLobby() {
       sfx.click(); draw(false);
     });
     el.querySelectorAll('[data-vp]').forEach(b => b.onclick = () => { newGame.vpTarget = Math.max(5, Math.min(20, newGame.vpTarget + +b.dataset.vp)); newGame.vpTouched = true; sfx.click(); draw(false); });
-    el.querySelector('#create').onclick = async () => {
+    // the public demo: one click creates the game, fills every other seat with a bot, deals and opens the board (no waiting room, nobody to invite)
+    const quickPlay = async e => {
+      const b = e.currentTarget; b.disabled = true;
+      try { const { vpTouched, ...body } = newGame; const { game } = await api('/games', { body: { ...body, quick: true } }); sfx.place(); location.hash = `#/game/${game.id}`; } catch (err) { toast(err.message, 'warn'); b.disabled = false; }
+    };
+    if (DEMO) el.querySelectorAll('#create, #qs-play').forEach(b => { b.onclick = quickPlay; });
+    else el.querySelector('#create').onclick = async () => {
       try { const { vpTouched, ...body } = newGame; await api('/games', { body }); sfx.place(); ngOpen = false; if (isPhone()) window.scrollTo({ top: 0, behavior: 'smooth' }); toast(t('Game created. Pick your color and invite your friends.')); } catch (e) { toast(e.message, 'warn'); }
     };
     const post = (sel, verb, after) => el.querySelectorAll(`[data-${sel}]`).forEach(b => b.onclick = async () => {
@@ -438,17 +447,17 @@ function renderProfile() {
       <label class="field"><span>${tx('Display name')}</span><input class="input" id="pname" value="${esc(u.name)}" maxlength="24"></label>
       <div class="field"><span>${tx('Favorite color (used in games when it is free, and on the stats page)')}</span>
         <div class="swatches">${COLOR_KEYS.map(c => `<button class="swatch ${u.color === c ? 'on' : ''}" data-color="${c}" title="${esc(colorName(c))}" style="--c:${PCOLOR[c]};--d:${PCOLOR_DARK[c]};--ink:${inkOn(c)}">${u.color === c ? '<span>✓</span>' : ''}</button>`).join('')}</div></div>
-      <label class="field"><span>${tx('Country')}</span>${countrySelect('pcountry', u.country || guessCountry())}</label>
+      ${DEMO ? '' : `<label class="field"><span>${tx('Country')}</span>${countrySelect('pcountry', u.country || guessCountry())}</label>`}
       <div class="field"><span>${tx('Language')}</span><button class="btn small lang-row" data-lang-pick><span>${esc(LANGS.find(l => l[0] === lang())[1])}</span><i class="lr-chev" aria-hidden="true">›</i></button></div>
       <div class="m-sticky ps-save"><button class="btn primary" id="psave">${tx('Save')}</button></div>
-      <p class="muted" style="font-size:13px;margin:10px 0 0">${tx('Signed in as {email}', { email: u.email })}${u.admin ? ` · ${tx('admin')}` : ''}</p>
+      ${DEMO ? '' : `<p class="muted" style="font-size:13px;margin:10px 0 0">${tx('Signed in as {email}', { email: u.email })}${u.admin ? ` · ${tx('admin')}` : ''}</p>`}
     </div>
-    <div class="card"><h3>${tx('Change password')}</h3>
+    ${DEMO ? `<div class="card demo-account"><h3>${tx('Like it?')}</h3><p>${tx('Create an account to play with your friends online and keep your statistics.')}</p><a class="btn gold" href="/#/register">${tx('Create account')}</a></div>` : `<div class="card"><h3>${tx('Change password')}</h3>
       <label class="field"><span>${tx('Current password')}</span><input class="input" type="password" id="pw0" autocomplete="current-password"></label>
       <label class="field"><span>${tx('New password')}</span><input class="input" type="password" id="pw1" minlength="8" autocomplete="new-password"></label>
       <button class="btn" id="pwsave">${tx('Change password')}</button>
     </div>
-    <div class="card"><div class="row"><div class="spacer">${tx('Done for today?')}</div><button class="btn dark" id="logout">${tx('Log out')}</button></div></div>
+    <div class="card"><div class="row"><div class="spacer">${tx('Done for today?')}</div><button class="btn dark" id="logout">${tx('Log out')}</button></div></div>`}
     ${footer()}</div>`;
   let color = u.color;
   app.querySelectorAll('[data-color]').forEach(b => b.onclick = () => {
@@ -456,12 +465,12 @@ function renderProfile() {
     app.querySelectorAll('[data-color]').forEach(x => { x.classList.toggle('on', x === b); x.innerHTML = x === b ? '<span>✓</span>' : ''; });
   });
   app.querySelector('#psave').onclick = async () => {
-    try { const r = await api('/me', { method: 'PATCH', body: { name: app.querySelector('#pname').value, color, country: app.querySelector('#pcountry').value || undefined } }); session.user = r.user; toast(t('Saved.')); renderProfile(); } catch (e) { toast(e.message, 'warn'); }
+    try { const r = await api('/me', { method: 'PATCH', body: { name: app.querySelector('#pname').value, color, country: app.querySelector('#pcountry')?.value || undefined } }); session.user = r.user; toast(t('Saved.')); renderProfile(); } catch (e) { toast(e.message, 'warn'); }
   };
-  app.querySelector('#pwsave').onclick = async () => {
+  if (!DEMO) app.querySelector('#pwsave').onclick = async () => {
     try { await api('/me', { method: 'PATCH', body: { password: app.querySelector('#pw0').value, newPassword: app.querySelector('#pw1').value } }); toast(t('Password changed.')); } catch (e) { toast(e.message, 'warn'); }
   };
-  app.querySelector('#logout').onclick = async () => { await api('/logout', { body: {} }).catch(() => {}); session.user = null; wsClose(); location.hash = '#/'; route(); };
+  if (!DEMO) app.querySelector('#logout').onclick = async () => { await api('/logout', { body: {} }).catch(() => {}); session.user = null; wsClose(); location.hash = '#/'; route(); };
 }
 
 // ------------------------------------------------------------ router
@@ -472,7 +481,7 @@ async function route(keepScroll) {
   const h = location.hash.replace(/^#/, '') || '/';
   if (!session.user) {
     if (h.startsWith('/join/')) { try { sessionStorage.setItem('broch_join', h.split('/')[2]); } catch { /* storage blocked */ } }
-    return renderAuth(h.startsWith('/register') ? 'register' : 'login'); // the demo banner and shared links open #/register
+    return renderAuth(h.startsWith('/register') ? 'register' : 'login', { focus: h.startsWith('/register') || h.startsWith('/login') }); // the demo banner and shared links open #/register
   }
   let pendingJoin = null;
   try { pendingJoin = sessionStorage.getItem('broch_join'); } catch { /* storage blocked */ }
@@ -480,6 +489,7 @@ async function route(keepScroll) {
   let m;
   try {
     if ((m = h.match(/^\/join\/([\w-]+)/))) {
+      if (DEMO) { location.hash = '#/'; return; } // nobody can join a demo game
       try { await api(`/games/${m[1]}/join`, { body: {} }); toast(t('You joined the game.')); } catch (e) { toast(e.message, 'warn'); }
       location.hash = '#/'; return;
     }
@@ -516,7 +526,7 @@ window.addEventListener('hashchange', () => route());
     reportProblem('Could not load Broch', e.message);
   }
   if (session.user) wsConnect();
-  onWs(msg => { if (msg.t === 'abandoned' && location.hash.startsWith('#/game/')) { toast(t('The host closed this game.'), 'warn'); location.hash = '#/'; } });
+  onWs(msg => { if (msg.t === 'abandoned' && location.hash.startsWith('#/game/')) { toast(t(DEMO ? 'This demo game is gone (a reload ends it). Start a new one.' : 'The host closed this game.'), 'warn'); location.hash = '#/'; } });
   route();
 })();
 
