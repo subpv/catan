@@ -143,7 +143,7 @@ function renderAuth(mode = 'login', opts = {}) {
       <div class="tabs2"><button data-m="login" class="${reg ? '' : 'on'}">${tx('Log in')}</button><button data-m="register" class="${reg ? 'on' : ''}">${tx('Create account')}</button></div>
       <form id="authf">
         ${reg ? `<label class="field"><span>${tx('Display name')}</span><input class="input" name="name" id="f-name" maxlength="24" autocomplete="nickname" required></label>` : ''}
-        ${reg ? `<label class="field"><span>${tx('Country')}</span>${countrySelect('f-country', guessCountry())}</label>` : ''}
+        ${reg ? `<label class="field"><span>${tx('Country')}</span>${countrySelect('f-country', 'DE')}</label>` : ''}
         <label class="field"><span>${tx('Email')}</span><input class="input" name="email" id="f-email" type="email" autocomplete="email" required></label>
         <label class="field pw-field"><span>${tx('Password')}</span><input class="input" name="password" id="f-pw" type="password" minlength="8" autocomplete="${reg ? 'new-password' : 'current-password'}" required><button type="button" class="pw-eye" data-eye aria-pressed="false" title="${tx('Show password')}" aria-label="${tx('Show password')}">${EYE(false)}</button></label>
         ${reg && session.config.needsCode && !session.config.firstUser ? `<label class="field"><span>${tx('Invite code (ask whoever runs this server)')}</span><input class="input" name="code" id="f-code" required></label>` : ''}

@@ -28,7 +28,12 @@ export function guessCountry() {
   return byLang[l] || '';
 }
 
+// European countries are listed first (then a divider, then the rest of the world), each part sorted by the name in the current language
+const EUROPE = new Set('AD AL AT AX BA BE BG BY CH CY CZ DE DK EE ES FI FO FR GB GG GI GR HR HU IE IM IS IT JE LI LT LU LV MC MD ME MK MT NL NO PL PT RO RS RU SE SI SJ SK SM TR UA VA XK'.split(' '));
 export function countrySelect(id, selected) {
-  const opts = COUNTRIES.map(c => [c, countryName(c)]).sort((a, b) => a[1].localeCompare(b[1], lang()));
-  return `<select class="input" id="${id}" name="country" required><option value="" disabled ${selected ? '' : 'selected'}></option>${opts.map(([c, n]) => `<option value="${c}" ${c === selected ? 'selected' : ''}>${flagEmoji(c)} ${n.replace(/</g, '&lt;')}</option>`).join('')}</select>`;
+  const byName = (a, b) => a[1].localeCompare(b[1], lang());
+  const all = COUNTRIES.map(c => [c, countryName(c)]);
+  const eu = all.filter(([c]) => EUROPE.has(c)).sort(byName), rest = all.filter(([c]) => !EUROPE.has(c)).sort(byName);
+  const opt = ([c, n]) => `<option value="${c}" ${c === selected ? 'selected' : ''}>${flagEmoji(c)} ${n.replace(/</g, '&lt;')}</option>`;
+  return `<select class="input" id="${id}" name="country" required><option value="" disabled ${selected ? '' : 'selected'}></option>${eu.map(opt).join('')}<option disabled>──────────</option>${rest.map(opt).join('')}</select>`;
 }
