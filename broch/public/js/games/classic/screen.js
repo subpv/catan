@@ -470,6 +470,28 @@ function renderBoardPart() {
   }
 }
 
+// phone: with dozens of corners glowing at zoom 1 they are only ~29 px apart. A tap that is too close to call zooms in (onBoardClick),
+// so the first time it happens a short pill under the HUD row says: tap twice. It goes away after 6 s or at the first touch.
+function tapHint() {
+  if (G.tapHinted) return;
+  G.tapHinted = true;
+  const gen = G; // after the dice overlay of the move before is gone (it covers the same strip of the board)
+  setTimeout(() => {
+    if (G !== gen || !G.tgSig || G.zoom.z >= 1.2) { gen.tapHinted = false; return; }
+    const wrap = G.app.querySelector('.board-wrap');
+    if (wrap && !wrap.querySelector('.tap-hint')) showTapHint(wrap);
+  }, 1800);
+}
+function showTapHint(wrap) {
+  const el = document.createElement('div');
+  el.className = 'tap-hint m-only';
+  el.setAttribute('role', 'status');
+  el.textContent = t('Tap twice: the first tap zooms in, the second one picks.');
+  wrap.appendChild(el);
+  const gone = () => { wrap.removeEventListener('pointerdown', gone, true); el.classList.add('out'); setTimeout(() => el.remove(), 500); };
+  wrap.addEventListener('pointerdown', gone, true);
+  setTimeout(() => { if (el.isConnected) gone(); }, 6000);
+}
 // phone: when a few corners or edges glow, zoom to them (the finger needs room); afterwards go back to where the board was
 // unless the person zoomed by hand in between
 function phoneTargetZoom(tg) {
@@ -483,7 +505,7 @@ function phoneTargetZoom(tg) {
     if (pre && !G.zoomer.touched()) G.zoomer.zoomTo(pre.z, pre.cx, pre.cy);
     return;
   }
-  if (n > 12) return;
+  if (n > 12) { if (G.zoom.z < 1.2) tapHint(); return; } // too many to zoom to (a setup on a big map): say how to get close
   const svg = G.app.querySelector('svg.board');
   if (!svg) return;
   const pts = [...svg.querySelectorAll('.hl-v, .hl-e')].map(el => { const b = el.getBBox(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });

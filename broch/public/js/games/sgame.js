@@ -356,6 +356,7 @@ function renderBoardPart() {
   const P = plugin();
   host.innerHTML = P.board ? P.board(G.view, tg, G.fresh, G.zoom, G.life, G.A) : renderBoard(G.view, tg, G.fresh, G.zoom, G.life, true, P.ext && P.ext(G.view, G.A));
   G.zoomer.apply();
+  phoneStartZoom(host);
   phoneZoomHint(host);
   phoneTargetZoom(tg);
   syncLoops(host);
@@ -364,12 +365,44 @@ function renderBoardPart() {
     G.fxClean = setTimeout(() => host.querySelectorAll('.fx-flash,.fx-roadglow,.fx-light,.fx-dust,.fx-splash').forEach(el => el.remove()), 2600);
   }
 }
+// phone, portrait: the wide maps (Dawn of Humankind, Explorers & Pirates) are about twice as wide as high, so fitted whole they are
+// 17-22 px per field with a big empty blue band above and below. They open at 1.5x instead, centred on the person's own camps,
+// once per game; the "whole map" button, the - button and a double-tap still go back to the fitted view.
+const START_ZOOM = 1.5;
+function ownPoints(v) {
+  const S = 56; // board units are 56 px per hex radius in both map renderers
+  const V = v.board && v.board.vertices;
+  if (!V || v.me == null || v.me < 0) return [];
+  const ids = Object.entries(v.buildings || {}).filter(([, b]) => b && b.p === v.me).map(([id]) => +id);
+  (v.humankind?.explorers || []).forEach(e => { if (e.p === v.me) ids.push(e.v); });
+  return ids.map(id => V[id]).filter(Boolean).map(q => ({ x: q.x * S, y: q.y * S }));
+}
+function phoneStartZoom(host) {
+  if (!isPhone() || G.startZoomed || !G.zoomer) return;
+  const P = plugin();
+  if (!P.wideMap || host.clientWidth < 100 || host.clientHeight < 120) return;
+  const pts = ownPoints(G.view);
+  if (!pts.length && G.view.phase !== 'play' && G.view.me >= 0) return; // still placing the first camp: wait until there is one to centre on
+  G.startZoomed = true;
+  if (G.zoomer.touched() || !matchMedia('(orientation: portrait)').matches) return;
+  const svg = host.querySelector('svg.board');
+  if (!svg || !svg.dataset.base) return;
+  const [bx, by, bw, bh] = svg.dataset.base.split(' ').map(Number);
+  const c = pts.length ? { x: pts.reduce((a, q) => a + q.x, 0) / pts.length, y: pts.reduce((a, q) => a + q.y, 0) / pts.length } : { x: bx + bw / 2, y: by + bh / 2 };
+  const home = { z: START_ZOOM, cx: c.x, cy: c.y };
+  G.startZoomIn = true;
+  // a pick is zoomed in right now (phoneTargetZoom): this view is where it goes back to
+  if (G.zoom.z !== 1) { if (G.preZoom) G.preZoom = home; return; }
+  G.zoom = home;
+  G.zoomer.apply();
+  if (G.preZoom) G.preZoom = { ...G.zoom }; // a pick that glowed before the map had its size: afterwards go back to this view, not to the fitted one
+}
 // phone: every map opens fitted whole (zoom 1, like the classic board). The wide maps (Dawn of Humankind, Explorers & Pirates)
 // are small at that size, so the first time a person sees one a short hint says how to zoom in. Zooming into picks is automatic (phoneTargetZoom).
 function phoneZoomHint(host) {
   if (!isPhone() || G.zoomHinted) return;
   const P = plugin();
-  if (!P.wideMap || G.zoom.z !== 1 || host.clientWidth < 100) return;
+  if (!P.wideMap || !G.startZoomed || G.startZoomIn || G.zoom.z !== 1 || host.clientWidth < 100) return; // (not before phoneStartZoom has had its say: it zooms in by itself in portrait)
   G.zoomHinted = true;
   let seen = false;
   try { seen = localStorage.getItem('broch_zoom_hint') === '1'; localStorage.setItem('broch_zoom_hint', '1'); } catch { /* storage blocked */ }

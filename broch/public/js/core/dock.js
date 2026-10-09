@@ -158,8 +158,32 @@ export function mountDock(app, ctx) {
   const drawBar = () => {
     const unread = ctx.unread ? ctx.unread() : 0;
     const cur = game.dataset.sheet;
+    const tabsEl = bar.querySelector('.m-tabs'), keep = tabsEl ? tabsEl.scrollLeft : 0;
     set('bar', bar, sheetBarHtml(tabs(), cur, unread));
+    fitTabs(keep);
   };
+  // the tab row scrolls when the labels do not fit (long languages): keep its position over a redraw, bring the chosen tab into view,
+  // and fade the edge that has more behind it (--fl / --fr, read by the mask in mobile-game.css)
+  const fadeTabs = () => {
+    const el = bar.querySelector('.m-tabs');
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    el.style.setProperty('--fl', max > 1 && el.scrollLeft > 1 ? '22px' : '0px');
+    el.style.setProperty('--fr', max > 1 && el.scrollLeft < max - 1 ? '22px' : '0px');
+  };
+  const fitTabs = (keep = 0) => {
+    const el = bar.querySelector('.m-tabs');
+    if (!el) return;
+    el.scrollLeft = keep;
+    const on = el.querySelector('.m-tab.on');
+    if (on && el.scrollWidth > el.clientWidth) {
+      const pad = 26;
+      if (on.offsetLeft - pad < el.scrollLeft) el.scrollLeft = Math.max(0, on.offsetLeft - pad);
+      else if (on.offsetLeft + on.offsetWidth + pad > el.scrollLeft + el.clientWidth) el.scrollLeft = on.offsetLeft + on.offsetWidth + pad - el.clientWidth;
+    }
+    fadeTabs();
+  };
+  bar.addEventListener('scroll', fadeTabs, true);
   const drawBadges = () => {
     const n = ctx.unread ? ctx.unread() : 0;
     game.querySelectorAll('.m-more .unread, .m-tab .unread').forEach(u => { u.hidden = !n; u.textContent = n > 9 ? '9+' : n; });
@@ -186,6 +210,7 @@ export function mountDock(app, ctx) {
     game.classList.toggle('sheet-open', !!name);
     side.toggleAttribute('aria-hidden', !name);
     drawBar();
+    if (name) requestAnimationFrame(() => fitTabs(bar.querySelector('.m-tabs')?.scrollLeft || 0));
     if (name === 'menu') { cache.menu = null; drawMenu(); }
     if (name === 'chat' || name === 'log' || name === 'graphs') ctx.onTab && ctx.onTab(name);
     if (!!was !== !!name || was !== name) ctx.onSheet && ctx.onSheet(name);
@@ -282,7 +307,7 @@ export function mountDock(app, ctx) {
     if (!phone) { close(); game.classList.remove('dock-tall'); document.documentElement.style.removeProperty('--m-dock-h'); document.documentElement.style.removeProperty('--m-acts-max'); }
     cache = {}; update(); measure();
   });
-  const onWin = () => measure();
+  const onWin = () => { measure(); fitTabs(bar.querySelector('.m-tabs')?.scrollLeft || 0); };
   window.addEventListener('resize', onWin);
 
   function update() {

@@ -204,6 +204,11 @@
   .fx-scene h1 { text-wrap: balance; overflow-wrap: anywhere; font-size: clamp(30px, 9vw, 46px); line-height: 1.1; }
   .fx-scene p { font-size: 16px; }
   .fx-scene[data-hint]::after { content: attr(data-hint); position: absolute; left: 0; right: 0; bottom: calc(16px + var(--m-safe-b, 0px)); text-align: center; font-size: 12px; letter-spacing: .06em; color: rgba(255,243,220,.78); pointer-events: none; opacity: 0; animation: m-hint-in .4s ease-out 1s forwards; }
+  /* in the game the dock (hand, buttons) belongs to the page behind the scene: the hint sits above it and the scene keeps clear of it */
+  body[data-route="game"] .fx-scene { padding-bottom: calc(var(--m-dock-h, 0px) + var(--m-safe-b, 0px) + 36px); }
+  body[data-route="game"] .fx-scene[data-hint]::after { bottom: calc(var(--m-dock-h, 0px) + var(--m-safe-b, 0px) + 8px); }
+  /* the 'draws from the bag' style scenes have no backdrop on the desktop (the board shows through): on the phone they dim the whole page, dock included */
+  .fx-event { background: rgba(20,8,4,.7); }
   .fx-event .ev-card { padding: 16px 14px 18px; max-width: calc(100vw - 24px); }
   .ev-disc { width: 132px; }
   .ev-face { width: 72px; height: 72px; }
@@ -297,7 +302,8 @@
   .fx-scene { padding: calc(12px + var(--m-safe-t, 0px)) calc(16px + var(--m-safe-r, 0px)) calc(12px + var(--m-safe-b, 0px)) calc(16px + var(--m-safe-l, 0px)); }
   .fx-scene h1 { font-size: 28px; }
   .fx-scene p { font-size: 14px; max-width: 44ch; }
-  .fx-scene[data-hint]::after { bottom: calc(6px + var(--m-safe-b, 0px)); }
+  body[data-route="game"] .fx-scene { padding-bottom: calc(12px + var(--m-safe-b, 0px)); }
+  .fx-scene[data-hint]::after, body[data-route="game"] .fx-scene[data-hint]::after { bottom: calc(6px + var(--m-safe-b, 0px)); right: calc(min(36vw, 340px) + var(--m-safe-r, 0px)); } /* landscape: the dock is the right column, the hint stays in the board half */
   .fx-robber { flex-direction: row; gap: 16px; }
   .fx-robber-fig { width: 110px; }
   .fx-seven { width: 44px; height: 44px; font-size: 26px; margin-bottom: 4px; }

@@ -90,8 +90,8 @@ function progressPanel(v, A) {
     const extra = k === 'food' ? ` ${t('Reach {n}.', { n: 3 + lvl })}` : '';
     return `<div class="hk-track" style="--tc:${tr.color}">
       <span class="hk-ti">${glyph(tr.icon, 18)}</span>
-      <div class="hk-tb"><b>${esc(term(k))}</b><div class="hk-pips">${pips(lvl, tr.color)}</div>${medal}<small>${esc(t(tr.perk))}${esc(extra)}</small></div>
-      ${lvl < 4 && mine ? `<button class="btn small ${can ? 'gold' : ''}" data-hk-adv="${k}" ${can ? '' : 'disabled'} title="${tx('Advance')}">${costDots(STEP_COST[lvl])}</button>` : `<span class="hk-done">${lvl >= 4 ? '✓' : ''}</span>`}
+      <div class="hk-tb"><span class="hk-th"><b>${esc(term(k))}</b><div class="hk-pips">${pips(lvl, tr.color)}</div>${medal}</span><small>${esc(t(tr.perk))}${esc(extra)}</small></div>
+      ${lvl < 4 && mine ? `<button class="btn small ${can ? 'gold' : ''}" data-hk-adv="${k}" ${can ? '' : 'disabled'} title="${tx('Advance')}" aria-label="${tx('Advance')}"><svg class="hk-up m-only" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 10l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="hk-cost">${costDots(STEP_COST[lvl])}</span></button>` : `<span class="hk-done">${lvl >= 4 ? '✓' : ''}</span>`}
     </div>`;
   }).join('');
   return `<div class="panel hk-prog"><div class="panel-h">${tx('Progress')}</div>${rows}</div>${awardsPanel(v)}`;

@@ -150,11 +150,16 @@ export function createZoom({ host, getState, setState, onChange }) {
     onChange && onChange(L.z);
   }
 
-  // phone: the glowing corners and edges keep a readable size on a small board (about 9.5 px radius on screen)
+  // phone: the glowing corners and edges keep a readable size on a small board.
+  // Edges: about 9.5 px radius on screen. Corners: the drawn marker follows the distance between two corners (56 units, ~29 px at zoom 1)
+  // so a board full of them (setup on a big map) does not hide tiles and number tokens: about 5-6 px at zoom 1, 9.5 px once zoomed in.
+  // Behind each marker the invisible hit circle is as big as a thumb needs (27 px), but never reaches further than halfway to the next corner.
   function markers(svg, s) {
     const k = clamp(9.5 / (14 * s), 1, 1.36); // never bigger than a third of the distance between two corners (56 units)
     svg.style.setProperty('--hs', k.toFixed(2));
-    svg.querySelectorAll('.hl-v').forEach(c => c.setAttribute('r', (14 * k).toFixed(1)));
+    const gap = 56 * s, draw = clamp(gap * 0.19, 4.5, 9.5), hit = clamp(gap * 0.5, 11, 27);
+    svg.querySelectorAll('.hl-v').forEach(c => c.setAttribute('r', (draw / s).toFixed(1)));
+    svg.querySelectorAll('circle[data-v]:not(.hl-v)').forEach(c => c.setAttribute('r', (hit / s).toFixed(1)));
   }
 
   function begin() {
@@ -214,7 +219,7 @@ export function createZoom({ host, getState, setState, onChange }) {
     const to = layout(z, cx ?? from.cx, cy ?? from.cy);
     const t0 = performance.now();
     const step = now => {
-      const p = Math.min(1, (now - t0) / ms);
+      const p = Math.max(0, Math.min(1, (now - t0) / ms)); // the first frame's timestamp can be older than t0: never run backwards
       const e = 1 - Math.pow(1 - p, 3);
       const z1 = 1 / (1 / from.z + (1 / to.z - 1 / from.z) * e); // even change of the visible area
       preview(z1, from.cx + (to.cx - from.cx) * e, from.cy + (to.cy - from.cy) * e);

@@ -1458,6 +1458,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Pierre 1 : {@p}. Pierre 2 : {@q
 "Choose {n} more":"Choisissez-en encore {n}",
 "Rules and bonuses":"Règles et bonus",
 "Tap a card to add one":"Touchez une carte pour en ajouter une",
+"Tap twice: the first tap zooms in, the second one picks.":"Touchez deux fois : le premier zoome, le second choisit.",
 "Menu":"Menu",
 "Improve":"Améliorer",
 "Overview":"Aperçu",

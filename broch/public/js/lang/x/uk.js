@@ -1458,6 +1458,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"Камінь 1: {@p}. Камі�
 "Choose {n} more":"Оберіть ще {n}",
 "Rules and bonuses":"Правила та бонуси",
 "Tap a card to add one":"Торкніться картки, щоб додати одну",
+"Tap twice: the first tap zooms in, the second one picks.":"Торкніться двічі: перший дотик збільшує, другий обирає.",
 "Menu":"Меню",
 "Improve":"Покращити",
 "Overview":"Огляд",

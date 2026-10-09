@@ -28,7 +28,9 @@ body[data-route="game"] .game-main::before { content: ''; grid-area: 4 / 1 / 6 /
 
 /* ---- status strip */
 body[data-route="game"] .status .msg { grid-area: msg; position: relative; z-index: 1; padding: 8px 12px; min-height: var(--m-strip-h, 56px); max-height: none; font-size: 15px; font-weight: 700; line-height: 1.2; display: flex; flex-direction: column; justify-content: center; min-width: 0; color: var(--ink); overflow: visible; }
-body[data-route="game"] .status .msg .mt { -webkit-line-clamp: 2; }
+body[data-route="game"] .status .msg .mt { -webkit-line-clamp: 3; }
+/* small phones: 14px headline, so the end of an instruction ("... oder handeln.") is not cut off in long languages */
+@media (max-width: 379px) { body[data-route="game"] .status .msg { font-size: 14px; } }
 body[data-route="game"] .status .msg .sub { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; white-space: normal; overflow: hidden; font-size: 12.5px; line-height: 1.3; margin-top: 2px; }
 body[data-route="game"] .who-ic { display: inline-block; vertical-align: -4px; margin-right: 6px; line-height: 0; }
 body[data-route="game"] .status .dice-slot { grid-area: dice; position: relative; z-index: 1; width: auto; min-width: 0; height: auto; padding: 0 12px 0 0; align-self: center; justify-self: end; }
@@ -71,10 +73,14 @@ body[data-route="game"] .zoom-ctl button { width: 44px; height: 44px; font-size:
 body[data-route="game"] .zoom-ctl .lifebtn { display: none; }
 body[data-route="game"] .zoom-ctl .rs { font-size: 20px; }
 /* corners and edges you can tap: bigger and with a dark outline, so they show on cream tile borders */
-body[data-route="game"] svg.board .hl-v { fill: rgba(255,246,218,.96); stroke: #2B1E12; stroke-width: 3; }
+body[data-route="game"] svg.board .hl-v { fill: rgba(255,246,218,.6); stroke: #2B1E12; stroke-width: 2.6; }
 body[data-route="game"] svg.board .hl-e { stroke-width: calc(12px * var(--hs, 1)); filter: drop-shadow(0 0 1.5px rgba(43,30,18,.95)) drop-shadow(0 0 3px rgba(43,30,18,.7)); }
 body[data-route="game"] svg.board .hl-h { stroke: var(--gold-2); stroke-width: 5; fill: rgba(255,246,218,.3); filter: drop-shadow(0 0 2px rgba(43,30,18,.8)); animation: m-hexglow 1.2s ease-in-out infinite; }
 @keyframes m-hexglow { 50% { fill: rgba(255,246,218,.1); stroke-opacity: .55; } }
+/* one-time pill under the HUD row while dozens of corners glow (setup on a big map): tap twice, the first tap zooms in */
+body[data-route="game"] .tap-hint { position: absolute; z-index: 6; left: 50%; top: 44px; transform: translateX(-50%); max-width: calc(100% - 32px); width: max-content; padding: 8px 16px; border-radius: 999px; background: rgba(28,20,14,.88); color: #FFF3DC; font: 600 13.5px/1.25 var(--sans, system-ui, sans-serif); text-align: center; pointer-events: none; box-shadow: 0 6px 22px rgba(0,0,0,.4); animation: m-tap-hint .35s ease-out both; transition: opacity .5s; }
+body[data-route="game"] .tap-hint.out { opacity: 0; }
+@keyframes m-tap-hint { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 /* the tutorial offer: one pill at the bottom of the board (thumb), beside the zoom buttons */
 body[data-route="game"] .tut-nudge { left: 8px; right: 64px; bottom: 8px; max-width: none; }
 body[data-route="game"] .tut-nudge .tn-go { flex: 1; min-height: 44px; padding: 0 12px 0 14px; font-size: 13px; }
@@ -173,10 +179,13 @@ body[data-route="game"] .game-side .panel { background: none; box-shadow: none; 
 body[data-route="game"] .game-side .panel-h { font-size: 12.5px; padding: 10px 14px; }
 body[data-route="game"] .m-sheetbar { flex: none; position: relative; display: flex; align-items: stretch; gap: 2px; padding: 14px 4px 0 2px; border-bottom: 1px solid var(--line); touch-action: none; user-select: none; -webkit-user-select: none; }
 body[data-route="game"] .m-pill { position: absolute; top: 6px; left: 50%; width: 40px; height: 5px; margin-left: -20px; border-radius: 3px; background: var(--line-2); }
-body[data-route="game"] .m-tabs { display: flex; flex: 1; min-width: 0; gap: 2px; }
-body[data-route="game"] .m-tab { flex: 1 1 0; min-width: 0; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 2px 0; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+/* the tabs keep their full label (German: "Spielverlauf", "Ausbauen"): when they do not fit, the row scrolls sideways and fades out at the edge that has more (dock.js sets --fl / --fr) */
+body[data-route="game"] .m-tabs { display: flex; flex: 1; min-width: 0; gap: 2px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x; --fl: 0px; --fr: 0px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--fl), #000 calc(100% - var(--fr)), transparent); mask-image: linear-gradient(90deg, transparent 0, #000 var(--fl), #000 calc(100% - var(--fr)), transparent); }
+body[data-route="game"] .m-tabs::-webkit-scrollbar { display: none; }
+body[data-route="game"] .m-tab { flex: 1 0 auto; min-width: 52px; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 2px 9px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; position: relative; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 body[data-route="game"] .m-tab.on { color: var(--ink); border-bottom-color: var(--red); }
-body[data-route="game"] .m-tl { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body[data-route="game"] .m-tl { white-space: nowrap; }
 body[data-route="game"] .m-tab .unread { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 18px; height: 18px; font-size: 12px; }
 body[data-route="game"] .m-close { flex: none; align-self: center; width: 44px; height: 44px; margin-left: 2px; border: 0; border-radius: 50%; background: var(--card-2); color: var(--ink); display: grid; place-items: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 /* feed inside the sheet */
@@ -299,6 +308,7 @@ body[data-route="game"] .status .btns { grid-area: 4 / 2; padding: 6px 8px 8px; 
 body[data-route="game"] .game-main:has(.btns:empty) .m-more { grid-column: 1; width: 52px; margin-right: 8px; }
 body[data-route="game"] .game-main:has(.btns:empty) .m-more .mm-lbl { display: none; }
 body[data-route="game"] .status .msg .mt { -webkit-line-clamp: 3; }
+body[data-route="game"] .status .msg .sub { -webkit-line-clamp: 5; }
 body[data-route="game"] .status .btns .btn { min-height: 48px; }
 body[data-route="game"] .status .btns .roll-btn { min-height: 52px; }
 body[data-route="game"] .zoom-ctl { flex-direction: column; }
@@ -321,6 +331,7 @@ body[data-route="game"] .m-menu-in { padding-bottom: 14px; }
 .sgame .en-tn { display: none; }          /* energies: the name beside a seat tab (phone only) */
 .sgame .en-slotsw { display: contents; }  /* energies: wrapper around a long row of slots (the phone shows a counter instead) */
 .sgame .zoom-hint { display: none; }          /* wide maps: one-time hint how to zoom in (phone only) */
+.sgame .hk-th, .sgame .hk-cost { display: contents; }  /* humankind: wrappers (title + pips + marker / cost dots) that only the phone lays out */
 
 @media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
 
@@ -440,7 +451,16 @@ body[data-route="game"] .sgame .hk-track { grid-template-columns: 38px minmax(0,
 body[data-route="game"] .sgame .hk-ti { width: 38px; height: 38px; }
 body[data-route="game"] .sgame .hk-tb b { font-size: 15px; }
 body[data-route="game"] .sgame .hk-tb small { font-size: 12.5px; }
-body[data-route="game"] .sgame .hk-track .btn.small { min-width: 64px; min-height: 48px; justify-content: center; padding: 6px 10px; }
+body[data-route="game"] .sgame .hk-th { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 8px; }
+body[data-route="game"] .sgame .hk-th .hk-pips { margin-left: 0; gap: 3px; }
+body[data-route="game"] .sgame .hk-th .hk-mk { flex: none; }
+@media (max-width: 400px) { body[data-route="game"] .sgame .hk-th { column-gap: 6px; } body[data-route="game"] .sgame .hk-th .hk-pips i { width: 12px; } }
+/* the advance button: an arrow over the price (it was an empty square with a grey dot while it could not be paid) */
+body[data-route="game"] .sgame .hk-track .btn.small { min-width: 60px; min-height: 48px; flex-direction: column; gap: 3px; justify-content: center; padding: 6px 10px; }
+body[data-route="game"] .sgame .hk-track .btn.small .hk-up { flex: none; }
+body[data-route="game"] .sgame .hk-track .btn.small .hk-cost { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 3px; }
+body[data-route="game"] .sgame .hk-track .btn.small .cost-dot { width: 11px; height: 11px; border-radius: 3px; }
+body[data-route="game"] .sgame .hk-track .btn.small:disabled { opacity: .62; }
 body[data-route="game"] .sgame .hk-pips i { width: 16px; height: 9px; }
 body[data-route="game"] .sgame .hk-mk { font-size: 12px; min-width: 26px; min-height: 22px; }
 body[data-route="game"] .sgame .hk-aw { min-height: 48px; font-size: 14px; }

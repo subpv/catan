@@ -1458,6 +1458,7 @@ export default {"Stone 1: {@p}. Stone 2: {@q}.":"石头1：{@p}。石头2：{@q}
 "Choose {n} more":"再选 {n} 张",
 "Rules and bonuses":"规则与奖励",
 "Tap a card to add one":"点按卡牌即可加一张",
+"Tap twice: the first tap zooms in, the second one picks.":"点两次：第一次放大，第二次选择。",
 "Menu":"菜单",
 "Improve":"升级",
 "Overview":"概览",
