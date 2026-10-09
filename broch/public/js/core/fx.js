@@ -1,5 +1,5 @@
 // Juice: sounds (synthesised, no files), board animations and full-screen moments.
-import { t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, glyph, cardName, inkOn, tf, houseIcon, pipsHtml, term } from './core.js';
+import { belowStripsTop, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, glyph, cardName, inkOn, tf, houseIcon, pipsHtml, term } from './core.js';
 import { cardDesc, deckOf } from './cards.js';
 import { findJob, jobAge, buildersBusyFor } from './builder.js';
 import { isPhone } from './phone.js';
@@ -601,6 +601,7 @@ async function banner(html, cls = '', ms = 1400) {
   const el = document.createElement('div');
   el.className = 'fx-banner ' + cls;
   el.innerHTML = html;
+  const top = belowStripsTop(); if (top) el.style.top = top; // phone: under the strips, not over them
   document.body.appendChild(el);
   await wait(reduced() ? 900 : ms);
   el.classList.add('out');

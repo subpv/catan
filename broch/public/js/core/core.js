@@ -259,6 +259,14 @@ function connBar(show) {
 }
 
 // ------------------------------------------------------------ toasts & modals
+// Phone, portrait game: y (px string) just under the status and player strips, '' elsewhere (css then uses its own formula).
+export function belowStripsTop() {
+  if (!isPhone() || document.body.dataset.route !== 'game' || window.matchMedia('(orientation: landscape) and (max-height: 500px)').matches) return '';
+  const strip = document.querySelector('.pstrip-host');
+  const r = strip && strip.getBoundingClientRect();
+  return r && r.height > 0 ? Math.round(r.bottom + 8) + 'px' : '';
+}
+
 export function toast(msg, kind = '') {
   const el = document.createElement('div');
   el.className = 'toast ' + kind;
@@ -268,11 +276,7 @@ export function toast(msg, kind = '') {
   const phone = isPhone();
   if (phone) while (host.children.length >= 2) host.firstElementChild.remove();
   // phone, portrait game: the stack sits just below the status and player strips (their real height varies), never over them
-  if (phone) {
-    const strip = document.body.dataset.route === 'game' && !window.matchMedia('(orientation: landscape) and (max-height: 500px)').matches && document.querySelector('.pstrip-host');
-    const r = strip && strip.getBoundingClientRect();
-    host.style.top = r && r.height > 0 ? Math.round(r.bottom + 8) + 'px' : '';
-  }
+  if (phone) host.style.top = belowStripsTop();
   host.appendChild(el);
   setTimeout(() => el.remove(), phone ? (kind === 'warn' ? 3600 : 2600) : (kind === 'warn' ? 4200 : 3000));
 }
