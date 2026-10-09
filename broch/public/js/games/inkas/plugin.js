@@ -199,6 +199,7 @@ const plugin = register({
       { key: 'road', label: t('Road'), icon: 'road', cost: COSTS.road, enabled: !!(actor && L.roads && L.roads.length), left: m.pieces.roads },
       { key: 'settlement', label: t('Settlement'), icon: 'bohio', cost: COSTS.settlement, enabled: !!(actor && L.settlements && L.settlements.length), left: m.pieces.settlements },
       { key: 'city', label: t('City'), icon: 'temple', cost: COSTS.city, enabled: !!(actor && L.cities && L.cities.length), left: m.pieces.cities },
+      { key: 'buy', label: t('Dev card'), icon: 'card', cost: COSTS.dev, enabled: !!(actor && L.canBuy), phoneOnly: true },
     ];
   },
   doAction(what, A) {

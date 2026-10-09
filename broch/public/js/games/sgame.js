@@ -2,7 +2,9 @@
 // log, graphs, trades, victory), but everything that belongs to one game's rules comes from its plugin in games/.
 import { esc, toast, modal, closeModals, wsWatch, wsAct, onWs, reportProblem, houseIcon, glyph, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, cardName, term, tf, t, isLightColor, dieHtml } from '../core/core.js';
 import { lang } from '../core/i18n.js';
-import { renderBoard } from '../core/board.js';
+import { renderBoard, tapTarget } from '../core/board.js';
+import { mountDock, yourMoveCue, buzz } from '../core/dock.js';
+import { isPhone, onPhoneChange } from '../core/phone.js';
 import { topbar } from '../app.js';
 import { diff, play, sfx, afterFx } from '../core/fx.js';
 import { victoryScene, closeVictory } from '../core/victory.js';
@@ -23,7 +25,9 @@ export function mountSGame(app, id, mode) {
   G = {
     id, mode, view: null, online: [], pick: null, tab: 'chat', opened: new Set(), celebrated: false, app, fresh: null, zoom: { z: 1, cx: 0, cy: 0 },
     html: {}, boardKey: null, boardRef: null, boardSig: '', chatSeenAt: 0, newestTurn: null, life: lifePref(), A: null,
+    sheet: null, dock: null, preZoom: null, tgSig: '', startZoom: true,
   };
+  document.body.dataset.route = 'game';
   G.A = api();
   const P0 = GAMES[mode];
   app.innerHTML = `${topbar('play')}<div class="game sgame ${esc(mode)}">
@@ -55,6 +59,19 @@ export function mountSGame(app, id, mode) {
   const wrap = app.querySelector('.board-wrap');
   G.zoomer = createZoom({ host: wrap, getState: () => G.zoom, setState: z => { G.zoom = z; }, onChange: z => wrap.querySelector('.zoom-ctl').classList.toggle('zoomed', z > 1) });
   app.addEventListener('click', onClick);
+  // phone: player strip, chat/menu button, bottom sheet (core/dock.js, the same as games/classic/screen.js); hidden by css on the desktop
+  G.dock = mountDock(app, {
+    getView: () => G && G.view,
+    onTab: tab => { if (!G || !G.view) return; G.tab = tab; G.html.feed = null; renderFeed(); requestAnimationFrame(() => { if (!G) return; if (tab === 'graphs') { G.html.feed = null; renderFeed(); } else if (tab === 'chat') { const b = G.app.querySelector('.feed-body'); if (b) b.scrollTop = b.scrollHeight; } }); },
+    unread: () => (G && G.view ? unreadCount() : 0),
+    hasSide: () => !!(G && G.html.side),
+    sideLabel: 'Info', // the Overview tab (the panels of the plugin): a short word, the tab bar has six tabs on a narrow phone
+    costs: () => costsDialog(),
+    howto: () => openTutorial(plugin().tutorial),
+    life: () => !!(G && G.life),
+    onSheet: name => { if (!G) return; G.sheet = name; if (!name && !document.hidden) document.title = 'Broch'; if (name === 'chat') renderFeed(); },
+  });
+  const offPhone = onPhoneChange(() => { if (G && G.view) { G.html = {}; G.boardKey = null; render(); } });
   const cf = app.querySelector('.chat-form');
   cf.addEventListener('submit', e => { e.preventDefault(); const tt = cf.t.value.trim(); if (tt) { send({ type: 'chat', text: tt }); cf.t.value = ''; } });
   cf.hidden = true;
@@ -77,7 +94,7 @@ export function mountSGame(app, id, mode) {
     }
   });
   wsWatch(id);
-  const key = e => { if (e.key === 'Escape' && G?.pick) { G.pick = null; render(); } };
+  const key = e => { if (e.key === 'Escape' && G?.pick && !G.dock?.isOpen()) { G.pick = null; render(); } };
   document.addEventListener('keydown', key);
   const vis = () => { if (!document.hidden) document.title = 'Broch'; };
   document.addEventListener('visibilitychange', vis);
@@ -86,17 +103,19 @@ export function mountSGame(app, id, mode) {
   window.addEventListener('resize', resize);
   return () => {
     off(); app.removeEventListener('click', onClick);
+    offPhone(); G?.dock?.();
     G?.zoomer?.destroy();
     document.removeEventListener('keydown', key); document.removeEventListener('visibilitychange', vis); window.removeEventListener('resize', resize);
   };
 }
 export function unmountSGame() {
   if (!G) return;
+  G.dock?.();
   G.zoomer?.destroy();
   closeVictory(); closeTutorial();
   wsWatch(null); G = null; closeModals(); document.title = 'Broch';
 }
-export function rerenderSGame() { if (G && G.view) { G.html = {}; G.boardKey = null; render(); } }
+export function rerenderSGame() { if (G && G.view) { G.html = {}; G.boardKey = null; G.dock?.refresh(); render(); } }
 
 // what a plugin may use
 function api() {
@@ -136,8 +155,7 @@ function lifePref() {
 function toggleLife() {
   G.life = !G.life;
   try { localStorage.setItem('broch_life', G.life ? '1' : '0'); } catch { /* storage blocked */ }
-  const b = G.app.querySelector('[data-life]');
-  if (b) { b.classList.toggle('on', G.life); b.setAttribute('aria-pressed', G.life); }
+  G.app.querySelectorAll('[data-life]').forEach(b => { b.classList.toggle('on', G.life); b.setAttribute('aria-pressed', G.life); });
   toast(G.life ? t('Living board: on') : t('Living board: off'));
   G.boardKey = null; renderBoardPart();
 }
@@ -148,7 +166,7 @@ async function send(action) {
     else {
       sfx.error();
       toast(htmlToText(tf(e.message, e.params || {})), 'warn');
-      const st = document.querySelector('.status'); if (st) { st.classList.remove('fx-nudge'); void st.offsetWidth; st.classList.add('fx-nudge'); }
+      const st = document.querySelector(isPhone() ? '.status .msg' : '.status'); if (st) { st.classList.remove('fx-nudge'); void st.offsetWidth; st.classList.add('fx-nudge'); }
     }
     return false;
   }
@@ -169,10 +187,13 @@ function onNewState(prev) {
   G.lastChatAt = lastAt;
   if (G.tab === 'chat' && feedVisible()) G.chatSeenAt = lastAt;
   if (G.pick && G.pick.version !== undefined && G.pick.version !== v.version) G.pick = null;
-  if (needsMe(v) && document.hidden) document.title = `● ${t('Your move')} · Broch`;
+  if (needsMe(v) && (document.hidden || G.dock?.isOpen())) document.title = `● ${t('Your move')} · Broch`;
   // a beep whenever the move passes to me (not only at the dice), and when someone answers my trade with a counter-offer
   if (prev && prev.phase !== 'over' && !needsMe(prev) && needsMe(v)) sfx.turn();
+  // phone: a buzz and a pulse of the primary button when the move passes to me (also on the very first state)
+  yourMoveCue(G.app, !!prev && prev.phase !== 'over' && needsMe(prev), needsMe(v));
   const tr = v.trade, ptr = prev && prev.trade;
+  if (tr && tr.from !== v.me && isMine() && !tr.responses?.[v.me] && (!ptr || ptr.id !== tr.id)) buzz(30);
   if (tr && tr.from === v.me && tr.responses) {
     const was = ptr && ptr.id === tr.id ? ptr.responses : {};
     const who = Object.keys(tr.responses).filter(i => tr.responses[i] === 'counter' && was[i] !== 'counter');
@@ -184,7 +205,9 @@ function onNewState(prev) {
   }
   G.app.querySelector('.chat-form').hidden = !isMine() || G.tab !== 'chat';
 }
+const unreadCount = () => { const v = G.view; return v.chat.filter(c => (c.at || 0) > G.chatSeenAt && c.p !== v.me).length; };
 function feedVisible() {
+  if (isPhone() && G.dock) return G.dock.isOpen('chat'); // phone: the chat is on screen while the sheet shows its tab
   const el = G.app.querySelector('.feed-body');
   if (!el) return false;
   const r = el.getBoundingClientRect();
@@ -271,9 +294,13 @@ function diceHtml() {
 function renderStatus() {
   const el = G.app.querySelector('.status');
   const st = statusInfo();
-  const cls = `status ${st.mine ? 'mine' : ''}`;
+  const cls = `status ${st.mine ? 'mine' : ''}${G.pick && st.mine ? ' st-pick' : ''}`;
   if (el.className !== cls) el.className = cls;
-  setHtml(el, 'status', `<div class="msg"><span class="mt">${st.msg}</span>${st.sub ? `<span class="sub">${st.sub}</span>` : ''}</div>
+  // phone: while somebody else plays, their house shows in front of the headline
+  const v = G.view;
+  const wait = st.mine || v.phase === 'over' || G.pick ? null : v.pending.length ? v.pending.find(p => p.group === v.activeGroup && p.player !== v.me)?.player : v.current;
+  const who = wait != null && wait !== v.me && v.players[wait] ? `<span class="who-ic m-only">${houseIcon(v.players[wait].color, 20)}</span>` : '';
+  setHtml(el, 'status', `<div class="msg"><span class="mt">${who}${st.msg}</span>${st.sub ? `<span class="sub">${st.sub}</span>` : ''}</div>
     <div class="dice-slot">${diceHtml()}</div><div class="btns">${st.btns || ''}</div>`);
 }
 
@@ -287,7 +314,18 @@ function targets() {
   return (P.targets && P.targets(v, G.A)) || {};
 }
 function onBoardClick(e) {
-  const el = e.target.closest('[data-v],[data-e],[data-h]');
+  let el = e.target.closest('[data-v],[data-e],[data-h]');
+  if (isPhone() && !(el && el.dataset.ship != null)) {
+    // a finger is wider than the little hit shapes: the nearest corner or edge within reach is the one meant.
+    // When two are about equally close the tap zooms in instead of guessing, so the next tap is clear.
+    const svg = e.target.closest('svg.board');
+    const lp = G.zoomer.lastPoint(), px = lp ? lp.x : e.clientX, py = lp ? lp.y : e.clientY; // not the click: the browser moves it to the nearest target
+    const r = svg && tapTarget(svg, px, py);
+    if (r && r.best && !(el && el.dataset.h != null && r.best.d > 14)) {
+      if (r.near >= 2 && r.best.d > 11 && G.zoom.z < 3) { G.zoomer.zoomAt(px, py, 2); return; }
+      el = r.best.el;
+    } else if (r && !r.best && lp && el && el.dataset.h == null) { /* nothing within reach: the browser's guess is not trusted */ el = null; }
+  }
   if (!el) return;
   const v = G.view, L = v.legal || {}, P = plugin();
   const id = +(el.dataset.v ?? el.dataset.e ?? el.dataset.h);
@@ -300,7 +338,7 @@ function startPick(kind, options, label, onPick, extra = {}) {
   if (!options || !options.length) { toast(t('There is nowhere to do that right now.'), 'warn'); return; }
   G.pick = { kind, options, label, onPick: async id => { const keep = await onPick(id); if (!keep) { G.pick = null; render(); } }, version: G.view.version, ...extra };
   render();
-  document.querySelector('.board-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (!isPhone()) document.querySelector('.board-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // the phone page never scrolls
 }
 function boardKey(tg) {
   const v = G.view, P = plugin();
@@ -317,12 +355,54 @@ function renderBoardPart() {
   G.boardKey = key;
   const P = plugin();
   host.innerHTML = P.board ? P.board(G.view, tg, G.fresh, G.zoom, G.life, G.A) : renderBoard(G.view, tg, G.fresh, G.zoom, G.life, true, P.ext && P.ext(G.view, G.A));
+  phoneStartZoom(host);
   G.zoomer.apply();
+  phoneTargetZoom(tg);
   syncLoops(host);
   if (freshAny) {
     clearTimeout(G.fxClean);
     G.fxClean = setTimeout(() => host.querySelectorAll('.fx-flash,.fx-roadglow,.fx-light,.fx-dust,.fx-splash').forEach(el => el.remove()), 2600);
   }
+}
+// phone: wide maps (Dawn of Humankind, Explorers & Pirates) open zoomed in on the player's own region, so the tiles are big enough
+// to read; the whole-map button goes back to the overview. A plugin says where: phoneStart(view, A) returns
+// { points: [{ x, y }] (board units), margin, minZ, maxZ } or null. Runs once, on the first drawing of the board.
+function phoneStartZoom(host) {
+  if (!G.startZoom || !isPhone()) return;
+  const P = plugin(), svg = host.querySelector('svg.board');
+  if (!P.phoneStart || !svg || !svg.dataset.base) { G.startZoom = false; return; }
+  const w = host.clientWidth, h = host.clientHeight;
+  if (w < 100 || h < 120) return; // not laid out yet: try again with the next drawing
+  G.startZoom = false;
+  const s = P.phoneStart(G.view, G.A);
+  if (!s || !s.points || !s.points.length || G.zoom.z !== 1) return;
+  const [, , bw, bh] = svg.dataset.base.split(' ').map(Number);
+  const s1 = Math.min(w / bw, h / bh), m = s.margin == null ? 70 : s.margin;
+  const xs = s.points.map(p => p.x), ys = s.points.map(p => p.y);
+  const x0 = Math.min(...xs) - m, x1 = Math.max(...xs) + m, y0 = Math.min(...ys) - m, y1 = Math.max(...ys) + m;
+  const fz = Math.min(w / s1 / (x1 - x0), h / s1 / (y1 - y0));
+  const z = Math.max(s.minZ || 1.6, Math.min(s.maxZ || 2.6, fz));
+  G.zoom = { z, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+}
+// phone: when a few corners or edges glow, zoom to them (the finger needs room); afterwards go back to where the board was
+// unless the person zoomed by hand in between
+function phoneTargetZoom(tg) {
+  if (!isPhone() || !G.zoomer) return;
+  const n = (tg.vertices?.length || 0) + (tg.edges?.length || 0);
+  const sig = n ? JSON.stringify([tg.vertices, tg.edges]) : '';
+  if (sig === G.tgSig) return;
+  G.tgSig = sig;
+  if (!n) {
+    const pre = G.preZoom; G.preZoom = null;
+    if (pre && !G.zoomer.touched()) G.zoomer.zoomTo(pre.z, pre.cx, pre.cy);
+    return;
+  }
+  if (n > 12) return;
+  const svg = G.app.querySelector('svg.board');
+  if (!svg) return;
+  const pts = [...svg.querySelectorAll('.hl-v, .hl-e')].map(el => { const b = el.getBBox(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });
+  const before = { ...G.zoom };
+  if (G.zoomer.focusPoints(pts) && !G.preZoom) { G.preZoom = before; G.zoomer.clearTouched(); }
 }
 // endless animations run on one clock so a redraw does not restart them (same trick as games/classic/screen.js)
 function syncLoops(root) {
@@ -347,14 +427,19 @@ function render() {
   renderTrade();
   setHtml(G.app.querySelector('.hand-host'), 'hand', isMine() ? handHtml() : `<div class="hand watching"><b>${tx('You are watching this game.')}</b></div>`);
   setHtml(G.app.querySelector('.players-host'), 'players', playersHtml());
-  setHtml(G.app.querySelector('.imp-host'), 'side', P.side ? P.side(v, G.A) : '');
+  // the overview tab of the phone sheet: the side panels of the plugin, and what only informs in the hand (P.phoneExtra = 'sheet')
+  setHtml(G.app.querySelector('.imp-host'), 'side', (P.side ? P.side(v, G.A) : '') + (sheetExtra() && isMine() ? `<div class="panel sg-extra">${P.handExtra(v, G.A)}</div>` : ''));
   P.afterRender?.(v, G.A);
   renderFeed();
+  G.dock?.update();
   autoDialogs();
   syncLoops(G.app);
 }
 
 // ------------------------------------------------------------ your hand
+// P.phoneExtra: where the extra block of the hand (P.handExtra) lives on a phone: 'dock' (stays under the hand) or 'sheet' (the Overview tab);
+// a function of the view may decide per step
+const sheetExtra = () => { const P = plugin(), pe = P.phoneExtra; return isPhone() && !!P.handExtra && (typeof pe === 'function' ? pe(G.view) : pe) === 'sheet'; };
 function handHtml() {
   const v = G.view, m = me(), P = plugin(), A = G.A;
   const card = k => {
@@ -363,15 +448,17 @@ function handHtml() {
   };
   const actor = A.actor();
   const pickOn = k => G.pick && G.pick.key === k ? 'on' : '';
+  // a.phoneOnly: a build button that exists on the phone only (the desktop has the same thing elsewhere); a.phone: html that replaces the sub line on the phone
+  const lw = s => (Math.max(...String(s).split(/[\s-]+/).map(x => x.length)) >= 12 ? ' lw' : '');
   const acts = (P.actions ? P.actions(v, A, actor) : []).map(a => a.plain
-    ? `<button class="act" data-do="${a.key}" ${a.enabled ? '' : 'disabled'} title="${esc(a.label)}"><span class="nm"><i class="ai">${glyph(a.icon, 14)}</i>${esc(a.label)}</span><small>${esc(a.sub || '')}</small></button>`
-    : `<button class="act ${pickOn(a.key)}" data-do="${a.key}" ${a.enabled ? '' : 'disabled'} title="${esc(a.label)}"><span class="nm"><i class="ai">${glyph(a.icon, 14)}</i>${esc(a.label)}</span><small><span class="cd">${costHtml(a.cost || {})}${a.costText ? `<span class="ctext">${esc(a.costText)}</span>` : ''}</span>${a.left != null ? `<span class="left">${a.left}</span>` : ''}</small></button>`).join('');
+    ? `<button class="act ${a.phoneOnly ? 'm-only' : ''}" data-do="${a.key}" ${a.enabled ? '' : 'disabled'} title="${esc(a.label)}"><span class="nm${lw(a.label)}"><i class="ai">${glyph(a.icon, 14)}</i>${esc(a.label)}</span><small class="pl"><span class="pl-d">${esc(a.sub || '')}</span>${a.phone != null ? `<span class="pl-m m-only">${a.phone}</span>` : ''}</small></button>`
+    : `<button class="act ${a.phoneOnly ? 'm-only' : ''} ${pickOn(a.key)}" data-do="${a.key}" ${a.enabled ? '' : 'disabled'} title="${esc(a.label)}"><span class="nm${lw(a.label)}"><i class="ai">${glyph(a.icon, 14)}</i>${esc(a.label)}</span><small><span class="cd">${costHtml(a.cost || {})}${a.costText ? `<span class="ctext">${esc(a.costText)}</span>` : ''}</span>${a.left != null ? `<span class="left">${a.left}</span>` : ''}</small></button>`).join('');
   const over = m.cards > m.handLimit;
   return `<div class="hand">
     <div class="hand-head"><b>${tx('Your hand')}</b><span class="hand-count ${over ? 'warn' : ''}" title="${over ? tx('More than {n} cards: a 7 costs you half of them.', { n: m.handLimit }) : ''}">${tx('Cards: {n} · limit {m}', { n: m.cards, m: m.handLimit })}</span></div>
     <div class="hand-cards">${v.cards.map(card).join('')}</div>
     <div class="actions">${acts}</div>
-    ${P.handExtra ? P.handExtra(v, A) : ''}
+    ${P.handExtra && !sheetExtra() ? P.handExtra(v, A) : ''}
   </div>`;
 }
 

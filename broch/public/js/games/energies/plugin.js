@@ -156,13 +156,15 @@ const sym = (kind, n = 1) => `<span class="en-sym ${kind}" title="${esc(kind ===
 function slots(total, built, kindPiece, color, symbol, per = 1) {
   let out = '';
   for (let i = 0; i < total; i++) out += i < total - built ? `<span class="en-slot">${piece(kindPiece, color)}</span>` : `<span class="en-slot open">${symbol ? sym(symbol, per) : ''}</span>`;
+  // phone: a long row of slots (6 brown, 9 green plants) becomes a counter: the symbol and how many are built
+  if (total >= 6) return `<span class="en-slotsw">${out}</span><span class="en-cnt m-only">${symbol ? sym(symbol, per) : ''}<b>${built}</b>/${total}</span>`;
   return out;
 }
 function tableauPanel(v, A) {
   const seat = A.G.enSeat != null && v.players[A.G.enSeat] ? A.G.enSeat : (v.me >= 0 ? v.me : v.current);
   const p = v.players[seat], tb = p.tab, pc = PCOLOR[p.color];
   const plus = tb.villages + 2 * tb.cities + tb.brown, minus = tb.green;
-  const tabs = v.players.map((q, i) => `<button class="en-tab ${i === seat ? 'on' : ''}" data-en-seat="${i}" title="${esc(q.name)}" style="--pc:${PCOLOR[q.color]}">${houseIcon(q.color, 16)}</button>`).join('');
+  const tabs = v.players.map((q, i) => `<button class="en-tab ${i === seat ? 'on' : ''}" data-en-seat="${i}" title="${esc(q.name)}" style="--pc:${PCOLOR[q.color]}">${houseIcon(q.color, 16)}<span class="en-tn">${esc([...q.name].slice(0, 7).join(''))}</span></button>`).join('');
   const row = (label, body, extra = '') => `<div class="en-trow"><span class="en-tl">${label}</span><div class="en-tslots">${body}</div>${extra}</div>`;
   const energy = Array.from({ length: 5 }, (_, i) => `<span class="en-slot bolt ${i < p.energy ? 'on' : ''}">${glyph('energy', 16)}</span>`).join('');
   return `<div class="panel en-tab-panel"><div class="panel-h"><span class="en-who" style="color:${isLight(p.color) ? '#8A6A2E' : pc}">${esc(p.name)}</span><span class="spacer"></span><span class="en-tabs">${tabs}</span></div>
@@ -214,6 +216,7 @@ const plugin = register({
   tagline: 'Power plants, energy tokens and a bag of event chips.',
   blurb: 'Brown power plants are cheap but pollute, green ones cost more and clean up. Event chips from the bag bring damages and rewards. First to 10 points wins, or the greenest builder when the bag runs empty.',
   lostText: 'The world lost.',
+  phoneExtra: 'sheet', // phone: the list of development cards moves into the Overview tab of the sheet
   tokenKeys: ['research', 'energy'], limited: CARDS, bankBuys: CARDS, tradeKeys: [...CARDS, 'energy'],
   bankText: 'Resources trade 4:1 (harbors make it 3:1 or 2:1), research cards 3:1 for a resource, energy tokens 2:1 for any card.',
   fresh(view, prev) {

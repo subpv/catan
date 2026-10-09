@@ -4,6 +4,7 @@
 import { register } from '../registry.js';
 import { extendCore, glyph, GLYPH, t, esc, PCOLOR, PCOLOR_DARK, CARD_COLOR, resName, houseIcon, modal } from '../../core/core.js';
 import { LOOT_BY_MODE, SEVEN_BY_MODE } from '../../core/fx.js';
+import { isPhone } from '../../core/phone.js';
 
 const tx = (k, p) => esc(t(k, p));
 const S = 56;
@@ -239,8 +240,9 @@ function ext() {
 }
 
 // ------------------------------------------------------------ panels
-function missionPanel(v) {
+function missionPanel(v, A) {
   const x = v.exp, tracks = x.tracks || {};
+  const openLane = A && A.G.eupOpen || {};
   const keys = Object.keys(tracks);
   const lanes = keys.map(k => {
     const tr = tracks[k], M = MISSIONS[k], max = tr.values.length - 1;
@@ -251,7 +253,10 @@ function missionPanel(v) {
       return `<div class="eup-cell ${i > 0 && i <= lead ? 'lit' : ''} ${i === 0 ? 'start' : ''}">${i === 0 ? '<small>▶</small>' : `<b title="${esc(t('{n} points', { n: val }))}">${val}</b>`}<div class="eup-toks">${toks}</div></div>`;
     }).join('');
     const holder = tr.holder != null ? `<span class="eup-tile" style="--pc:${PCOLOR[v.players[tr.holder].color]}" title="${esc(t(M.tile))}: ${esc(v.players[tr.holder].name)} (+1)">${glyph('star', 14)}</span>` : `<span class="eup-tile none" title="${esc(t(M.tile))} (+1)">${glyph('star', 14)}</span>`;
-    return `<div class="eup-lane" style="--c:${M.color}"><div class="eup-lh"><span class="lane-ic" style="background:${M.color}">${glyph(M.icon, 15)}</span><b title="${esc(t(M.name))}">${esc(t(M.name))}</b>${holder}</div><div class="eup-cells" style="grid-template-columns:repeat(${max + 1},1fr)">${cells}</div></div>`;
+    // phone: one line per mission (my marker against the leaders'); a tap folds the track out
+    const leaders = v.players.map((p, pi) => pi).filter(pi => tr.pos[pi] === lead && lead > 0);
+    const sum = `<span class="eup-sum m-only">${v.me >= 0 ? `<span class="eup-sm" title="${esc(v.players[v.me].name)}">${houseIcon(v.players[v.me].color, 16)}<b>${tr.pos[v.me]}</b></span>` : ''}${leaders.length ? `<span class="eup-sm lead" title="${esc(leaders.map(pi => v.players[pi].name).join(', '))}">${leaders.slice(0, 3).map(pi => houseIcon(v.players[pi].color, 16)).join('')}<b>${lead}</b></span>` : ''}</span>`;
+    return `<div class="eup-lane ${openLane[k] ? 'open' : ''}" style="--c:${M.color}"><div class="eup-lh" data-eup-lane="${k}" role="button" tabindex="0" aria-expanded="${!!openLane[k]}"><span class="lane-ic" style="background:${M.color}">${glyph(M.icon, 15)}</span><b title="${esc(t(M.name))}">${esc(t(M.name))}</b>${sum}${holder}</div><div class="eup-cells" style="grid-template-columns:repeat(${max + 1},1fr)">${cells}</div></div>`;
   }).join('');
   const pairs = x.ship1 != null ? `<div class="eup-pairs">${houseIcon(v.players[x.ship1].color, 16)} <b>${tx('Ship 1')}</b> ${esc(v.players[x.ship1].name)} · ${houseIcon(v.players[x.ship2].color, 16)} <b>${tx('Ship 2')}</b> ${esc(v.players[x.ship2].name)}</div>` : '';
   if (!keys.length) return `<div class="panel imp eup-panel"><div class="panel-h">${tx('Missions')}</div><div class="muted imp-foot">${tx('Land in Sight: no missions yet. Discover land, found settlements and upgrade them to harbor settlements. The first to 8 points wins.')}</div>${pairs}</div>`;
@@ -269,7 +274,7 @@ function fleetHtml(v, A) {
   }).join('');
   const fr = m.friends || { fast: 0, gold: 0, pirate: [] };
   const friends = [fr.fast ? `${glyph('ship', 13)} +${fr.fast}` : '', fr.gold ? `${glyph('gold', 13)} ×${fr.gold}` : '', fr.pirate.length ? `${glyph('skull', 13)} 6${fr.pirate.map(n => `, ${n}`).join('')}` : ''].filter(Boolean);
-  return `<div class="eup-fleet"><div class="lbl"><b>${tx('Your fleet')}</b></div>${rows || `<small class="muted">${tx('No ships on the board.')}</small>`}${friends.length ? `<div class="eup-friends" title="${esc(t('Friendly spice villages'))}">${friends.map(x => `<span class="stat-chip">${x}</span>`).join('')}</div>` : ''}</div>`;
+  return `<div class="eup-fleet ${v.step === 'move' ? 'move' : ''}"><div class="lbl"><b>${tx('Your fleet')}</b></div>${rows || `<small class="muted">${tx('No ships on the board.')}</small>`}${friends.length ? `<div class="eup-friends" title="${esc(t('Friendly spice villages'))}">${friends.map(x => `<span class="stat-chip">${x}</span>`).join('')}</div>` : ''}</div>`;
 }
 
 // ------------------------------------------------------------ dialogs and picking
@@ -386,6 +391,18 @@ const plugin = register({
   blurb: 'Five scenarios from the book: discover the fog with ships, found settlements with explorers, upgrade them to harbor settlements, fight pirate lairs, catch fish and trade spices.',
   tokenKeys: ['gold'], limited: RES, bankBuys: ['lumber', 'brick', 'wool', 'grain', 'ore', 'gold'], tradeKeys: ['lumber', 'brick', 'wool', 'grain', 'ore', 'gold'],
   bankText: 'Trade 3 identical resources for 1 other resource or 1 gold with the supply. 2 gold buy 1 resource, twice per turn.',
+  // phone: the map opens zoomed in on your own settlements and ships (the whole-map button shows all of it)
+  phoneStart(v) {
+    const pts = [], at = id => { const p = v.board.vertices[id]; if (p) pts.push({ x: p.x * S, y: p.y * S }); };
+    const who = v.me >= 0 ? v.me : v.current; // a spectator starts with the player whose turn it is
+    if (who >= 0) {
+      Object.entries(v.buildings || {}).forEach(([id, b]) => { if (b.p === who) at(id); });
+      Object.values((v.exp && v.exp.ships) || {}).forEach(sh => { if (sh.p === who && v.board.edges[sh.e]) v.board.edges[sh.e].v.forEach(at); });
+    }
+    if (!pts.length && v.legal && v.legal.setupSpots) v.legal.setupSpots.forEach(at);
+    return pts.length ? { points: pts, margin: 120, minZ: 1.5, maxZ: 2.4 } : null;
+  },
+  phoneExtra: v => (v.step === 'move' ? 'dock' : 'sheet'), // phone: the fleet row replaces the build buttons while ships move, otherwise it lives in the Overview tab
   ext, boardKey: v => JSON.stringify([v.exp && v.exp.ships, v.exp && v.exp.pirate, v.exp && v.exp.neutral, v.step, v.current]),
 
   hud(v) {
@@ -476,6 +493,8 @@ const plugin = register({
     if (el.dataset.ship) shipMenu(+el.dataset.ship, A);
   },
   onClick(el, A) {
+    const ln = el.closest('[data-eup-lane]'); // phone: fold a mission track in or out
+    if (ln && isPhone()) { const set = A.G.eupOpen || (A.G.eupOpen = {}); set[ln.dataset.eupLane] = !set[ln.dataset.eupLane]; A.render(); return true; }
     const b = el.closest('[data-xship]');
     if (!b || b.disabled) return false;
     shipMenu(+b.dataset.xship, A);

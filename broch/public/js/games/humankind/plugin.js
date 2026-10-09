@@ -207,6 +207,17 @@ const plugin = register({
   bankText: 'Trade 3 equal cards for 1 card of your choice.',
   threat: { name: 'Neanderthal', icon: 'neanderthal' },
   boardKey, fresh,
+  // phone: the map opens zoomed in on your own camps and explorer (the whole-map button shows all of it)
+  phoneStart(v) {
+    const pts = [], at = id => { const p = v.board.vertices[id]; if (p) pts.push({ x: p.x * 56, y: p.y * 56 }); };
+    const who = v.me >= 0 ? v.me : v.current; // a spectator starts with the player whose turn it is
+    if (who >= 0) {
+      Object.entries(v.buildings || {}).forEach(([id, b]) => { if (b.p === who) at(id); });
+      ((v.humankind && v.humankind.explorers) || []).forEach(e => { if (e.p === who) at(e.v); });
+    }
+    if (!pts.length && v.legal && v.legal.setupCamps) v.legal.setupCamps.forEach(at);
+    return pts.length ? { points: pts, margin: 130, minZ: 1.8, maxZ: 2.6 } : null;
+  },
   board: (view, targets, fr, zoom, life) => renderWorld(view, targets, fr, zoom, life),
   targets(v) {
     const L = v.legal || {};
@@ -264,9 +275,9 @@ const plugin = register({
     const moves = Object.keys(L.moves || {}).length;
     return [
       { key: 'explorer', label: t('Explorer'), icon: 'explorer', cost: COSTS.explorer, enabled: !!(actor && L.explorerSpots && L.explorerSpots.length), left: m.pieces.explorers },
-      { key: 'move', label: t('Walk'), icon: 'campfire', plain: true, sub: t('1 fur or 1 meat'), enabled: !!(actor && moves) },
+      { key: 'move', label: t('Walk'), icon: 'campfire', plain: true, sub: t('1 fur or 1 meat'), phone: `<span class="cd">${costDots({ fur: 1 })}<span class="ctext">${tx('or')}</span>${costDots({ meat: 1 })}</span>`, enabled: !!(actor && moves) },
       { key: 'camp', label: t('Camp'), icon: 'tent', cost: COSTS.camp, enabled: !!(actor && L.camps && L.camps.length), left: m.pieces.camps },
-      { key: 'progress', label: t('Progress'), icon: 'food', plain: true, sub: t('Clothing, Construction, Food, Hunting'), enabled: !!(actor && L.advance && Object.values(L.advance).some(a => a && A.has(a.cost))) },
+      { key: 'progress', label: t('Progress'), icon: 'food', plain: true, sub: t('Clothing, Construction, Food, Hunting'), phone: '', enabled: !!(actor && L.advance && Object.values(L.advance).some(a => a && A.has(a.cost))) },
     ];
   },
   doAction(what, A) {
