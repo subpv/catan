@@ -105,6 +105,7 @@
   .cost-rules-h::after { content: '▾'; transition: transform .2s; }
   .cost-rules-h[aria-expanded="true"]::after { transform: rotate(180deg); }
   .cost-rules:not(.open) { display: none; }
+  .modal .env-sub, .modal small { font-size: 12px; } /* plugin sub-labels in the costs dialog (11 to 11.5px on the desktop) */
   /* the status button that reopens a dialog calls for attention while no dialog is open */
   [data-do="pendingDialog"] { animation: m-dlg-pulse 1.6s ease-in-out infinite; }
   body:has(.modal-back) [data-do="pendingDialog"] { animation: none; }
@@ -179,6 +180,7 @@
   .fx-loot .loot-row.me { order: -1; }
   .fx-loot .loot-who { font-size: 13px; width: 38%; }
   .fx-loot .lcard { width: 32px; height: 28px; }
+  .lcard i { font-size: 12px; } /* count badge on loot cards (also in the tutorial) */
   /* things that fly or float over the page vanish while a dialog is open */
   body:has(.modal-back) .fx-token, body:has(.modal-back) .fx-float, body:has(.modal-back) .fx-spark { display: none; }
   /* dice: smaller, the board stays visible */
