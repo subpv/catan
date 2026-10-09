@@ -35,7 +35,7 @@ function createRunner({ engine, store, broadcastState, finishGame, delay = () =>
     const tries = [];
     if (move) tries.push(move);
     if (!move && !expected(s, seat)) return false;
-    tries.push(...shuffle(fallbackMoves(s, seat)).filter(m => m.type !== 'offerTrade' && m.type !== 'counterTrade').slice(0, 30));
+    tries.push(...shuffle(fallbackMoves(s, seat)).filter(m => m.type !== 'offerTrade' && m.type !== 'counterTrade').slice(0, 300));
     for (const m of tries) {
       try { engine.act(s, seat, m); return true; } catch (e) { if (!(e instanceof engine.GameError)) console.error('Bot move crashed', m && m.type, e.message); }
     }
@@ -56,6 +56,20 @@ function createRunner({ engine, store, broadcastState, finishGame, delay = () =>
       }
     }
     // nobody could move: it is a human's turn (or a human has to answer something); the next human action wakes the bots again
+    warnStalled(g);
+  }
+  // Watchdog: a bot is the only one who has to move, yet none of its candidate moves was accepted. That table is dead until someone
+  // resigns or leaves, so say so in the server log (once per situation) to make such a bug findable.
+  const reported = new Map();
+  function warnStalled(g) {
+    const s = g.state, seats = botSeats(g);
+    const items = (s.pending || []).filter(x => x.player != null);
+    const onlyBots = items.length ? items.length === (s.pending || []).length && items.every(x => seats.includes(x.player)) : seats.includes(s.current);
+    if (!onlyBots) return;
+    const sig = JSON.stringify([s.turn, s.current, s.step, items.map(x => x.type + x.player)]);
+    if (reported.get(g.meta.id) === sig) return;
+    reported.set(g.meta.id, sig);
+    console.error(`Bot runner: game ${g.meta.id} (${s.mode}) is stuck, no bot move was accepted: turn ${s.turn}, seat ${s.current}, step ${s.step}, pending ${items.map(x => x.type + '@' + x.player).join(',') || 'none'}`);
   }
   function schedule(g) {
     if (!g.state || g.state.phase === 'over' || timers.has(g.meta.id) || !botSeats(g).length) return;

@@ -23,6 +23,32 @@ function robberHex(v) {
   return scored[0][1];
 }
 
+// A forced progress-card play (a 5th card on the bot's own turn) for the cards that need an argument. Built from the player's view;
+// null when nothing fits (the runner's fuzz fallback then tries every combination).
+function forcedProgress(v, me) {
+  const L = v.legal || {}, others = v.players.map((_, i) => i).filter(i => i !== v.me);
+  const own = type => Object.keys(v.buildings || {}).map(Number).filter(b => v.buildings[b].p === v.me && v.buildings[b].type === type);
+  const knightsOf = q => Object.values(v.knights || {}).some(k => k.p === q);
+  const richer = others.filter(q => v.players[q].vp > me.vp && v.players[q].cards > 0);
+  for (const [idx, card] of (me.progress || []).entries()) {
+    const play = extra => ({ type: 'playProgress', idx, ...extra });
+    switch (card) {
+      case 'commercialHarbor': return play({ offers: {} });
+      case 'bishop': if (L.robberHexes?.length) return play({}); break;
+      case 'engineer': { const c = own('city').filter(b => !v.buildings[b].wall); if (c.length) return play({ v: pick(c) }); break; }
+      case 'medicine': { const st = own('settlement'); if (st.length && (me.res?.grain || 0) >= 1 && (me.res?.ore || 0) >= 2) return play({ v: pick(st) }); break; }
+      case 'masterMerchant': if (richer.length) return play({ target: pick(richer) }); break;
+      case 'spy': { const t = others.filter(q => v.players[q].progressCount > 0); if (t.length) return play({ target: pick(t) }); break; }
+      case 'deserter': { const t = others.filter(knightsOf); if (t.length) return play({ target: pick(t) }); break; }
+      case 'diplomat': if (L.openRoads?.length) return play({ e: pick(L.openRoads) }); break;
+      case 'intrigue': if (L.intrigue?.length) return play({ v: pick(L.intrigue) }); break;
+      case 'merchant': if (L.merchantHexes?.length) return play({ hex: pick(L.merchantHexes) }); break;
+      case 'inventor': if ((L.inventorHexes || []).length > 1) return play({ a: L.inventorHexes[0], b: L.inventorHexes[1] }); break;
+    }
+  }
+  return null;
+}
+
 function decide(v) {
   const L = v.legal || {}, me = v.players[v.me];
   if (v.phase === 'over') return null;
@@ -53,7 +79,9 @@ function decide(v) {
         const safe = ['crane', 'irrigation', 'mining', 'roadBuilding', 'smith', 'warlord', 'saboteur', 'wedding', 'merchantFleet', 'resourceMonopoly', 'tradeMonopoly'];
         const idx = (me.progress || []).findIndex(c => safe.includes(c));
         if (idx >= 0) return { type: 'playProgress', idx, kind: me.progress[idx] === 'tradeMonopoly' ? 'cloth' : pick(RES) };
-        return { type: 'discardProgress', idx: 0 };
+        if (mine.canGiveBack) return { type: 'discardProgress', idx: 0 };
+        // every card needs a target and the engine refuses a give-back while one of them could be played: find a playable one
+        return forcedProgress(v, me) || { type: 'discardProgress', idx: 0 };
       }
       case 'harborGive': { const c = ['paper', 'cloth', 'coin'].filter(k => (me.comm?.[k] || 0) > 0); return { type: 'harborGive', comm: pick(c.length ? c : ['paper']) }; }
       case 'deserterPick': return { type: 'deserterPick', v: pick(L.giveKnights) };

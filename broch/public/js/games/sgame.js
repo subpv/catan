@@ -4,7 +4,7 @@ import { esc, toast, modal, closeModals, wsWatch, wsAct, onWs, reportProblem, ho
 import { lang } from '../core/i18n.js';
 import { renderBoard, tapTarget } from '../core/board.js';
 import { mountDock, yourMoveCue, buzz } from '../core/dock.js';
-import { isPhone, onPhoneChange } from '../core/phone.js';
+import { isPhone, isCoarse, onPhoneChange } from '../core/phone.js';
 import { topbar } from '../app.js';
 import { diff, play, sfx, afterFx } from '../core/fx.js';
 import { victoryScene, closeVictory } from '../core/victory.js';
@@ -150,6 +150,8 @@ function tutNudge() {
 }
 function lifePref() {
   try { const v = localStorage.getItem('broch_life'); if (v != null) return v === '1'; } catch { /* storage blocked */ }
+  // the endless board animations cost a phone or tablet most of its CPU while idle, so they start switched off there (the button turns them on)
+  if (isCoarse()) return false;
   return !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 function toggleLife() {

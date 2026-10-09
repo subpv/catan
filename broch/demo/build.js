@@ -51,13 +51,17 @@ async function buildPublic() {
     outdir: out, entryNames: 'demo', chunkNames: 'chunks/[name]-[hash]', metafile: true, plugins: [noProgress],
   });
   fs.copyFileSync(path.join(__dirname, 'demo.css'), path.join(out, 'demo.css'));
+  // chunks that demo.js imports statically are only discovered after demo.js has arrived (one more round trip): preload them next to it
+  const entryOut = Object.entries(r.metafile.outputs).find(([, o]) => o.entryPoint);
+  const preloads = entryOut[1].imports.filter(i => i.kind === 'import-statement' && !i.external)
+    .map(i => `<link rel="modulepreload" href="/demo/${path.relative(out, path.resolve(process.cwd(), i.path)).split(path.sep).join('/')}">\n`).join('');
   // the same page as the app, minus everything that belongs to the real app (manifest, preloads of the app's own modules, build stamp)
   const html = read('index.html')
     .replace('<title>Broch</title>', '<title>Broch Demo</title>')
     .replace(/<!--[\s\S]*?-->\s*/g, '').replace(/<link rel="modulepreload"[^>]*>\s*/g, '').replace(/<link rel="manifest"[^>]*>\s*/g, '')
     .replace(/<meta name="broch-build"[^>]*>\s*/, '') // no build stamp: the demo's texts are bundled, not fetched with ?v=
     .replace(/(<meta property="og:url" content=")[^"]*"/, '$1__ORIGIN__/demo/"').replace(/(<link rel="canonical" href=")[^"]*"/, '$1__ORIGIN__/demo/"')
-    .replace('</head>', '<link rel="stylesheet" href="/demo/demo.css">\n</head>')
+    .replace('</head>', () => `<link rel="stylesheet" href="/demo/demo.css">\n${preloads}</head>`)
     .replace('<script type="module" src="/js/app.js"></script>', '<script type="module" src="/demo/demo.js"></script>');
   if (/<script(?![^>]*\bsrc=)/i.test(html) || /\son[a-z]+=/i.test(html)) throw new Error('the public demo page must not contain inline script');
   fs.writeFileSync(path.join(out, 'index.html'), html);

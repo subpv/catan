@@ -918,6 +918,9 @@ function legalFor(s, p) {
     L.ratios = {};
     [...C.RES, ...(K(s) ? C.COMM : [])].forEach(t => { L.ratios[t] = bankRatio(s, p, t); });
     if (K(s)) KN.legalTurn(s, p, L);
+  } else if (K(s) && p === s.current && s.phase === 'play' && s.pending.some(i => i.type === 'discardProgress' && i.mustPlay && i.player === p)) {
+    // a forced progress-card play happens while the question is still open: the targets of the cards (roads, tiles, knights) are needed now
+    KN.legalTurn(s, p, L);
   }
   return L;
 }

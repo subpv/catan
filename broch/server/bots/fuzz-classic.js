@@ -24,6 +24,33 @@ function progressArgs(s, p, L, c, idx) {
     a: pick(L.inventorHexes || [0]), b: pick(L.inventorHexes || [0]), e: pick(L.openRoads && L.openRoads.length ? L.openRoads : [0]) };
 }
 
+// Every well-formed way to play one progress card (the engine still refuses the ones that do not work right now).
+// Unlike progressArgs this is exhaustive, so a bot that MUST play a card never runs out of candidates.
+function progressPlays(s, p, L, c, idx) {
+  const base = { type: 'playProgress', idx };
+  const opp = s.players.map((_, i) => i).filter(i => i !== p);
+  const own = type => Object.keys(s.buildings).map(Number).filter(v => s.buildings[v].p === p && s.buildings[v].type === type);
+  switch (c.type) {
+    case 'inventor': {
+      const h = L.inventorHexes || [], out = [];
+      for (let i = 0; i < h.length && out.length < 12; i++) for (let j = i + 1; j < h.length && out.length < 12; j++) out.push({ ...base, a: h[i], b: h[j] });
+      return out;
+    }
+    case 'engineer': return own('city').map(v => ({ ...base, v }));
+    case 'medicine': return own('settlement').map(v => ({ ...base, v }));
+    case 'masterMerchant': case 'spy': case 'deserter': return opp.map(target => ({ ...base, target }));
+    case 'diplomat': return (L.openRoads || []).map(e => ({ ...base, e }));
+    case 'intrigue': return (L.intrigue || []).map(v => ({ ...base, v }));
+    case 'merchant': return (L.merchantHexes || []).map(hex => ({ ...base, hex }));
+    case 'merchantFleet': return [...C.RES, ...C.COMM].map(kind => ({ ...base, kind }));
+    case 'resourceMonopoly': return C.RES.map(kind => ({ ...base, kind }));
+    case 'tradeMonopoly': return C.COMM.map(kind => ({ ...base, kind }));
+    case 'commercialHarbor': return [{ ...base, offers: {} }, progressArgs(s, p, L, c, idx)];
+    case 'alchemist': return []; // only before the roll, never as a forced play in the main phase
+    default: return [base]; // crane, irrigation, mining, roadBuilding, smith, warlord, saboteur, wedding, bishop
+  }
+}
+
 function candidates(s, p) {
   const v = viewFor(s, p), L = v.legal, out = [];
   if (L.goldPick) {
@@ -47,7 +74,8 @@ function candidates(s, p) {
       case 'chooseProgress': out.push({ type: 'chooseProgress', deck: pick(['trade', 'politics', 'science']) }); break;
       case 'discardProgress': {
         out.push({ type: 'discardProgress', idx: 0 });
-        if (it.mustPlay) s.players[p].progress.forEach((c, idx) => out.push(progressArgs(s, p, L, c, idx)));
+        // a forced play: list EVERY way to play each card, so that a playable one is always among the candidates
+        if (it.mustPlay) s.players[p].progress.forEach((c, idx) => out.push(...progressPlays(s, p, L, c, idx)));
         break;
       }
       case 'harborGive': out.push({ type: 'harborGive', comm: pick(C.COMM) }); break;

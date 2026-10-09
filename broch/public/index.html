@@ -36,7 +36,7 @@
 <link rel="stylesheet" href="/css/mobile-game.css">
 <link rel="stylesheet" href="/css/mobile-dialogs.css">
 <link rel="stylesheet" href="/css/landing.css">
-<!-- fetch every module at once instead of one import level at a time -->
+<!-- fetch every module at once instead of one import level at a time; test/rules/preload.js fails when a module is missing here -->
 <link rel="modulepreload" href="/js/core/core.js">
 <link rel="modulepreload" href="/js/core/phone.js">
 <link rel="modulepreload" href="/js/core/dock.js">
@@ -58,6 +58,25 @@
 <link rel="modulepreload" href="/js/games/seafarers/ui.js">
 <link rel="modulepreload" href="/js/games/seafarers/tutorial.js">
 <link rel="modulepreload" href="/js/games/traders-barbarians/tutorial.js">
+<link rel="modulepreload" href="/js/games/registry.js">
+<link rel="modulepreload" href="/js/games/sgame.js">
+<link rel="modulepreload" href="/js/core/builder.js">
+<link rel="modulepreload" href="/js/games/seafarers/scen.js">
+<link rel="modulepreload" href="/js/games/traders-barbarians/hub.js">
+<link rel="modulepreload" href="/js/games/traders-barbarians/hub-art.js">
+<link rel="modulepreload" href="/js/games/energies/plugin.js">
+<link rel="modulepreload" href="/js/games/energies/art.js">
+<link rel="modulepreload" href="/js/games/energies/threats.js">
+<link rel="modulepreload" href="/js/games/energies/tutorial.js">
+<link rel="modulepreload" href="/js/games/humankind/plugin.js">
+<link rel="modulepreload" href="/js/games/humankind/art.js">
+<link rel="modulepreload" href="/js/games/humankind/board.js">
+<link rel="modulepreload" href="/js/games/humankind/tutorial.js">
+<link rel="modulepreload" href="/js/games/inkas/plugin.js">
+<link rel="modulepreload" href="/js/games/inkas/art.js">
+<link rel="modulepreload" href="/js/games/inkas/tutorial.js">
+<link rel="modulepreload" href="/js/games/explorers-pirates/plugin.js">
+<link rel="modulepreload" href="/js/games/explorers-pirates/tutorial.js">
 </head>
 <body>
 <div class="stripe"><i></i><i></i><i></i><i></i><i></i></div>
