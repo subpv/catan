@@ -517,8 +517,20 @@ function broadcastState(g) {
   const online = onlineIn(g);
   clients.forEach(c => {
     if (c.game !== g.meta.id || !g.state) return;
+    c.sentV = g.state.version; c.sentAt = Date.now();
     sendWs(c, { t: 'state', game: g.meta.id, state: stateFor(c, g), online });
   });
+}
+// A player's screen plays animations (dice, building, loot). Their client reports {t:'fx', v} when it has shown everything up to state version v,
+// and the computer players wait for that, so a bot never races ahead of what the human sees. At most 8 s per move; clients that never report are ignored.
+const FX_WAIT_MS = 8000;
+function viewersBehind(g) {
+  const now = Date.now();
+  for (const c of clients) {
+    if (c.game !== g.meta.id || c.fxV === undefined || c.sentV === undefined) continue;
+    if (c.fxV < c.sentV && now - c.sentAt < FX_WAIT_MS && seatOf(g, c.user.id) >= 0) return true;
+  }
+  return false;
 }
 function onlineIn(g) {
   const ids = new Set([...clients].filter(c => c.game === g.meta.id).map(c => c.user.id));
@@ -536,7 +548,7 @@ function finishGame(g) {
   broadcastAll({ t: 'stats' });
 }
 
-const runner = createRunner({ engine, store, broadcastState, finishGame });
+const runner = createRunner({ engine, store, broadcastState, finishGame, viewersBehind });
 
 wss.on('connection', (ws, req) => {
   const user = userFromReq(req);
@@ -557,6 +569,8 @@ wss.on('connection', (ws, req) => {
         const g = c.game && db.games.get(c.game);
         if (!g) { if (c.game) sendWs(c, { t: 'abandoned' }); return; }
         if (g.state) broadcastState(g);
+      } else if (msg.t === 'fx') {
+        if (msg.game === c.game && Number.isFinite(+msg.v)) c.fxV = +msg.v;
       } else if (msg.t === 'act') {
         const g = db.games.get(msg.game);
         if (!g || !g.state) throw new engine.GameError('Game not running.');

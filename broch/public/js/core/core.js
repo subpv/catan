@@ -251,6 +251,11 @@ export function wsAct(game, action) {
     setTimeout(() => { if (waiting.has(rid)) { waiting.delete(rid); reject(Object.assign(new Error(t('The server did not answer.')), { handled: true })); } }, 10000);
   });
 }
+// tells the server that every animation of the state with this version has been played; the bots wait for it (see server/bots/runner.js)
+export function wsFxIdle(game, v) {
+  if (window.BROCH_MOCK || !wsOpen || !ws) return;
+  try { ws.send(JSON.stringify({ t: 'fx', game, v })); } catch { /* the connection just closed */ }
+}
 export function wsClose() { if (window.BROCH_MOCK) { wsOpen = false; return; } if (ws) { ws.onclose = null; ws.close(); ws = null; wsOpen = false; } }
 function connBar(show) {
   let el = document.querySelector('.conn-bar');

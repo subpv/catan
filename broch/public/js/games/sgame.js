@@ -14,7 +14,7 @@ import { createZoom } from '../core/zoom.js';
 import { chatHtml, historyHtml, graphsHtml, wireGraphs } from '../core/feed.js';
 import { GAMES } from './registry.js';
 
-import { cardListText } from '../core/core.js';
+import { cardListText, wsFxIdle } from '../core/core.js';
 import { isPhone as dlgPhone } from '../core/phone.js';
 let G = null;
 const tx = (k, p) => esc(t(k, p));
@@ -91,6 +91,7 @@ export function mountSGame(app, id, mode) {
       G.fresh = null;
       play(d.events, G.view, pname);
       if (release) afterFx(release);
+      { const gid = msg.game, ver = msg.state.version; afterFx(() => wsFxIdle(gid, ver)); } // the bots wait until this table has seen everything
     }
   });
   wsWatch(id);

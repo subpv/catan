@@ -16,7 +16,7 @@ import { createKnights } from '../knights/ui.js';
 import { createSeafarers } from '../seafarers/ui.js';
 import { chatHtml, historyHtml, graphsHtml, wireGraphs } from '../../core/feed.js';
 
-import { cardListText } from '../../core/core.js';
+import { cardListText, wsFxIdle } from '../../core/core.js';
 import { isPhone as dlgPhone } from '../../core/phone.js';
 let G = null;
 const ZOOM0 = () => ({ z: 1, cx: 0, cy: 0 });
@@ -112,6 +112,7 @@ export function mountGame(app, id) {
       G.fresh = null; // animate new pieces only once
       play(d.events, G.view, pname);
       if (release) afterFx(release);
+      { const gid = msg.game, ver = msg.state.version; afterFx(() => wsFxIdle(gid, ver)); } // the bots wait until this table has seen everything
     }
   });
   wsWatch(id);

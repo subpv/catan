@@ -113,11 +113,11 @@ let busy = 0;
 export const fxBusy = () => busy > 0;
 // runs cb once every queued scene (dice, loot, …) has finished; the statistics wait for it
 export const afterFx = cb => { queue = queue.then(() => { try { cb(); } catch { /* the screen is gone */ } }); };
-function enqueue(fn) {
+function enqueue(fn, { noBuilderWait = false } = {}) {
   busy++;
   window.BROCH_FX_BUSY = true;
-  // full-screen moments (dice, a new turn, loot) wait until the builders have finished, so they are never cut off
-  const afterBuilders = async () => { const left = buildersBusyFor(); if (left > 0) await wait(Math.min(left + 150, 9000)); return fn(); };
+  // full-screen moments (a new turn, loot) wait a little for the builders (never longer than 3.5 s), so they are not cut off; the dice never wait
+  const afterBuilders = async () => { const left = noBuilderWait ? 0 : buildersBusyFor(); if (left > 0) await wait(Math.min(left + 150, 3500)); return fn(); };
   queue = queue.then(afterBuilders).catch(() => {}).finally(() => { busy--; if (!busy) window.BROCH_FX_BUSY = false; });
   return queue;
 }
@@ -256,7 +256,7 @@ export function play(events, view, nameHtml) {
     if (ev.type === 'pirateMoved') sfx.pirate();
   }
   if (dealt) enqueue(() => SCENES.eventCard(view, dealt.a.n, nameHtml));
-  else if (rolled) enqueue(() => diceScene(view, rolled.a.n));
+  else if (rolled) enqueue(() => diceScene(view, rolled.a.n), { noBuilderWait: true });
   const logs = events.filter(e => e.type === 'log');
   const attack = logs.find(e => e.k.startsWith('The barbarians attack!'));
   if (attack) {

@@ -13,7 +13,7 @@ const FUZZ = {
 const isBotId = id => typeof id === 'string' && id.startsWith('bot_');
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
-function createRunner({ engine, store, broadcastState, finishGame, delay = () => (process.env.BROCH_BOT_DELAY !== undefined ? +process.env.BROCH_BOT_DELAY : 650 + Math.random() * 650) }) {
+function createRunner({ engine, store, broadcastState, finishGame, viewersBehind = () => false, delay = () => (process.env.BROCH_BOT_DELAY !== undefined ? +process.env.BROCH_BOT_DELAY : 650 + Math.random() * 650) }) {
   const timers = new Map();
 
   const botSeats = g => (g.state ? g.state.players.map((p, i) => (isBotId(p.userId) ? i : -1)).filter(i => i >= 0) : []);
@@ -45,6 +45,8 @@ function createRunner({ engine, store, broadcastState, finishGame, delay = () =>
   function step(g) {
     timers.delete(g.meta.id);
     if (!g.state || g.state.phase === 'over' || g.meta.status !== 'playing') return;
+    // a human's screen is still playing animations: look again in a moment (the server caps the wait)
+    if (viewersBehind(g)) { timers.set(g.meta.id, setTimeout(() => { try { step(g); } catch (e) { console.error('Bot runner crashed', e); } }, 200)); return; }
     for (const seat of shuffle(botSeats(g))) {
       const wasOver = g.state.phase === 'over';
       if (playOne(g, seat)) {
