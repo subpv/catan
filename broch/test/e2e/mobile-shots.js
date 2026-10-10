@@ -44,7 +44,7 @@ const GAMES = {
   explorers: { mode: 'explorers', escen: 2 },
 };
 // plays the human seat with the bot brain until `until(view)` is true
-async function playUntil(id, mode, until, maxMs = 20000) {
+async function playUntil(id, mode, until, maxMs = 120000) {
   const brain = engine.isStandalone(mode) ? standalone : classic;
   const ws = new WebSocket(`ws://127.0.0.1:${PORT}/ws`, { headers: { Cookie: cookie } });
   await new Promise((r, j) => { ws.on('open', r); ws.on('error', j); });
@@ -108,7 +108,9 @@ async function measure(page, label) {
       await call('POST', `/games/${game.id}/start`);
       await page.goto(`http://127.0.0.1:${PORT}/#/game/${game.id}`);
       await shot(`10-${key}-setup`, 1500);
+      const t0 = Date.now();
       const ok = await playUntil(game.id, spec.mode, v => v.phase === 'play' && v.current === v.me && (v.step === 'main' || v.step === 'roll'));
+      console.log(`${key}: ${ok ? 'main phase reached' : 'NOT reached'} after ${Math.round((Date.now() - t0) / 1000)} s`);
       await page.waitForTimeout(800);
       await shot(`11-${key}-turn`, 1200);
       // regression: the menu's "Leave this game" opened the dialog and it closed again at once (the sheet's history.back() popped the dialog's entry)
@@ -124,6 +126,7 @@ async function measure(page, label) {
       const tabs = await page.$$('.feed-tabs button, .tabs button, [data-tab]');
       for (let i = 0; i < Math.min(tabs.length, 4); i++) { try { await tabs[i].click(); await shot(`12-${key}-tab${i}`, 600); } catch { } }
       if (!ok) report.push({ label: key, note: 'never reached the main phase' });
+      await call('POST', `/games/${game.id}/abandon`, {}).catch(() => {});
     }
     report.push({ label: 'pageerrors', errors });
     await browser.close();
