@@ -1,0 +1,46 @@
+# Broch on TrueNAS SCALE: Apps -> Discover Apps -> Custom App -> "Install via YAML", paste this file.
+# Change the things marked CHANGE-ME (pool name, tunnel token). REGISTRATION_CODE is optional: delete the line and anybody can sign up
+# (10 new accounts per hour and address at most). If you already run a Cloudflare tunnel elsewhere, delete the whole `cloudflared:` service and point
+# the tunnel at http://TRUENAS-IP:30080.
+services:
+  broch:
+    image: node:22-alpine
+    container_name: broch
+    restart: unless-stopped
+    user: "568:568"                 # the "apps" user of TrueNAS; it needs read access to .../broch/app and write access to .../broch/data
+    working_dir: /app
+    command: ["node", "server/index.js"]
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      DATA_DIR: /data
+      TRUST_PROXY: "1"              # the app sits behind Cloudflare: use the real visitor address and mark the cookie Secure
+      REGISTRATION_CODE: "CHANGE-ME-a-long-random-invite-code"   # optional: friends need this code to create an account (the first account never does); delete the line for open sign-up
+      FEEDBACK_URL: ""                # empty = no "Send feedback" link in the footer and the error banner (leave it out to get the default form of the developer)
+    volumes:
+      - /mnt/CHANGE-ME-POOL/broch/app:/app:ro       # the program (unzipped broch-app.zip), read only
+      - /mnt/CHANGE-ME-POOL/broch/data:/data        # accounts, running games, history: this is what you back up
+    logging:                        # Docker does not rotate logs by itself: without this a chatty or attacked server could slowly fill the disk
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    ports:
+      - "30080:8080"                # only to test inside your home network: http://TRUENAS-IP:30080 (remove this block once the tunnel works)
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  cloudflared:                      # the Cloudflare Tunnel: no port has to be opened on your router
+    image: cloudflare/cloudflared:latest
+    container_name: broch-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: "CHANGE-ME-token-from-the-cloudflare-dashboard"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    depends_on:
+      - broch

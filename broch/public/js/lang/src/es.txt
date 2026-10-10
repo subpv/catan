@@ -1,0 +1,951 @@
+1|Jugar
+2|Estadísticas
+3|Perfil
+4|Idioma
+5|Sonido apagado
+6|Sonido activado
+7|¿Algo no funciona o tienes una idea?
+8|Enviar comentarios
+9|Cerrar
+10|Coloniza, comercia y construye con tus amigos.
+11|Iniciar sesión
+12|Crear cuenta
+13|Nombre visible
+14|País
+15|Correo electrónico
+16|Contraseña
+17|Código de invitación (pídeselo a quien gestiona el servidor)
+18|Eres el primer jugador, así que esta cuenta será la de administrador.
+19|Tu color
+20|¿De dónde eres? Tu bandera aparece junto a tu nombre.
+21|Guardar
+22|Guardado.
+23|Caballeros
+24|Clásico
+25|{n} puntos
+26|turno {n}
+27|Partida de {name}
+28|Nueva partida
+29|Versión
+30|Coloniza, comercia, construye. Cartas de desarrollo, gran ruta comercial, gran ejército. 10 puntos.
+31|Caballeros y Bárbaros
+32|Mercancías, mejoras de ciudad, caballeros e incursiones bárbaras. 13 puntos.
+33|Jugadores
+34|Menos
+35|Más
+36|Puntos para ganar
+37|Con cinco o seis jugadores se usa el tablero grande, con una fase de construcción especial entre turnos.
+38|Hasta cuatro jugadores usan el tablero estándar.
+39|Crear partida
+40|Tus partidas
+41|Tu turno
+42|Abrir
+43|anfitrión
+44|Plaza libre
+45|Elige tu color
+46|Empezar partida
+47|Esperando a que el anfitrión empiece…
+48|Copiar enlace de invitación
+49|Salir
+50|Partidas abiertas
+51|Unirse
+52|No hay partidas abiertas. Crea una e invita a tus amigos.
+53|Mirar
+54|Partida creada. Elige tu color e invita a tus amigos.
+55|Enlace de invitación copiado.
+56|Color favorito (se usa en las partidas si está libre, y en la página de estadísticas)
+57|Sesión iniciada como {email}
+58|administrador
+59|Cambiar contraseña
+60|Contraseña actual
+61|Nueva contraseña
+62|¿Suficiente por hoy?
+63|Cerrar sesión
+64|Contraseña cambiada.
+65|Te has unido a la partida.
+66|El anfitrión ha cerrado esta partida.
+67|No se pudo cargar Broch
+68|Puerto: cambia 3 cartas iguales por 1
+69|Puerto: cambia 2 {res} por 1
+70|Tablero
+71|nada
+72|Algo ha salido mal
+73|Cuéntanos qué estabas haciendo y lo arreglaremos. El botón copia los detalles del error para que los pegues en el formulario.
+74|Detalles del error
+75|Descartar
+76|Detalles del error copiados. Pégalos en el formulario de comentarios.
+77|No se puede conectar con el servidor de Broch. Revisa tu conexión.
+78|La petición ha fallado ({n})
+79|Reconectando con el servidor… inténtalo de nuevo en un momento.
+80|El servidor no ha respondido.
+81|Reconectando…
+82|La aplicación ha tenido un error inesperado
+83|El servidor ha informado de un error
+84|Se perdió la conexión con el servidor de juego
+85|Madera
+86|Arcilla
+87|Lana
+88|Cereal
+89|Mineral
+90|Papel
+91|Tela
+92|Moneda
+93|Comercio
+94|Política
+95|Ciencia
+96|barco bárbaro
+97|puerta del comercio
+98|puerta de la política
+99|puerta de la ciencia
+100|básico
+101|fuerte
+102|poderoso
+103|Caballero
+104|Punto de victoria
+105|Construcción de carreteras
+106|Año de abundancia
+107|Monopolio
+108|Alquimista
+109|Inventor
+110|Grúa
+111|Ingeniero
+112|Irrigación
+113|Medicina
+114|Minería
+115|Imprenta
+116|Herrero
+117|Puerto comercial
+118|Maestro mercader
+119|Mercader
+120|Flota mercante
+121|Monopolio de recursos
+122|Monopolio comercial
+123|Obispo
+124|Constitución
+125|Desertor
+126|Diplomático
+127|Intriga
+128|Saboteador
+129|Espía
+130|Señor de la guerra
+131|Boda
+132|Rojo
+133|Azul
+134|Naranja
+135|Blanco
+136|Turquesa
+137|Morado
+138|Negro
+139|Rosa
+140|Amarillo
+141|Marrón
+142|¡Metrópolis!
+143|Gran ruta comercial
+144|Gran ejército
+145|+2 puntos de victoria
+146|Quien tenga demasiadas cartas debe descartar la mitad.
+147|Nadie tiene que descartar.
+148|El ladrón se pone en marcha.
+149|Los bárbaros aún no han atacado, así que el ladrón se queda quieto.
+150|¡El ladrón ataca!
+151|¡Atacan los bárbaros!
+152|Bárbaros (ciudades)
+153|Caballeros activos
+154|¡Rechazados!
+155|¡Broch es saqueada!
+156|Cargando partida…
+157|Le has robado 1 {res} a {name}.
+158|{name} te ha robado 1 {res}.
+159|Tu jugada
+160|¡{name} gana!
+161|El resultado se ha guardado en la página de estadísticas.
+162|Celebrar
+163|Cancelar
+164|Coloca una carretera al lado.
+165|Coloca tu ciudad.
+166|Coloca tu primer poblado.
+167|Coloca tu segundo poblado.
+168|Toca un borde iluminado.
+169|Toca una esquina iluminada. Entre edificios debe quedar al menos una esquina libre.
+170|{name} está colocando una carretera…
+171|{name} está colocando un edificio…
+172|Descarta {n} cartas.
+173|Tienes más cartas de las que permite tu límite.
+174|Elegir cartas
+175|Dale {n} cartas a {name}.
+176|Regalo de boda: tú eliges las cartas.
+177|Mueve al ladrón (Obispo).
+178|Mueve al ladrón.
+179|Toca una casilla. Robas a un jugador que tenga un edificio allí.
+180|Elige a quién robar.
+181|Elegir
+182|Han expulsado a tu caballero.
+183|Toca una esquina iluminada para moverlo allí.
+184|Elige una ciudad para tu metrópolis ({track}).
+185|Toca una de tus ciudades resaltadas.
+186|Los bárbaros saquean una de tus ciudades.
+187|Toca la ciudad que pasará a ser poblado.
+188|Has ayudado a defender Broch. Roba una carta de progreso.
+189|Elegir mazo
+190|Tienes más de 4 cartas de progreso.
+191|Descarta hasta quedarte con 4.
+192|Elegir carta
+193|Tu acueducto te da un recurso.
+194|Esta tirada no te ha dado nada.
+195|Un caballero ha desertado a tu bando.
+196|Toca una esquina junto a tu carretera o sáltalo.
+197|Tu espía ve sus cartas de progreso.
+198|Toma 2 cartas de su mano.
+199|Haz tu elección.
+200|Saltar
+201|Fase de construcción especial.
+202|Puedes construir o comprar ahora. Sin comercio.
+203|Hecho
+204|{name} está en la fase de construcción especial…
+205|Esperando a que {name} tire…
+206|{name} está jugando su turno.
+207|Tu turno. Tira los dados.
+208|Puedes jugar un caballero antes de tirar.
+209|Tirar dados
+210|Carreteras gratis por colocar: {n}.
+211|Construye, comercia o termina tu turno.
+212|Ascensos gratis restantes: {n} (toca un caballero).
+213|Terminar turno
+214|Barco bárbaro
+215|Puerta de {track}
+216|Ha salido {n}
+217|Ahora mismo no hay dónde hacer eso.
+218|Estás mirando esta partida.
+219|Barco bárbaro: ataca cuando llega al final
+220|Fuerza bárbara (ciudades) contra caballeros activos
+221|Cartas de desarrollo restantes: {n}
+222|quedan {n}
+223|Carretera
+224|Poblado
+225|Ciudad
+226|Desarrollo
+227|Muralla
+228|Comercio con la banca
+229|4:1 o mejor
+230|Cartas de desarrollo
+231|nueva
+232|Cartas de progreso
+233|Tu mano
+234|Cartas: {n} · límite {m}
+235|Cartas: {n}
+236|Des.: {n}
+237|Caballeros: {n}
+238|Progreso: {n}
+239|Mejoras: comercio / política / ciencia
+240|tú
+241|En línea
+242|Desconectado
+243|de {n}
+244|{name} da
+245|y quiere
+246|Comerciar con {name}
+247|Rechazado
+248|Pensando…
+249|Retirar oferta
+250|Has aceptado. Esperando confirmación.
+251|Has rechazado.
+252|Aceptar
+253|Rechazar
+254|No tienes las cartas.
+255|Oferta de comercio
+256|Metrópolis: {name}
+257|Mejorar {track} ({n} {res})
+258|Mazos: ciencia {a}, comercio {b}, política {c}
+259|Mejoras de ciudad
+260|El nivel 3 desbloquea una ventaja. El primero en llegar al nivel 4 levanta una metrópolis (+2).
+261|Saluda a la mesa.
+262|Registro
+263|Chat
+264|Costes
+265|Mensaje
+266|Enviar
+267|Toca dónde construir tu carretera.
+268|Toca dónde construir tu poblado.
+269|Toca el poblado que quieres mejorar.
+270|Toca una esquina junto a tu carretera para el caballero.
+271|Toca la ciudad que tendrá muralla.
+272|Confirmar
+273|tienes {n}
+274|Menos
+275|Descarta {n} cartas
+276|Ha salido un 7 y tienes más de {n} cartas.
+277|Regalo de boda para {name}
+278|Elige {n} cartas para dar.
+279|Robar a…
+280|Tomas una carta al azar.
+281|Robar una carta de progreso
+282|Elige un mazo.
+283|Acueducto
+284|Toma un recurso a tu elección.
+285|Descartar una carta de progreso
+286|Puedes tener como máximo 4.
+287|No tomar nada
+288|Cartas de progreso de {name}
+289|Toma una.
+290|Mano de {name}
+291|Toma {n} cartas.
+292|Proponer un intercambio
+293|Todos ven la oferta y pueden aceptar. Tú eliges con quién comerciar.
+294|Das
+295|Quieres
+296|Mejor con la banca
+297|Ofrecer
+298|Comerciar con la banca
+299|Tus tasas dependen de tus puertos y mejoras.
+300|Tus tasas dependen de tus puertos.
+301|Dar
+302|Recibir 1
+303|Cambiar {n} {a} por 1 {b}
+304|Cuenta automáticamente.
+305|Juégala en tu turno.
+306|Ya has jugado una carta este turno.
+307|Las cartas compradas este turno se juegan a partir del siguiente.
+308|Jugar carta
+309|Toma 2 recursos cualesquiera de la banca.
+310|Todos te dan todo lo que tengan del recurso que nombres.
+311|El Alquimista se juega antes de tirar.
+312|Tira primero los dados.
+313|Elige el dado rojo y el amarillo. El dado de evento se tira normalmente.
+314|Sacar {n}
+315|Inventor: toca dos casillas numeradas para intercambiarlas.
+316|Ingeniero: toca una ciudad para darle una muralla gratis.
+317|Medicina: toca el poblado que quieres mejorar (1 cereal, 2 minerales).
+318|Mercader: toca una casilla junto a tu edificio.
+319|Diplomático: toca una carretera abierta para quitarla.
+320|Intriga: toca un caballero rival en tu carretera.
+321|Puntos: {n}
+322|¿Qué tipo de carta quieres cambiar 2:1 este turno?
+323|Cada rival te da hasta 2.
+324|Cada rival te da 1.
+325|Caballero básico
+326|Caballero fuerte
+327|Caballero poderoso
+328|Activar (1 cereal)
+329|Ascender (gratis, Herrero)
+330|Ascender (1 lana, 1 mineral)
+331|Moverse por tus carreteras
+332|Expulsar a un caballero más débil
+333|Ahuyentar al ladrón
+334|Activo (activado este turno, podrá actuar en el siguiente)
+335|Activo
+336|Inactivo
+337|Ahora mismo no puede hacer nada.
+338|Toca adónde debe ir el caballero.
+339|Toca el caballero que quieres expulsar.
+340|1 punto
+341|2 puntos, producción doble
+342|Carta de desarrollo
+343|Caballero, progreso o punto
+344|Caballero básico (inactivo)
+345|Activar caballero
+346|Ascender caballero
+347|Poderoso requiere política 3
+348|+2 al límite de mano
+349|Costes de construcción
+350|Las mejoras cuestan de 1 a 5 mercancías: tela para comercio, monedas para política, papel para ciencia. Las ciudades junto a bosque, pasto y montaña producen una mercancía en vez de un segundo recurso.
+351|Ver estadísticas
+352|Volver al vestíbulo
+353|El servidor de juego tuvo un error al procesar tu jugada
+354|Mueve al ladrón y roba una carta. Cuenta para el gran ejército.
+355|Vale 1 punto. Permanece oculta hasta el final de la partida.
+356|Construye 2 carreteras gratis.
+357|Nombra un recurso. Todos te dan todo lo que tengan de él.
+358|Elige los dos dados de producción antes de tirar.
+359|Intercambia dos fichas numeradas (excepto 2, 6, 8 o 12).
+360|Tu próxima mejora de ciudad este turno cuesta 1 menos.
+361|Construye una muralla gratis.
+362|Toma 2 cereales por cada campo junto a tus edificios.
+363|Convierte un poblado en ciudad por 2 minerales y 1 cereal.
+364|Toma 2 minerales por cada montaña junto a tus edificios.
+365|Asciende 2 caballeros gratis.
+366|Cambia uno de tus recursos por una mercancía de cada rival.
+367|Mira la mano de un jugador con más puntos y toma 2 cartas.
+368|Coloca al mercader junto a tu edificio: cambia ese recurso 2:1 y consigue 1 punto.
+369|Cambia un tipo de carta a tu elección 2:1 este turno.
+370|Cada rival te da hasta 2 de un recurso.
+371|Cada rival te da 1 de una mercancía.
+372|Mueve al ladrón y roba 1 carta a cada jugador de esa casilla.
+373|El caballero más débil de un rival deserta. Puedes colocar uno de la misma fuerza.
+374|Quita una carretera abierta. Si es tuya, la reconstruyes gratis.
+375|Expulsa a un caballero rival situado en una de tus carreteras.
+376|Los jugadores con tantos puntos como tú o más descartan la mitad de sus cartas.
+377|Mira las cartas de progreso de un rival y toma una.
+378|Activa todos tus caballeros gratis.
+379|Cada jugador con más puntos te da 2 cartas a su elección.
+380|Esperando a que {names} descarten…
+381|Esperando a que {names} mueva al ladrón…
+382|Esperando a que {names} robe…
+383|Esperando a que {names} recoloque un caballero…
+384|Esperando a que {names} den cartas…
+385|Esperando a que {names} elijan una ciudad que perder…
+386|Esperando a que {names} roben cartas de progreso…
+387|Esperando a {names}…
+388|{name} gana
+389|Cargando…
+390|Alguien
+391|Año anterior
+392|EN CURSO
+393|CERRADO
+394|Año siguiente
+395|Todas las partidas
+396|VA EN CABEZA
+397|CAMPEÓN {year}
+398|Nadie todavía
+399|Victorias
+400|Partidas: {n}
+401|Ver la celebración de la victoria
+402|Clasificación {year}
+403|pts
+404|Sin partidas todavía
+405|Aún no hay jugadores.
+406|A lo largo del tiempo
+407|Cara a cara
+408|Cada número indica cuántas veces el jugador de la fila ha ganado al de la columna.
+409|Registrar una partida jugada en la mesa
+410|Todas las partidas {year}
+411|Aún no hay nada registrado.
+412|Victoria n.º {n} en {year}
+413|Victorias: {n}
+414|¿Borrar?
+415|Borrado.
+416|Aún no hay partidas este año.
+417|Mejor racha
+418|Racha actual
+419|Versión favorita
+420|Bestia negra: {name} ({n}×)
+421|jugada en la mesa
+422|Turnos: {n}
+423|{n} min
+424|Mesa
+425|Borrar
+426|Victoria más rápida
+427|Puntuación más alta
+428|Más cartas cosechadas
+429|{n} en una partida
+430|Partida más larga
+431|Récords
+432|Dados
+433|Cuántas veces salió cada número
+434|Barras: tiradas de este año. Línea discontinua: lo que predicen las probabilidades. Número más caliente: {n} ({m} de {total} tiradas).
+435|El gráfico se rellena a medida que se juega.
+436|Victorias acumuladas durante el año
+437|Cuándo se jugó
+438|Quién jugó
+439|Quién ganó
+440|Elige primero a los jugadores.
+441|Guardar partida
+442|Guardado en las estadísticas.
+443|Modo desconocido
+444|Broch necesita de 2 a 6 jugadores
+445|Empieza la partida. {@ps} toman asiento.
+446|{@p} coloca primero.
+447|¡{@p} gana con {n} puntos de victoria!
+448|{@p} tiene ahora la gran ruta comercial ({n}).
+449|Ya nadie tiene la gran ruta comercial.
+450|{@p} ha sacado {n} ({#e}).
+451|{@p} ha sacado {n}.
+452|A la banca se le acabó {#r}; nadie recibe nada.
+453|{@p} recibe {$c}.
+454|El barco bárbaro avanza ({n}/{m}).
+455|¡Atacan los bárbaros! Fuerza {n} contra {m} de los caballeros.
+456|Los bárbaros son rechazados. {@p} es nombrado Defensor de Broch (+1 PV).
+457|Los bárbaros son rechazados. {@ps} comparten la gloria y roban una carta de progreso cada uno.
+458|Los bárbaros son rechazados.
+459|¡Ganan los bárbaros! {@ps} pierden una ciudad cada uno.
+460|Ganan los bárbaros, pero no hay ciudades sin protección que saquear.
+461|La ciudad de {@p} pasa a ser un poblado.
+462|El mazo de {#d} está vacío.
+463|{@p} revela {%c} (+1 PV).
+464|{@p} roba una carta de progreso ({#d}).
+465|{@p} no tiene ninguna ciudad libre para la metrópolis ({#t}).
+466|{@p} levanta una metrópolis ({#t}).
+467|Fase de construcción especial: {@ps}.
+468|No puedes construir una carretera ahí.
+469|No quedan carreteras.
+470|No tienes suficientes recursos.
+471|{@p} ha construido una carretera.
+472|Acción no válida.
+473|La partida ha terminado.
+474|No juegas en esta partida.
+475|Acción desconocida.
+476|Ahora no es tu turno.
+477|Ahora no está permitido.
+478|Solo en el modo caballeros.
+479|No te toca colocar.
+480|Demasiado cerca de otro edificio.
+481|{@p} ha colocado un poblado.
+482|{@p} ha colocado una ciudad.
+483|La carretera debe tocar tu nuevo edificio.
+484|Preparación terminada. Empieza {@p}.
+485|Ya has tirado.
+486|No hay carreteras gratis que saltar.
+487|No es tu fase de construcción especial.
+488|No puedes construir un poblado ahí.
+489|No quedan poblados.
+490|{@p} ha construido un poblado.
+491|Mejora uno de tus poblados.
+492|No quedan ciudades.
+493|{@p} ha construido una ciudad.
+494|No hay cartas de desarrollo en el modo caballeros.
+495|El mazo de desarrollo está vacío.
+496|{@p} ha comprado una carta de desarrollo.
+497|Solo una carta de desarrollo por turno.
+498|No tienes ninguna carta jugable de ese tipo (las nuevas esperan un turno).
+499|{@p} ha jugado {%c}.
+500|{@p} tiene ahora el gran ejército.
+501|Elige dos recursos.
+502|La banca no los tiene.
+503|{@p} ha jugado {%c} y ha tomado {$c2}.
+504|Elige un recurso.
+505|{@p} ha jugado {%c} sobre {#r} y ha reunido {n}.
+506|Carta desconocida.
+507|No hay nada que descartar.
+508|Elige exactamente {n} cartas.
+509|No tienes esas cartas.
+510|{@p} ha descartado cartas: {n}.
+511|No hay nada que dar.
+512|{@p} da cartas a {@q}: {n}.
+513|No eres tú quien mueve al ladrón.
+514|Mueve al ladrón a otra casilla.
+515|{@p} ha movido al ladrón.
+516|Elige a alguien junto al ladrón.
+517|Completa los dos lados del intercambio.
+518|{@p} ofrece {$g} por {$w}.
+519|Esa oferta no existe.
+520|No tienes las cartas pedidas.
+521|Ese jugador no ha aceptado.
+522|Alguien ya no tiene las cartas.
+523|{@p} ha cambiado {$g} con {@q} por {$w}.
+524|No hay ninguna oferta que retirar.
+525|Elige qué das y qué recibes.
+526|Necesitas {$c}.
+527|A la banca no le queda.
+528|{@p} ha cambiado {$g} con la banca por {$w}.
+529|Los caballeros van en una esquina libre junto a tu carretera.
+530|No quedan caballeros básicos.
+531|{@p} ha reclutado un caballero.
+532|Elige uno de tus caballeros inactivos.
+533|Activar cuesta 1 cereal.
+534|{@p} ha activado un caballero.
+535|Elige uno de tus caballeros.
+536|Un caballero solo puede ascender una vez por turno.
+537|No quedan caballeros del siguiente nivel.
+538|{@p} ha ascendido un caballero ({#l}).
+539|El caballero no puede llegar a esa esquina.
+540|{@p} ha movido un caballero.
+541|No hay ningún caballero rival alcanzable ahí.
+542|Solo puedes expulsar a un caballero más débil.
+543|El caballero de {@p} expulsa al de {@q}.
+544|El ladrón no se puede mover antes del primer ataque bárbaro.
+545|Ese caballero no está junto al ladrón.
+546|El caballero de {@p} ahuyenta al ladrón.
+547|No hay ningún caballero que recolocar.
+548|Elige una esquina resaltada.
+549|{@p} ha recolocado un caballero expulsado.
+550|Las murallas rodean tus ciudades.
+551|No quedan murallas.
+552|{@p} ha construido una muralla.
+553|Mejora desconocida.
+554|Primero necesitas una ciudad.
+555|Ya está al máximo.
+556|{@p} ha mejorado {#t} al nivel {n}.
+557|{@p} le quita la metrópolis ({#t}) a {@q}.
+558|No hay metrópolis que colocar.
+559|Elige una de tus ciudades.
+560|No hay nada que perder.
+561|Elige una de tus ciudades sin protección.
+562|Elige una carta.
+563|{@p} ha descartado una carta de progreso.
+564|El acueducto de {@p} le da {$c}.
+565|No hay ningún caballero que colocar.
+566|Elige una esquina libre junto a tu carretera.
+567|{@p} coloca al caballero desertor.
+568|No hay nada que tomar.
+569|El espía de {@p} le roba una carta de progreso a {@q}.
+570|Elige {n} de sus cartas.
+571|{@p} toma cartas de {@q}: {n}.
+572|Juega el Alquimista antes de tirar.
+573|{@p} le ha robado una carta a {@q}.
+574|Ese caballero no está activo.
+575|Un caballero activado este turno debe esperar al siguiente.
+576|El caballero de {@p} no tiene adónde ir y abandona el tablero.
+577|Elige los dos dados.
+578|Elige dos casillas numeradas (excepto 2, 6, 8 o 12).
+579|Elige una de tus ciudades sin muralla.
+580|Elige uno de tus poblados.
+581|La Medicina cuesta 1 cereal y 2 minerales.
+582|{@p} cambia {$g} por {$w} de {@q}.
+583|Elige a un jugador con más puntos que tú.
+584|No tiene cartas.
+585|Elige una casilla de tierra.
+586|El mercader debe estar junto a tu poblado o ciudad.
+587|Elige un tipo de carta.
+588|{@p} reúne {$c}.
+589|Elige una mercancía.
+590|El ladrón no puede moverse antes del primer ataque bárbaro.
+591|Elige a un jugador que tenga caballeros.
+592|Uno de los caballeros de {@p} deserta.
+593|Elige una carretera abierta (con un extremo suelto).
+594|{@p} ha quitado una carretera de {@q}.
+595|Elige un caballero rival en una de tus carreteras.
+596|Elige a un rival.
+597|No tiene cartas de progreso.
+598|Datos no válidos
+599|Partida no encontrada
+600|Inicia sesión.
+601|Demasiados intentos. Vuelve a intentarlo en unos minutos.
+602|Introduce un correo electrónico válido.
+603|Elige un nombre visible.
+604|La contraseña debe tener al menos 6 caracteres.
+605|Elige tu país.
+606|Código de invitación incorrecto.
+607|Ese correo ya está registrado.
+608|Ese nombre ya está en uso.
+609|Correo o contraseña incorrectos.
+610|El nombre no puede estar vacío.
+611|Color desconocido.
+612|Idioma desconocido.
+613|La contraseña actual no es correcta.
+614|La partida ya ha empezado.
+615|Únete primero a la partida.
+616|Otra persona ya tiene ese color.
+617|Esa partida ya ha empezado.
+618|La partida está llena.
+619|No puedes salir de una partida en curso. El anfitrión puede abandonarla.
+620|Solo el anfitrión puede empezar.
+621|Ya ha empezado.
+622|Espera al menos a un jugador más.
+623|Solo el anfitrión puede abandonar la partida.
+624|Elige al ganador entre los jugadores.
+625|No encontrado
+626|Solo quien la registró (o un administrador) puede borrarla.
+627|Ruta desconocida
+628|La partida no está en curso.
+629|Escenario
+630|Variantes
+631|Misiones
+632|Elige una expansión para ver sus opciones.
+633|Ciudades y Caballeros
+634|5–6
+635|Coloniza, comercia, construye. Cartas de desarrollo, gran ruta comercial, gran ejército.
+636|Mercancías, mejoras de ciudad, caballeros e incursiones bárbaras.
+637|Expansión
+638|Ninguna
+639|La isla estándar.
+640|Navegantes
+641|Barcos y exploración de islas.
+642|Comerciantes y Bárbaros
+643|Pescadores, ríos y cartas de evento.
+644|Exploradores y Piratas
+645|Misiones a través de la niebla.
+646|Expansión de 5–6 jugadores
+647|Tablero más grande y fase especial de construcción. Funciona con cualquier número de jugadores.
+648|Caladero
+649|Banco de peces
+650|Guarida pirata
+651|Bonus de isla nueva: +1 punto de victoria por el primer poblado
+652|Pirata
+653|Bosque
+654|Colinas
+655|Pradera
+656|Campos
+657|Montañas
+658|Desierto
+659|Oro
+660|Río
+661|pescado
+662|especia
+663|Descubrimiento
+664|Recursos iniciales
+665|Botín
+666|Mueve el ladrón o el pirata.
+667|Toca una casilla de tierra para el ladrón o de mar para el pirata. Robas a un jugador junto a ella.
+668|¡Oro! Elige {n} recursos.
+669|Toma los recursos que tenga el banco.
+670|Toca uno de tus barcos parpadeantes para navegar (una vez por turno).
+671|Toca adónde debe navegar este barco.
+672|Acercar
+673|Alejar
+674|Ver todo el tablero
+675|Fichas de pescado que quedan en la bolsa
+676|Cartas de evento hasta volver a barajar
+677|Barco
+678|Puente
+679|Pescado
+680|{n} de pescado
+681|2 de oro = 1 carta
+682|Entregar, atacar
+683|Oro ganado junto a los ríos. 2 de oro compran cualquier carta.
+684|{n} de oro
+685|El pescado está a salvo del ladrón y no se puede comerciar.
+686|La bota vieja: te falta un punto más para ganar.
+687|Bota vieja
+688|Pescado en el tablero · entregado
+689|Especia en el tablero · entregada
+690|Piezas restantes
+691|Fuerza de caballeros activos
+692|Pescado · especia entregados
+693|Nivel 3: cambia mercancías 2:1 con el banco.
+694|Nivel 3: tus caballeros pueden volverse poderosos.
+695|Nivel 3: el acueducto da un recurso cuando no obtienes nada.
+696|Nivel 4: el primero aquí levanta una metrópolis (+2 puntos).
+697|todos de un vistazo
+698|Toca el borde de mar adonde debe ir tu barco.
+699|Toca el cruce de río para tu puente.
+700|¡Oro!
+701|Elige {n} recursos del banco.
+702|Ahuyentar al ladrón
+703|Mueve el ladrón a cualquier casilla y roba a un vecino.
+704|Robar una carta
+705|Toma una carta al azar de un jugador a tu elección.
+706|Tomar un recurso
+707|Toma cualquier recurso del banco.
+708|Camino gratis
+709|Construye un camino sin pagar.
+710|Carta de progreso
+711|Roba una carta de progreso de un mazo a tu elección.
+712|Roba una carta de desarrollo gratis.
+713|Gastar pescado
+714|Tienes {n} de pescado. El pescado no se puede robar ni perder por el ladrón.
+715|Nadie tiene cartas que robar.
+716|Oro por carta
+717|Tienes {n} de oro. 2 de oro compran cualquier recurso, hasta dos veces por turno.
+718|En el tablero: {n} · entregado: {d} · {v}/3 puntos
+719|Entregar
+720|Cada 2 entregas al consejo dan 1 punto, hasta 3 puntos por misión. Una guarida pirata destruida vale 1 punto para quien más la haya golpeado.
+721|Pescado para Broch
+722|Especias para Broch
+723|Guaridas piratas
+724|Cada golpe cuesta 1 mineral y 1 lana y requiere un barco junto a la guarida.
+725|Aún no hay guaridas. Explora la niebla.
+726|Guarida · quedan {n} golpes
+727|Atacar
+728|Navega por bordes de mar; se mueve una vez por turno
+729|Cruza un río; gana 3 de oro
+730|Esperando a que {names} elijan del campo de oro…
+731|Expansiones
+732|Mueve el pirata a otra casilla de mar.
+733|{@p} movió el pirata.
+734|Se vuelven a barajar las cartas de evento.
+735|{@p} navega a mar abierto.
+736|{@p} descubre tierra: {#t}.
+737|{@p} encuentra oro y puede elegir {n} recursos.
+738|{@p} pesca {n} de pescado.
+739|{@p} pesca la bota vieja y ahora necesita un punto más para ganar.
+740|{@p} carga {n} de especia.
+741|{@p} recoge una gran captura de pescado.
+742|{@p} gana {n} de oro.
+743|{@p} puebla una isla nueva y gana un punto extra (+1 PV).
+744|No hay barcos en esta partida.
+745|No quedan barcos.
+746|No puedes navegar un barco hasta allí.
+747|{@p} construyó un barco.
+748|Ese barco no puede ir allí.
+749|{@p} navegó un barco a un nuevo lugar.
+750|No tienes oro para gastar.
+751|{@p} toma {$c} del campo de oro.
+752|No hay ríos en esta partida.
+753|No quedan puentes.
+754|No puedes construir un puente allí.
+755|{@p} construyó un puente.
+756|Solo puedes cambiar oro dos veces por turno.
+757|Necesitas 2 de oro.
+758|{@p} cambia 2 de oro por {$c}.
+759|No hay pescadores en esta partida.
+760|Intercambio de pescado desconocido.
+761|Necesitas {n} de pescado.
+762|{@p} paga {n} de pescado para ahuyentar al ladrón.
+763|Elige un jugador con cartas.
+764|Elige un recurso que tenga el banco.
+765|{@p} cambia {n} de pescado por {$c}.
+766|{@p} cambia {n} de pescado por un camino gratis.
+767|{@p} cambia {n} de pescado por una carta de progreso.
+768|{@p} cambia {n} de pescado por una carta de desarrollo.
+769|No hay misiones en esta partida.
+770|Esa misión no está en esta partida.
+771|No tienes nada que entregar.
+772|Necesitas un poblado al que entregar.
+773|{@p} entrega {n} de {#k} al consejo.
+774|No hay guaridas piratas en esta partida.
+775|No hay guarida allí.
+776|Necesitas un barco junto a la guarida.
+777|Atacar cuesta 1 mineral y 1 lana.
+778|{@p} ataca una guarida pirata (quedan {n}).
+779|La guarida pirata queda destruida. {@p} se lleva la recompensa (+1 PV).
+780|Rumbo a nuevas costas
+781|Las cuatro islas
+782|Las islas de la niebla
+783|Pescadores de Broch
+784|Ríos de Broch
+785|Cartas de evento
+786|Caladeros, fichas de pescado y la bota vieja.
+787|Puentes, oro y el jugador más rico y más pobre.
+788|Un mazo de cartas de evento sustituye a los dados.
+789|Regla de la casa: ladrón olvidado
+790|Si un jugador termina su turno sin mover al ladrón, este vuelve al desierto.
+791|Si terminas tu turno ahora, el ladrón vuelve al desierto.
+792|Esa regla de la casa no está activada.
+793|{@p} olvidó mover al ladrón, así que vuelve al desierto.
+794|Regla de la casa: recursos iniciales por ambos
+795|Reglas de la casa
+796|Los dos edificios de la fase de preparación dan recursos iniciales. En Ciudades y Caballeros la ciudad cuenta como un poblado.
+797|Aún no ha pasado nada.
+798|Fase de preparación
+799|Los gráficos se rellenan en cuanto se juegan los primeros turnos.
+800|Evolución de los puntos de victoria
+801|Tiradas de dados
+802|Barras: real · línea: esperado tras {n} tiradas
+803|Recursos recibidos
+804|Tiradas
+805|Más frecuente
+806|Sietes
+807|Meta
+808|real
+809|esperado
+810|Más de {n} cartas: con un 7 pierdes la mitad.
+811|Solo la última tirada
+812|Ver turnos anteriores
+813|Defensor de Broch
+814|−1 ciudad
+815|Tablero vivo
+816|Tablero vivo: activado
+817|Tablero vivo: desactivado
+818|Banca
+819|Vale 1 punto. Se coloca boca arriba delante de ti.
+820|Cómo se juega: {mode}
+821|Cómo se juega
+822|Cómo funciona {mode} (1 min)
+823|¡Bienvenido a Broch!
+824|Construye, comercia y crece. Gana el primero en llegar a 10 puntos.
+825|Cada casilla produce un recurso.
+826|Bosque, colinas, pradera, campos y montañas. El desierto no produce nada.
+827|Construye poblados en las esquinas.
+828|Toca la esquina iluminada.
+829|Un poblado toca hasta 3 casillas.
+830|Tus rivales también construyen.
+831|Tira los dados en cada turno.
+832|Toca los dados.
+833|Cada casilla con ese número produce.
+834|Quien esté al lado recibe una carta, incluso en el turno de otros.
+835|Más puntitos, más suerte.
+836|El 6 y el 8 rojos salen más a menudo; el 2 y el 12, rara vez.
+837|Gasta cartas para construir.
+838|Una carretera cuesta madera y arcilla. Toca el borde iluminado.
+839|Las ciudades producen el doble.
+840|Convierte un poblado en ciudad con 2 cereales y 3 minerales. Toca tu poblado.
+841|¡Un 7 despierta al ladrón!
+842|Mueve al ladrón a una casilla.
+843|Deja de producir. Toca una casilla junto a tu rival.
+844|Luego roba una carta a alguien de allí.
+845|Quien tenga más de 7 cartas pierde la mitad.
+846|Comercia con los jugadores o con la banca.
+847|La banca cambia 4 cartas iguales por 1. Puertos: 3:1 o 2:1.
+848|Los caballeros mueven al ladrón. Las demás dan carreteras, recursos o un punto de victoria.
+849|3 caballeros jugados: gran ejército, +2 puntos.
+850|Quien lo tiene ondea estandartes de guerra en el tablero.
+851|5 carreteras seguidas: gran ruta comercial, +2 puntos.
+852|El camino más largo brilla en dorado.
+853|¡Llega a 10 puntos para ganar!
+854|Poblado 1 · Ciudad 2 · Gran ruta comercial 2 · Gran ejército 2 · Carta de punto de victoria 1
+855|Todo lo del Clásico, más mercancías, caballeros y bárbaros. Se gana con 13 puntos.
+856|Las ciudades producen mercancías.
+857|Bosque: papel · Pradera: tela · Montañas: monedas
+858|Las mercancías compran mejoras de ciudad.
+859|El comercio cuesta tela, la política monedas y la ciencia papel. Toca +.
+860|El nivel 3 desbloquea un poder especial.
+861|Ciencia: un recurso cuando no recibes nada. Comercio: mercancías 2:1. Política: caballeros más fuertes.
+862|El primero en llegar al nivel 4 levanta una metrópolis.
+863|Vale 2 puntos y se alza sobre tu ciudad.
+864|Los caballeros defienden Broch.
+865|Recluta uno por lana y mineral. Toca la esquina iluminada.
+866|Actívalo con cereal.
+867|Solo luchan los caballeros activos. Asciéndelos para hacerlos más fuertes.
+868|Un barco en el dado de evento hace avanzar a los bárbaros.
+869|Cada barco los acerca un paso más a Broch.
+870|Su fuerza: todas las ciudades del tablero. Tu defensa: todos los caballeros activos.
+871|El defensor más fuerte gana un punto. Si ganan los bárbaros, saquean la ciudad más débil.
+872|Una puerta de color en el dado de evento da cartas a quienes tengan mejoras suficientes.
+873|Murallas
+874|Cada muralla te deja guardar 2 cartas más cuando sale un 7.
+875|¡Llega a 13 puntos para ganar!
+876|Poblado 1 · Ciudad 2 · Metrópolis 2 · Defensor 1 · Gran ruta comercial 2
+877|La tierra está dividida en islas. Los barcos cruzan el mar.
+878|Construye barcos en el agua.
+879|Un barco cuesta madera y lana. Toca el borde iluminado.
+880|Los barcos forman una cadena, como las carreteras.
+881|El último barco de una cadena abierta puede navegar a otro lugar una vez por turno.
+882|Navega junto a la niebla para descubrirla.
+883|Descubrir tierra te da un recurso.
+884|Puebla una isla nueva: ¡+1 punto!
+885|Los campos de oro dan el recurso que quieras.
+886|El pirata
+887|Los barcos junto a su casilla quedan bloqueados, y él roba. Un 7 o un caballero lo mueven.
+888|Para ganar hacen falta de 12 a 14 puntos.
+889|Elige un escenario al crear la partida: Nuevas costas, Cuatro islas o Islas de la niebla.
+890|Tres variantes que puedes combinar: Pescadores, Ríos y Cartas de evento.
+891|Pescadores
+892|El desierto se convierte en un lago y la costa recibe caladeros.
+893|Saca el número de un caladero para pescar.
+894|El lago produce con 2, 3, 11 y 12.
+895|Pagar con pescado
+896|2 ahuyentar al ladrón · 3 robar · 4 tomar un recurso · 5 una carretera · 7 una carta de desarrollo
+897|La bota vieja
+898|Quien la pesca necesita un punto más para ganar, y puede pasársela a quien vaya en cabeza.
+899|Ríos
+900|Cada carretera o poblado junto a un río da 1 de oro.
+901|Los puentes cruzan el río.
+902|Un puente cuesta 2 de arcilla y 1 de madera y da 3 de oro.
+903|Cambia 2 de oro por cualquier recurso. El más rico gana +1 punto; el más pobre, −2.
+904|Un mazo con los 36 resultados de los dados sustituye a los dados, así cada número sale tantas veces como debe.
+905|Navega hacia la niebla, descubre tierras y cumple misiones.
+906|Explora la niebla con barcos.
+907|Toca el borde iluminado. La tierra nueva te da un recurso.
+908|Un barco junto a un banco de peces recoge pescado cuando sale su número.
+909|Especias para Broch
+910|Los poblados junto a un campo de especias cargan especia cuando produce.
+911|Entrega la carga al consejo.
+912|Cada 2 entregas dan 1 punto, hasta 3 puntos por misión.
+913|Ataca desde un barco junto a una guarida por 1 mineral y 1 lana. Cuando cae, quien más la haya golpeado gana un punto.
+914|¡Llega a 12 puntos para ganar!
+915|Cuentan poblados, ciudades, islas nuevas, misiones y guaridas.
+916|Un tablero más grande, con más casillas, puertos y cartas, para hasta 6 jugadores.
+917|Fase de construcción especial
+918|Tras cada turno, los demás pueden construir por orden, pero no comerciar.
+919|Así nadie espera mucho.
+920|Los turnos siguen siendo cortos, incluso con la mesa llena.
+921|Atrás
+922|Pausa
+923|Siguiente
+924|¡Ya conoces {mode}!
+925|Ver otra vez
+926|Siguiente: {mode}
+927|¡A jugar!
+928|Carta de evento
+929|Tirar
+930|¡Victoria!
+931|Fin de la partida
+932|¡Has ganado!
+933|puntos de victoria
+934|Has terminado en el puesto {n} con {m} puntos.
+935|Clasificación final
+936|Ver el tablero
+937|Poblados
+938|Ciudades
+939|Metrópolis
+940|Cartas de punto de victoria
+941|Puntos extra
+942|Así fue la carrera
+943|Más recursos
+944|Número más frecuente
+945|{n}×
+946|Duración de la partida
+947|{n} turnos
+948|Lo más destacado
+949|Gran ruta comercial
+950|Elige tu recurso una sola vez. A partir de ahora el acueducto lo entrega cada vez que una tirada no te dé nada (salvo con un 7).
+951|Acueducto: {res}. Toca para cambiar.

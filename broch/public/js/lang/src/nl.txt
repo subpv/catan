@@ -1,0 +1,951 @@
+1|Spelen
+2|Statistieken
+3|Profiel
+4|Taal
+5|Geluid uit
+6|Geluid aan
+7|Werkt er iets niet, of heb je een idee?
+8|Feedback sturen
+9|Sluiten
+10|Vestig je, handel en bouw met je vrienden.
+11|Inloggen
+12|Account aanmaken
+13|Weergavenaam
+14|Land
+15|E-mail
+16|Wachtwoord
+17|Uitnodigingscode (vraag het aan wie de server beheert)
+18|Je bent de eerste speler, dus dit account wordt beheerder.
+19|Jouw kleur
+20|Waar kom je vandaan? Je vlag staat naast je naam.
+21|Opslaan
+22|Opgeslagen.
+23|Ridders
+24|Klassiek
+25|{n} punten
+26|beurt {n}
+27|Spel van {name}
+28|Nieuw spel
+29|Versie
+30|Vestigen, handelen, bouwen. Ontwikkelingskaarten, langste handelsroute, grootste riddermacht. 10 punten.
+31|Ridders & Barbaren
+32|Handelswaren, stadsuitbreidingen, ridders en barbaarse aanvallen. 13 punten.
+33|Spelers
+34|Minder
+35|Meer
+36|Punten om te winnen
+37|Vijf of zes spelers gebruiken het grotere bord, met een extra bouwfase tussen de beurten.
+38|Tot vier spelers gebruiken het normale bord.
+39|Spel aanmaken
+40|Jouw spellen
+41|Jouw beurt
+42|Openen
+43|host
+44|Vrije plek
+45|Kies je kleur
+46|Spel starten
+47|Wachten tot de host start…
+48|Uitnodigingslink kopiëren
+49|Verlaten
+50|Open spellen
+51|Meedoen
+52|Geen open spellen. Maak er een aan en nodig je vrienden uit.
+53|Kijken
+54|Spel aangemaakt. Kies je kleur en nodig je vrienden uit.
+55|Uitnodigingslink gekopieerd.
+56|Favoriete kleur (gebruikt in spellen als die vrij is, en op de statistiekenpagina)
+57|Ingelogd als {email}
+58|beheerder
+59|Wachtwoord wijzigen
+60|Huidig wachtwoord
+61|Nieuw wachtwoord
+62|Klaar voor vandaag?
+63|Uitloggen
+64|Wachtwoord gewijzigd.
+65|Je doet mee met het spel.
+66|De host heeft dit spel gesloten.
+67|Broch kon niet worden geladen
+68|Haven: ruil 3 gelijke kaarten voor 1
+69|Haven: ruil 2 {res} voor 1
+70|Spelbord
+71|niets
+72|Er ging iets mis
+73|Vertel ons wat je aan het doen was, dan lossen we het op. De knop kopieert de foutdetails zodat je ze in het formulier kunt plakken.
+74|Foutdetails
+75|Sluiten
+76|Foutdetails gekopieerd. Plak ze in het feedbackformulier.
+77|De Broch-server is niet bereikbaar. Controleer je verbinding.
+78|Verzoek mislukt ({n})
+79|Opnieuw verbinden met de server… probeer het zo nog eens.
+80|De server reageerde niet.
+81|Opnieuw verbinden…
+82|De app kreeg een onverwachte fout
+83|De server meldde een fout
+84|Verbinding met de spelserver verloren
+85|Hout
+86|Baksteen
+87|Wol
+88|Graan
+89|Erts
+90|Papier
+91|Stof
+92|Munt
+93|Handel
+94|Politiek
+95|Wetenschap
+96|barbarenschip
+97|handelspoort
+98|politiekpoort
+99|wetenschapspoort
+100|gewone
+101|sterke
+102|machtige
+103|Ridder
+104|Overwinningspunt
+105|Stratenbouw
+106|Uitvinding
+107|Monopolie
+108|Alchemist
+109|Uitvinder
+110|Kraan
+111|Ingenieur
+112|Irrigatie
+113|Geneeskunde
+114|Mijnbouw
+115|Boekdrukkunst
+116|Smid
+117|Handelshaven
+118|Meesterkoopman
+119|Koopman
+120|Handelsvloot
+121|Grondstoffenmonopolie
+122|Handelsmonopolie
+123|Bisschop
+124|Grondwet
+125|Deserteur
+126|Diplomaat
+127|Intrige
+128|Saboteur
+129|Spion
+130|Krijgsheer
+131|Bruiloft
+132|Rood
+133|Blauw
+134|Oranje
+135|Wit
+136|Turquoise
+137|Paars
+138|Zwart
+139|Roze
+140|Geel
+141|Bruin
+142|Metropool!
+143|Langste handelsroute
+144|Grootste riddermacht
+145|+2 overwinningspunten
+146|Spelers met te veel kaarten moeten de helft afleggen.
+147|Niemand hoeft kaarten af te leggen.
+148|De rover gaat op pad.
+149|De barbaren hebben nog niet aangevallen, dus de rover blijft staan.
+150|De rover slaat toe!
+151|De barbaren vallen aan!
+152|Barbaren (steden)
+153|Actieve ridders
+154|Afgeslagen!
+155|Broch wordt geplunderd!
+156|Spel laden…
+157|Je hebt 1 {res} gestolen van {name}.
+158|{name} heeft 1 {res} van je gestolen.
+159|Jouw zet
+160|{name} wint!
+161|De uitslag is opgeslagen op de statistiekenpagina.
+162|Vieren
+163|Annuleren
+164|Plaats er een straat naast.
+165|Plaats je stad.
+166|Plaats je eerste dorp.
+167|Plaats je tweede dorp.
+168|Tik op een oplichtende rand.
+169|Tik op een oplichtende hoek. Tussen gebouwen moet minstens één lege hoek zitten.
+170|{name} plaatst een straat…
+171|{name} plaatst een gebouw…
+172|Leg {n} kaarten af.
+173|Je hebt meer kaarten dan je handlimiet.
+174|Kaarten kiezen
+175|Geef {name} {n} kaarten.
+176|Huwelijkscadeau: jij kiest welke kaarten.
+177|Verplaats de rover (Bisschop).
+178|Verplaats de rover.
+179|Tik op een tegel. Je steelt van een speler met een gebouw daar.
+180|Kies van wie je steelt.
+181|Kiezen
+182|Je ridder is verdreven.
+183|Tik op een oplichtende hoek om hem daarheen te zetten.
+184|Kies een stad voor je metropool ({track}).
+185|Tik op een van je gemarkeerde steden.
+186|De barbaren plunderen een van je steden.
+187|Tik op de stad die een dorp wordt.
+188|Je hielp Broch verdedigen. Trek een vooruitgangskaart.
+189|Stapel kiezen
+190|Je hebt meer dan 4 vooruitgangskaarten.
+191|Leg af tot je er 4 hebt.
+192|Kaart kiezen
+193|Je aquaduct levert een grondstof.
+194|Deze worp leverde je niets op.
+195|Een ridder is naar jouw kant overgelopen.
+196|Tik op een hoek aan je straat, of sla over.
+197|Je spion ziet hun vooruitgangskaarten.
+198|Pak 2 kaarten uit hun hand.
+199|Maak je keuze.
+200|Overslaan
+201|Extra bouwfase.
+202|Je mag nu bouwen of kopen. Niet handelen.
+203|Klaar
+204|{name} is in de extra bouwfase…
+205|Wachten tot {name} gooit…
+206|{name} is aan de beurt.
+207|Jouw beurt. Gooi de dobbelstenen.
+208|Je kunt een ridder spelen voordat je gooit.
+209|Dobbelen
+210|Gratis straten plaatsen: {n}.
+211|Bouw, handel of beëindig je beurt.
+212|Gratis promoties over: {n} (tik op een ridder).
+213|Beurt beëindigen
+214|Barbarenschip
+215|{track}-poort
+216|{n} gegooid
+217|Daar is nu geen plek voor.
+218|Je kijkt naar dit spel.
+219|Barbarenschip: valt aan als het het einde bereikt
+220|Kracht van de barbaren (steden) tegen actieve ridders
+221|Ontwikkelingskaarten over: {n}
+222|nog {n}
+223|Straat
+224|Dorp
+225|Stad
+226|Ontwikkeling
+227|Stadsmuur
+228|Bankhandel
+229|4:1 of beter
+230|Ontwikkelingskaarten
+231|nieuw
+232|Vooruitgangskaarten
+233|Jouw hand
+234|Kaarten: {n} · limiet {m}
+235|Kaarten: {n}
+236|Ontw.: {n}
+237|Ridders: {n}
+238|Vooruitgang: {n}
+239|Uitbreidingen: handel / politiek / wetenschap
+240|jij
+241|Online
+242|Offline
+243|van {n}
+244|{name} geeft
+245|en wil
+246|Handelen met {name}
+247|Afgewezen
+248|Denkt na…
+249|Aanbod intrekken
+250|Je hebt geaccepteerd. Wachten op bevestiging.
+251|Je hebt afgewezen.
+252|Accepteren
+253|Afwijzen
+254|Je mist de kaarten.
+255|Handelsaanbod
+256|Metropool: {name}
+257|{track} uitbreiden ({n} {res})
+258|Stapels: wetenschap {a}, handel {b}, politiek {c}
+259|Stadsuitbreidingen
+260|Niveau 3 ontgrendelt een bonus. Wie als eerste niveau 4 haalt, bouwt een metropool (+2).
+261|Zeg hallo tegen de tafel.
+262|Spelverloop
+263|Chat
+264|Kosten
+265|Bericht
+266|Versturen
+267|Tik waar je straat moet komen.
+268|Tik waar je dorp moet komen.
+269|Tik op het dorp dat je uitbreidt.
+270|Tik op een hoek aan je straat voor de ridder.
+271|Tik op de stad die een muur krijgt.
+272|Bevestigen
+273|je hebt {n}
+274|Minder
+275|Leg {n} kaarten af
+276|Er werd een 7 gegooid en je hebt meer dan {n} kaarten.
+277|Huwelijkscadeau voor {name}
+278|Kies {n} kaarten om te geven.
+279|Stelen van…
+280|Je pakt een willekeurige kaart.
+281|Trek een vooruitgangskaart
+282|Kies een stapel.
+283|Aquaduct
+284|Neem een grondstof naar keuze.
+285|Vooruitgangskaart afleggen
+286|Je mag er hoogstens 4 hebben.
+287|Niets nemen
+288|Vooruitgangskaarten van {name}
+289|Neem er een.
+290|Hand van {name}
+291|Neem {n} kaarten.
+292|Handel aanbieden
+293|Iedereen ziet het aanbod en kan accepteren. Jij kiest met wie je handelt.
+294|Jij geeft
+295|Jij wilt
+296|Liever met de bank
+297|Aanbieden
+298|Handelen met de bank
+299|Je koersen komen van je havens en uitbreidingen.
+300|Je koersen komen van je havens.
+301|Geven
+302|1 krijgen
+303|Ruil {n} {a} voor 1 {b}
+304|Telt automatisch mee.
+305|Speel het in je eigen beurt.
+306|Je hebt deze beurt al een kaart gespeeld.
+307|Kaarten die je deze beurt koopt, kun je volgende beurt spelen.
+308|Kaart spelen
+309|Neem 2 grondstoffen naar keuze van de bank.
+310|Iedereen geeft je alles van de grondstof die je noemt.
+311|De Alchemist speel je voordat je gooit.
+312|Gooi eerst de dobbelstenen.
+313|Kies de rode en de gele dobbelsteen. De gebeurtenisdobbelsteen wordt normaal gegooid.
+314|{n} gooien
+315|Uitvinder: tik op twee getaltegels om te ruilen.
+316|Ingenieur: tik op een stad voor een gratis muur.
+317|Geneeskunde: tik op het dorp dat je uitbreidt (1 graan, 2 erts).
+318|Koopman: tik op een tegel naast je gebouw.
+319|Diplomaat: tik op een open straat om te verwijderen.
+320|Intrige: tik op een ridder van een tegenstander aan je straat.
+321|Punten: {n}
+322|Welk kaarttype wil je deze beurt 2:1 ruilen?
+323|Elke tegenstander geeft je er maximaal 2.
+324|Elke tegenstander geeft je er 1.
+325|Gewone ridder
+326|Sterke ridder
+327|Machtige ridder
+328|Activeren (1 graan)
+329|Promoveren (gratis, Smid)
+330|Promoveren (1 wol, 1 erts)
+331|Langs je straten verplaatsen
+332|Een zwakkere ridder verdrijven
+333|De rover wegjagen
+334|Actief (deze beurt geactiveerd, kan volgende beurt iets doen)
+335|Actief
+336|Inactief
+337|Er is nu niets mee te doen.
+338|Tik waar de ridder heen moet.
+339|Tik op de ridder die je verdrijft.
+340|1 punt
+341|2 punten, dubbele opbrengst
+342|Ontwikkelingskaart
+343|Ridder, vooruitgang of punt
+344|Gewone ridder (inactief)
+345|Ridder activeren
+346|Ridder promoveren
+347|Machtig vereist politiek 3
+348|+2 handlimiet
+349|Bouwkosten
+350|Uitbreidingen kosten 1–5 handelswaren: stof voor handel, munten voor politiek, papier voor wetenschap. Steden aan bos, weide en gebergte leveren een handelswaar in plaats van een tweede grondstof.
+351|Statistieken bekijken
+352|Terug naar de lobby
+353|De spelserver kreeg een fout bij het verwerken van je zet
+354|Verplaats de rover en steel een kaart. Telt mee voor de grootste riddermacht.
+355|Is 1 punt waard. Blijft verborgen tot het einde van het spel.
+356|Bouw 2 straten gratis.
+357|Noem een grondstof. Iedereen geeft je alles wat ze ervan hebben.
+358|Kies beide opbrengstdobbelstenen voordat je gooit.
+359|Ruil twee getalfiches (niet 2, 6, 8 of 12).
+360|Je volgende stadsuitbreiding deze beurt kost 1 minder.
+361|Bouw gratis een stadsmuur.
+362|Neem 2 graan voor elk akkerland naast je gebouwen.
+363|Breid een dorp uit tot stad voor 2 erts en 1 graan.
+364|Neem 2 erts voor elk gebergte naast je gebouwen.
+365|Promoveer 2 ridders gratis.
+366|Ruil met elke tegenstander een van je grondstoffen tegen een handelswaar.
+367|Bekijk de hand van een speler met meer punten en neem 2 kaarten.
+368|Zet de koopman naast je gebouw: ruil die grondstof 2:1 en houd 1 punt.
+369|Ruil deze beurt één kaarttype naar keuze 2:1.
+370|Elke tegenstander geeft je maximaal 2 van een grondstof.
+371|Elke tegenstander geeft je 1 van een handelswaar.
+372|Verplaats de rover en steel 1 kaart van elke speler bij die tegel.
+373|De zwakste ridder van een tegenstander deserteert. Je mag er een van dezelfde sterkte plaatsen.
+374|Verwijder een open straat. Is die van jou, dan bouw je hem gratis opnieuw.
+375|Verdrijf een ridder van een tegenstander die aan een van je straten staat.
+376|Spelers met evenveel of meer punten dan jij leggen de helft van hun kaarten af.
+377|Bekijk de vooruitgangskaarten van een tegenstander en neem er een.
+378|Activeer al je ridders gratis.
+379|Elke speler met meer punten geeft je 2 kaarten naar eigen keuze.
+380|Wachten tot {names} kaarten afleggen…
+381|Wachten tot {names} de rover verplaatst…
+382|Wachten tot {names} steelt…
+383|Wachten tot {names} een ridder verplaatst…
+384|Wachten tot {names} kaarten geven…
+385|Wachten tot {names} een stad kiezen om te verliezen…
+386|Wachten tot {names} vooruitgangskaarten trekken…
+387|Wachten op {names}…
+388|{name} wint
+389|Laden…
+390|Iemand
+391|Vorig jaar
+392|BEZIG
+393|AFGESLOTEN
+394|Volgend jaar
+395|Alle spellen
+396|STAAT NU BOVENAAN
+397|KAMPIOEN {year}
+398|Nog niemand
+399|Overwinningen
+400|Spellen: {n}
+401|Bekijk het overwinningsfeest
+402|Stand {year}
+403|ptn
+404|Nog geen spellen
+405|Nog geen spelers.
+406|In de loop van de tijd
+407|Onderling
+408|Elk getal toont hoe vaak de speler in de rij de speler in de kolom heeft verslagen.
+409|Een aan tafel gespeeld spel invoeren
+410|Alle spellen {year}
+411|Nog niets ingevoerd.
+412|Overwinning nr. {n} in {year}
+413|Overwinningen: {n}
+414|Verwijderen?
+415|Verwijderd.
+416|Dit jaar nog geen spellen.
+417|Beste reeks
+418|Huidige reeks
+419|Favoriete versie
+420|Aartsrivaal: {name} ({n}×)
+421|aan tafel gespeeld
+422|Beurten: {n}
+423|{n} min
+424|Tafel
+425|Verwijderen
+426|Snelste overwinning
+427|Hoogste score
+428|Meeste kaarten geoogst
+429|{n} in één spel
+430|Langste spel
+431|Records
+432|Dobbelstenen
+433|Hoe vaak elk getal werd gegooid
+434|Balken: worpen dit jaar. Stippellijn: wat de kansen voorspellen. Heetste getal: {n} ({m} van {total} worpen).
+435|De grafiek vult zich naarmate er gespeeld wordt.
+436|Opgetelde overwinningen door het jaar
+437|Wanneer gespeeld
+438|Wie speelde mee
+439|Wie won
+440|Kies eerst de spelers.
+441|Spel opslaan
+442|Opgeslagen in de statistieken.
+443|Onbekende modus
+444|Broch heeft 2–6 spelers nodig
+445|Het spel begint. {@ps} nemen plaats.
+446|{@p} plaatst als eerste.
+447|{@p} wint met {n} overwinningspunten!
+448|{@p} heeft nu de langste handelsroute ({n}).
+449|Niemand heeft nog de langste handelsroute.
+450|{@p} gooide {n} ({#e}).
+451|{@p} gooide {n}.
+452|De bank heeft geen {#r} meer; niemand krijgt iets.
+453|{@p} krijgt {$c}.
+454|Het barbarenschip komt dichterbij ({n}/{m}).
+455|De barbaren vallen aan! Kracht {n} tegen {m} van de ridders.
+456|De barbaren zijn afgeslagen. {@p} wordt Verdediger van Broch (+1 OP).
+457|De barbaren zijn afgeslagen. {@ps} delen de eer en trekken elk een vooruitgangskaart.
+458|De barbaren zijn afgeslagen.
+459|De barbaren winnen! {@ps} verliezen elk een stad.
+460|De barbaren winnen, maar er zijn geen onbeschermde steden om te plunderen.
+461|De stad van {@p} wordt een dorp.
+462|De stapel {#d} is leeg.
+463|{@p} onthult {%c} (+1 OP).
+464|{@p} trekt een vooruitgangskaart ({#d}).
+465|{@p} heeft geen vrije stad voor de metropool ({#t}).
+466|{@p} bouwt een metropool ({#t}).
+467|Extra bouwfase: {@ps}.
+468|Daar kun je geen straat bouwen.
+469|Geen straten meer.
+470|Niet genoeg grondstoffen.
+471|{@p} bouwde een straat.
+472|Ongeldige actie.
+473|Het spel is afgelopen.
+474|Je speelt niet mee in dit spel.
+475|Onbekende actie.
+476|Je bent nu niet aan zet.
+477|Nu niet toegestaan.
+478|Alleen in de riddermodus.
+479|Het is niet jouw plaatsing.
+480|Te dicht bij een ander gebouw.
+481|{@p} plaatste een dorp.
+482|{@p} plaatste een stad.
+483|De straat moet aan je nieuwe gebouw grenzen.
+484|Opbouw klaar. {@p} begint.
+485|Al gegooid.
+486|Geen gratis straten om over te slaan.
+487|Het is niet jouw extra bouwfase.
+488|Daar kun je geen dorp bouwen.
+489|Geen dorpen meer.
+490|{@p} bouwde een dorp.
+491|Breid een van je dorpen uit.
+492|Geen steden meer.
+493|{@p} bouwde een stad.
+494|Geen ontwikkelingskaarten in de riddermodus.
+495|De stapel ontwikkelingskaarten is leeg.
+496|{@p} kocht een ontwikkelingskaart.
+497|Maar één ontwikkelingskaart per beurt.
+498|Je hebt geen speelbare kaart van die soort (nieuwe kaarten wachten een beurt).
+499|{@p} speelde {%c}.
+500|{@p} heeft nu de grootste riddermacht.
+501|Kies twee grondstoffen.
+502|De bank heeft die niet.
+503|{@p} speelde {%c} en nam {$c2}.
+504|Kies een grondstof.
+505|{@p} speelde {%c} op {#r} en verzamelde {n}.
+506|Onbekende kaart.
+507|Niets af te leggen.
+508|Kies precies {n} kaarten.
+509|Je hebt die kaarten niet.
+510|{@p} legde kaarten af: {n}.
+511|Niets te geven.
+512|{@p} geeft {@q} kaarten: {n}.
+513|Jij verplaatst de rover niet.
+514|Verplaats de rover naar een andere tegel.
+515|{@p} verplaatste de rover.
+516|Kies iemand naast de rover.
+517|Vul beide kanten van de ruil in.
+518|{@p} biedt {$g} voor {$w}.
+519|Dat aanbod bestaat niet.
+520|Je hebt de gevraagde kaarten niet.
+521|Die speler heeft niet geaccepteerd.
+522|Iemand heeft de kaarten niet meer.
+523|{@p} ruilde {$g} met {@q} voor {$w}.
+524|Geen aanbod om in te trekken.
+525|Kies wat je geeft en wat je krijgt.
+526|Je hebt {$c} nodig.
+527|De bank heeft daar niets meer van.
+528|{@p} ruilde {$g} met de bank voor {$w}.
+529|Ridders staan op een lege hoek aan je straat.
+530|Geen gewone ridders meer.
+531|{@p} rekruteerde een ridder.
+532|Kies een van je inactieve ridders.
+533|Activeren kost 1 graan.
+534|{@p} activeerde een ridder.
+535|Kies een van je ridders.
+536|Een ridder kan maar één keer per beurt promoveren.
+537|Geen ridders van het volgende niveau meer.
+538|{@p} promoveerde een ridder ({#l}).
+539|De ridder kan die hoek niet bereiken.
+540|{@p} verplaatste een ridder.
+541|Daar staat geen bereikbare ridder van een tegenstander.
+542|Je kunt alleen een zwakkere ridder verdrijven.
+543|De ridder van {@p} verdrijft de ridder van {@q}.
+544|De rover kan niet worden verplaatst vóór de eerste barbaarse aanval.
+545|Die ridder staat niet naast de rover.
+546|De ridder van {@p} jaagt de rover weg.
+547|Geen ridder om te verplaatsen.
+548|Kies een gemarkeerde hoek.
+549|{@p} verplaatste een verdreven ridder.
+550|Muren komen om je steden.
+551|Geen muren meer.
+552|{@p} bouwde een stadsmuur.
+553|Onbekende uitbreiding.
+554|Je hebt eerst een stad nodig.
+555|Al op het hoogste niveau.
+556|{@p} breidde {#t} uit naar niveau {n}.
+557|{@p} neemt de metropool ({#t}) over van {@q}.
+558|Geen metropool om te plaatsen.
+559|Kies een van je steden.
+560|Niets te verliezen.
+561|Kies een van je onbeschermde steden.
+562|Kies een kaart.
+563|{@p} legde een vooruitgangskaart af.
+564|Het aquaduct van {@p} levert {$c}.
+565|Geen ridder om te plaatsen.
+566|Kies een lege hoek aan je straat.
+567|{@p} plaatst de overgelopen ridder.
+568|Niets te pakken.
+569|De spion van {@p} steelt een vooruitgangskaart van {@q}.
+570|Kies {n} van hun kaarten.
+571|{@p} pakt kaarten van {@q}: {n}.
+572|Speel de Alchemist voordat je gooit.
+573|{@p} stal een kaart van {@q}.
+574|Die ridder is niet actief.
+575|Een ridder die deze beurt is geactiveerd, moet tot de volgende beurt wachten.
+576|De ridder van {@p} kan nergens heen en verlaat het bord.
+577|Kies beide dobbelstenen.
+578|Kies twee getaltegels (niet 2, 6, 8 of 12).
+579|Kies een van je steden zonder muur.
+580|Kies een van je dorpen.
+581|Geneeskunde kost 1 graan en 2 erts.
+582|{@p} ruilt {$g} voor {$w} van {@q}.
+583|Kies een speler met meer punten dan jij.
+584|Ze hebben geen kaarten.
+585|Kies een landtegel.
+586|De koopman moet naast je dorp of stad staan.
+587|Kies een kaarttype.
+588|{@p} verzamelt {$c}.
+589|Kies een handelswaar.
+590|De rover kan niet bewegen vóór de eerste barbaarse aanval.
+591|Kies een speler met ridders.
+592|Een van de ridders van {@p} deserteert.
+593|Kies een open straat (met een los uiteinde).
+594|{@p} verwijderde een straat van {@q}.
+595|Kies een ridder van een tegenstander aan een van je straten.
+596|Kies een tegenstander.
+597|Ze hebben geen vooruitgangskaarten.
+598|Ongeldige gegevens
+599|Spel niet gevonden
+600|Log eerst in.
+601|Te veel pogingen. Probeer het over een paar minuten opnieuw.
+602|Voer een geldig e-mailadres in.
+603|Kies een weergavenaam.
+604|Het wachtwoord moet minstens 6 tekens hebben.
+605|Kies je land.
+606|Verkeerde uitnodigingscode.
+607|Dat e-mailadres is al geregistreerd.
+608|Die naam is al bezet.
+609|Verkeerd e-mailadres of wachtwoord.
+610|De naam mag niet leeg zijn.
+611|Onbekende kleur.
+612|Onbekende taal.
+613|Het huidige wachtwoord klopt niet.
+614|Het spel is al begonnen.
+615|Doe eerst mee met het spel.
+616|Iemand anders heeft die kleur al.
+617|Dat spel is al begonnen.
+618|Het spel is vol.
+619|Je kunt een lopend spel niet verlaten. De host kan het afbreken.
+620|Alleen de host kan starten.
+621|Al gestart.
+622|Wacht op minstens één extra speler.
+623|Alleen de host kan het spel afbreken.
+624|Kies de winnaar uit de spelers.
+625|Niet gevonden
+626|Alleen wie het heeft ingevoerd (of een beheerder) kan het verwijderen.
+627|Onbekend endpoint
+628|Het spel loopt niet.
+629|Scenario
+630|Varianten
+631|Missies
+632|Kies een uitbreiding om de opties te zien.
+633|Steden & Ridders
+634|5–6
+635|Vestigen, handelen, bouwen. Ontwikkelingskaarten, langste handelsroute, grootste riddermacht.
+636|Handelswaren, stadsuitbreidingen, ridders en barbaarse aanvallen.
+637|Uitbreiding
+638|Geen
+639|Het standaardeiland.
+640|Zeevaarders
+641|Schepen en eilandverkenning.
+642|Handelaren & Barbaren
+643|Vissers, rivieren en gebeurteniskaarten.
+644|Ontdekkers & Piraten
+645|Missies door de mist.
+646|Uitbreiding voor 5–6 spelers
+647|Groter bord en speciale bouwfase. Werkt met elk aantal spelers.
+648|Visgrond
+649|School vissen
+650|Piratenschuilplaats
+651|Bonus nieuw eiland: +1 overwinningspunt voor het eerste dorp
+652|Piraat
+653|Bos
+654|Heuvels
+655|Weiland
+656|Akkers
+657|Bergen
+658|Woestijn
+659|Goud
+660|Rivier
+661|vis
+662|specerij
+663|Ontdekking
+664|Startgrondstoffen
+665|Buit
+666|Verplaats de rover of de piraat.
+667|Tik op een landtegel voor de rover of een zeetegel voor de piraat. Je steelt van een speler ernaast.
+668|Goud! Kies {n} grondstoffen.
+669|Neem grondstoffen die de bank heeft.
+670|Tik op een pulserend schip om te varen (één keer per beurt).
+671|Tik waar dit schip heen moet varen.
+672|Inzoomen
+673|Uitzoomen
+674|Hele bord tonen
+675|Vistokens over in de zak
+676|Gebeurteniskaarten over voor de stapel wordt geschud
+677|Schip
+678|Brug
+679|Vis
+680|{n} vis
+681|2 goud = 1 kaart
+682|Leveren, aanvallen
+683|Goud verdiend naast rivieren. 2 goud koopt elke kaart.
+684|{n} goud
+685|Vis is veilig voor de rover en kan niet worden geruild.
+686|De oude laars: je hebt nog één punt nodig om te winnen.
+687|Oude laars
+688|Vis op bord · geleverd
+689|Specerij op bord · geleverd
+690|Stukken over
+691|Actieve ridderkracht
+692|Geleverde vis · specerij
+693|Niveau 3: ruil handelswaren 2:1 bij de bank.
+694|Niveau 3: je ridders kunnen machtig worden.
+695|Niveau 3: het aquaduct geeft een grondstof als je niets krijgt.
+696|Niveau 4: de eerste speler hier bouwt een metropool (+2 punten).
+697|iedereen in één oogopslag
+698|Tik op de zeerand waar je schip heen moet.
+699|Tik op de rivierkruising voor je brug.
+700|Goud!
+701|Kies {n} grondstoffen van de bank.
+702|Jaag de rover weg
+703|Verplaats de rover naar een tegel naar keuze en steel van een buur.
+704|Steel een kaart
+705|Neem een willekeurige kaart van een speler naar keuze.
+706|Neem een grondstof
+707|Neem een grondstof naar keuze van de bank.
+708|Gratis straat
+709|Bouw één straat zonder te betalen.
+710|Vooruitgangskaart
+711|Trek een vooruitgangskaart van een stapel naar keuze.
+712|Trek gratis een ontwikkelingskaart.
+713|Vis uitgeven
+714|Je hebt {n} vis. Vis kan niet gestolen worden en gaat niet verloren aan de rover.
+715|Niemand heeft kaarten om te stelen.
+716|Goud ruilen voor een kaart
+717|Je hebt {n} goud. 2 goud koopt een grondstof naar keuze, maximaal twee keer per beurt.
+718|Op bord: {n} · geleverd: {d} · {v}/3 punten
+719|Leveren
+720|Elke 2 leveringen aan de raad leveren 1 punt op, tot 3 punten per missie. Een vernietigde piratenschuilplaats is 1 punt waard voor wie hem het vaakst raakte.
+721|Vis voor Broch
+722|Specerijen voor Broch
+723|Piratenschuilplaatsen
+724|Elke treffer kost 1 erts en 1 wol en vereist een schip naast de schuilplaats.
+725|Nog geen schuilplaatsen gevonden. Verken de mist.
+726|Schuilplaats · nog {n} treffers
+727|Aanvallen
+728|Vaart over zeerand; beweegt één keer per beurt
+729|Steekt een rivier over; levert 3 goud op
+730|Wachten tot {names} uit het goudveld kiest…
+731|Uitbreidingen
+732|Verplaats de piraat naar een andere zeetegel.
+733|{@p} verplaatste de piraat.
+734|De gebeurteniskaarten worden opnieuw geschud.
+735|{@p} vaart open zee op.
+736|{@p} ontdekt land: {#t}.
+737|{@p} vindt goud en mag {n} grondstoffen kiezen.
+738|{@p} vangt {n} vis.
+739|{@p} haalt de oude laars op en heeft nog één punt nodig om te winnen.
+740|{@p} laadt {n} specerij.
+741|{@p} haalt een flinke vangst vis binnen.
+742|{@p} verdient {n} goud.
+743|{@p} vestigt zich op een nieuw eiland en krijgt een bonuspunt (+1 OP).
+744|Er zijn geen schepen in dit spel.
+745|Geen schepen meer.
+746|Je kunt daar geen schip heen laten varen.
+747|{@p} bouwde een schip.
+748|Dat schip kan daar niet heen.
+749|{@p} voer met een schip naar een nieuwe plek.
+750|Geen goud om uit te geven.
+751|{@p} neemt {$c} uit het goudveld.
+752|Er zijn geen rivieren in dit spel.
+753|Geen bruggen meer.
+754|Je kunt daar geen brug bouwen.
+755|{@p} bouwde een brug.
+756|Je kunt maar twee keer per beurt goud ruilen.
+757|Je hebt 2 goud nodig.
+758|{@p} ruilt 2 goud voor {$c}.
+759|Er zijn geen vissers in dit spel.
+760|Onbekende vishandel.
+761|Je hebt {n} vis nodig.
+762|{@p} betaalt {n} vis om de rover weg te jagen.
+763|Kies een speler met kaarten.
+764|Kies een grondstof die de bank heeft.
+765|{@p} ruilt {n} vis voor {$c}.
+766|{@p} ruilt {n} vis voor een gratis straat.
+767|{@p} ruilt {n} vis voor een vooruitgangskaart.
+768|{@p} ruilt {n} vis voor een ontwikkelingskaart.
+769|Er zijn geen missies in dit spel.
+770|Die missie zit niet in dit spel.
+771|Je hebt niets om te leveren.
+772|Je hebt een dorp nodig om aan te leveren.
+773|{@p} levert {n} {#k} aan de raad.
+774|Er zijn geen piratenschuilplaatsen in dit spel.
+775|Daar is geen schuilplaats.
+776|Je hebt een schip naast de schuilplaats nodig.
+777|Aanvallen kost 1 erts en 1 wol.
+778|{@p} valt een piratenschuilplaats aan (nog {n}).
+779|De piratenschuilplaats is vernietigd. {@p} krijgt het kopgeld (+1 OP).
+780|Op weg naar nieuwe kusten
+781|De vier eilanden
+782|De mistige eilanden
+783|Vissers van Broch
+784|Rivieren van Broch
+785|Gebeurteniskaarten
+786|Visgronden, vistokens en de oude laars.
+787|Bruggen, goud, en de rijkste en armste speler.
+788|Een stapel gebeurteniskaarten vervangt de dobbelstenen.
+789|Huisregel: vergeten rover
+790|Als een speler zijn beurt beëindigt zonder de rover te verplaatsen, gaat die terug naar de woestijn.
+791|Als je nu je beurt beëindigt, gaat de rover terug naar de woestijn.
+792|Die huisregel staat niet aan.
+793|{@p} vergat de rover te verplaatsen, dus hij gaat terug naar de woestijn.
+794|Huisregel: startgrondstoffen voor beide
+795|Huisregels
+796|Beide gebouwen uit de opbouwfase leveren startgrondstoffen op. Bij Steden & Ridders telt de stad als een dorp.
+797|Er is nog niets gebeurd.
+798|Opbouwfase
+799|De grafieken vullen zich zodra de eerste beurten gespeeld zijn.
+800|Verloop van de overwinningspunten
+801|Dobbelsteenworpen
+802|Balken: gegooid · lijn: verwacht na {n} worpen
+803|Ontvangen grondstoffen
+804|Worpen
+805|Vaakst gegooid
+806|Zevens
+807|Doel
+808|gegooid
+809|verwacht
+810|Meer dan {n} kaarten: bij een 7 ben je de helft kwijt.
+811|Alleen de laatste worp
+812|Eerdere beurten tonen
+813|Verdediger van Broch
+814|−1 stad
+815|Levend bord
+816|Levend bord: aan
+817|Levend bord: uit
+818|Bank
+819|Is 1 punt waard. Wordt open voor je neergelegd.
+820|Speluitleg: {mode}
+821|Speluitleg
+822|Zo werkt {mode} (1 min)
+823|Welkom in Broch!
+824|Bouw, handel en groei. Wie als eerste 10 punten heeft, wint.
+825|Elke tegel levert een grondstof op.
+826|Bos, heuvels, weiland, akkers en bergen. De woestijn levert niets op.
+827|Bouw dorpen op de hoeken.
+828|Tik op de oplichtende hoek.
+829|Een dorp grenst aan maximaal 3 tegels.
+830|Je tegenstanders bouwen ook.
+831|Gooi elke beurt de dobbelstenen.
+832|Tik op de dobbelstenen.
+833|Elke tegel met dat getal levert grondstoffen op.
+834|Iedereen ernaast krijgt een kaart, ook in de beurt van een ander.
+835|Meer stipjes, meer geluk.
+836|De rode 6 en 8 vallen het vaakst, 2 en 12 zelden.
+837|Geef kaarten uit om te bouwen.
+838|Een straat kost hout en baksteen. Tik op de oplichtende rand.
+839|Steden leveren dubbel op.
+840|Breid een dorp uit tot stad met 2 graan en 3 erts. Tik op je dorp.
+841|Een 7 wekt de rover!
+842|Verplaats de rover naar een tegel.
+843|Die levert dan niets meer op. Tik op een tegel naast je tegenstander.
+844|Steel dan een kaart van iemand daar.
+845|Wie meer dan 7 kaarten heeft, verliest de helft.
+846|Handel met spelers of met de bank.
+847|De bank ruilt 4 gelijke kaarten voor 1. Havens: 3:1 of 2:1.
+848|Ridders verplaatsen de rover. Andere kaarten geven straten, grondstoffen of een overwinningspunt.
+849|3 ridders gespeeld: grootste riddermacht, +2 punten.
+850|Wie die heeft, laat oorlogsvaandels wapperen op het bord.
+851|5 straten op een rij: langste handelsroute, +2 punten.
+852|De langste route licht goud op.
+853|Haal 10 punten om te winnen!
+854|Dorp 1 · Stad 2 · Langste handelsroute 2 · Grootste riddermacht 2 · Overwinningspuntkaart 1
+855|Alles uit het klassieke spel, plus handelswaren, ridders en barbaren. Winnen doe je met 13 punten.
+856|Steden leveren handelswaren op.
+857|Bos: papier · Weiland: stof · Bergen: munten
+858|Met handelswaren koop je stadsuitbreidingen.
+859|Handel kost stof, politiek munten, wetenschap papier. Tik op +.
+860|Niveau 3 ontgrendelt een speciale kracht.
+861|Wetenschap: een grondstof als je niets krijgt. Handel: handelswaren 2:1. Politiek: sterkere ridders.
+862|Wie als eerste niveau 4 haalt, bouwt een metropool.
+863|Die is 2 punten waard en prijkt op je stad.
+864|Ridders verdedigen Broch.
+865|Rekruteer er een voor wol en erts. Tik op de oplichtende hoek.
+866|Activeer hem met graan.
+867|Alleen actieve ridders vechten. Promoveer ze om ze sterker te maken.
+868|Een schip op de gebeurtenisdobbelsteen laat de barbaren oprukken.
+869|Elk schip brengt ze een stap dichter bij Broch.
+870|Hun kracht: alle steden op het bord. Jouw verdediging: alle actieve ridders.
+871|De sterkste verdediger krijgt een punt. Winnen de barbaren, dan wordt de zwakste stad geplunderd.
+872|Een gekleurde poort op de gebeurtenisdobbelsteen geeft kaarten aan spelers met genoeg stadsuitbreidingen.
+873|Stadsmuren
+874|Met elke muur mag je 2 kaarten meer houden als er een 7 valt.
+875|Haal 13 punten om te winnen!
+876|Dorp 1 · Stad 2 · Metropool 2 · Verdediger 1 · Langste handelsroute 2
+877|Het land is verdeeld in eilanden. Schepen steken de zee over.
+878|Bouw schepen op het water.
+879|Een schip kost hout en wol. Tik op de oplichtende rand.
+880|Schepen vormen een ketting, net als straten.
+881|Het laatste schip van een open ketting mag één keer per beurt naar een nieuwe plek varen.
+882|Vaar naast de mist om die te onthullen.
+883|Land ontdekken levert je een grondstof op.
+884|Vestig je op een nieuw eiland: +1 punt!
+885|Goudvelden leveren een grondstof naar keuze op.
+886|De piraat
+887|Schepen naast zijn tegel zijn geblokkeerd, en hij steelt. Een 7 of een ridder verplaatst hem.
+888|Win met 12 tot 14 punten.
+889|Kies een scenario als je het spel aanmaakt: Nieuwe kusten, Vier eilanden of Mistige eilanden.
+890|Drie varianten om te combineren: Vissers, Rivieren en Gebeurteniskaarten.
+891|Vissers
+892|De woestijn wordt een meer en de kust krijgt visgronden.
+893|Gooi het getal van een visgrond om vis te vangen.
+894|Het meer levert op bij 2, 3, 11 en 12.
+895|Betalen met vis
+896|2 rover wegjagen · 3 stelen · 4 grondstof nemen · 5 een straat · 7 een ontwikkelingskaart
+897|De oude laars
+898|Wie hem opvist, heeft een punt meer nodig om te winnen, en mag hem doorschuiven naar een koploper.
+899|Rivieren
+900|Elke straat of elk dorp aan een rivier levert 1 goud op.
+901|Bruggen gaan over de rivier.
+902|Een brug kost 2 baksteen en 1 hout en levert 3 goud op.
+903|Ruil 2 goud voor een grondstof naar keuze. De rijkste krijgt +1 punt, de armste −2.
+904|Een stapel met alle 36 worpen vervangt de dobbelstenen, zodat elk getal precies zo vaak valt als het hoort.
+905|Vaar de mist in, ontdek land en voltooi missies.
+906|Verken de mist met schepen.
+907|Tik op de oplichtende rand. Nieuw land levert je een grondstof op.
+908|Een schip naast een school vissen haalt vis binnen als het bijbehorende getal valt.
+909|Specerijen voor Broch
+910|Dorpen aan een specerijveld laden specerijen in zodra het veld oplevert.
+911|Lever vracht af bij de raad.
+912|Elke 2 leveringen zijn 1 punt waard, tot 3 punten per missie.
+913|Val vanaf een schip naast een schuilplaats aan voor 1 erts en 1 wol. Valt die, dan krijgt wie het vaakst raakte een punt.
+914|Haal 12 punten om te winnen!
+915|Dorpen, steden, nieuwe eilanden, missies en schuilplaatsen tellen allemaal mee.
+916|Een groter bord met meer tegels, havens en kaarten voor maximaal 6 spelers.
+917|Extra bouwfase
+918|Na elke beurt mogen alle anderen om de beurt bouwen, maar niet handelen.
+919|Zo hoeft niemand lang te wachten.
+920|Beurten blijven kort, zelfs met een volle tafel.
+921|Terug
+922|Pauze
+923|Volgende
+924|Nu ken je {mode}!
+925|Opnieuw bekijken
+926|Volgende: {mode}
+927|Spelen maar!
+928|Gebeurteniskaart
+929|Gooien
+930|Overwinning!
+931|Einde spel
+932|Je hebt gewonnen!
+933|overwinningspunten
+934|Je bent als {n}e geëindigd met {m} punten.
+935|Eindstand
+936|Bord bekijken
+937|Dorpen
+938|Steden
+939|Metropool
+940|Overwinningspuntkaarten
+941|Bonuspunten
+942|Zo verliep de race
+943|Meeste grondstoffen
+944|Vaakst gegooide getal
+945|{n}×
+946|Speelduur
+947|{n} beurten
+948|Hoogtepunten
+949|Langste handelsroute
+950|Kies je grondstof één keer. Vanaf nu keert het aquaduct hem uit telkens als een worp je niets oplevert (behalve bij een 7).
+951|Aquaduct: {res}. Tik om te wijzigen.

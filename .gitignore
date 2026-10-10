@@ -1,0 +1,4 @@
+# Claude Code working files and logs of other agents; the app lives in broch/ (see broch/.gitignore)
+.claude/
+*.log
+node_modules/

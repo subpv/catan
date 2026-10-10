@@ -1,0 +1,349 @@
+/* Phone layout (dialogs). Everything here sits inside @media (max-width: 760px) or another phone query, so the desktop stays as it is.
+   Outside a query only NEW classes of the phone work are styled (and hidden): .m-grab .dlg-need .dlg-sum .cost-rules-h.
+   Owns: .modal*, .foot, .picker/.pick, .board-trade, #toasts, .feedback-banner, .conn-bar, .fx-*, .tut*, .vic*.
+   Every section below the first applies to any phone: the portrait query or the landscape one (the same pair as the shell and game css).
+   Order: 1 sheet shell, 2 pickers, 3 dialog bits, 4 trade window on the board, 5 toasts and banners, 6 feedback scenes,
+          7 tutorial, 8 victory, 9 LANDSCAPE (last, so it wins where both queries match). */
+
+/* ---- new elements: invisible on the desktop */
+.m-grab, .dlg-need, .dlg-sum, .cost-rules-h { display: none; }
+@keyframes m-slide-up { from { transform: translateY(100%); } }
+@keyframes m-sheet-fade { from { opacity: 0; } }
+@keyframes m-dlg-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(240,194,74,0); } 50% { box-shadow: 0 0 0 7px rgba(240,194,74,.7); } }
+
+/* =====================================================================================================================
+   1. THE SHEET: every modal() is a bottom sheet with a sticky footer
+   ===================================================================================================================== */
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  body:has(.modal-back) { overflow: hidden; }
+  .modal-back { align-items: end; justify-items: stretch; padding: 0; z-index: 100; background: rgba(20,5,2,.6); overscroll-behavior: contain; animation: m-sheet-fade .18s ease-out; }
+  .modal-back:has(.choice-list) { background: rgba(20,5,2,.35); } /* the board stays readable behind the steal chooser */
+  .modal {
+    width: 100%; max-width: none; margin: 0; border-radius: 20px 20px 0 0;
+    max-height: min(92vh, calc(100vh - var(--m-safe-t, 0px) - 8px));
+    max-height: min(92dvh, calc(var(--m-vvh, 100dvh) - var(--m-safe-t, 0px) - 8px));
+    padding: 0 16px calc(16px + var(--m-safe-b, 0px));
+    overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+    box-shadow: 0 -14px 40px -14px rgba(0,0,0,.55);
+    animation: m-slide-up .2s cubic-bezier(.2,.9,.3,1);
+  }
+  .modal:has(> .foot:last-child) { padding-bottom: 0; }
+  .modal h2 { font-size: 21px; line-height: 1.2; margin-bottom: 6px; }
+  .modal p.muted { font-size: 14px; line-height: 1.4; }
+  .modal .section-label { margin: 14px 2px 6px; }
+
+  /* drag handle (the grab zone is the top 30px) */
+  .m-grab { display: block; position: sticky; top: 0; z-index: 3; height: 30px; margin: 0 -16px 2px; border-radius: 20px 20px 0 0; background: var(--card); touch-action: none; cursor: grab; }
+  .m-grab::before { content: ''; position: absolute; left: 50%; top: 10px; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--line-2); }
+  .modal.fixed .m-grab { height: 16px; cursor: default; }
+  .modal.fixed .m-grab::before { display: none; }
+
+  /* sticky footer: lead button 52px on its own row, the others 48px below it in two columns */
+  .modal .foot {
+    position: sticky; bottom: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 12px 8px; justify-content: stretch;
+    margin: 12px -16px 0; padding: 10px 16px calc(10px + var(--m-safe-b, 0px));
+    background: var(--card); box-shadow: 0 -10px 14px -12px rgba(0,0,0,.25);
+  }
+  .modal .foot > .spacer { display: none; }
+  .modal .foot > :not(.btn) { flex: 1 1 100%; }
+  .modal .foot > .btn { flex: 1 1 calc(50% - 4px); min-width: 0; min-height: 48px; font-size: 14px; line-height: 1.15; padding: 0 8px; }
+  .modal .foot > .dlg-sum { order: -3; margin: 0; } /* live summary of what the lead button will do, always above it */
+  .modal .foot > .btn.primary, .modal .foot > .btn.gold, .modal .foot > .btn.m-main { flex: 1 1 100%; order: -1; min-height: var(--m-tap-lg, 52px); font-size: 16px; }
+  .modal .btn.m-main { background: linear-gradient(180deg, var(--gold-2), var(--gold)); color: var(--ink); border-color: transparent; box-shadow: 0 3px 0 #A87A1B; }
+  .modal .foot > .btn.danger, .modal .btn.danger { background: transparent; color: #B3261E; border: 1.5px solid #B3261E; }
+  .modal .foot > .btn.primary:disabled { background: var(--card-2); color: var(--muted); border: 1.5px solid var(--line-2); box-shadow: none; opacity: 1; }
+  .modal .btn.small { min-height: 44px; }
+  .modal .btn, .modal .chip, .modal a.btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .modal input, .modal select, .modal textarea { font-size: 16px; min-height: 48px; }
+  .modal .lang-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+  .modal .lang-grid .chip { min-height: 48px; font-size: 15px; }
+  .modal .tut-open { min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) { .modal, .modal-back { animation: none !important; } }
+
+/* =====================================================================================================================
+   2. PICKERS: a grid of tiles; the whole tile adds one, a 44px minus at the bottom of a chosen tile takes one away
+   ===================================================================================================================== */
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  .picker { display: grid; grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr)); justify-content: stretch; align-items: stretch; gap: 6px; margin-top: 8px; }
+  /* tiles are as high as their content (icon + one or two short lines); a tile you can add to is 90px so the 44px minus fits under the icon */
+  .pick { position: relative; width: auto; min-width: 0; min-height: 0; padding: 6px 3px; gap: 3px; justify-content: flex-start; border-radius: 12px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .pick:has(.ctr) { min-height: 90px; }
+  .pick .rcard { flex: none !important; min-width: 0 !important; width: 36px !important; height: 40px !important; margin-top: 0; border-radius: 10px; }
+  .pick .rcard.comm { border-radius: 40% 40% 10px 10px / 25% 25% 10px 10px; }
+  .pick .rcard svg { width: 20px !important; height: 20px !important; }
+  /* captions ("du hast 3", resource names) wrap to two lines instead of being cut with an ellipsis: a tile is only about 60px wide at 360px */
+  .pick .have, .pick > div:not(.rcard):not(.ctr), .pick > span:not(.ctr) { min-width: 0; max-width: 100%; font-size: 12px !important; line-height: 1.2; text-align: center; white-space: normal; overflow: visible; overflow-wrap: anywhere; text-wrap: balance; }
+  .pick > b { font-size: 15px; line-height: 1.2; }
+  .pick.dim { opacity: .4; pointer-events: none; }
+  .pick.on:has(.ctr) > :not(.rcard):not(.ctr) { visibility: hidden; } /* a chosen tile shows the minus where the name was; the badge shows the count */
+  .pick .ctr { display: block; height: 0; line-height: 0; font-size: 0; }
+  .pick .ctr b { display: none; position: absolute; top: 4px; right: 4px; z-index: 1; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: var(--ink); color: var(--cream); font-size: 13px; line-height: 22px; text-align: center; }
+  .pick.on .ctr b { display: block; }
+  /* plus: no box and no look of its own, the whole tile is its hit area */
+  .pick .ctr button { position: static; width: 0; height: 0; padding: 0; border: 0; background: none; overflow: visible; font-size: 0; }
+  .pick .ctr button[data-d='1']::after { content: ''; position: absolute; inset: 0; border-radius: 12px; }
+  /* minus: only on a chosen tile, a 44px strip along its bottom edge */
+  .pick .ctr button[data-d='-1'] { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; width: 100%; height: var(--m-tap, 44px); border-radius: 0 0 11px 11px; visibility: hidden; display: flex; align-items: center; justify-content: center; color: var(--ink); font-size: 24px; font-weight: 700; line-height: 1;
+    background: radial-gradient(circle at 50% 50%, var(--card-2) 0 14px, var(--line-2) 14px 15.5px, transparent 16px); touch-action: manipulation; }
+  .pick.on .ctr button[data-d='-1'] { visibility: visible; }
+  .pick .ctr button[data-d='-1']:active { background: radial-gradient(circle at 50% 50%, var(--gold-2) 0 14px, var(--line-2) 14px 15.5px, transparent 16px); }
+}
+
+/* =====================================================================================================================
+   3. DIALOG BITS: "choose 2 more" chip, summary line, steal chooser, costs list and its fold-out
+   ===================================================================================================================== */
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  .dlg-need { display: flex; width: max-content; max-width: 100%; margin: 12px auto 2px; padding: 6px 18px; border-radius: 999px; background: var(--card-2); border: 1.5px solid var(--line-2); font: 800 18px/1.2 var(--serif); color: var(--ink); }
+  .dlg-need.done { background: #DDEFD8; border-color: #2E8B57; color: #1F5E3A; }
+  .dlg-sum { display: block; margin: 0; min-height: 20px; font-size: 14px; line-height: 1.35; font-weight: 600; text-align: center; color: var(--ink); }
+  .choice-list { gap: 8px !important; margin-top: 8px; }
+  .choice-list .btn { min-height: var(--m-tap-lg, 52px); justify-content: flex-start; text-align: left; padding: 0 16px; gap: 10px; font-size: 16px; border-radius: 12px; }
+  .choice-list .btn[style*="--pc"] { border-left: 6px solid var(--pc); }
+  /* costs */
+  .cost-row { flex-wrap: wrap; gap: 4px 10px; }
+  .cost-row .cost-name { width: auto !important; flex: 0 1 auto; min-width: 0; }
+  .cost-row .spacer { flex: 1 1 auto; justify-content: flex-end; }
+  .cost-row .cost-desc { flex: 1 1 100%; text-align: left !important; font-size: 12.5px !important; line-height: 1.35; }
+  .cost-rules-h { display: flex; width: 100%; justify-content: space-between; min-height: 44px; margin-top: 10px; }
+  .cost-rules-h::after { content: '▾'; transition: transform .2s; }
+  .cost-rules-h[aria-expanded="true"]::after { transform: rotate(180deg); }
+  .cost-rules:not(.open) { display: none; }
+  .modal .env-sub, .modal small { font-size: 12px; } /* plugin sub-labels in the costs dialog (11 to 11.5px on the desktop) */
+  /* the status button that reopens a dialog calls for attention while no dialog is open */
+  [data-do="pendingDialog"] { animation: m-dlg-pulse 1.6s ease-in-out infinite; }
+  body:has(.modal-back) [data-do="pendingDialog"] { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) { [data-do="pendingDialog"] { animation: none !important; } }
+
+/* =====================================================================================================================
+   4. TRADE WINDOW ON THE BOARD: a small sheet at the bottom of the board
+   ===================================================================================================================== */
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  .board-trade { left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 58%; border-radius: 16px; z-index: 6; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+  .board-wrap:has(.board-trade) .zoom-ctl, .board-wrap:has(.board-trade) .tut-nudge { display: none; }
+  .board-trade .trade-box { max-height: none; overflow: visible; padding: 6px 14px 12px; }
+  .board-trade:has(.tb-row) { max-height: 72%; } /* my own offer: a row per player and maybe a counter-offer to accept */
+  .board-trade:has(.trade-counter) { max-height: 84%; }
+  .board-trade .panel-h { position: sticky; top: 0; z-index: 1; background: var(--card); min-height: var(--m-tap, 44px); padding: 0 14px; font-size: 14px; cursor: pointer; touch-action: manipulation; }
+  .board-trade .panel-h::after { content: '▾'; margin-left: auto; padding-left: 12px; font-size: 16px; }
+  .board-trade.min .panel-h::after { content: '▴'; }
+  /* compact header: "Name gives [cards] and wants [cards]" flows as one wrapping line */
+  .board-trade .trade-box > .trade-line { display: inline; font-size: 14px; line-height: 2.1; margin: 0 !important; }
+  .board-trade .trade-box > .trade-line + .trade-line { margin-left: 6px !important; }
+  .board-trade .mini { font-size: 13px; padding: 3px 7px; }
+  .board-trade.min .trade-box { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-bottom: 8px; }
+  .board-trade.min .trade-box > :not(.trade-line) { display: none; }
+  .board-trade .btn.small { min-height: 48px; font-size: 14px; padding: 0 12px; touch-action: manipulation; }
+  .board-trade .row { flex-wrap: wrap; gap: 6px 8px; }
+  /* incoming offer: Accept / Counter-offer / Decline in one row, the missing-cards hint above it */
+  .board-trade .tb-ans { margin-top: 8px !important; flex-wrap: wrap; gap: 8px; }
+  .board-trade .tb-ans .btn { flex: 1 1 0; min-width: 0; padding: 0 6px; line-height: 1.15; white-space: normal; text-align: center; }
+  .board-trade .tb-ans .btn.gold { flex-grow: 1.4; }
+  .board-trade .tb-ans .tb-need { order: -1; flex: 1 1 100%; font-size: 12.5px !important; line-height: 1.3; }
+  .board-trade .tb-wait { font-size: 14px !important; line-height: 1.35; }
+  /* my own offer: a row per player */
+  .board-trade .tb-row { min-height: 48px; margin-top: 4px !important; }
+  .board-trade .tb-row .spacer { flex: 0 1 auto; min-width: 0; max-width: 100%; font-size: 14px; font-weight: 600; }
+  .board-trade .tb-row > .btn.gold { flex: 1 1 200px; }
+  .board-trade .tb-row > .tb-state { margin-left: auto; }
+  .board-trade .tb-state { font-size: 13px !important; padding: 5px 12px; border-radius: 999px; background: var(--card-2); border: 1px solid var(--line); }
+  .board-trade .trade-counter { flex: 1 1 100% !important; padding-bottom: 4px; }
+  .board-trade .trade-counter .trade-line { display: inline; font-size: 14px; line-height: 2; margin: 0 6px 0 0 !important; }
+  .board-trade .trade-counter .btn { width: 100%; margin-top: 8px !important; }
+  .board-trade .tb-wd { justify-content: center; margin-top: 6px !important; }
+  .board-trade .tb-wd .btn { width: 100%; min-height: var(--m-tap, 44px); background: none; border: 0; box-shadow: none; color: var(--muted); text-decoration: underline; font-size: 14px; }
+}
+
+/* =====================================================================================================================
+   5. TOASTS AND BANNERS
+   ===================================================================================================================== */
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  #toasts { position: fixed; left: 50%; top: calc(var(--m-safe-t, 0px) + var(--m-topbar-h, 52px) + 8px); bottom: auto; transform: translateX(-50%); z-index: 120; width: calc(100% - 24px); max-width: 560px; margin: 0; pointer-events: none; }
+  body[data-route="game"] #toasts { top: calc(var(--m-safe-t, 0px) + var(--m-gtop-h, 44px) + var(--m-strip-h, 56px) + 8px); }
+  .toast { pointer-events: none; font-size: 15px; line-height: 1.35; padding: 11px 16px; max-width: 100%; }
+  .feedback-banner { top: calc(10px + var(--m-safe-t, 0px)); z-index: 130; max-height: calc(100vh - 20px - var(--m-safe-t, 0px)); max-height: calc(100dvh - 20px - var(--m-safe-t, 0px)); overflow-y: auto; }
+  .feedback-banner .btn.small { min-height: var(--m-tap, 44px); padding: 0 14px; display: inline-flex; align-items: center; }
+  .feedback-banner .x { min-width: var(--m-tap, 44px); min-height: var(--m-tap, 44px); margin: -8px -8px 0 0; }
+  .feedback-banner summary { min-height: 32px; display: flex; align-items: center; }
+  .conn-bar { padding-top: calc(4px + var(--m-safe-t, 0px)); font-size: 13px; z-index: 60; }
+}
+
+/* =====================================================================================================================
+   6. FEEDBACK LAYER: banners, loot panel, dice, full-screen scenes
+   ===================================================================================================================== */
+@keyframes m-hint-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  .fx-banner { width: max-content; max-width: calc(100vw - 32px); top: calc(var(--m-safe-t, 0px) + var(--m-gtop-h, 0px) + var(--m-strip-h, 56px) + 8px); }
+  .fx-banner > span { white-space: nowrap; font-size: 26px; padding: 8px 22px; }
+  .fx-banner.trade { font-size: 15px; line-height: 1.3; padding: 9px 16px; text-align: center; white-space: normal; max-width: calc(100vw - 32px); }
+  /* the loot card sits at the top of the board: one compact line per player, my own first */
+  .fx-loot { top: 8px; bottom: auto; width: min(360px, calc(100% - 16px)); max-width: calc(100% - 16px); display: flex; flex-direction: column; padding: 6px 8px 8px; border-radius: 14px; }
+  .fx-loot .loot-title { order: -2; font-size: 12px; padding: 0 4px 2px; }
+  .fx-loot .loot-row { height: 36px; margin-top: 4px; gap: 8px; padding: 0 6px; border-radius: 10px; }
+  .fx-loot .loot-row.me { order: -1; }
+  .fx-loot .loot-who { font-size: 13px; width: 38%; }
+  .fx-loot .lcard { width: 32px; height: 28px; }
+  .lcard i { font-size: 12px; } /* count badge on loot cards (also in the tutorial) */
+  /* things that fly or float over the page vanish while a dialog is open */
+  body:has(.modal-back) .fx-token, body:has(.modal-back) .fx-float, body:has(.modal-back) .fx-spark { display: none; }
+  /* ... and while the game sheet (chat, log, stats, menu) is open: they would be drawn over the strip next to its top edge */
+  body:has(.game.sheet-open) .fx-token, body:has(.game.sheet-open) .fx-float, body:has(.game.sheet-open) .fx-spark, body:has(.game.sheet-open) .fx-loot, body:has(.game.sheet-open) .fx-banner { display: none; }
+  /* the desktop wiggle of the Roll button (rotate + scale 1.05) pushes the full-width phone button 2px over the screen edge: horizontal scroll while the sheet is open. The phone has its own pulse (mobile-game.css). */
+  body[data-route="game"] .status .btns .roll-btn { animation: none; }
+  /* dice: smaller, the board stays visible */
+  .fx-dice { background: radial-gradient(circle at 50% 55%, rgba(20,8,4,.3), transparent 62%); }
+  .fx-dice-row { gap: 12px; }
+  .fx-die { width: 64px; height: 64px; border-radius: 15px; }
+  .fx-die .pips { width: 44px; height: 44px; }
+  .fx-die .pips i { width: 10px; height: 10px; }
+  .fx-sum { width: 68px; height: 68px; font-size: 38px; }
+  .fx-sum.seven { font-size: 42px; }
+  /* scenes */
+  .fx-scene { padding: calc(20px + var(--m-safe-t, 0px)) 20px calc(20px + var(--m-safe-b, 0px)); }
+  .fx-scene h1 { text-wrap: balance; overflow-wrap: anywhere; font-size: clamp(30px, 9vw, 46px); line-height: 1.1; }
+  .fx-scene p { font-size: 16px; }
+  .fx-scene[data-hint]::after { content: attr(data-hint); position: absolute; left: 0; right: 0; bottom: calc(16px + var(--m-safe-b, 0px)); text-align: center; font-size: 12px; letter-spacing: .06em; color: rgba(255,243,220,.78); pointer-events: none; opacity: 0; animation: m-hint-in .4s ease-out 1s forwards; }
+  /* in the game the dock (hand, buttons) belongs to the page behind the scene: the hint sits above it and the scene keeps clear of it */
+  body[data-route="game"] .fx-scene { padding-bottom: calc(var(--m-dock-h, 0px) + var(--m-safe-b, 0px) + 36px); }
+  body[data-route="game"] .fx-scene[data-hint]::after { bottom: calc(var(--m-dock-h, 0px) + var(--m-safe-b, 0px) + 8px); }
+  /* the 'draws from the bag' style scenes have no backdrop on the desktop (the board shows through): on the phone they dim the whole page, dock included */
+  .fx-event { background: rgba(20,8,4,.7); }
+  .fx-event .ev-card { padding: 16px 14px 18px; max-width: calc(100vw - 24px); }
+  .ev-disc { width: 132px; }
+  .ev-face { width: 72px; height: 72px; }
+  .ev-disc small { font-size: 12px; }
+  .fx-bigcard .bc-by { font-size: 13px; }
+}
+
+/* =====================================================================================================================
+   7. TUTORIAL: full screen, tabs on top, caption, controls in the thumb zone
+   ===================================================================================================================== */
+.tut-prog { display: none; }
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  .tut { padding: 0; place-items: stretch; z-index: 92; }
+  .tut-box { width: 100%; height: 100vh; height: 100dvh; max-height: none; border-radius: 0; box-shadow: none; }
+  .tut-top { flex: none; gap: 6px; padding: calc(6px + var(--m-safe-t, 0px)) calc(8px + var(--m-safe-r, 0px)) 6px calc(8px + var(--m-safe-l, 0px)); align-items: center; }
+  .tut-tabs { align-items: center; height: var(--m-tap, 44px); padding: 0 10px; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 14px), transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 14px), transparent 100%); }
+  .tut-tab { min-height: var(--m-tap, 44px); padding: 0 14px; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; }
+  .tut-x { width: var(--m-tap, 44px); height: var(--m-tap, 44px); font-size: 18px; touch-action: manipulation; }
+  .tut-stage { flex: none; height: min(100vw, 52vh); height: min(100vw, 52dvh); min-height: 0; }
+  .tut-cap { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 10px calc(18px + var(--m-safe-r, 0px)) 6px calc(18px + var(--m-safe-l, 0px)); }
+  .tut-say { font-size: clamp(19px, 5vw, 23px); }
+  .tut-small { font-size: 16px; line-height: 1.4; }
+  .tut-ctl { flex: none; position: sticky; bottom: 0; gap: 10px; padding: 8px calc(14px + var(--m-safe-r, 0px)) calc(10px + var(--m-safe-b, 0px)) calc(14px + var(--m-safe-l, 0px)); background: var(--card); border-top: 1px solid var(--line); }
+  .tut-btn { width: 48px; height: 48px; font-size: 15px; touch-action: manipulation; flex: none; }
+  .tut-btn.play { width: 52px; height: 52px; }
+  .tut-steps { display: none; }
+  .tut-prog { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+  .tut-stepn { font-size: 13px; font-weight: 700; color: var(--muted); text-align: right; }
+  .tut-bar { display: block; height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .tut-bar b { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--cc, var(--red-d)); transition: width .3s ease; }
+  .tut-end { padding: 12px; }
+  .tut-endbtns .btn { min-height: 48px; padding: 0 14px; }
+  .tut-endcard { max-width: calc(100% - 24px); }
+  .tut-nudge button { min-height: var(--m-tap, 44px); }
+  /* the "How X works" offer is a 44px round "?" in the corner of the board (it used to be a wide pill over the bottom harbors); it fades out on its own after 15s */
+  body[data-route="game"] .board-wrap .tut-nudge { left: calc(8px + var(--m-safe-l, 0px)); right: auto; bottom: 8px; width: var(--m-tap, 44px); height: var(--m-tap, 44px); max-width: none; border-radius: 50%; }
+  body[data-route="game"] .board-wrap .tut-nudge .tn-x { display: none; }
+  body[data-route="game"] .board-wrap .tut-nudge .tn-go { position: relative; flex: 1; width: 100%; height: 100%; padding: 0; overflow: hidden; text-indent: -999px; white-space: nowrap; }
+  body[data-route="game"] .board-wrap .tut-nudge .tn-go::before { content: '?'; position: absolute; inset: 0; display: grid; place-items: center; text-indent: 0; font: 800 24px/1 var(--serif); }
+}
+
+/* =====================================================================================================================
+   8. VICTORY: the buttons never scroll away, a close button is there from the first frame
+   ===================================================================================================================== */
+.vic-x { display: none; }
+@media (max-width: 760px), (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  .vic-scroll { padding: calc(14px + var(--m-safe-t, 0px)) 14px 0; }
+  .vic-card { position: relative; }
+  .vic-x { display: grid; place-items: center; position: absolute; z-index: 6; top: calc(8px + var(--m-safe-t, 0px)); right: calc(8px + var(--m-safe-r, 0px)); width: var(--m-tap, 44px); height: var(--m-tap, 44px); border-radius: 50%; border: 1.5px solid rgba(255,243,220,.35); background: rgba(20,6,3,.6); color: var(--cream); font-size: 18px; touch-action: manipulation; }
+  .vic-foot { position: sticky; bottom: 0; z-index: 3; width: calc(100% + 28px); margin: 18px -14px 0; padding: 22px 14px calc(10px + var(--m-safe-b, 0px)); background: linear-gradient(transparent, rgba(18,5,2,.96) 30%); display: flex; flex-wrap: wrap; justify-content: stretch; gap: 12px 8px; animation-delay: 1.4s; }
+  .vic-foot .btn { flex: 1 1 calc(50% - 4px); min-width: 0; min-height: 48px; padding: 0 10px; font-size: 15px; touch-action: manipulation; }
+  .vic-foot .btn.m-main { flex: 1 1 100%; order: -1; min-height: var(--m-tap-lg, 52px); font-size: 16px; background: linear-gradient(180deg, var(--gold-2), var(--gold)); color: var(--ink); border-color: transparent; box-shadow: 0 3px 0 #A87A1B; }
+  .vic-foot .btn.gold:not(.m-main) { background: transparent; color: var(--cream); border: 1.5px solid rgba(255,243,220,.35); box-shadow: none; }
+  .vic-panel { padding: 10px 10px 12px; }
+  .vic-fact small { font-size: 12px; }
+  .vic-chip small { font-size: 12px; }
+  .vic-row .nmt { font-size: 15px; }
+}
+@media (max-width: 420px) { .vic-trophy, .vic-emblem { width: 180px; height: 174px; } }
+
+/* =====================================================================================================================
+   9. LANDSCAPE PHONE (last, so it wins where both queries match)
+   ===================================================================================================================== */
+@media (max-height: 500px) and (max-width: 1040px) and (orientation: landscape) {
+  /* dialogs: a centred sheet, the footer in one row with the lead button at the right (thumb side) */
+  .modal-back { justify-items: center; padding: 0 var(--m-safe-r, 0px) 0 var(--m-safe-l, 0px); }
+  .modal { width: min(640px, 100%); max-height: min(94vh, calc(100vh - var(--m-safe-t, 0px) - 4px)); max-height: min(94dvh, calc(var(--m-vvh, 100dvh) - var(--m-safe-t, 0px) - 4px)); padding-left: 16px; padding-right: 16px; }
+  .modal h2 { font-size: 19px; margin-bottom: 2px; }
+  .modal p.muted { font-size: 13px; line-height: 1.35; }
+  .modal .section-label { margin: 8px 2px 4px; }
+  .modal .foot { flex-wrap: nowrap; gap: 8px; margin-top: 8px; padding-top: 8px; padding-bottom: calc(8px + var(--m-safe-b, 0px)); }
+  .modal .foot > .btn { flex: 1 1 0; }
+  .modal .foot > .btn.primary, .modal .foot > .btn.gold, .modal .foot > .btn.m-main { flex: 1.7 1 0; order: 5; min-height: 48px; font-size: 15px; }
+  .modal .foot > :not(.btn) { flex: 1 1 100%; }
+  .modal .foot:has(> .dlg-sum) { flex-wrap: wrap; }
+  .modal .foot:has(> .dlg-sum) > .btn { flex: 1 1 0; }
+  .modal .foot:has(> .dlg-sum) > .btn.primary { flex: 1.7 1 0; }
+  .modal .lang-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 6px; }
+  .modal .lang-grid .chip { min-height: 44px; }
+  .picker { gap: 6px; margin-top: 4px; }
+  .pick:has(.ctr) { min-height: 88px; }
+  .dlg-need { margin-top: 6px; padding: 3px 14px; font-size: 16px; }
+  .choice-list .btn { min-height: 48px; }
+  /* toasts, banners */
+  #toasts, body[data-route="game"] #toasts { top: calc(var(--m-safe-t, 0px) + 8px); width: min(520px, calc(100% - 24px)); }
+  .fx-banner { top: calc(var(--m-safe-t, 0px) + 8px); }
+  .fx-banner > span { font-size: 22px; padding: 6px 18px; }
+  /* trade window: the board column is the only thing left of the dock, keep the window low and short */
+  .board-trade { max-height: 62%; }
+  /* scenes */
+  .fx-scene { padding: calc(12px + var(--m-safe-t, 0px)) calc(16px + var(--m-safe-r, 0px)) calc(12px + var(--m-safe-b, 0px)) calc(16px + var(--m-safe-l, 0px)); }
+  .fx-scene h1 { font-size: 28px; }
+  .fx-scene p { font-size: 14px; max-width: 44ch; }
+  body[data-route="game"] .fx-scene { padding-bottom: calc(12px + var(--m-safe-b, 0px)); }
+  .fx-scene[data-hint]::after, body[data-route="game"] .fx-scene[data-hint]::after { bottom: calc(6px + var(--m-safe-b, 0px)); right: calc(min(36vw, 340px) + var(--m-safe-r, 0px)); } /* landscape: the dock is the right column, the hint stays in the board half */
+  .fx-robber { flex-direction: row; gap: 16px; }
+  .fx-robber-fig { width: 110px; }
+  .fx-seven { width: 44px; height: 44px; font-size: 26px; margin-bottom: 4px; }
+  .fx-robber-text { margin-top: 0; max-width: 46%; }
+  .fx-barb-text { transform: scale(.8); transform-origin: 50% 0; margin-bottom: -60px; }
+  .fx-ship-wrap { display: none; }
+  .fx-barb { padding-top: calc(10px + var(--m-safe-t, 0px)); }
+  .br-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; width: min(620px, 94vw); margin-top: 8px; }
+  .fx-medal svg { width: 84px; height: 84px; }
+  .fx-award h2 { font-size: 26px; margin-top: 6px; }
+  .fx-bigcard { width: 210px; height: min(312px, calc(100vh - 28px)); padding: 12px; gap: 6px; }
+  .fx-bigcard .bc-desc { font-size: 13px; -webkit-line-clamp: 7; }
+  .fx-event .ev-card { padding: 10px 14px 12px; }
+  .ev-disc { width: 110px; } .ev-face { width: 56px; height: 56px; }
+  .fx-die { width: 56px; height: 56px; } .fx-die .pips { width: 38px; height: 38px; } .fx-sum { width: 56px; height: 56px; font-size: 32px; }
+  /* tutorial: stage on the left, a 280px column with tabs, caption and controls on the right */
+  .tut-box { display: grid; grid-template-columns: minmax(0, 1fr) 280px; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "stage top" "stage cap" "stage ctl"; padding-right: var(--m-safe-r, 0px); }
+  .tut-stage { grid-area: stage; height: auto; margin-left: var(--m-safe-l, 0px); }
+  .tut-top { grid-area: top; padding: calc(6px + var(--m-safe-t, 0px)) 8px 6px 8px; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); }
+  .tut-cap { grid-area: cap; padding: 8px 14px 4px; justify-content: flex-start; border-left: 1px solid var(--line); }
+  .tut-say { font-size: 18px; }
+  .tut-small { font-size: 15px; }
+  .tut-ctl { grid-area: ctl; position: static; flex-wrap: wrap; justify-content: center; padding: 6px 10px calc(8px + var(--m-safe-b, 0px)); border-left: 1px solid var(--line); }
+  .tut-prog { flex: 1 1 100%; order: 2; flex-direction: row; align-items: center; gap: 10px; }
+  .tut-stepn { white-space: nowrap; }
+  .tut-bar { flex: 1; }
+  /* victory: trophy and name side by side, the podium in two columns */
+  .vic-scroll { padding: calc(10px + var(--m-safe-t, 0px)) calc(14px + var(--m-safe-r, 0px)) 0 calc(14px + var(--m-safe-l, 0px)); }
+  .vic-card { width: min(780px, 100%); display: grid; grid-template-columns: 130px minmax(0, 1fr); column-gap: 18px; justify-items: center; align-content: start; margin: 0 auto; }
+  .vic-card > * { grid-column: 1 / -1; }
+  .vic-card > .vic-you { margin-top: 10px; }
+  .vic-card > .vic-trophy { grid-column: 1; grid-row: 2 / span 7; width: 110px; height: 106px; align-self: center; }
+  .vic-card > .vic-you, .vic-card > .vic-name, .vic-card > .vic-line, .vic-card > .vic-sub, .vic-card > .vic-vp, .vic-card > .vic-break, .vic-card > .vic-mine { grid-column: 2; }
+  .vic-emblem { width: 110px; height: 106px; }
+  .vic-name { font-size: clamp(28px, 6vw, 40px); }
+  .vic-vp b { font-size: 48px; }
+  .vic-podium { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; }
+  .vic-podium h3 { grid-column: 1 / -1; }
+  .vic-foot { flex-wrap: nowrap; width: calc(100% + 28px); }
+  .vic-foot .btn { flex: 1 1 0; }
+  .vic-foot .btn.m-main { flex: 1.6 1 0; order: 5; min-height: 48px; }
+  .vic-x { top: calc(6px + var(--m-safe-t, 0px)); }
+}
