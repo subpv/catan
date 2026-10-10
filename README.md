@@ -19,6 +19,19 @@ No server? Open `dist/broch-demo.html` in a browser: the real rules engine runs 
 
 Docker: `cd broch && docker compose up` (the Dockerfile also builds the `/demo` page).
 
+## Self-hosting (TrueNAS SCALE)
+
+1. Create datasets `broch/app` (the program, mounted read-only) and `broch/data` (accounts and games, read-write). Optional: `broch/upload` for copying the zip. Never share `data`.
+2. Upload [`dist/broch-app.zip`](dist/broch-app.zip) and unpack it into `app`:
+   ```bash
+   sudo unzip -o /tmp/broch-app.zip -d /mnt/<pool>/broch/app/
+   ```
+3. Apps → Custom App → Install via YAML with [`deploy/truenas-compose.yml`](deploy/truenas-compose.yml) (`node:22-alpine`, port `30080:8080`, user `568:568`).
+   Env: `DATA_DIR=/data`, `PORT=8080`, `TRUST_PROXY=1` (behind Cloudflare), optional `REGISTRATION_CODE` (without it anyone can sign up).
+4. Open `http://<truenas-ip>:30080`, create your account first (it becomes admin), then publish it, e.g. through a Cloudflare tunnel.
+
+**Update:** replace the contents of `app` with the new zip and restart the app. Never touch `data`. Details, backup and troubleshooting: `docs/OPERATIONS.md`.
+
 ## Where to read next
 
 | You want to | Read |

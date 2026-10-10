@@ -1,5 +1,7 @@
 # Broch on TrueNAS SCALE: Apps -> Discover Apps -> Custom App -> "Install via YAML", paste this file.
-# Change the three things marked CHANGE-ME (pool name, invite code, tunnel token). Everything else can stay.
+# Change the things marked CHANGE-ME (pool name, tunnel token). REGISTRATION_CODE is optional: delete the line and anybody can sign up
+# (10 new accounts per hour and address at most). If you already run a Cloudflare tunnel elsewhere, delete the whole `cloudflared:` service and point
+# the tunnel at http://TRUENAS-IP:30080.
 services:
   broch:
     image: node:22-alpine
@@ -13,7 +15,7 @@ services:
       PORT: "8080"
       DATA_DIR: /data
       TRUST_PROXY: "1"              # the app sits behind Cloudflare: use the real visitor address and mark the cookie Secure
-      REGISTRATION_CODE: "CHANGE-ME-a-long-random-invite-code"   # friends need this code to create an account (the first account never does)
+      REGISTRATION_CODE: "CHANGE-ME-a-long-random-invite-code"   # optional: friends need this code to create an account (the first account never does); delete the line for open sign-up
       FEEDBACK_URL: ""                # empty = no "Send feedback" link in the footer and the error banner (leave it out to get the default form of the developer)
     volumes:
       - /mnt/CHANGE-ME-POOL/broch/app:/app:ro       # the program (unzipped broch-app.zip), read only
