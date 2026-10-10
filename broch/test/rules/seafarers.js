@@ -1,6 +1,7 @@
 'use strict';
 // Targeted Seafarers rules checks (ship lines, one ship move per turn, setup ships, new-island bonus):
 // node test/rules/seafarers.js
+require('../seed');
 const { createGame, act, viewFor, GameError, _internal } = require('../../server/engine/classic/game');
 
 let bad = 0;

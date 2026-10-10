@@ -438,7 +438,7 @@ export function renderBoard(view, targets = {}, fresh = null, zoom = null, life 
       for (let i = 0; i < pips; i++) dots += `<circle cx="${(i - (pips - 1) / 2) * 4.4}" cy="9" r="1.6" fill="${red ? '#C1272D' : '#2B1E12'}"/>`;
       out.push(`<g transform="translate(${cx},${cy + 4})"><g class="ntok" data-n="${h.number}">${discShade(17)}<circle r="17" fill="url(#tok)" stroke="#C9AE7C" stroke-width="1.5"/>
         <text y="4" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="${red ? 19 : 17}" fill="${red ? '#C1272D' : '#2B1E12'}">${h.number}</text>${dots}</g></g>`);
-      // Rivers of Catan: the extra chip (a 2) lies on the tile with the 12
+      // Rivers of Broch: the extra chip (a 2) lies on the tile with the 12
       if (h.number2) out.push(`<g transform="translate(${cx + 21},${cy - 12})"><g class="ntok" data-n="${h.number2}">${discShade(11)}<circle r="11" fill="url(#tok)" stroke="#C9AE7C" stroke-width="1.3"/><text y="4.6" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="12" fill="#2B1E12">${h.number2}</text></g></g>`);
     }
     if (view.merchant && view.merchant.hex === h.id) {

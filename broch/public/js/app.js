@@ -57,7 +57,7 @@ function topbar(active) {
     </nav>
   </header>`;
 }
-const footer = () => `<div class="footer">${tx('Something not working, or have an idea?')} <a href="${esc(getFeedbackUrl())}" target="_blank" rel="noopener">${tx('Send feedback')}</a>${window.BROCH_BUILD ? `<span class="build"> · <span title="Build">${esc(window.BROCH_BUILD)}</span></span>` : ''}</div>`;
+const footer = () => `<div class="footer">${getFeedbackUrl() ? `${tx('Something not working, or have an idea?')} <a href="${esc(getFeedbackUrl())}" target="_blank" rel="noopener">${tx('Send feedback')}</a>` : ''}${window.BROCH_BUILD ? `<span class="build"> · <span title="Build">${esc(window.BROCH_BUILD)}</span></span>` : ''}</div>`;
 export { topbar, footer };
 
 // topbar buttons work on every page (the game menu on phones carries the same data-attributes)
@@ -226,9 +226,9 @@ async function renderLobby() {
     if (newGame.expansion === 'seafarers') { const sc = SCEN[newGame.scenario]; return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${SCEN_KEYS.map(k => chip(newGame.scenario === k, `data-scen="${k}"`, SCEN[k].label)).join('')}</div><div class="muted" style="font-size:13px;margin-top:8px">${tx(sc.blurb)} ${tx('Win with {n} points.', { n: newGame.mode === 'knights' ? sc.vp + 2 : sc.vp })}</div>${sc.variable ? `<div class="chips" style="margin-top:8px">${chip(newGame.variable, 'data-vsetup', 'Variable setup', 'Deal the tiles, numbers and harbours again inside the printed outlines, as the rulebook allows.')}</div>` : ''}`; }
     if (newGame.expansion === 'traders') {
       const V = newGame.variants;
-      const scen = [['fishermen', 'Fishermen of Catan', 'Fishing grounds, fish tokens and the old boot.'], ['rivers', 'Rivers of Catan', 'Bridges, gold, and the richest and poorest player.'], ['caravans', 'Merchant Trains', 'Nomads send trade wagons out; vote with wool and grain. 3–6 players.'], ['barbarians', 'Barbarian Attack', 'Barbarians land on the coast; knights drive them off. 3–6 players.'], ['traders', 'Traders & Barbarians', 'Haul glass, marble, sand and tools with your wagon. 3–6 players.']];
+      const scen = [['fishermen', 'Fishermen of Broch', 'Fishing grounds, fish tokens and the old boot.'], ['rivers', 'Rivers of Broch', 'Bridges, gold, and the richest and poorest player.'], ['caravans', 'Merchant Trains', 'Nomads send trade wagons out; vote with wool and grain. 3–6 players.'], ['barbarians', 'Barbarian Attack', 'Barbarians land on the coast; knights drive them off. 3–6 players.'], ['traders', 'Traders & Barbarians', 'Haul glass, marble, sand and tools with your wagon. 3–6 players.']];
       return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${scen.map(([k, l, h]) => chip(V[k], `data-scn="${k}"`, l, h)).join('')}</div>
-        <div class="muted sub-h">${tx('Variants')}</div><div class="chips">${chip(V.events, 'data-var="events"', 'Event cards', 'A deck of event cards replaces the dice.')}${chip(V.friendly, 'data-var="friendly"', 'Friendly robber', 'The robber spares players with 2 points or fewer.')}${chip(V.harbors, 'data-var="harbors"', 'Harbors of Catan', 'Settlements and cities at harbors earn harbor points; the Strongest Ports tile is worth 2 points.')}</div>`;
+        <div class="muted sub-h">${tx('Variants')}</div><div class="chips">${chip(V.events, 'data-var="events"', 'Event cards', 'A deck of event cards replaces the dice.')}${chip(V.friendly, 'data-var="friendly"', 'Friendly robber', 'The robber spares players with 2 points or fewer.')}${chip(V.harbors, 'data-var="harbors"', 'Harbors of Broch', 'Settlements and cities at harbors earn harbor points; the Strongest Ports tile is worth 2 points.')}</div>`;
     }
     if (newGame.mode === 'explorers') return `<div class="muted sub-h">${tx('Scenario')}</div><div class="chips">${[1, 2, 3, 4, 5].filter(k => k > 1 || newGame.maxPlayers <= 4).map(k => `<button class="chip ${newGame.escen === k ? 'on' : ''}" data-escen="${k}" aria-pressed="${newGame.escen === k}">${k}. ${esc(t(EUP_LABEL[k]))}</button>`).join('')}</div><div class="muted" style="font-size:13px;margin-top:6px">${tx(EUP_DESC[newGame.escen])}</div>`;
     if (isStandalone(newGame.mode)) return `<div class="muted sub-h">${tx(GAMES[newGame.mode].name)}</div><div class="muted" style="font-size:13px">${tx(GAMES[newGame.mode].blurb)}</div>${(GAMES[newGame.mode].lobbyOptions || []).map(o => `<label class="switch ${newGame.gameOptions[o.key] ? 'on' : ''}" data-gopt="${o.key}" role="switch" aria-checked="${!!newGame.gameOptions[o.key]}" tabindex="0"><span class="tr"><i></i></span><span class="tx"><b>${tx(o.label)}</b><small>${tx(o.hint)}</small></span></label>`).join('')}`;
@@ -239,7 +239,14 @@ async function renderLobby() {
   // toggles only redraw from the last lobby snapshot; the server is asked again only when something changed there
   const draw = async (refetch = true) => {
     let L = lastL;
-    if (refetch || !L) { try { L = lastL = await api('/lobby'); } catch (e) { toast(e.message, 'warn'); return; } }
+    if (refetch || !L) {
+      try { L = lastL = await api('/lobby'); } catch (e) {
+        toast(e.message, 'warn');
+        const box = document.getElementById('lobby');
+        if (box && !lastL) { box.innerHTML = `<div class="card load-fail"><p class="muted">${tx('Could not load this page.')}</p><button class="btn" data-retry>${tx('Try again')}</button></div>`; box.querySelector('[data-retry]').onclick = () => draw(); }
+        return;
+      }
+    }
     const el = document.getElementById('lobby');
     if (!el) return;
     const me = session.user.id;
@@ -435,7 +442,7 @@ async function renderLobby() {
   });
   api('/lobby').then(L => { known = L.playing.filter(g => L.mine.includes(g.id)).map(g => g.id); }).catch(() => {});
   const offPhone = onPhoneChange(() => draw(false)); // grouped switches and the folded form only exist on phones
-  cleanup = () => { off(); offPhone(); };
+  return () => { off(); offPhone(); };
 }
 
 // ------------------------------------------------------------ profile
@@ -474,42 +481,70 @@ function renderProfile() {
 }
 
 // ------------------------------------------------------------ router
+let routeSeq = 0;
 async function route(keepScroll) {
+  // route() awaits the server in several places; when the hash changed meanwhile, the older call must not paint over the newer page
+  const seq = ++routeSeq;
   if (cleanup) { try { cleanup(); } catch { /* ignore */ } cleanup = null; }
   unmountGame(); unmountSGame();
   if (keepScroll !== true) window.scrollTo(0, 0);
-  const h = location.hash.replace(/^#/, '') || '/';
+  let h = location.hash.replace(/^#/, '') || '/';
   if (!session.user) {
     if (h.startsWith('/join/')) { try { sessionStorage.setItem('broch_join', h.split('/')[2]); } catch { /* storage blocked */ } }
     return renderAuth(h.startsWith('/register') ? 'register' : 'login', { focus: h.startsWith('/register') || h.startsWith('/login') }); // the demo banner and shared links open #/register
   }
   let pendingJoin = null;
   try { pendingJoin = sessionStorage.getItem('broch_join'); } catch { /* storage blocked */ }
-  if (pendingJoin) { try { sessionStorage.removeItem('broch_join'); } catch { /* ignore */ } location.hash = `#/join/${pendingJoin}`; return; }
+  if (pendingJoin) {
+    try { sessionStorage.removeItem('broch_join'); } catch { /* ignore */ }
+    // an invite link was opened while logged out: carry on with it now. Setting location.hash would do nothing, because it is the same hash already (no hashchange).
+    if (/^[\w-]+$/.test(pendingJoin)) { h = `/join/${pendingJoin}`; try { history.replaceState(null, '', `#${h}`); } catch { /* ignore */ } }
+  }
   let m;
   try {
     if ((m = h.match(/^\/join\/([\w-]+)/))) {
       if (DEMO) { location.hash = '#/'; return; } // nobody can join a demo game
       try { await api(`/games/${m[1]}/join`, { body: {} }); toast(t('You joined the game.')); } catch (e) { toast(e.message, 'warn'); }
-      location.hash = '#/'; return;
+      if (seq === routeSeq) location.hash = '#/';
+      return;
     }
     if ((m = h.match(/^\/game\/([\w-]+)/))) {
       // standalone games have their own screen; ask which game this is before building the page
       let mode = 'classic';
       try { mode = (await api(`/games/${m[1]}`)).game.mode; } catch { /* a missing game opens the normal screen, which reports it */ }
+      if (seq !== routeSeq) return;
       document.body.dataset.route = 'game';
       cleanup = isStandalone(mode) ? mountSGame(app, m[1], mode) : mountGame(app, m[1]);
       return;
     }
-    if (h.startsWith('/stats')) { document.body.dataset.route = 'stats'; cleanup = await mountStats(app); return; }
+    if (h.startsWith('/stats')) { document.body.dataset.route = 'stats'; cleanup = mountStats(app); return; }
     if (h.startsWith('/profile')) { document.body.dataset.route = 'profile'; return renderProfile(); }
     document.body.dataset.route = 'lobby';
-    await renderLobby();
+    const c = await renderLobby();
+    if (seq !== routeSeq) { c && c(); return; }
+    cleanup = c;
   } catch (e) {
     if (!e.handled) throw e;
     toast(e.message, 'warn');
   }
 }
+
+// The login is gone (server restarted with empty sessions, logged out elsewhere, expired): say so and show the login page
+// instead of a game or lobby that only looks alive. core.js raises this on a rejected websocket and on a 401 answer.
+let sessionCheck = false;
+window.addEventListener('broch:session', async () => {
+  if (!session.user || sessionCheck || DEMO) return;
+  sessionCheck = true;
+  try {
+    const { user } = await api('/me');
+    if (!user) {
+      session.user = null; wsClose();
+      toast(t('You were logged out. Please log in again.'), 'warn');
+      route();
+    } else setTimeout(wsConnect, 1500); // the login is fine; only the socket was refused (e.g. a race while the server started)
+  } catch { /* server unreachable: the connection bar and the reconnect logic take care of it */ }
+  finally { sessionCheck = false; }
+});
 
 window.addEventListener('hashchange', () => route());
 

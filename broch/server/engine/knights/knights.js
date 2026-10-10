@@ -446,7 +446,7 @@ module.exports = function make(core) {
     improve(s, p, a) {
       requireKnights(s); requireActor(s, p);
       const pl = P(s, p);
-      if (!C.TRACK_COMM[a.track]) fail('Unknown improvement.');
+      if (typeof a.track !== 'string' || !Object.hasOwn(C.TRACK_COMM, a.track)) fail('Unknown improvement.');
       const block = improveBlock(s, p, a.track);
       if (block) fail(block);
       const lvl = pl.improvements[a.track];
@@ -488,7 +488,7 @@ module.exports = function make(core) {
     },
     chooseProgress(s, p, a) {
       const it = findPending(s, p, 'chooseProgress');
-      if (!it || !C.PROGRESS[a.deck]) fail('Pick a deck.');
+      if (!it || typeof a.deck !== 'string' || !Object.hasOwn(C.PROGRESS, a.deck)) fail('Pick a deck.');
       resolvePending(s, it);
       drawProgress(s, p, a.deck);
     },

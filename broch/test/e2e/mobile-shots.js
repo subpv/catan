@@ -111,7 +111,16 @@ async function measure(page, label) {
       const ok = await playUntil(game.id, spec.mode, v => v.phase === 'play' && v.current === v.me && (v.step === 'main' || v.step === 'roll'));
       await page.waitForTimeout(800);
       await shot(`11-${key}-turn`, 1200);
-      for (const [tab, sel] of [['feed', '.tabs [data-tab]']]) { /* tabs are shot below */ }
+      // regression: the menu's "Leave this game" opened the dialog and it closed again at once (the sheet's history.back() popped the dialog's entry)
+      if (key === 'classic' && await page.$('.m-more')) {
+        await page.tap('.m-more'); await page.tap('[data-sheet-tab="menu"]'); await page.tap('.m-menu [data-leavegame]');
+        await sleep(900);
+        const dlg = await page.evaluate(() => { const m = document.querySelector('.modal-back .modal'); return m ? { labelled: !!m.getAttribute('aria-labelledby') && !!document.getElementById(m.getAttribute('aria-labelledby')), focusIn: m.contains(document.activeElement) } : null; });
+        const sheetOpen = await page.evaluate(() => document.querySelector('.game').classList.contains('sheet-open'));
+        report.push({ label: 'menu-leave-dialog', note: dlg && !sheetOpen ? 'stays open' : 'FAILED', dlg, sheetOpen });
+        if (!dlg || sheetOpen || !dlg.labelled || !dlg.focusIn) { report.push({ error: 'menu Leave: dialog missing, sheet still open or dialog not labelled/focused ' + JSON.stringify({ dlg, sheetOpen }) }); process.exitCode = 1; }
+        await page.tap('.modal-back [data-close]'); await sleep(400);
+      }
       const tabs = await page.$$('.feed-tabs button, .tabs button, [data-tab]');
       for (let i = 0; i < Math.min(tabs.length, 4); i++) { try { await tabs[i].click(); await shot(`12-${key}-tab${i}`, 600); } catch { } }
       if (!ok) report.push({ label: key, note: 'never reached the main phase' });

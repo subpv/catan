@@ -1,18 +1,22 @@
 {
   "name": "broch",
   "version": "1.0.0",
-  "description": "Broch: an online settlers-style board game for friends, with classic and knights modes.",
+  "description": "Broch: a self-hosted settlers-style board game for friends and family (classic, Cities & Knights, Seafarers, Traders & Barbarians, Explorers & Pirates and three stand-alone games), with computer players.",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node test/rules/knights.js && node test/rules/bot-forced-progress.js && node test/rules/preload.js && node test/rules/energies-rules.js && node test/rules/inkas-rules.js && node test/rules/eup-rules.js && node test/rules/migrate-explorers.js && node test/rules/counter-offers.js && node test/rules/experiments.js && node test/rules/seafarers.js && node test/rules/scenario-maps.js && node test/rules/tb-merchant.js && node test/rules/tb-traders.js && node test/rules/tb-barbarians.js && node test/rules/tb-variants.js && node test/fuzz/simulate.js 30 && node test/fuzz/simulate-games.js 5",
+    "test": "node test/rules/i18n-check.js && node test/rules/knights.js && node test/rules/bot-forced-progress.js && node test/rules/preload.js && node test/rules/energies-rules.js && node test/rules/inkas-rules.js && node test/rules/eup-rules.js && node test/rules/migrate-explorers.js && node test/rules/counter-offers.js && node test/rules/experiments.js && node test/rules/robustness.js && node test/rules/seafarers.js && node test/rules/scenario-maps.js && node test/rules/tb-merchant.js && node test/rules/tb-traders.js && node test/rules/tb-barbarians.js && node test/rules/tb-variants.js && node test/fuzz/simulate.js 30 && node test/fuzz/simulate-games.js 5",
     "test:bots": "node test/e2e/bots-server.js",
     "test:security": "node test/e2e/security.js",
     "test:resign": "node test/e2e/resign.js",
     "test:pacing": "node test/e2e/bot-pacing.js",
     "test:demo": "NODE_PATH=$(npm root -g) node test/e2e/demo.js",
     "test:browser": "NODE_PATH=$(npm root -g) node test/e2e/mobile-shots.js /tmp/broch-shots 390 844 classic knights seafarers traders big energies humankind inkas explorers",
-    "dist": "node scripts/make-dist.js"
+    "dist": "node scripts/make-dist.js",
+    "test:ops": "node test/e2e/ops.js",
+    "test:all": "npm test && npm run test:security && npm run test:resign && npm run test:ops",
+    "dist:check": "node scripts/dist-check.js",
+    "admin": "node scripts/admin.js"
   },
   "dependencies": {
     "ws": "^8.22.0"

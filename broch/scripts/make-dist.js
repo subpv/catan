@@ -2,9 +2,9 @@
 // Builds everything that is handed out:
 //   dist/broch-demo.html  the playable demo (open it in a browser, no server needed)
 //   public/demo/          (inside the zip) the same demo for the real site, served at /demo with the strict CSP
-//   dist/broch-app.zip    the server app, ready to unpack into the TrueNAS dataset (includes the production node_modules, so nothing has to be installed there)
-//   PROGRESS.md           status of every mode
-// Usage: cd broch && node scripts/make-dist.js   (needs esbuild: npm i --no-save esbuild, plus the zip and npm commands)
+//   dist/broch-app.zip    the server app, ready to unpack into the TrueNAS dataset (includes the production node_modules, so nothing has to be installed there, and scripts/admin.js)
+//   PROGRESS.md           status of every mode (generated from demo/progress-data.js: edit that file, not PROGRESS.md)
+// Usage: cd broch && node scripts/make-dist.js   (needs `npm ci` once for esbuild, plus the zip and npm commands and network access)
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
@@ -22,6 +22,8 @@ for (const f of ['server', 'public']) fs.cpSync(path.join(app, f), path.join(sta
 // the public demo (served at /demo) is generated, so it is built straight into the staging folder and never lands in the repo copy of public/
 fs.rmSync(path.join(stage, 'public', 'demo'), { recursive: true, force: true }); // (a copy of a locally built demo)
 run(process.execPath, [path.join(app, 'demo', 'build.js'), '--public', '--out', path.join(stage, 'public', 'demo')], root);
+fs.mkdirSync(path.join(stage, 'scripts'));
+fs.copyFileSync(path.join(app, 'scripts', 'admin.js'), path.join(stage, 'scripts', 'admin.js')); // account tools for the server owner (reset a password), see the TrueNAS guide
 for (const f of ['package.json', 'package-lock.json']) fs.copyFileSync(path.join(app, f), path.join(stage, f));
 run('npm', ['ci', '--omit=dev', '--no-audit', '--no-fund'], stage);
 const zip = path.join(root, 'dist', 'broch-app.zip');

@@ -11,6 +11,9 @@ services:
     environment:
       # Optional: people need this code to create an account (the first account never does).
       REGISTRATION_CODE: ""
-      FEEDBACK_URL: "https://feedback.maidev.dk/"
+      FEEDBACK_URL: "https://feedback.maidev.dk/"   # "" = no feedback link at all
+    logging:                      # Docker does not rotate logs by itself
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
     volumes:
       - /mnt/tank/apps/broch/data:/data

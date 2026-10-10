@@ -780,174 +780,172 @@
 780|Cap sur de nouveaux rivages
 781|Les Quatre Îles
 782|Les Îles de la brume
-783|Pêcheurs de Catane
-784|Rivières de Catane
+783|Pêcheurs de Broch
+784|Rivières de Broch
 785|Cartes événement
-786|Poissons pour Catane
-787|Épices pour Catane
-788|Zones de pêche, jetons poisson et vieille botte.
-789|Ponts, or, et joueur le plus riche et le plus pauvre.
-790|Un paquet de cartes événement remplace les dés.
-791|Règle maison : voleur oublié
-792|Si un joueur termine son tour sans déplacer le voleur, celui-ci retourne dans le désert.
-793|Si vous terminez votre tour maintenant, le voleur retourne dans le désert.
-794|Cette règle maison n'est pas activée.
-795|{@p} a oublié de déplacer le voleur, il retourne donc dans le désert.
-796|Règle maison : ressources de départ pour les deux
-797|Règles maison
-798|Les deux bâtiments de la mise en place rapportent des ressources de départ. Dans Cités et Chevaliers, la ville compte comme une colonie.
-799|Il ne s'est encore rien passé.
-800|Mise en place
-801|Les graphiques se remplissent dès que les premiers tours sont joués.
-802|Points de victoire au fil de la partie
-803|Lancers de dés
-804|Barres : obtenus · ligne : attendus après {n} lancers
-805|Ressources reçues
-806|Lancers
-807|Plus fréquent
-808|7 obtenus
-809|Objectif
-810|obtenus
-811|attendus
-812|Plus de {n} cartes : sur un 7, vous en perdez la moitié.
-813|Dernier lancer uniquement
-814|Voir les tours précédents
-815|Défenseur de Broch
-816|−1 ville
-817|Plateau vivant
-818|Plateau vivant : activé
-819|Plateau vivant : désactivé
-820|Banque
-821|Vaut 1 point. Se pose face visible devant vous.
-822|Comment jouer : {mode}
-823|Comment jouer
-824|Comment se joue {mode} (1 min)
-825|Bienvenue à Broch !
-826|Construisez, échangez, prospérez. Le premier à 10 points gagne.
-827|Chaque tuile produit une ressource.
-828|Forêt, collines, pré, champs et montagnes. Le désert ne produit rien.
-829|Construisez des colonies sur les coins.
-830|Touchez le coin lumineux.
-831|Une colonie touche jusqu'à 3 tuiles.
-832|Vos adversaires construisent aussi.
-833|Lancez les dés à chaque tour.
-834|Touchez les dés.
-835|Chaque tuile portant ce nombre produit.
-836|Chaque voisin reçoit une carte, même pendant le tour des autres.
-837|Plus de petits points, plus de chances.
-838|Les 6 et 8 rouges sortent le plus souvent, les 2 et 12 rarement.
-839|Dépensez des cartes pour construire.
-840|Une route coûte du bois et de l'argile. Touchez le bord lumineux.
-841|Les villes rapportent double.
-842|Transformez une colonie en ville pour 2 blés et 3 minerais. Touchez votre colonie.
-843|Un 7 réveille le voleur !
-844|Déplacez le voleur sur une tuile.
-845|Elle ne produit plus rien. Touchez une tuile à côté de votre adversaire.
-846|Puis volez une carte à quelqu'un sur place.
-847|Qui a plus de 7 cartes en perd la moitié.
-848|Échangez avec les joueurs ou la banque.
-849|La banque échange 4 cartes identiques contre 1. Ports : 3:1 ou 2:1.
-850|Les chevaliers déplacent le voleur. Les autres donnent des routes, des ressources ou un point de victoire.
-851|3 chevaliers joués : armée la plus puissante, +2 points.
-852|Son détenteur hisse des bannières de guerre sur le plateau.
-853|5 routes d'affilée : route la plus longue, +2 points.
-854|Le tracé le plus long s'illumine d'or.
-855|Atteignez 10 points pour gagner !
-856|Colonie 1 · Ville 2 · Route la plus longue 2 · Armée la plus puissante 2 · Carte point de victoire 1
-857|Tout le jeu Classique, plus marchandises, chevaliers et barbares. Victoire à 13 points.
-858|Les villes produisent des marchandises.
-859|Forêt : papier · Pré : tissu · Montagnes : pièces
-860|Les marchandises paient les améliorations de ville.
-861|Le commerce coûte du tissu, la politique des pièces, la science du papier. Touchez +.
-862|Le niveau 3 débloque un pouvoir spécial.
-863|Science : une ressource quand vous ne recevez rien. Commerce : marchandises à 2:1. Politique : chevaliers plus forts.
-864|Le premier au niveau 4 bâtit une métropole.
-865|Elle vaut 2 points et trône sur votre ville.
-866|Les chevaliers défendent Broch.
-867|Recrutez-en un pour de la laine et du minerai. Touchez le coin lumineux.
-868|Activez-le avec du blé.
-869|Seuls les chevaliers actifs combattent. Promouvez-les pour les renforcer.
-870|Un navire sur le dé d'événement fait avancer les barbares.
-871|Chaque navire les rapproche d'un pas de Broch.
-872|Leur force : toutes les villes du plateau. Votre défense : tous les chevaliers actifs.
-873|Le meilleur défenseur gagne un point. Si les barbares l'emportent, la ville la plus faible est pillée.
-874|Une porte colorée sur le dé d'événement donne des cartes aux joueurs dont les améliorations sont assez avancées.
-875|Remparts
-876|Chaque rempart vous permet de garder 2 cartes de plus quand un 7 sort.
-877|Atteignez 13 points pour gagner !
-878|Colonie 1 · Ville 2 · Métropole 2 · Défenseur 1 · Route la plus longue 2
-879|Les terres sont divisées en îles. Les navires traversent la mer.
-880|Construisez des navires sur l'eau.
-881|Un navire coûte du bois et de la laine. Touchez le bord lumineux.
-882|Les navires forment une chaîne, comme les routes.
-883|Le dernier navire d'une chaîne ouverte peut naviguer vers un nouvel endroit une fois par tour.
-884|Naviguez près de la brume pour la dévoiler.
-885|Découvrir une terre vous rapporte une ressource.
-886|Colonisez une nouvelle île : +1 point !
-887|Les champs d'or rapportent la ressource de votre choix.
-888|Le pirate
-889|Les navires près de sa tuile sont bloqués, et il vole. Un 7 ou un chevalier le déplace.
-890|Gagnez avec 12 à 14 points.
-891|Choisissez un scénario en créant la partie : Nouveaux rivages, Quatre Îles ou Îles de la brume.
-892|Trois variantes à combiner : Pêcheurs, Rivières et Cartes événement.
-893|Pêcheurs
-894|Le désert devient un lac et la côte se dote de zones de pêche.
-895|Obtenez le nombre d'une zone de pêche pour attraper des poissons.
-896|Le lac rapporte sur 2, 3, 11 et 12.
-897|Payer en poissons
-898|2 chasser le voleur · 3 voler · 4 prendre une ressource · 5 une route · 7 une carte développement
-899|La vieille botte
-900|Qui la repêche a besoin d'un point de plus pour gagner, et peut la refiler à un joueur en tête.
-901|Rivières
-902|Chaque route ou colonie au bord d'une rivière rapporte 1 or.
-903|Les ponts franchissent la rivière.
-904|Un pont coûte 2 argiles et 1 bois et rapporte 3 or.
-905|Échangez 2 or contre une ressource au choix. Le plus riche gagne +1 point, le plus pauvre −2.
-906|Un paquet des 36 résultats de dés remplace les dés : chaque nombre sort aussi souvent qu'il le doit.
-907|Naviguez dans la brume, découvrez des terres et accomplissez des missions.
-908|Explorez la brume avec vos navires.
-909|Touchez le bord lumineux. Une nouvelle terre vous rapporte une ressource.
-910|Un navire près d'un banc de poissons ramène du poisson quand son nombre sort.
-911|Épices pour Broch
-912|Les colonies près d'un champ d'épices chargent des épices quand il produit.
-913|Livrez votre cargaison au conseil.
-914|Toutes les 2 livraisons rapportent 1 point, jusqu'à 3 points par mission.
-915|Attaquez un repaire depuis un navire voisin pour 1 minerai et 1 laine. Quand il tombe, celui qui l'a le plus frappé gagne un point.
-916|Atteignez 12 points pour gagner !
-917|Colonies, villes, nouvelles îles, missions et repaires : tout compte.
-918|Un plateau plus grand, avec plus de tuiles, de ports et de cartes, jusqu'à 6 joueurs.
-919|Phase de construction spéciale
-920|Après chaque tour, tous les autres peuvent construire à tour de rôle, mais pas échanger.
-921|Pour que personne n'attende longtemps.
-922|Les tours restent courts, même quand la table est pleine.
-923|Précédent
-924|Pause
-925|Suivant
-926|Vous connaissez {mode} !
-927|Revoir
-928|Suivant : {mode}
-929|C'est parti !
-930|Carte événement
-931|Lancer
-932|Victoire !
-933|Partie terminée
-934|Vous avez gagné !
-935|points de victoire
-936|Vous terminez à la {n}e place avec {m} points.
-937|Classement final
-938|Voir le plateau
-939|Colonies
-940|Villes
-941|Métropole
-942|Cartes point de victoire
-943|Points bonus
-944|Le déroulé de la course
-945|Le plus de ressources
-946|Nombre le plus sorti
-947|{n}×
-948|Durée de la partie
-949|{n} tours
-950|Temps forts
-951|Route commerciale la plus longue
-952|Choisissez votre ressource une seule fois. Désormais, l’aqueduc la verse chaque fois qu’un lancer ne vous rapporte rien (sauf sur un 7).
-953|Aqueduc : {res}. Touchez pour changer.
+786|Zones de pêche, jetons poisson et vieille botte.
+787|Ponts, or, et joueur le plus riche et le plus pauvre.
+788|Un paquet de cartes événement remplace les dés.
+789|Règle maison : voleur oublié
+790|Si un joueur termine son tour sans déplacer le voleur, celui-ci retourne dans le désert.
+791|Si vous terminez votre tour maintenant, le voleur retourne dans le désert.
+792|Cette règle maison n'est pas activée.
+793|{@p} a oublié de déplacer le voleur, il retourne donc dans le désert.
+794|Règle maison : ressources de départ pour les deux
+795|Règles maison
+796|Les deux bâtiments de la mise en place rapportent des ressources de départ. Dans Cités et Chevaliers, la ville compte comme une colonie.
+797|Il ne s'est encore rien passé.
+798|Mise en place
+799|Les graphiques se remplissent dès que les premiers tours sont joués.
+800|Points de victoire au fil de la partie
+801|Lancers de dés
+802|Barres : obtenus · ligne : attendus après {n} lancers
+803|Ressources reçues
+804|Lancers
+805|Plus fréquent
+806|7 obtenus
+807|Objectif
+808|obtenus
+809|attendus
+810|Plus de {n} cartes : sur un 7, vous en perdez la moitié.
+811|Dernier lancer uniquement
+812|Voir les tours précédents
+813|Défenseur de Broch
+814|−1 ville
+815|Plateau vivant
+816|Plateau vivant : activé
+817|Plateau vivant : désactivé
+818|Banque
+819|Vaut 1 point. Se pose face visible devant vous.
+820|Comment jouer : {mode}
+821|Comment jouer
+822|Comment se joue {mode} (1 min)
+823|Bienvenue à Broch !
+824|Construisez, échangez, prospérez. Le premier à 10 points gagne.
+825|Chaque tuile produit une ressource.
+826|Forêt, collines, pré, champs et montagnes. Le désert ne produit rien.
+827|Construisez des colonies sur les coins.
+828|Touchez le coin lumineux.
+829|Une colonie touche jusqu'à 3 tuiles.
+830|Vos adversaires construisent aussi.
+831|Lancez les dés à chaque tour.
+832|Touchez les dés.
+833|Chaque tuile portant ce nombre produit.
+834|Chaque voisin reçoit une carte, même pendant le tour des autres.
+835|Plus de petits points, plus de chances.
+836|Les 6 et 8 rouges sortent le plus souvent, les 2 et 12 rarement.
+837|Dépensez des cartes pour construire.
+838|Une route coûte du bois et de l'argile. Touchez le bord lumineux.
+839|Les villes rapportent double.
+840|Transformez une colonie en ville pour 2 blés et 3 minerais. Touchez votre colonie.
+841|Un 7 réveille le voleur !
+842|Déplacez le voleur sur une tuile.
+843|Elle ne produit plus rien. Touchez une tuile à côté de votre adversaire.
+844|Puis volez une carte à quelqu'un sur place.
+845|Qui a plus de 7 cartes en perd la moitié.
+846|Échangez avec les joueurs ou la banque.
+847|La banque échange 4 cartes identiques contre 1. Ports : 3:1 ou 2:1.
+848|Les chevaliers déplacent le voleur. Les autres donnent des routes, des ressources ou un point de victoire.
+849|3 chevaliers joués : armée la plus puissante, +2 points.
+850|Son détenteur hisse des bannières de guerre sur le plateau.
+851|5 routes d'affilée : route la plus longue, +2 points.
+852|Le tracé le plus long s'illumine d'or.
+853|Atteignez 10 points pour gagner !
+854|Colonie 1 · Ville 2 · Route la plus longue 2 · Armée la plus puissante 2 · Carte point de victoire 1
+855|Tout le jeu Classique, plus marchandises, chevaliers et barbares. Victoire à 13 points.
+856|Les villes produisent des marchandises.
+857|Forêt : papier · Pré : tissu · Montagnes : pièces
+858|Les marchandises paient les améliorations de ville.
+859|Le commerce coûte du tissu, la politique des pièces, la science du papier. Touchez +.
+860|Le niveau 3 débloque un pouvoir spécial.
+861|Science : une ressource quand vous ne recevez rien. Commerce : marchandises à 2:1. Politique : chevaliers plus forts.
+862|Le premier au niveau 4 bâtit une métropole.
+863|Elle vaut 2 points et trône sur votre ville.
+864|Les chevaliers défendent Broch.
+865|Recrutez-en un pour de la laine et du minerai. Touchez le coin lumineux.
+866|Activez-le avec du blé.
+867|Seuls les chevaliers actifs combattent. Promouvez-les pour les renforcer.
+868|Un navire sur le dé d'événement fait avancer les barbares.
+869|Chaque navire les rapproche d'un pas de Broch.
+870|Leur force : toutes les villes du plateau. Votre défense : tous les chevaliers actifs.
+871|Le meilleur défenseur gagne un point. Si les barbares l'emportent, la ville la plus faible est pillée.
+872|Une porte colorée sur le dé d'événement donne des cartes aux joueurs dont les améliorations sont assez avancées.
+873|Remparts
+874|Chaque rempart vous permet de garder 2 cartes de plus quand un 7 sort.
+875|Atteignez 13 points pour gagner !
+876|Colonie 1 · Ville 2 · Métropole 2 · Défenseur 1 · Route la plus longue 2
+877|Les terres sont divisées en îles. Les navires traversent la mer.
+878|Construisez des navires sur l'eau.
+879|Un navire coûte du bois et de la laine. Touchez le bord lumineux.
+880|Les navires forment une chaîne, comme les routes.
+881|Le dernier navire d'une chaîne ouverte peut naviguer vers un nouvel endroit une fois par tour.
+882|Naviguez près de la brume pour la dévoiler.
+883|Découvrir une terre vous rapporte une ressource.
+884|Colonisez une nouvelle île : +1 point !
+885|Les champs d'or rapportent la ressource de votre choix.
+886|Le pirate
+887|Les navires près de sa tuile sont bloqués, et il vole. Un 7 ou un chevalier le déplace.
+888|Gagnez avec 12 à 14 points.
+889|Choisissez un scénario en créant la partie : Nouveaux rivages, Quatre Îles ou Îles de la brume.
+890|Trois variantes à combiner : Pêcheurs, Rivières et Cartes événement.
+891|Pêcheurs
+892|Le désert devient un lac et la côte se dote de zones de pêche.
+893|Obtenez le nombre d'une zone de pêche pour attraper des poissons.
+894|Le lac rapporte sur 2, 3, 11 et 12.
+895|Payer en poissons
+896|2 chasser le voleur · 3 voler · 4 prendre une ressource · 5 une route · 7 une carte développement
+897|La vieille botte
+898|Qui la repêche a besoin d'un point de plus pour gagner, et peut la refiler à un joueur en tête.
+899|Rivières
+900|Chaque route ou colonie au bord d'une rivière rapporte 1 or.
+901|Les ponts franchissent la rivière.
+902|Un pont coûte 2 argiles et 1 bois et rapporte 3 or.
+903|Échangez 2 or contre une ressource au choix. Le plus riche gagne +1 point, le plus pauvre −2.
+904|Un paquet des 36 résultats de dés remplace les dés : chaque nombre sort aussi souvent qu'il le doit.
+905|Naviguez dans la brume, découvrez des terres et accomplissez des missions.
+906|Explorez la brume avec vos navires.
+907|Touchez le bord lumineux. Une nouvelle terre vous rapporte une ressource.
+908|Un navire près d'un banc de poissons ramène du poisson quand son nombre sort.
+909|Épices pour Broch
+910|Les colonies près d'un champ d'épices chargent des épices quand il produit.
+911|Livrez votre cargaison au conseil.
+912|Toutes les 2 livraisons rapportent 1 point, jusqu'à 3 points par mission.
+913|Attaquez un repaire depuis un navire voisin pour 1 minerai et 1 laine. Quand il tombe, celui qui l'a le plus frappé gagne un point.
+914|Atteignez 12 points pour gagner !
+915|Colonies, villes, nouvelles îles, missions et repaires : tout compte.
+916|Un plateau plus grand, avec plus de tuiles, de ports et de cartes, jusqu'à 6 joueurs.
+917|Phase de construction spéciale
+918|Après chaque tour, tous les autres peuvent construire à tour de rôle, mais pas échanger.
+919|Pour que personne n'attende longtemps.
+920|Les tours restent courts, même quand la table est pleine.
+921|Précédent
+922|Pause
+923|Suivant
+924|Vous connaissez {mode} !
+925|Revoir
+926|Suivant : {mode}
+927|C'est parti !
+928|Carte événement
+929|Lancer
+930|Victoire !
+931|Partie terminée
+932|Vous avez gagné !
+933|points de victoire
+934|Vous terminez à la {n}e place avec {m} points.
+935|Classement final
+936|Voir le plateau
+937|Colonies
+938|Villes
+939|Métropole
+940|Cartes point de victoire
+941|Points bonus
+942|Le déroulé de la course
+943|Le plus de ressources
+944|Nombre le plus sorti
+945|{n}×
+946|Durée de la partie
+947|{n} tours
+948|Temps forts
+949|Route commerciale la plus longue
+950|Choisissez votre ressource une seule fois. Désormais, l’aqueduc la verse chaque fois qu’un lancer ne vous rapporte rien (sauf sur un 7).
+951|Aqueduc : {res}. Touchez pour changer.

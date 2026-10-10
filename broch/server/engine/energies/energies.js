@@ -429,7 +429,7 @@ function produce(s, total) {
     if (s.dmg.h[h.id]) { delete s.dmg.h[h.id]; cleaned++; }
     for (const v of h.verts) if (s.dmg.v[v]) { delete s.dmg.v[v]; cleaned++; }
   }
-  if (cleaned) log(s, 'The Catanians clear {n} environmental damages.', { n: cleaned });
+  if (cleaned) log(s, 'The islanders clear {n} environmental damages.', { n: cleaned });
 }
 
 // ---------------------------------------------------------------- development cards

@@ -1,5 +1,6 @@
 'use strict';
 // Rule checks for Cities & Knights against the printed rulebook (Städte & Ritter): each case builds a small situation and plays one action.
+require('../seed');
 const assert = require('assert');
 const { createGame, act, viewFor, GameError, _internal } = require('../../server/engine/classic/game');
 const C = require('../../server/engine/shared/constants');

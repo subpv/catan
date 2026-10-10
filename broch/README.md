@@ -2,10 +2,13 @@
 
 An online settlers-style board game for you and your friends, self-hosted on TrueNAS.
 
+Status: complete, in maintenance mode. To work on it start with `../CLAUDE.md`; deeper documents are `../docs/ARCHITECTURE.md`, `../docs/OPERATIONS.md` and `../docs/RULES-AND-GAPS.md`. This file is the feature list and the rule notes.
+
 - **Base game:** the classic island, 10 points, following the 2025 rulebooks of CATAN – Das Spiel (3–4 players) and its 5–6 player expansion
 - **Expansions:** Cities & Knights (13 points, 15 with Seafarers: commodities, city improvements, knights, barbarian raids, all 54 progress cards; the aqueduct at science level 3 asks for your resource once, right when you reach the level, and from then on pays it out by itself whenever a roll (not a 7) gives you nothing; a chip in the science lane changes it. This is the owner's wish: the rulebook has you pick a resource each time), Seafarers (ships, harbours, islands, fog, gold, pirate, played on the printed maps of the rulebook for 3–6 players: Heading for New Shores, The Four Islands, The Fog Islands (Oceania), Through the Desert, The Forgotten Tribe, Cloth for Broch, The Wonders of Broch and the free game New World; an optional variable setup deals tiles and numbers again inside the printed outlines), Traders & Barbarians (the five scenarios of the book, Fishermen of Catan, Rivers of Catan, Merchant Trains, Barbarian Attack and Traders & Barbarians, one per game, plus the variants Event cards, Friendly robber and Harbors of Catan), Explorers & Pirates (the five scenarios of the rulebook for 2–6 players: ships, explorers, harbor settlements, units, pirates, and the missions The Pirate Lairs, Fish and Spices). Cities & Knights can be combined with Seafarers or Traders & Barbarians.
 - **House rules (switches in the lobby; with a switch off the rulebook applies; "knights without a limit" is on by default, the owner's wish, because the rulebook allows only one development card per turn):**
-  - *Forgotten robber:* if a player has to move the robber and ends their turn instead, the robber goes back to the desert
+  - *Forgotten robber:* if a player has to move the robber and ends their turn instead, the robber goes back to the hex he started on (the desert; never a face-down fog tile)
+  - *Build anytime (experiment, classic and Cities & Knights):* once the dice are down every player may build (roads, ships, settlements, cities, walls, development cards, improvements), not only the one whose turn it is. A player who reaches the points target by building out of turn wins at once; in the normal rules the points are only checked on your own turn.
   - *Knights without a limit (classic game):* knight cards can be played as often per turn as you like; every other development card is still limited to one per turn (the rulebook allows one development card per turn, whichever it is)
   - *Starting resources for both:* both buildings from the setup phase pay starting resources (the rulebook pays only the second one); in Cities & Knights the city counts like a settlement (one resource per tile, no commodities)
 - **Standalone games** (own rules, own tile row in the lobby, 2–4 players (New Energies 3–4), with the same board animations, a tutorial and all 16 languages; rules rebuilt from research, not copies of the printed ones):
@@ -33,7 +36,7 @@ An online settlers-style board game for you and your friends, self-hosted on Tru
 
 ## Run it on TrueNAS SCALE
 
-The step-by-step guide (datasets, which file goes where, Cloudflare Tunnel, security, backups) is in `../deploy/ANLEITUNG-TrueNAS.md` (German); the YAML to paste into Apps → Custom App is `../deploy/truenas-compose.yml`. In short: upload `dist/broch-app.zip` (the program with its dependencies) into a dataset, keep accounts and games in a second dataset, set `REGISTRATION_CODE` and `TRUST_PROXY=1`, and let a Cloudflare Tunnel point at the app. Environment variables: `PORT` (8080), `DATA_DIR` (where accounts, games and history are stored), `REGISTRATION_CODE` (invite code for new accounts; the first account never needs it and becomes the admin), `TRUST_PROXY` (set to 1 behind Cloudflare: real visitor address, `Secure` cookies, HSTS), `FEEDBACK_URL`.
+The step-by-step guide (datasets, which file goes where, Cloudflare Tunnel, security, backups) is in `../deploy/ANLEITUNG-TrueNAS.md` (German); the YAML to paste into Apps → Custom App is `../deploy/truenas-compose.yml`. In short: upload `dist/broch-app.zip` (the program with its dependencies) into a dataset, keep accounts and games in a second dataset, set `REGISTRATION_CODE` and `TRUST_PROXY=1`, and let a Cloudflare Tunnel point at the app. Environment variables: `PORT` (8080), `DATA_DIR` (where accounts, games and history are stored), `REGISTRATION_CODE` (invite code for new accounts; the first account never needs it and becomes the admin), `TRUST_PROXY` (set to 1 behind Cloudflare: real visitor address, `Secure` cookies, HSTS), `FEEDBACK_URL`. All of them are listed in "Settings" below. How to keep it running without the original developer (backups, a forgotten password, damaged files, logs) is in "Operating it" below.
 
 ### Security notes
 
@@ -43,6 +46,14 @@ The step-by-step guide (datasets, which file goes where, Cloudflare Tunnel, secu
 - Cookies are `HttpOnly`, `SameSite=Lax` and `Secure` behind https; every answer carries a content security policy, `X-Frame-Options: DENY`, `nosniff` and `no-referrer`; the WebSocket only accepts connections from the site itself.
 - `node test/e2e/security.js` checks all of this against a real server.
 
+## Operating it
+
+- **Data:** everything is in `DATA_DIR`: `users.json` (accounts, password hashes), `sessions.json`, `history.json` (statistics), `games/*.json`. Back up that folder (a snapshot on the same pool is not a backup: copy it to another disk now and then). Restore by stopping the app, putting the files back and starting it.
+- **Damaged files:** a missing file means a fresh start. A file that exists but cannot be read or has the wrong content is never treated as "no data": `users.json` and `history.json` come back from `<file>.bak` (the previous save; the damaged file is kept as `<file>.corrupt-<time>`); if there is no good `.bak`, a bad `users.json` stops the server with a message (fix the owner/permissions, restore a backup, or delete the file to start over) instead of making the next visitor the admin; a bad `history.json` or `sessions.json` is set aside and starts empty. A game file that is damaged, or whose data makes the rules crash at start, is moved to `games/_broken/` and the other games keep running.
+- **Forgotten password:** there is no e-mail reset. Stop the app, then `node scripts/admin.js reset-password EMAIL [DATA_DIR]` (it asks for the new password, or reads `BROCH_NEW_PASSWORD`), start the app. The same script has `list-users`, `make-admin EMAIL` and `delete-user EMAIL`. It is inside `broch-app.zip`; the TrueNAS guide shows the exact command. Editing `users.json` by hand does not work while the app runs (the app writes its memory back).
+- **Log:** the server writes to stdout (Docker keeps it; the YAML limits it to 3 x 10 MB). `[client-error]` lines are error reports from browsers (limited to 20 per minute and address, one clean line each). `Bot runner: game ... is stuck` means only bots had to move and none of their moves was accepted. `WARNING: ... damaged` lines come from the data checks above.
+- **Health:** `GET /api/health` returns the build id (also shown in the page footer).
+
 ## Playing outside your home network
 
 Broch serves plain HTTP. To play with friends elsewhere, put it behind a reverse proxy with HTTPS (Nginx Proxy Manager or Traefik from the TrueNAS app catalog), or use Tailscale. WebSockets must be allowed through the proxy (in Nginx Proxy Manager, tick "Websockets Support"). When it's reachable from the internet, set `REGISTRATION_CODE`.
@@ -51,32 +62,46 @@ Broch serves plain HTTP. To play with friends elsewhere, put it behind a reverse
 
 | Variable | Default | What it does |
 |---|---|---|
-| `PORT` | `8080` | Port inside the container |
-| `DATA_DIR` | `/data` | Where data is stored |
-| `REGISTRATION_CODE` | empty | If set, new accounts need this code |
-| `FEEDBACK_URL` | `https://feedback.maidev.dk/` | Where the "Send feedback" button points |
+| `PORT` | `8080` | Port the server listens on |
+| `DATA_DIR` | `./data` next to `server/` (the Docker image and the TrueNAS YAML set `/data`) | Where accounts, games, history and sessions are stored |
+| `REGISTRATION_CODE` | empty | If set, new accounts need this code (the first account never does). Optional: with no code anybody who finds the address can sign up, limited to 10 new accounts per hour and address, and the server prints a warning at start |
+| `TRUST_PROXY` | off | Set to `1` behind Cloudflare / a reverse proxy: real visitor address from `CF-Connecting-IP`, `Secure` cookies, HSTS. Without it those headers are ignored |
+| `FEEDBACK_URL` | `https://feedback.maidev.dk/` (the original developer's form) | Where "Send feedback" points. Set it to an empty string (`FEEDBACK_URL=""`) to remove the link from the footer and the error banner |
+| `BROCH_BOT_DELAY` | normal pacing | Test only: milliseconds a computer player waits per move (`0` for the bot tests) |
 
 ## Running it without Docker (for development)
 
 ```sh
 npm install
 npm start          # http://localhost:8080, data in ./data
-npm test           # plays 60 random games through the rules engine
+npm test           # 17 rule suites (every game and house rule, plus the i18n check) and fuzz runs: random bot games through the rules engine
 ```
+
+More checks (each starts its own server on a scratch `DATA_DIR`; none touches your real data):
+
+| Command | What it checks |
+|---|---|
+| `npm run test:security` | no emails or hashes leak, sessions are hashed, cookies, headers, WebSocket origin, rate limits |
+| `npm run test:resign` | leaving a game: a bot takes the seat, the game counts for no statistics |
+| `npm run test:ops` | damaged data files never wipe accounts, the log cannot be flooded or forged, `FEEDBACK_URL=""`, `scripts/admin.js` |
+| `npm run test:bots` | computer players play whole games on a real server (all modes; `npm run test:bots -- classic knights` for some) |
+| `npm run test:demo`, `npm run test:browser` | Chromium smoke tests of the demo and all nine modes (fail on JavaScript page errors). Need Playwright and a Chromium, which are NOT in `package.json`: `npm i -g playwright && npx playwright install chromium`; the scripts find it through `NODE_PATH=$(npm root -g)` |
+| `npm run test:all` | `npm test` + security + resign + ops (everything that needs no browser) |
+
+Formerly flaky, now fixed: the knights bots (a forced progress-card play had no targets in the view; the runner logs `Bot runner: game ... is stuck` if it ever happens again) and the `tb-traders` rule test (it no longer depends on random setup roads). Random-play tests are reproducible: `SEED=13 node test/rules/tb-traders.js` (see `test/seed.js`). Under heavy load `test:browser` can still report "never reached the main phase" (the bots wait for the player's animation acknowledgement); run it again.
 
 ## Translations
 
-Each language lives in `public/js/lang/src/<code>.txt`, one line per text: `N|translation`, where N is the line number of the English text in `public/js/lang/_keys.json`. After editing, rebuild and check:
+The English text is the key; there are 16 languages (English + 15). Two sources:
 
-```sh
-node public/js/lang/build-lang.js
-```
+- **The app itself:** `public/js/lang/src/<code>.txt`, one line per text: `N|translation`, where N is the line number of the English text in `public/js/lang/_keys.json`. After editing: `node public/js/lang/build-lang.js` (reports missing lines and any translation that dropped a placeholder like `{n}` or `{@p}`).
+- **The games' own texts** (stand-alone games, tutorials, house rules, newer features): `public/js/lang/games/*.tsv`, one line per text with 16 tab-separated columns (English, then de da sv nb nl fr es it pt pl tr uk ko ja zh). After editing: `node public/js/lang/build-games-lang.js`, which writes `public/js/lang/x/<code>.js`. Those files are generated: never edit them by hand (they are committed because the server serves them).
 
-It reports missing lines and any translation that dropped a placeholder like `{n}` or `{@p}`.
+A new visible text needs all 15 translations. `node test/rules/i18n-check.js` (part of `npm test`) fails when a text used in the code is missing.
 
 ## Try it without a server
 
-`../dist/broch-demo.html` is a self-contained copy of the app that runs entirely in the browser: you play one seat, bots play the others, and nothing is saved. Rebuild it (and `dist/broch-app.zip`, `PROGRESS.md`) after changes with `npm i --no-save esbuild && node scripts/make-dist.js`.
+`../dist/broch-demo.html` is a self-contained copy of the app that runs entirely in the browser: you play one seat, bots play the others, and nothing is saved. Rebuild it (and `dist/broch-app.zip`, `PROGRESS.md`) after changes with `npm ci && node scripts/make-dist.js` (esbuild is a devDependency; the `zip` command and network access for `npm ci --omit=dev` are needed). `dist/broch-demo.html` and `dist/broch-app.zip` are committed, so rebuild as the very last step and run `npm run dist:check`: it fails when the zip does not match `server/` and `public/`. The public demo at `/demo` (`public/demo/`) is generated and git-ignored: `make-dist.js` puts it into the zip, the Dockerfile builds it in a first stage, and `npm start` from a clone has no `/demo` until you run `node demo/build.js --public`.
 
 ## Rule notes
 
@@ -129,7 +154,8 @@ Cities & Knights follows the printed rules (Städte & Ritter, 2025 edition), wit
 ```
 server/index.js          HTTP API, accounts, lobby, WebSocket play, stats; server/store.js JSON file storage
 server/bots/             computer players (runner, names, per-mode brains and fallbacks)
-server/engine/index.js   picks the engine for a game
+server/engine/index.js   picks the engine for a game; its act() is the one door for every action: it refuses prototype names ('constructor', '__proto__', ...) and non-integer board ids,
+                         and rolls the whole state back if a rule throws, so a bad action never leaves a half-applied game (test/rules/robustness.js)
 server/engine/shared/    board generation, constants, the kit shared by the stand-alone games
 server/engine/classic/   classic rules (game.js) and the glue for the expansions (expansions.js)
 server/engine/knights/   Cities & Knights          server/engine/seafarers/         Seafarers (rules, sea maps, scenarios)

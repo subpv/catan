@@ -62,7 +62,7 @@ function energies() {
         await T.wait(2200);
       },
       async T => {
-        T.say(t('Roll a blocked number...'), t('...and you get nothing. But the Catanians clear the damage.'));
+        T.say(t('Roll a blocked number...'), t('...and you get nothing. But the islanders clear the damage.'));
         await T.roll(1, 5);
         T.hit(6);
         await T.banner(t('Blocked!'), 'red');

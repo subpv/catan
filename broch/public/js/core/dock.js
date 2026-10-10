@@ -221,16 +221,29 @@ export function mountDock(app, ctx) {
     if (!open) { try { history.pushState({ broch: 'sheet' }, ''); pushed = true; } catch { pushed = false; } }
     apply(name);
   }
-  function close() {
-    if (!open) return;
+  // then: runs once the sheet's history entry is really gone. A dialog that opens earlier would push its own entry
+  // first, and the pending history.back() would pop THAT one (the dialog would close again at once).
+  let afterPop = null;
+  function close(then) {
+    if (typeof then !== 'function') then = null;
+    if (!open) { then && then(); return; }
     apply(null);
     if (pushed) {
       pushed = false;
-      if (history.state && history.state.broch === 'sheet') { skipPop++; history.back(); }
+      if (history.state && history.state.broch === 'sheet') {
+        skipPop++;
+        if (then) {
+          const run = afterPop = () => { if (afterPop === run) { afterPop = null; then(); } };
+          setTimeout(run, 400); // popstate never came (should not happen): do not lose the action
+        }
+        history.back();
+        return;
+      }
     }
+    then && then();
   }
   const onPop = () => {
-    if (skipPop > 0) { skipPop--; return; }
+    if (skipPop > 0) { skipPop--; if (!skipPop && afterPop) afterPop(); return; }
     if (open) { pushed = false; apply(null); }
   };
   window.addEventListener('popstate', onPop);
@@ -259,7 +272,12 @@ export function mountDock(app, ctx) {
     }
     // the menu rows that other handlers deal with: leaving opens a dialog, so the sheet gets out of the way
     // (the link back to the lobby leaves the page: unmounting takes the sheet away, and a history.back() here would race the navigation)
-    if (el.closest('.m-menu [data-leavegame]')) close();
+    const lv = el.closest('.m-menu [data-leavegame]');
+    if (lv && open) { // the document-level handler opens the dialog; run it again once the sheet has stepped aside
+      e.stopPropagation(); e.preventDefault();
+      close(() => { if (lv.isConnected) lv.click(); });
+      return;
+    }
     if (el.closest('.m-menu [data-life]')) setTimeout(() => { cache.menu = null; drawMenu(); }, 0);
     if (el.closest('.m-menu [data-mute]')) setTimeout(() => { cache.menu = null; drawMenu(); }, 0);
   };

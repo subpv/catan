@@ -780,174 +780,172 @@
 780|Mot nya stränder
 781|De fyra öarna
 782|Dimöarna
-783|Fiskarna på Catan
-784|Floderna på Catan
+783|Fiskarna på Broch
+784|Floderna på Broch
 785|Händelsekort
-786|Fisk till Catan
-787|Kryddor till Catan
-788|Fiskeplatser, fiskmarker och den gamla kängan.
-789|Broar, guld, och rikaste och fattigaste spelaren.
-790|En hög med händelsekort ersätter tärningarna.
-791|Husregel: bortglömd rövare
-792|Om en spelare avslutar sin tur utan att flytta rövaren går den tillbaka till öknen.
-793|Om du avslutar din tur nu går rövaren tillbaka till öknen.
-794|Den husregeln är inte påslagen.
-795|{@p} glömde flytta rövaren, så den går tillbaka till öknen.
-796|Husregel: startresurser för båda
-797|Husregler
-798|Båda byggnaderna från uppställningsfasen ger startresurser. I Städer & Riddare räknas staden som en bosättning.
-799|Inget har hänt än.
-800|Uppställningsfas
-801|Diagrammen fylls i när de första dragen har spelats.
-802|Segerpoäng över tid
-803|Tärningsslag
-804|Staplar: utfall · linje: förväntat efter {n} slag
-805|Mottagna råvaror
-806|Slag
-807|Vanligast
-808|Sjuor
-809|Mål
-810|utfall
-811|förväntat
-812|Fler än {n} kort: vid en 7:a förlorar du hälften.
-813|Bara senaste slaget
-814|Visa tidigare drag
-815|Brochs försvarare
-816|−1 stad
-817|Levande spelplan
-818|Levande spelplan: på
-819|Levande spelplan: av
-820|Bank
-821|Ger 1 poäng. Läggs öppet framför dig.
-822|Så spelar du: {mode}
-823|Så spelar du
-824|Så fungerar {mode} (1 min)
-825|Välkommen till Broch!
-826|Bygg, handla och väx. Först till 10 poäng vinner.
-827|Varje ruta ger en råvara.
-828|Skog, kullar, betesmark, åkrar och berg. Öknen ger ingenting.
-829|Bygg bosättningar på hörnen.
-830|Tryck på det lysande hörnet.
-831|En bosättning rör vid upp till 3 rutor.
-832|Dina motståndare bygger också.
-833|Slå tärningarna varje tur.
-834|Tryck på tärningarna.
-835|Alla rutor med det talet ger råvaror.
-836|Alla intill får ett kort, även under andras tur.
-837|Fler prickar, mer tur.
-838|Röda 6 och 8 slås oftast, 2 och 12 sällan.
-839|Använd kort för att bygga.
-840|En väg kostar trä och lera. Tryck på den lysande kanten.
-841|Städer ger dubbelt.
-842|Uppgradera en bosättning med 2 säd och 3 malm. Tryck på din bosättning.
-843|En 7:a väcker rövaren!
-844|Flytta rövaren till en ruta.
-845|Rutan slutar ge råvaror. Tryck på en ruta intill din motståndare.
-846|Stjäl sedan ett kort från någon där.
-847|Den som har fler än 7 kort förlorar hälften.
-848|Handla med spelarna eller banken.
-849|Banken byter 4 likadana mot 1. Hamnar: 3:1 eller 2:1.
-850|Riddare flyttar rövaren. Andra kort ger vägar, råvaror eller en segerpoäng.
-851|3 spelade riddare: Största armén, +2 poäng.
-852|Innehavaren hissar krigsfanor på spelplanen.
-853|5 vägar i rad: Längsta vägen, +2 poäng.
-854|Den längsta sträckan lyser i guld.
-855|Nå 10 poäng för att vinna!
-856|Bosättning 1 · Stad 2 · Längsta vägen 2 · Största armén 2 · Segerpoängkort 1
-857|Allt från Klassisk, plus varor, riddare och barbarer. Först till 13 poäng vinner.
-858|Städer ger varor.
-859|Skog: papper · Betesmark: tyg · Berg: mynt
-860|Med varor köper du stadsförbättringar.
-861|Handel kostar tyg, politik mynt, vetenskap papper. Tryck på +.
-862|Nivå 3 låser upp en specialförmåga.
-863|Vetenskap: ta en råvara när du inte får något. Handel: varor 2:1. Politik: starkare riddare.
-864|Först till nivå 4 bygger en metropol.
-865|Den är värd 2 poäng och står på din stad.
-866|Riddare försvarar Broch.
-867|Rekrytera en för ull och malm. Tryck på det lysande hörnet.
-868|Aktivera den med säd.
-869|Bara aktiva riddare strider. Befordra dem för att göra dem starkare.
-870|Ett skepp på händelsetärningen flyttar barbarerna.
-871|Varje skepp för dem ett steg närmare Broch.
-872|Deras styrka: alla städer på spelplanen. Ditt försvar: alla aktiva riddare.
-873|Den starkaste försvararen får en poäng. Vinner barbarerna plundras den svagaste staden.
-874|En färgad port på händelsetärningen ger kort till spelare med tillräckligt höga förbättringar.
-875|Stadsmurar
-876|Varje mur låter dig behålla 2 kort till när en 7:a slås.
-877|Nå 13 poäng för att vinna!
-878|Bosättning 1 · Stad 2 · Metropol 2 · Försvarare 1 · Längsta vägen 2
-879|Landet är uppdelat i öar. Skepp korsar havet.
-880|Bygg skepp på vattnet.
-881|Ett skepp kostar trä och ull. Tryck på den lysande kanten.
-882|Skepp bildar en kedja, precis som vägar.
-883|Det sista skeppet i en öppen kedja får segla till en ny plats en gång per tur.
-884|Segla intill dimman för att avslöja den.
-885|Att upptäcka land ger dig en råvara.
-886|Bosätt dig på en ny ö: +1 poäng!
-887|Guldfält ger valfri råvara.
-888|Piraten
-889|Skepp intill hans ruta blockeras, och han stjäl. En 7:a eller en riddare flyttar honom.
-890|Vinn med 12 till 14 poäng.
-891|Välj ett scenario när du skapar spelet: Mot nya stränder, De fyra öarna eller Dimöarna.
-892|Tre varianter som går att kombinera: Fiskare, Floder och Händelsekort.
-893|Fiskare
-894|Öknen blir en sjö och kusten får fiskeplatser.
-895|Slå talet vid en fiskeplats för att fånga fisk.
-896|Sjön ger fisk på 2, 3, 11 och 12.
-897|Betala med fisk
-898|2 jaga bort rövaren · 3 stjäl · 4 ta en råvara · 5 en väg · 7 ett utvecklingskort
-899|Den gamla kängan
-900|Den som fiskar upp den behöver en poäng till för att vinna, och får ge den vidare till den som leder.
-901|Floder
-902|Varje väg eller bosättning vid en flod ger 1 guld.
-903|Broar korsar floden.
-904|En bro kostar 2 lera och 1 trä och ger 3 guld.
-905|Byt 2 guld mot valfri råvara. Rikaste spelaren får +1 poäng, fattigaste −2.
-906|En hög med alla 36 tärningsutfall ersätter tärningarna, så varje tal kommer så ofta som det ska.
-907|Segla in i dimman, upptäck land och fullfölj uppdrag.
-908|Utforska dimman med skepp.
-909|Tryck på den lysande kanten. Nytt land ger dig en råvara.
-910|Ett skepp intill ett fiskstim drar upp fisk när dess tal slås.
-911|Kryddor till Broch
-912|Bosättningar vid ett kryddfält lastar kryddor när det ger.
-913|Leverera lasten till rådet.
-914|Var 2:a leverans ger 1 poäng, upp till 3 poäng per uppdrag.
-915|Attackera från ett skepp intill ett näste för 1 malm och 1 ull. Den som träffat mest när det faller får en poäng.
-916|Nå 12 poäng för att vinna!
-917|Bosättningar, städer, nya öar, uppdrag och nästen räknas alla.
-918|En större spelplan med fler rutor, hamnar och kort för upp till 6 spelare.
-919|Särskild byggfas
-920|Efter varje tur får alla andra bygga i tur och ordning, men inte handla.
-921|Så att ingen behöver vänta länge.
-922|Turerna hålls korta, även vid fullt bord.
-923|Tillbaka
-924|Paus
-925|Nästa
-926|Nu kan du {mode}!
-927|Se igen
-928|Nästa: {mode}
-929|Dags att spela!
-930|Händelsekort
-931|Slå
-932|Seger!
-933|Spelet är slut
-934|Du vann!
-935|segerpoäng
-936|Du slutade på plats {n} med {m} poäng.
-937|Slutställning
-938|Titta på spelplanen
-939|Bosättningar
-940|Städer
-941|Metropol
-942|Segerpoängkort
-943|Bonuspoäng
-944|Så gick loppet
-945|Flest råvaror
-946|Vanligaste talet
-947|{n}×
-948|Spellängd
-949|{n} drag
-950|Höjdpunkter
-951|Längsta handelsvägen
-952|Välj din råvara en gång. Från och med nu betalar akvedukten ut den varje gång ett kast inte ger dig något (utom vid en 7:a).
-953|Akvedukt: {res}. Tryck för att ändra.
+786|Fiskeplatser, fiskmarker och den gamla kängan.
+787|Broar, guld, och rikaste och fattigaste spelaren.
+788|En hög med händelsekort ersätter tärningarna.
+789|Husregel: bortglömd rövare
+790|Om en spelare avslutar sin tur utan att flytta rövaren går den tillbaka till öknen.
+791|Om du avslutar din tur nu går rövaren tillbaka till öknen.
+792|Den husregeln är inte påslagen.
+793|{@p} glömde flytta rövaren, så den går tillbaka till öknen.
+794|Husregel: startresurser för båda
+795|Husregler
+796|Båda byggnaderna från uppställningsfasen ger startresurser. I Städer & Riddare räknas staden som en bosättning.
+797|Inget har hänt än.
+798|Uppställningsfas
+799|Diagrammen fylls i när de första dragen har spelats.
+800|Segerpoäng över tid
+801|Tärningsslag
+802|Staplar: utfall · linje: förväntat efter {n} slag
+803|Mottagna råvaror
+804|Slag
+805|Vanligast
+806|Sjuor
+807|Mål
+808|utfall
+809|förväntat
+810|Fler än {n} kort: vid en 7:a förlorar du hälften.
+811|Bara senaste slaget
+812|Visa tidigare drag
+813|Brochs försvarare
+814|−1 stad
+815|Levande spelplan
+816|Levande spelplan: på
+817|Levande spelplan: av
+818|Bank
+819|Ger 1 poäng. Läggs öppet framför dig.
+820|Så spelar du: {mode}
+821|Så spelar du
+822|Så fungerar {mode} (1 min)
+823|Välkommen till Broch!
+824|Bygg, handla och väx. Först till 10 poäng vinner.
+825|Varje ruta ger en råvara.
+826|Skog, kullar, betesmark, åkrar och berg. Öknen ger ingenting.
+827|Bygg bosättningar på hörnen.
+828|Tryck på det lysande hörnet.
+829|En bosättning rör vid upp till 3 rutor.
+830|Dina motståndare bygger också.
+831|Slå tärningarna varje tur.
+832|Tryck på tärningarna.
+833|Alla rutor med det talet ger råvaror.
+834|Alla intill får ett kort, även under andras tur.
+835|Fler prickar, mer tur.
+836|Röda 6 och 8 slås oftast, 2 och 12 sällan.
+837|Använd kort för att bygga.
+838|En väg kostar trä och lera. Tryck på den lysande kanten.
+839|Städer ger dubbelt.
+840|Uppgradera en bosättning med 2 säd och 3 malm. Tryck på din bosättning.
+841|En 7:a väcker rövaren!
+842|Flytta rövaren till en ruta.
+843|Rutan slutar ge råvaror. Tryck på en ruta intill din motståndare.
+844|Stjäl sedan ett kort från någon där.
+845|Den som har fler än 7 kort förlorar hälften.
+846|Handla med spelarna eller banken.
+847|Banken byter 4 likadana mot 1. Hamnar: 3:1 eller 2:1.
+848|Riddare flyttar rövaren. Andra kort ger vägar, råvaror eller en segerpoäng.
+849|3 spelade riddare: Största armén, +2 poäng.
+850|Innehavaren hissar krigsfanor på spelplanen.
+851|5 vägar i rad: Längsta vägen, +2 poäng.
+852|Den längsta sträckan lyser i guld.
+853|Nå 10 poäng för att vinna!
+854|Bosättning 1 · Stad 2 · Längsta vägen 2 · Största armén 2 · Segerpoängkort 1
+855|Allt från Klassisk, plus varor, riddare och barbarer. Först till 13 poäng vinner.
+856|Städer ger varor.
+857|Skog: papper · Betesmark: tyg · Berg: mynt
+858|Med varor köper du stadsförbättringar.
+859|Handel kostar tyg, politik mynt, vetenskap papper. Tryck på +.
+860|Nivå 3 låser upp en specialförmåga.
+861|Vetenskap: ta en råvara när du inte får något. Handel: varor 2:1. Politik: starkare riddare.
+862|Först till nivå 4 bygger en metropol.
+863|Den är värd 2 poäng och står på din stad.
+864|Riddare försvarar Broch.
+865|Rekrytera en för ull och malm. Tryck på det lysande hörnet.
+866|Aktivera den med säd.
+867|Bara aktiva riddare strider. Befordra dem för att göra dem starkare.
+868|Ett skepp på händelsetärningen flyttar barbarerna.
+869|Varje skepp för dem ett steg närmare Broch.
+870|Deras styrka: alla städer på spelplanen. Ditt försvar: alla aktiva riddare.
+871|Den starkaste försvararen får en poäng. Vinner barbarerna plundras den svagaste staden.
+872|En färgad port på händelsetärningen ger kort till spelare med tillräckligt höga förbättringar.
+873|Stadsmurar
+874|Varje mur låter dig behålla 2 kort till när en 7:a slås.
+875|Nå 13 poäng för att vinna!
+876|Bosättning 1 · Stad 2 · Metropol 2 · Försvarare 1 · Längsta vägen 2
+877|Landet är uppdelat i öar. Skepp korsar havet.
+878|Bygg skepp på vattnet.
+879|Ett skepp kostar trä och ull. Tryck på den lysande kanten.
+880|Skepp bildar en kedja, precis som vägar.
+881|Det sista skeppet i en öppen kedja får segla till en ny plats en gång per tur.
+882|Segla intill dimman för att avslöja den.
+883|Att upptäcka land ger dig en råvara.
+884|Bosätt dig på en ny ö: +1 poäng!
+885|Guldfält ger valfri råvara.
+886|Piraten
+887|Skepp intill hans ruta blockeras, och han stjäl. En 7:a eller en riddare flyttar honom.
+888|Vinn med 12 till 14 poäng.
+889|Välj ett scenario när du skapar spelet: Mot nya stränder, De fyra öarna eller Dimöarna.
+890|Tre varianter som går att kombinera: Fiskare, Floder och Händelsekort.
+891|Fiskare
+892|Öknen blir en sjö och kusten får fiskeplatser.
+893|Slå talet vid en fiskeplats för att fånga fisk.
+894|Sjön ger fisk på 2, 3, 11 och 12.
+895|Betala med fisk
+896|2 jaga bort rövaren · 3 stjäl · 4 ta en råvara · 5 en väg · 7 ett utvecklingskort
+897|Den gamla kängan
+898|Den som fiskar upp den behöver en poäng till för att vinna, och får ge den vidare till den som leder.
+899|Floder
+900|Varje väg eller bosättning vid en flod ger 1 guld.
+901|Broar korsar floden.
+902|En bro kostar 2 lera och 1 trä och ger 3 guld.
+903|Byt 2 guld mot valfri råvara. Rikaste spelaren får +1 poäng, fattigaste −2.
+904|En hög med alla 36 tärningsutfall ersätter tärningarna, så varje tal kommer så ofta som det ska.
+905|Segla in i dimman, upptäck land och fullfölj uppdrag.
+906|Utforska dimman med skepp.
+907|Tryck på den lysande kanten. Nytt land ger dig en råvara.
+908|Ett skepp intill ett fiskstim drar upp fisk när dess tal slås.
+909|Kryddor till Broch
+910|Bosättningar vid ett kryddfält lastar kryddor när det ger.
+911|Leverera lasten till rådet.
+912|Var 2:a leverans ger 1 poäng, upp till 3 poäng per uppdrag.
+913|Attackera från ett skepp intill ett näste för 1 malm och 1 ull. Den som träffat mest när det faller får en poäng.
+914|Nå 12 poäng för att vinna!
+915|Bosättningar, städer, nya öar, uppdrag och nästen räknas alla.
+916|En större spelplan med fler rutor, hamnar och kort för upp till 6 spelare.
+917|Särskild byggfas
+918|Efter varje tur får alla andra bygga i tur och ordning, men inte handla.
+919|Så att ingen behöver vänta länge.
+920|Turerna hålls korta, även vid fullt bord.
+921|Tillbaka
+922|Paus
+923|Nästa
+924|Nu kan du {mode}!
+925|Se igen
+926|Nästa: {mode}
+927|Dags att spela!
+928|Händelsekort
+929|Slå
+930|Seger!
+931|Spelet är slut
+932|Du vann!
+933|segerpoäng
+934|Du slutade på plats {n} med {m} poäng.
+935|Slutställning
+936|Titta på spelplanen
+937|Bosättningar
+938|Städer
+939|Metropol
+940|Segerpoängkort
+941|Bonuspoäng
+942|Så gick loppet
+943|Flest råvaror
+944|Vanligaste talet
+945|{n}×
+946|Spellängd
+947|{n} drag
+948|Höjdpunkter
+949|Längsta handelsvägen
+950|Välj din råvara en gång. Från och med nu betalar akvedukten ut den varje gång ett kast inte ger dig något (utom vid en 7:a).
+951|Akvedukt: {res}. Tryck för att ändra.

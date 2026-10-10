@@ -150,7 +150,7 @@ function traders() {
         await T.wait(2800);
       },
       async T => {
-        T.say(t('Variants'), t('The friendly robber spares players with 2 points or fewer. Harbors of Catan: buildings at harbors count 1 (a city 2); the first with 3 or the most holds a tile worth 2 points, and everybody needs 1 more point to win.'));
+        T.say(t('Variants'), t('The friendly robber spares players with 2 points or fewer. Harbors of Broch: buildings at harbors count 1 (a city 2); the first with 3 or the most holds a tile worth 2 points, and everybody needs 1 more point to win.'));
         await T.wait(2400);
         await T.finale();
       },

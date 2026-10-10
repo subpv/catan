@@ -49,7 +49,7 @@ export function mountGame(app, id) {
   document.body.dataset.route = 'game';
   app.innerHTML = `${topbar('play')}<div class="game">
     <div class="game-main">
-      <div class="status"><div class="msg"><span class="mt">${esc(t('Loading game…'))}</span></div></div>
+      <div class="status" role="status" aria-live="polite"><div class="msg"><span class="mt">${esc(t('Loading game…'))}</span></div></div>
       <div class="board-wrap">
         <div class="board-host"></div>
         <div class="hud-host"></div>

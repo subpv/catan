@@ -396,7 +396,7 @@ function createKit(spec) {
     if (!a || typeof a.type !== 'string') fail('Bad action.');
     if (s.phase === 'over') fail('The game is over.');
     if (p < 0 || p >= s.players.length) fail('You are not in this game.');
-    const handler = HANDLERS[a.type];
+    const handler = Object.hasOwn(HANDLERS, a.type) ? HANDLERS[a.type] : null;
     if (!handler) fail('Unknown action.');
     handler(s, p, a);
     s.version++;

@@ -27,7 +27,7 @@ function createGame({ id, mode = 'classic', players, options = {} }) {
   const sea = expansion === 'seafarers';
   // the 5–6 player set (30 tiles, 28 chips, 11 harbors) is needed from five players on; with fewer it is a switch (a bigger board)
   const big = players.length > 4 || (options.big ?? false);
-  const scenario = X.SCENARIOS[options.scenario] ? options.scenario : 'shores';
+  const scenario = Object.hasOwn(X.SCENARIOS, options.scenario) ? options.scenario : 'shores';
   const kind = sea ? 'sea' : big ? 'extended' : 'standard';
   const def = C.BOARDS[big ? 'extended' : 'standard'];
   const variants = expansion === 'traders' ? X.hub.normalize(options.variants, { big, players: players.length, knights }) : {};
@@ -185,7 +185,8 @@ function vpBreakdown(s, p) {
   };
 }
 
-function checkWin(s) {
+// `who`: with the experiment "build anytime" a player who builds out of turn and reaches the target wins at once, not at the start of his own turn
+function checkWin(s, who) {
   if (s.phase !== 'play') return;
   // Cloth for Broch: the game ends when only three villages still hold cloth
   const ended = X.endWinner(s);
@@ -195,9 +196,9 @@ function checkWin(s) {
     snapshot(s, true);
     return;
   }
-  let p = s.current;
+  let p = who != null ? who : s.current;
   // 5–6 players: if both players of one turn reach the target in that turn, the holder of stone 1 has won
-  if (s.pair && s.pair.phase === 2 && vp(s, s.pair.one) >= X.vpTarget(s, s.pair.one)) p = s.pair.one;
+  if (who == null && s.pair && s.pair.phase === 2 && vp(s, s.pair.one) >= X.vpTarget(s, s.pair.one)) p = s.pair.one;
   // Wonders of Broch: a finished wonder wins, or a taller wonder than everybody else with enough points
   const wonderWon = X.wonderWin(s, p);
   if (wonderWon !== null ? wonderWon : vp(s, p) >= X.vpTarget(s, p)) {
@@ -505,12 +506,12 @@ function act(s, p, a) {
   if (!a || typeof a.type !== 'string') fail('Bad action.');
   if (s.phase === 'over') fail('The game is over.');
   if (p < 0 || p >= s.players.length) fail('You are not in this game.');
-  const handler = HANDLERS[a.type];
+  const handler = Object.hasOwn(HANDLERS, a.type) ? HANDLERS[a.type] : null;
   if (!handler) fail('Unknown action.');
   handler(s, p, a);
   s.version++;
   X.afterAct(s);
-  if (s.phase === 'play' && !s.pending.length) checkWin(s);
+  if (s.phase === 'play' && !s.pending.length) checkWin(s, s.options.expBuildAnytime && p !== s.current ? p : undefined);
 }
 
 // Experiment "build anytime": once the dice are down, everybody may build, not only the player whose turn it is
@@ -546,6 +547,19 @@ function finishSetupRoad(s) {
   // C&K and the Traders & Barbarians city start: the second round places cities (a third Cloth round places settlements)
   s.setup.need = s.setup.needs ? s.setup.needs[Math.floor(s.setup.idx / n)] : (K(s) || X.cityStart(s)) && s.setup.idx >= n && s.setup.idx < 2 * n ? 'city' : 'settlement';
   s.setup.last = null;
+}
+
+// House rule "forgotten robber": where the robber returns to. Traders & Barbarians has its own home; otherwise it is the hex he
+// started on (board.desert; in Seafarers s.robberStart), never a face-down fog tile. null = beside the board (Traders & Barbarians).
+// undefined (the rule is then off) only if no start hex can be found at all.
+function robberHomeHex(s) {
+  const hb = X.robberHome(s);
+  if (hb !== undefined) return hb;
+  const ok = id => id != null && s.board.hexes[id] && !s.board.hexes[id].hidden; // (on a few maps the start hex is not a desert tile)
+  if (ok(s.robberStart)) return s.robberStart;
+  if (ok(s.board.desert)) return s.board.desert;
+  const d = s.board.hexes.find(h => h.terrain === 'desert' && !h.hidden);
+  return d ? d.id : undefined;
 }
 
 const HANDLERS = {
@@ -767,12 +781,11 @@ const HANDLERS = {
     if (!s.options.robberReturn) fail('That house rule is not switched on.');
     const it = findPending(s, p, 'moveRobber');
     if (!it) fail('You are not moving the robber.');
-    const hb = X.robberHome(s);
-    const d = hb !== undefined ? (hb == null ? null : s.board.hexes[hb]) : s.board.hexes.find(h => h.terrain === 'desert');
+    const home = robberHomeHex(s);
+    if (home === undefined) fail('That house rule is not switched on.');
     resolvePending(s, it);
-    if (hb !== undefined) s.robber = hb;
-    else if (d) s.robber = d.id;
-    log(s, '{@p} forgot to move the robber, so it goes back to the desert (house rule).', { p, h: d ? d.id : undefined });
+    s.robber = home;
+    log(s, '{@p} forgot to move the robber, so it goes back to the desert (house rule).', { p, h: home == null ? undefined : home });
     if (a && a.endTurn && s.phase === 'play' && s.step === 'main' && !s.pending.length && p === s.current) { s.flags.ending = true; endTurn(s); }
   },
   steal(s, p, a) {
@@ -897,7 +910,7 @@ function legalFor(s, p) {
   if (s.phase !== 'play') return L;
   const pl = P(s, p);
   for (const it of activePending(s).filter(i => i.player === p)) {
-    if (it.type === 'moveRobber' && s.options.robberReturn) L.leaveRobber = true;
+    if (it.type === 'moveRobber' && s.options.robberReturn && robberHomeHex(s) !== undefined) L.leaveRobber = true;
     if (it.type === 'moveRobber' && s.expansion === 'seafarers' && s.pirate != null && !it.bishop) L.pirateFrame = true;
     if (it.type === 'moveRobber') L.robberHexes = X.robberHexes(s, p, s.board.hexes.filter(h => !h.hidden && (h.terrain === 'sea' ? s.sea && h.id !== s.pirate : h.id !== s.robber)).map(h => h.id));
     KN.legalPending(s, p, it, L);
@@ -913,7 +926,7 @@ function legalFor(s, p) {
     if (K(s)) KN.legal(s, p, L, c);
   }
   const mainNow = p === s.current && s.phase === 'play' && !s.pending.length && s.step !== 'sbp';
-  X.legalExtra(s, p, L, isActor(s, p), mainNow && s.step === 'main');
+  X.legalExtra(s, p, L, isActor(s, p) || anytimeBuilder(s, p), mainNow && s.step === 'main'); // `actor`: may build (ships, wonders, bridges); with "build anytime" that is everybody
   if (p === s.current && s.phase === 'play' && !s.pending.length && s.step !== 'sbp') {
     L.ratios = {};
     [...C.RES, ...(K(s) ? C.COMM : [])].forEach(t => { L.ratios[t] = bankRatio(s, p, t); });

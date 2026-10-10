@@ -780,174 +780,172 @@
 780|Ku nowym brzegom
 781|Cztery wyspy
 782|Wyspy we mgle
-783|Rybacy z Catanu
-784|Rzeki Catanu
+783|Rybacy z Broch
+784|Rzeki Broch
 785|Karty zdarzeń
-786|Ryby dla Catanu
-787|Przyprawy dla Catanu
-788|Łowiska, żetony ryb i stary but.
-789|Mosty, złoto oraz najbogatszy i najbiedniejszy gracz.
-790|Talia kart zdarzeń zastępuje kości.
-791|Zasada domowa: zapomniany złodziej
-792|Jeśli gracz zakończy turę bez przesunięcia złodzieja, wraca on na pustynię.
-793|Jeśli teraz zakończysz turę, złodziej wróci na pustynię.
-794|Ta zasada domowa nie jest włączona.
-795|{@p} zapomniał przesunąć złodzieja, więc wraca on na pustynię.
-796|Zasada domowa: surowce startowe z obu budynków
-797|Zasady domowe
-798|Oba budynki z fazy przygotowania dają surowce startowe. W Miastach i Rycerzach miasto liczy się jak osada.
-799|Jeszcze nic się nie wydarzyło.
-800|Faza przygotowania
-801|Wykresy wypełnią się po pierwszych turach.
-802|Punkty zwycięstwa w czasie
-803|Rzuty kośćmi
-804|Słupki: wyrzucone · linia: oczekiwane po {n} rzutach
-805|Otrzymane surowce
-806|Rzuty
-807|Najczęściej
-808|Siódemki
-809|Cel
-810|wyrzucone
-811|oczekiwane
-812|Więcej kart niż {n}: przy 7 tracisz połowę.
-813|Tylko ostatni rzut
-814|Pokaż wcześniejsze tury
-815|Obrońca Broch
-816|−1 miasto
-817|Żywa plansza
-818|Żywa plansza: włączona
-819|Żywa plansza: wyłączona
-820|Bank
-821|Daje 1 punkt. Kładziesz ją odkrytą przed sobą.
-822|Jak grać: {mode}
-823|Jak grać
-824|{mode}: jak to działa (1 min)
-825|Witaj w Broch!
-826|Buduj, handluj i rozwijaj się. Kto pierwszy zdobędzie 10 punktów, wygrywa.
-827|Każde pole daje surowiec.
-828|Las, wzgórza, pastwisko, pola i góry. Pustynia nic nie daje.
-829|Buduj osady na narożnikach.
-830|Dotknij świecącego narożnika.
-831|Osada styka się z maksymalnie 3 polami.
-832|Przeciwnicy też budują.
-833|Rzucaj kośćmi w każdej turze.
-834|Dotknij kości.
-835|Każde pole z tą liczbą daje surowce.
-836|Każdy, kto stoi obok, dostaje kartę, nawet w turze innych graczy.
-837|Więcej kropek, więcej szczęścia.
-838|Czerwone 6 i 8 wypadają najczęściej, 2 i 12 rzadko.
-839|Płać kartami za budowę.
-840|Droga kosztuje drewno i glinę. Dotknij świecącej krawędzi.
-841|Miasta dają podwójnie.
-842|Ulepsz osadę za 2 zboża i 3 rudy. Dotknij swojej osady.
-843|7 budzi złodzieja!
-844|Przesuń złodzieja na pole.
-845|Pole przestaje dawać surowce. Dotknij pola obok przeciwnika.
-846|Potem ukradnij kartę komuś, kto tam stoi.
-847|Kto ma więcej niż 7 kart, traci połowę.
-848|Handluj z graczami lub z bankiem.
-849|Bank wymienia 4 takie same karty na 1. Porty: 3:1 lub 2:1.
-850|Rycerze przesuwają złodzieja. Inne karty dają drogi, surowce lub punkt zwycięstwa.
-851|3 zagranych rycerzy: Największa armia, +2 punkty.
-852|Jej posiadacz wywiesza na planszy wojenne sztandary.
-853|5 dróg z rzędu: Najdłuższa droga, +2 punkty.
-854|Najdłuższy szlak świeci złotem.
-855|Zdobądź 10 punktów, aby wygrać!
-856|Osada 1 · Miasto 2 · Najdłuższa droga 2 · Największa armia 2 · Karta punktu zwycięstwa 1
-857|Wszystko z wersji klasycznej plus towary, rycerze i barbarzyńcy. Do wygranej potrzeba 13 punktów.
-858|Miasta dają towary.
-859|Las: papier · Pastwisko: sukno · Góry: moneta
-860|Za towary kupujesz ulepszenia miast.
-861|Handel kosztuje sukno, polityka monety, nauka papier. Dotknij +.
-862|Poziom 3 odblokowuje specjalną zdolność.
-863|Nauka: weź surowiec, gdy nic nie dostajesz. Handel: towary 2:1. Polityka: silniejsi rycerze.
-864|Kto pierwszy osiągnie poziom 4, wznosi metropolię.
-865|Jest warta 2 punkty i stoi na twoim mieście.
-866|Rycerze bronią Broch.
-867|Zwerbuj jednego za wełnę i rudę. Dotknij świecącego narożnika.
-868|Aktywuj go zbożem.
-869|Walczą tylko aktywni rycerze. Awansuj ich, aby byli silniejsi.
-870|Statek na kości zdarzeń przesuwa barbarzyńców.
-871|Każdy statek przybliża ich o krok do Broch.
-872|Ich siła: wszystkie miasta na planszy. Twoja obrona: wszyscy aktywni rycerze.
-873|Najsilniejszy obrońca zdobywa punkt. Gdy wygrają barbarzyńcy, najsłabsze miasto zostaje splądrowane.
-874|Kolorowa brama na kości zdarzeń daje karty graczom z odpowiednio wysokimi ulepszeniami.
-875|Mury miejskie
-876|Każdy mur pozwala zatrzymać 2 karty więcej, gdy wypadnie 7.
-877|Zdobądź 13 punktów, aby wygrać!
-878|Osada 1 · Miasto 2 · Metropolia 2 · Obrońca 1 · Najdłuższa droga 2
-879|Ląd jest podzielony na wyspy. Statki przemierzają morze.
-880|Buduj statki na wodzie.
-881|Statek kosztuje drewno i wełnę. Dotknij świecącej krawędzi.
-882|Statki tworzą łańcuch, tak jak drogi.
-883|Ostatni statek otwartego łańcucha może raz na turę popłynąć w nowe miejsce.
-884|Podpłyń do mgły, aby ją odsłonić.
-885|Odkrycie lądu daje ci surowiec.
-886|Zasiedl nową wyspę: +1 punkt!
-887|Złote pola dają dowolny surowiec.
-888|Pirat
-889|Statki obok jego pola są zablokowane, a on kradnie. Przesuwa go 7 lub rycerz.
-890|Do wygranej potrzeba od 12 do 14 punktów.
-891|Wybierz scenariusz przy tworzeniu gry: Ku nowym brzegom, Cztery wyspy lub Wyspy we mgle.
-892|Trzy warianty, które możesz łączyć: Rybacy, Rzeki i Karty zdarzeń.
-893|Rybacy
-894|Pustynia staje się jeziorem, a na wybrzeżu pojawiają się łowiska.
-895|Wyrzuć liczbę łowiska, aby złowić ryby.
-896|Jezioro daje ryby przy 2, 3, 11 i 12.
-897|Płać rybami
-898|2 przegonienie złodzieja · 3 kradzież · 4 surowiec · 5 droga · 7 karta rozwoju
-899|Stary but
-900|Kto go wyłowi, potrzebuje jeszcze jednego punktu do wygranej i może przekazać go liderowi.
-901|Rzeki
-902|Każda droga lub osada przy rzece daje 1 złoto.
-903|Mosty prowadzą przez rzekę.
-904|Most kosztuje 2 gliny i 1 drewno, a daje 3 złota.
-905|Wymień 2 złota na dowolny surowiec. Najbogatszy gracz dostaje +1 punkt, najbiedniejszy −2.
-906|Talia ze wszystkimi 36 wynikami rzutu zastępuje kości, więc każda liczba wypada tak często, jak powinna.
-907|Wypłyń we mgłę, odkrywaj lądy i wypełniaj misje.
-908|Odkrywaj mgłę statkami.
-909|Dotknij świecącej krawędzi. Nowy ląd daje ci surowiec.
-910|Statek obok ławicy ryb łowi ryby, gdy wypadnie jej liczba.
-911|Przyprawy dla Broch
-912|Osady przy polu przypraw ładują przyprawy, gdy pole daje plon.
-913|Dostarcz ładunek radzie.
-914|Co 2 dostawy dają 1 punkt, maks. 3 punkty za misję.
-915|Atakuj ze statku obok gniazda za 1 rudę i 1 wełnę. Gdy padnie, punkt zdobywa ten, kto trafił najwięcej razy.
-916|Zdobądź 12 punktów, aby wygrać!
-917|Liczą się osady, miasta, nowe wyspy, misje i gniazda.
-918|Większa plansza z dodatkowymi polami, portami i kartami, nawet dla 6 graczy.
-919|Dodatkowa faza budowy
-920|Po każdej turze pozostali gracze mogą po kolei budować, ale nie handlować.
-921|Dzięki temu nikt długo nie czeka.
-922|Tury pozostają krótkie, nawet przy pełnym stole.
-923|Wstecz
-924|Pauza
-925|Dalej
-926|Umiesz już grać: {mode}!
-927|Obejrzyj jeszcze raz
-928|Dalej: {mode}
-929|Zagrajmy!
-930|Karta zdarzeń
-931|Rzuć
-932|Zwycięstwo!
-933|Koniec gry
-934|Wygrywasz!
-935|punktów zwycięstwa
-936|Kończysz na {n}. miejscu z wynikiem {m} pkt.
-937|Klasyfikacja końcowa
-938|Zobacz planszę
-939|Osady
-940|Miasta
-941|Metropolia
-942|Karty punktów zwycięstwa
-943|Punkty bonusowe
-944|Przebieg wyścigu
-945|Najwięcej surowców
-946|Najczęściej wyrzucana liczba
-947|{n}×
-948|Długość gry
-949|Tury: {n}
-950|Ciekawostki
-951|Najdłuższy szlak handlowy
-952|Wybierz surowiec raz. Od teraz akwedukt wypłaca go za każdym razem, gdy rzut nic ci nie przyniesie (poza siódemką).
-953|Akwedukt: {res}. Dotknij, aby zmienić.
+786|Łowiska, żetony ryb i stary but.
+787|Mosty, złoto oraz najbogatszy i najbiedniejszy gracz.
+788|Talia kart zdarzeń zastępuje kości.
+789|Zasada domowa: zapomniany złodziej
+790|Jeśli gracz zakończy turę bez przesunięcia złodzieja, wraca on na pustynię.
+791|Jeśli teraz zakończysz turę, złodziej wróci na pustynię.
+792|Ta zasada domowa nie jest włączona.
+793|{@p} zapomniał przesunąć złodzieja, więc wraca on na pustynię.
+794|Zasada domowa: surowce startowe z obu budynków
+795|Zasady domowe
+796|Oba budynki z fazy przygotowania dają surowce startowe. W Miastach i Rycerzach miasto liczy się jak osada.
+797|Jeszcze nic się nie wydarzyło.
+798|Faza przygotowania
+799|Wykresy wypełnią się po pierwszych turach.
+800|Punkty zwycięstwa w czasie
+801|Rzuty kośćmi
+802|Słupki: wyrzucone · linia: oczekiwane po {n} rzutach
+803|Otrzymane surowce
+804|Rzuty
+805|Najczęściej
+806|Siódemki
+807|Cel
+808|wyrzucone
+809|oczekiwane
+810|Więcej kart niż {n}: przy 7 tracisz połowę.
+811|Tylko ostatni rzut
+812|Pokaż wcześniejsze tury
+813|Obrońca Broch
+814|−1 miasto
+815|Żywa plansza
+816|Żywa plansza: włączona
+817|Żywa plansza: wyłączona
+818|Bank
+819|Daje 1 punkt. Kładziesz ją odkrytą przed sobą.
+820|Jak grać: {mode}
+821|Jak grać
+822|{mode}: jak to działa (1 min)
+823|Witaj w Broch!
+824|Buduj, handluj i rozwijaj się. Kto pierwszy zdobędzie 10 punktów, wygrywa.
+825|Każde pole daje surowiec.
+826|Las, wzgórza, pastwisko, pola i góry. Pustynia nic nie daje.
+827|Buduj osady na narożnikach.
+828|Dotknij świecącego narożnika.
+829|Osada styka się z maksymalnie 3 polami.
+830|Przeciwnicy też budują.
+831|Rzucaj kośćmi w każdej turze.
+832|Dotknij kości.
+833|Każde pole z tą liczbą daje surowce.
+834|Każdy, kto stoi obok, dostaje kartę, nawet w turze innych graczy.
+835|Więcej kropek, więcej szczęścia.
+836|Czerwone 6 i 8 wypadają najczęściej, 2 i 12 rzadko.
+837|Płać kartami za budowę.
+838|Droga kosztuje drewno i glinę. Dotknij świecącej krawędzi.
+839|Miasta dają podwójnie.
+840|Ulepsz osadę za 2 zboża i 3 rudy. Dotknij swojej osady.
+841|7 budzi złodzieja!
+842|Przesuń złodzieja na pole.
+843|Pole przestaje dawać surowce. Dotknij pola obok przeciwnika.
+844|Potem ukradnij kartę komuś, kto tam stoi.
+845|Kto ma więcej niż 7 kart, traci połowę.
+846|Handluj z graczami lub z bankiem.
+847|Bank wymienia 4 takie same karty na 1. Porty: 3:1 lub 2:1.
+848|Rycerze przesuwają złodzieja. Inne karty dają drogi, surowce lub punkt zwycięstwa.
+849|3 zagranych rycerzy: Największa armia, +2 punkty.
+850|Jej posiadacz wywiesza na planszy wojenne sztandary.
+851|5 dróg z rzędu: Najdłuższa droga, +2 punkty.
+852|Najdłuższy szlak świeci złotem.
+853|Zdobądź 10 punktów, aby wygrać!
+854|Osada 1 · Miasto 2 · Najdłuższa droga 2 · Największa armia 2 · Karta punktu zwycięstwa 1
+855|Wszystko z wersji klasycznej plus towary, rycerze i barbarzyńcy. Do wygranej potrzeba 13 punktów.
+856|Miasta dają towary.
+857|Las: papier · Pastwisko: sukno · Góry: moneta
+858|Za towary kupujesz ulepszenia miast.
+859|Handel kosztuje sukno, polityka monety, nauka papier. Dotknij +.
+860|Poziom 3 odblokowuje specjalną zdolność.
+861|Nauka: weź surowiec, gdy nic nie dostajesz. Handel: towary 2:1. Polityka: silniejsi rycerze.
+862|Kto pierwszy osiągnie poziom 4, wznosi metropolię.
+863|Jest warta 2 punkty i stoi na twoim mieście.
+864|Rycerze bronią Broch.
+865|Zwerbuj jednego za wełnę i rudę. Dotknij świecącego narożnika.
+866|Aktywuj go zbożem.
+867|Walczą tylko aktywni rycerze. Awansuj ich, aby byli silniejsi.
+868|Statek na kości zdarzeń przesuwa barbarzyńców.
+869|Każdy statek przybliża ich o krok do Broch.
+870|Ich siła: wszystkie miasta na planszy. Twoja obrona: wszyscy aktywni rycerze.
+871|Najsilniejszy obrońca zdobywa punkt. Gdy wygrają barbarzyńcy, najsłabsze miasto zostaje splądrowane.
+872|Kolorowa brama na kości zdarzeń daje karty graczom z odpowiednio wysokimi ulepszeniami.
+873|Mury miejskie
+874|Każdy mur pozwala zatrzymać 2 karty więcej, gdy wypadnie 7.
+875|Zdobądź 13 punktów, aby wygrać!
+876|Osada 1 · Miasto 2 · Metropolia 2 · Obrońca 1 · Najdłuższa droga 2
+877|Ląd jest podzielony na wyspy. Statki przemierzają morze.
+878|Buduj statki na wodzie.
+879|Statek kosztuje drewno i wełnę. Dotknij świecącej krawędzi.
+880|Statki tworzą łańcuch, tak jak drogi.
+881|Ostatni statek otwartego łańcucha może raz na turę popłynąć w nowe miejsce.
+882|Podpłyń do mgły, aby ją odsłonić.
+883|Odkrycie lądu daje ci surowiec.
+884|Zasiedl nową wyspę: +1 punkt!
+885|Złote pola dają dowolny surowiec.
+886|Pirat
+887|Statki obok jego pola są zablokowane, a on kradnie. Przesuwa go 7 lub rycerz.
+888|Do wygranej potrzeba od 12 do 14 punktów.
+889|Wybierz scenariusz przy tworzeniu gry: Ku nowym brzegom, Cztery wyspy lub Wyspy we mgle.
+890|Trzy warianty, które możesz łączyć: Rybacy, Rzeki i Karty zdarzeń.
+891|Rybacy
+892|Pustynia staje się jeziorem, a na wybrzeżu pojawiają się łowiska.
+893|Wyrzuć liczbę łowiska, aby złowić ryby.
+894|Jezioro daje ryby przy 2, 3, 11 i 12.
+895|Płać rybami
+896|2 przegonienie złodzieja · 3 kradzież · 4 surowiec · 5 droga · 7 karta rozwoju
+897|Stary but
+898|Kto go wyłowi, potrzebuje jeszcze jednego punktu do wygranej i może przekazać go liderowi.
+899|Rzeki
+900|Każda droga lub osada przy rzece daje 1 złoto.
+901|Mosty prowadzą przez rzekę.
+902|Most kosztuje 2 gliny i 1 drewno, a daje 3 złota.
+903|Wymień 2 złota na dowolny surowiec. Najbogatszy gracz dostaje +1 punkt, najbiedniejszy −2.
+904|Talia ze wszystkimi 36 wynikami rzutu zastępuje kości, więc każda liczba wypada tak często, jak powinna.
+905|Wypłyń we mgłę, odkrywaj lądy i wypełniaj misje.
+906|Odkrywaj mgłę statkami.
+907|Dotknij świecącej krawędzi. Nowy ląd daje ci surowiec.
+908|Statek obok ławicy ryb łowi ryby, gdy wypadnie jej liczba.
+909|Przyprawy dla Broch
+910|Osady przy polu przypraw ładują przyprawy, gdy pole daje plon.
+911|Dostarcz ładunek radzie.
+912|Co 2 dostawy dają 1 punkt, maks. 3 punkty za misję.
+913|Atakuj ze statku obok gniazda za 1 rudę i 1 wełnę. Gdy padnie, punkt zdobywa ten, kto trafił najwięcej razy.
+914|Zdobądź 12 punktów, aby wygrać!
+915|Liczą się osady, miasta, nowe wyspy, misje i gniazda.
+916|Większa plansza z dodatkowymi polami, portami i kartami, nawet dla 6 graczy.
+917|Dodatkowa faza budowy
+918|Po każdej turze pozostali gracze mogą po kolei budować, ale nie handlować.
+919|Dzięki temu nikt długo nie czeka.
+920|Tury pozostają krótkie, nawet przy pełnym stole.
+921|Wstecz
+922|Pauza
+923|Dalej
+924|Umiesz już grać: {mode}!
+925|Obejrzyj jeszcze raz
+926|Dalej: {mode}
+927|Zagrajmy!
+928|Karta zdarzeń
+929|Rzuć
+930|Zwycięstwo!
+931|Koniec gry
+932|Wygrywasz!
+933|punktów zwycięstwa
+934|Kończysz na {n}. miejscu z wynikiem {m} pkt.
+935|Klasyfikacja końcowa
+936|Zobacz planszę
+937|Osady
+938|Miasta
+939|Metropolia
+940|Karty punktów zwycięstwa
+941|Punkty bonusowe
+942|Przebieg wyścigu
+943|Najwięcej surowców
+944|Najczęściej wyrzucana liczba
+945|{n}×
+946|Długość gry
+947|Tury: {n}
+948|Ciekawostki
+949|Najdłuższy szlak handlowy
+950|Wybierz surowiec raz. Od teraz akwedukt wypłaca go za każdym razem, gdy rzut nic ci nie przyniesie (poza siódemką).
+951|Akwedukt: {res}. Dotknij, aby zmienić.

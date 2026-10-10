@@ -14,7 +14,10 @@ const { botName } = require('./bots/names');
 
 const PORT = +process.env.PORT || 8080;
 const REGISTRATION_CODE = process.env.REGISTRATION_CODE || '';
-const FEEDBACK_URL = process.env.FEEDBACK_URL || 'https://feedback.maidev.dk/';
+// FEEDBACK_URL unset: the default feedback form; set but empty (FEEDBACK_URL=""): no feedback link anywhere (footer and error banner hide it)
+const FEEDBACK_URL = process.env.FEEDBACK_URL ?? 'https://feedback.maidev.dk/';
+// text from a visitor or a request goes into the log only as one short line without control characters (no forged log lines)
+const logText = (v, max = 300) => String(v == null ? '' : v).replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]+/g, ' ').slice(0, max);
 const PUBLIC = path.join(__dirname, '..', 'public');
 const SESSION_DAYS = 60;
 // Behind Cloudflare (tunnel or proxy) set TRUST_PROXY=1: the real visitor address comes from CF-Connecting-IP and https from X-Forwarded-Proto.
@@ -24,19 +27,24 @@ const MIN_PASSWORD = 8;
 
 // ------------------------------------------------------------ auth helpers
 const newId = (n = 9) => crypto.randomBytes(n).toString('base64url');
-function hashPassword(pw, salt = crypto.randomBytes(16).toString('hex')) {
-  return { salt, hash: crypto.scryptSync(pw, salt, 64).toString('hex') };
+// scrypt runs on the libuv thread pool (async), so a burst of logins cannot freeze the game traffic of everybody else
+const scryptAsync = (pw, salt) => new Promise((resolve, reject) => crypto.scrypt(pw, salt, 64, (err, key) => (err ? reject(err) : resolve(key))));
+async function hashPassword(pw, salt = crypto.randomBytes(16).toString('hex')) {
+  return { salt, hash: (await scryptAsync(pw, salt)).toString('hex') };
 }
-function checkPassword(user, pw) {
-  const h = crypto.scryptSync(pw, user.salt, 64);
+async function checkPassword(user, pw) {
+  const h = await scryptAsync(pw, user.salt);
   return crypto.timingSafeEqual(h, Buffer.from(user.hash, 'hex'));
 }
+const MAX_PASSWORD = 256, MAX_EMAIL = 254, MAX_SESSIONS_PER_USER = 20, MAX_OPEN_GAMES_PER_USER = 8;
 const publicUser = u => u && ({ id: u.id, name: u.name, color: u.color, country: u.country || null, admin: !!u.admin });
 // a seat is a registered user or a bot of that game (meta.bots)
 const seatUser = (g, id) => (isBotId(id) ? { id, name: (g.meta.bots && g.meta.bots[id] && g.meta.bots[id].name) || 'Bot', color: null, country: null, bot: true } : publicUser(db.users.find(x => x.id === id)));
 const meUser = u => u && ({ ...publicUser(u), email: u.email, lang: u.lang || null });
+// a malformed %-escape in a cookie must never throw (it is visitor input): keep the raw text then
+function safeDecode(v) { try { return decodeURIComponent(v); } catch { return v; } }
 function cookies(req) {
-  return Object.fromEntries((req.headers.cookie || '').split(';').map(c => c.trim().split('=')).filter(x => x[0]).map(([k, ...v]) => [k, decodeURIComponent(v.join('='))]));
+  return Object.fromEntries((req.headers.cookie || '').split(';').map(c => c.trim().split('=')).filter(x => x[0]).map(([k, ...v]) => [k, safeDecode(v.join('='))]));
 }
 // The cookie holds a random token; only its SHA-256 is stored on disk, so a copy of sessions.json cannot be used to log in.
 const hashToken = tok => crypto.createHash('sha256').update(String(tok)).digest('hex');
@@ -59,11 +67,14 @@ const isHttps = req => TRUST_PROXY && (req.headers['x-forwarded-proto'] === 'htt
 function startSession(req, res, user) {
   const tok = newId(24);
   db.sessions[hashToken(tok)] = { userId: user.id, exp: Date.now() + SESSION_DAYS * 864e5 };
+  // at most MAX_SESSIONS_PER_USER logins stay valid per account: the oldest ones are dropped (sessions.json cannot grow without limit)
+  const mine = Object.entries(db.sessions).filter(([, v]) => v.userId === user.id).sort((a, b) => a[1].exp - b[1].exp);
+  for (const [k] of mine.slice(0, Math.max(0, mine.length - MAX_SESSIONS_PER_USER))) { delete db.sessions[k]; closeSockets(c => c.key === k); }
   store.saveSessions();
   res.setHeader('Set-Cookie', `broch_session=${tok}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${SESSION_DAYS * 86400}${isHttps(req) ? '; Secure' : ''}`);
 }
 function dropSessionsOf(userId, keep) {
-  for (const [k, v] of Object.entries(db.sessions)) if (v.userId === userId && k !== keep) delete db.sessions[k];
+  for (const [k, v] of Object.entries(db.sessions)) if (v.userId === userId && k !== keep) { delete db.sessions[k]; closeSockets(c => c.key === k); }
   store.saveSessions();
 }
 function purgeSessions() {
@@ -72,7 +83,8 @@ function purgeSessions() {
   if (n) store.saveSessions();
 }
 
-const DUMMY_USER = { ...hashPassword(crypto.randomBytes(8).toString('hex')) }; // a failed login for an unknown email takes as long as one for a known email
+const DUMMY_SALT = crypto.randomBytes(16).toString('hex');
+const DUMMY_USER = { salt: DUMMY_SALT, hash: crypto.scryptSync('dummy-' + crypto.randomBytes(8).toString('hex'), DUMMY_SALT, 64).toString('hex') }; // a failed login for an unknown email takes as long as one for a known email
 function sameSecret(a, b) {
   const x = crypto.createHash('sha256').update(String(a || '')).digest(), y = crypto.createHash('sha256').update(String(b)).digest();
   return crypto.timingSafeEqual(x, y);
@@ -92,6 +104,21 @@ function signupLimited(ip) {
   return a.length >= SIGNUPS_PER_HOUR;
 }
 function noteFailure(ip) { (attempts.get(ip) || attempts.set(ip, []).get(ip)).push(Date.now()); }
+// Every login attempt (also a right password) counts per address: a script cannot hammer the password hashing or pile up sessions.
+// A shared home address needs far less than the limit. Also used for the manual stats entries (per user).
+const rates = new Map();
+function rateHit(key, windowMs, max) {
+  const now = Date.now();
+  const a = (rates.get(key) || []).filter(t => now - t < windowMs);
+  if (a.length >= max) { rates.set(key, a); return true; }
+  a.push(now); rates.set(key, a);
+  return false;
+}
+setInterval(() => { // forget old counters
+  const now = Date.now();
+  for (const [k, a] of rates) if (!a.length || now - a[a.length - 1] > 3600e3) rates.delete(k);
+  for (const m of [attempts, signups]) for (const [k, a] of m) if (!a.length || now - a[a.length - 1] > 3600e3) m.delete(k);
+}, 600e3).unref();
 
 // ------------------------------------------------------------ http helpers
 function send(res, code, body) {
@@ -102,7 +129,14 @@ function readBody(req) {
   return new Promise((resolve, reject) => {
     let data = '';
     req.on('data', c => { data += c; if (data.length > 1e6) { reject(new Error('too large')); req.destroy(); } });
-    req.on('end', () => { try { resolve(data ? JSON.parse(data) : {}); } catch { reject(new HttpError(400, 'Bad JSON')); } });
+    req.on('end', () => {
+      try {
+        const v = data ? JSON.parse(data) : {};
+        if (!v || typeof v !== 'object' || Array.isArray(v)) throw new Error('not an object'); // null, [] or a number would crash the routes below
+        resolve(v);
+      } catch { reject(new HttpError(400, 'Bad JSON')); }
+    });
+    req.on('error', reject);
   });
 }
 class HttpError extends Error { constructor(code, msg) { super(msg); this.code = code; } }
@@ -154,12 +188,14 @@ function withOrigin(e, origin) {
   return v;
 }
 function serveStatic(req, res) {
-  let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  let p;
+  try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400); return res.end('Bad request'); } // %zz or a malformed target
+  if (p.includes('\0')) { res.writeHead(400); return res.end('Bad request'); }
   // the public demo (node demo/build.js --public writes it to public/demo/): /demo and /demo/ are its page, its files live below /demo/. A checkout without a built demo answers 404.
   if (p === '/demo' || p === '/demo/') p = '/demo/index.html';
   else if (p === '/' || (!path.extname(p) && !p.startsWith('/demo/'))) p = '/index.html';
   const file = path.join(PUBLIC, path.normalize(p).replace(/^(\.\.[/\\])+/, ''));
-  if (!file.startsWith(PUBLIC)) { res.writeHead(403); return res.end(); }
+  if (!file.startsWith(PUBLIC + path.sep)) { res.writeHead(403); return res.end(); }
   let e = loadStatic(file);
   if (!e) { res.writeHead(404); return res.end('Not found'); }
   // the page carries the build id, so the script files it loads can be asked for with it (a proxy or browser cannot serve old ones)
@@ -247,33 +283,36 @@ async function api(req, res, url) {
     const email = String(b.email || '').trim().toLowerCase();
     const name = String(b.name || '').trim().slice(0, 24);
     const pw = String(b.password || '');
-    if (!/^\S+@\S+\.\S+$/.test(email)) throw new HttpError(400, 'Enter a valid email.');
+    if (email.length > MAX_EMAIL || !/^\S+@\S+\.\S+$/.test(email)) throw new HttpError(400, 'Enter a valid email.');
     if (!name) throw new HttpError(400, 'Pick a display name.');
-    if (pw.length < MIN_PASSWORD) throw new HttpError(400, 'Password must be at least 8 characters.');
+    if (pw.length < MIN_PASSWORD || pw.length > MAX_PASSWORD) throw new HttpError(400, 'Password must be at least 8 characters.');
     const country = String(b.country || '').toUpperCase();
     if (!/^[A-Z]{2}$/.test(country)) throw new HttpError(400, 'Pick your country.');
     if (REGISTRATION_CODE && !sameSecret(b.code, REGISTRATION_CODE) && db.users.length > 0) { noteFailure(ip); throw new HttpError(403, 'Wrong invite code.'); }
     if (signupLimited(ip)) throw new HttpError(429, 'Too many new accounts from this address. Try again in an hour.');
+    const pwHash = await hashPassword(pw); // (async: the checks and the insert below follow without another await, so two sign-ups cannot take the same name)
     if (db.users.some(u => u.email === email)) throw new HttpError(409, 'That email is already registered.');
     if (db.users.some(u => u.name.toLowerCase() === name.toLowerCase())) throw new HttpError(409, 'That name is taken.');
     const taken = db.users.map(u => u.color);
-    const u = { id: newId(), email, name, country, color: COLORS.find(c => !taken.includes(c)) || COLORS[db.users.length % COLORS.length], ...hashPassword(pw), createdAt: Date.now(), admin: db.users.length === 0, colorsV: 2 };
+    const u = { id: newId(), email, name, country, color: COLORS.find(c => !taken.includes(c)) || COLORS[db.users.length % COLORS.length], ...pwHash, createdAt: Date.now(), admin: db.users.length === 0, colorsV: 2 };
     db.users.push(u); store.saveUsers();
     signups.get(ip).push(Date.now());
     startSession(req, res, u);
     return send(res, 200, { user: meUser(u) });
   }
   if (route === '/login' && method === 'POST') {
-    if (rateLimited(ip)) throw new HttpError(429, 'Too many attempts. Try again in a few minutes.');
+    if (rateLimited(ip) || rateHit('login:' + ip, 10 * 60e3, 60)) throw new HttpError(429, 'Too many attempts. Try again in a few minutes.');
     const b = await readBody(req);
     const u = db.users.find(x => x.email === String(b.email || '').trim().toLowerCase());
-    if (!u || !checkPassword(u || DUMMY_USER, String(b.password || '')) ) { noteFailure(ip); throw new HttpError(401, 'Wrong email or password.'); }
+    const pw = String(b.password || '');
+    const ok = pw.length <= MAX_PASSWORD && await checkPassword(u || DUMMY_USER, pw); // (the dummy check keeps unknown emails as slow as known ones)
+    if (!u || !ok) { noteFailure(ip); throw new HttpError(401, 'Wrong email or password.'); }
     startSession(req, res, u);
     return send(res, 200, { user: meUser(u) });
   }
   if (route === '/logout' && method === 'POST') {
     const key = sessionKey(req);
-    if (key) { delete db.sessions[key]; store.saveSessions(); }
+    if (key) { delete db.sessions[key]; store.saveSessions(); closeSockets(c => c.key === key); }
     res.setHeader('Set-Cookie', `broch_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${isHttps(req) ? '; Secure' : ''}`);
     return send(res, 200, { ok: true });
   }
@@ -288,11 +327,12 @@ async function api(req, res, url) {
     }
     if (b.color != null) { if (!COLORS.includes(b.color)) throw new HttpError(400, 'Unknown color.'); u.color = b.color; }
     if (b.country != null) { const c = String(b.country).toUpperCase(); if (!/^[A-Z]{2}$/.test(c)) throw new HttpError(400, 'Pick your country.'); u.country = c; }
-    if (b.lang != null) { if (!/^[a-z]{2}$/.test(b.lang)) throw new HttpError(400, 'Unknown language.'); u.lang = b.lang; }
+    if (b.lang != null) { if (typeof b.lang !== 'string' || !/^[a-z]{2}$/.test(b.lang)) throw new HttpError(400, 'Unknown language.'); u.lang = b.lang; }
     if (b.newPassword) {
-      if (!checkPassword(u, String(b.password || ''))) throw new HttpError(401, 'Current password is wrong.');
-      if (String(b.newPassword).length < MIN_PASSWORD) throw new HttpError(400, 'Password must be at least 8 characters.');
-      Object.assign(u, hashPassword(String(b.newPassword)));
+      if (rateHit('pw:' + u.id, 10 * 60e3, 20)) throw new HttpError(429, 'Too many attempts. Try again in a few minutes.');
+      if (String(b.password || '').length > MAX_PASSWORD || !(await checkPassword(u, String(b.password || '')))) throw new HttpError(401, 'Current password is wrong.');
+      if (String(b.newPassword).length < MIN_PASSWORD || String(b.newPassword).length > MAX_PASSWORD) throw new HttpError(400, 'Password must be at least 8 characters.');
+      Object.assign(u, await hashPassword(String(b.newPassword)));
       dropSessionsOf(u.id, sessionKey(req)); // everybody else who was logged in with the old password is logged out
     }
     store.saveUsers();
@@ -304,11 +344,15 @@ async function api(req, res, url) {
   if (route === '/lobby' && method === 'GET') return send(res, 200, lobbyFor(need()));
   if (route === '/games' && method === 'POST') {
     const u = need(); const b = await readBody(req);
+    // one account cannot flood the lobby: a limited number of games it hosts that are open or running
+    let hosted = 0;
+    for (const x of db.games.values()) if (x.meta.host === u.id && (x.meta.status === 'open' || x.meta.status === 'playing')) hosted++;
+    if (hosted >= MAX_OPEN_GAMES_PER_USER) throw new HttpError(429, 'You already host too many open or running games.');
     const mode = b.mode === 'knights' || engine.isStandalone(b.mode) ? b.mode : 'classic';
     const standalone = engine.isStandalone(mode);
     const maxPlayers = Math.max(standalone ? engine.minPlayers(mode) : 2, Math.min(standalone ? engine.maxPlayers(mode) : 6, b.maxPlayers | 0 || 4));
     const expansion = !standalone && ['seafarers', 'traders'].includes(b.expansion) ? b.expansion : 'none';
-    const scenario = expansion === 'seafarers' ? (SEA_SCENARIOS[b.scenario] ? b.scenario : 'shores') : mode === 'explorers' ? String(Math.max(1, Math.min(5, b.escen | 0 || 2))) : null;
+    const scenario = expansion === 'seafarers' ? (typeof b.scenario === 'string' && Object.hasOwn(SEA_SCENARIOS, b.scenario) ? b.scenario : 'shores') : mode === 'explorers' ? String(Math.max(1, Math.min(5, b.escen | 0 || 2))) : null;
     const bv = b.variants || {};
     const variants = expansion === 'traders' ? { fishermen: !!bv.fishermen, rivers: !!bv.rivers, caravans: !!bv.caravans, barbarians: !!bv.barbarians, traders: !!bv.traders, events: !!bv.events, friendly: !!bv.friendly, harbors: !!bv.harbors } : null;
     if (variants && (variants.caravans || variants.barbarians || variants.traders) && mode === 'knights') throw new HttpError(400, 'This scenario is for the classic rules.');
@@ -424,7 +468,8 @@ async function api(req, res, url) {
   }
   if (route === '/stats/manual' && method === 'POST') {
     const u = need(); const b = await readBody(req);
-    const players = Array.isArray(b.players) ? b.players.filter(id => db.users.some(x => x.id === id)) : [];
+    if (rateHit('manual:' + u.id, 3600e3, 30)) throw new HttpError(429, 'Too many attempts. Try again in a few minutes.');
+    const players = Array.isArray(b.players) ? [...new Set(b.players)].filter(id => typeof id === 'string' && db.users.some(x => x.id === id)).slice(0, 6) : [];
     if (!players.includes(b.winner)) throw new HttpError(400, 'Pick the winner among the players.');
     const date = Date.parse(b.date) || Date.now();
     const entry = {
@@ -449,8 +494,11 @@ async function api(req, res, url) {
   }
 
   if (route === '/client-error' && method === 'POST') {
+    // open to visitors who are not logged in (the login page can fail too), so: few per minute and address, small, one clean line each
+    if (rateHit('cerr:' + ip, 60e3, 20)) throw new HttpError(429, 'Too many reports.');
+    if (+req.headers['content-length'] > 16384) throw new HttpError(413, 'Report too large.');
     const b = await readBody(req).catch(() => ({}));
-    console.warn('[client-error]', user ? user.name : 'anon', String(b.message || '').slice(0, 500), String(b.stack || '').slice(0, 1500));
+    console.warn('[client-error]', logText(user ? user.name : 'anon', 40), logText(b.message, 500), logText(b.stack, 1500));
     return send(res, 200, { ok: true });
   }
   if (route === '/health') return send(res, 200, { ok: true, build: BUILD_ID });
@@ -469,18 +517,26 @@ function securityHeaders(req, res) {
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   if (isHttps(req)) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
 }
+// Nothing a visitor sends may take the process down: the whole handler is guarded (bad request target, bad %-escape, a failing file read).
 const server = http.createServer(async (req, res) => {
-  securityHeaders(req, res);
-  const url = new URL(req.url, 'http://x');
-  if (url.pathname.startsWith('/api/')) {
-    try { await api(req, res, url); } catch (e) {
-      if (e instanceof HttpError) return send(res, e.code, { error: e.message });
-      console.error('API error', req.method, url.pathname, e);
-      return send(res, 500, { error: 'Server error: ' + e.message, internal: true });
+  try {
+    securityHeaders(req, res);
+    let url;
+    try { url = new URL(req.url, 'http://x'); } catch { res.writeHead(400); return res.end('Bad request'); }
+    if (url.pathname.startsWith('/api/')) {
+      try { await api(req, res, url); } catch (e) {
+        if (res.headersSent) { try { res.end(); } catch { /* connection gone */ } return; }
+        if (e instanceof HttpError) return send(res, e.code, { error: e.message });
+        console.error('API error', req.method, url.pathname, e);
+        return send(res, 500, { error: 'Server error: ' + e.message, internal: true });
+      }
+      return;
     }
-    return;
+    serveStatic(req, res);
+  } catch (e) {
+    console.error('Request crashed', req.method, String(req.url).slice(0, 200), e);
+    try { if (!res.headersSent) res.writeHead(500); res.end(); } catch { /* connection gone */ }
   }
-  serveStatic(req, res);
 });
 
 // ------------------------------------------------------------ websockets
@@ -492,7 +548,10 @@ function sameOrigin(req) {
   try { return new URL(o).host === (req.headers['x-forwarded-host'] && TRUST_PROXY ? req.headers['x-forwarded-host'] : req.headers.host); } catch { return false; }
 }
 const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 64 * 1024, verifyClient: ({ req }) => sameOrigin(req), perMessageDeflate: { threshold: 1024, zlibDeflateOptions: { level: 3 }, concurrencyLimit: 4 } });
-const clients = new Set(); // {ws, user, game}
+const clients = new Set(); // {ws, user, key (hash of the session token), game}
+// close the sockets of logged-out or dropped sessions (a socket is authenticated once, when it opens)
+function closeSockets(pred) { for (const c of clients) if (pred(c)) { try { c.ws.close(4001, 'login'); } catch { /* already closed */ } } }
+wss.on('error', e => console.error('WebSocket server error', e && e.message));
 
 function sendWs(c, msg) { if (c.ws.readyState === 1) c.ws.send(JSON.stringify(msg)); }
 function broadcastAll(msg) { clients.forEach(c => sendWs(c, msg)); }
@@ -551,15 +610,25 @@ function finishGame(g) {
 const runner = createRunner({ engine, store, broadcastState, finishGame, viewersBehind });
 
 wss.on('connection', (ws, req) => {
-  const user = userFromReq(req);
+  // a frame that is too big or not valid text makes ws emit 'error' on the socket; without a listener that would end the process
+  ws.on('error', e => { console.warn('WebSocket error:', e && e.message); try { ws.terminate(); } catch { /* gone */ } });
+  let user, key;
+  try { key = sessionKey(req); user = userFromReq(req); } catch (e) { user = null; }
   if (!user) { ws.close(4001, 'login'); return; }
-  const c = { ws, user, game: null };
+  const c = { ws, user, key, game: null };
   clients.add(c);
   ws.isAlive = true;
   ws.on('pong', () => { ws.isAlive = true; });
+  let burstAt = Date.now(), burst = 0;
   ws.on('message', raw => {
+    // the login is checked again on every message: logout, a password change or an expired session ends the socket
+    const sess = db.sessions[c.key];
+    if (!sess || sess.exp < Date.now() || !db.users.includes(user)) { ws.close(4001, 'login'); return; }
+    if (Date.now() - burstAt > 1000) { burstAt = Date.now(); burst = 0; }
+    if (++burst > 200) { ws.close(1008, 'too fast'); return; } // far more than a client ever sends per second (the bot test at zero delay peaks below this)
     let msg;
     try { msg = JSON.parse(raw); } catch { return; }
+    if (!msg || typeof msg !== 'object') return;
     try {
       if (msg.t === 'watch') {
         const prev = c.game ? db.games.get(c.game) : null;
@@ -569,6 +638,8 @@ wss.on('connection', (ws, req) => {
         const g = c.game && db.games.get(c.game);
         if (!g) { if (c.game) sendWs(c, { t: 'abandoned' }); return; }
         if (g.state) broadcastState(g);
+      } else if (msg.t === 'ping') {
+        sendWs(c, { t: 'pong' }); // the client's heartbeat: it replaces a connection that goes silent (public/js/core/core.js)
       } else if (msg.t === 'fx') {
         if (msg.game === c.game && Number.isFinite(+msg.v)) c.fxV = +msg.v;
       } else if (msg.t === 'act') {
@@ -586,7 +657,7 @@ wss.on('connection', (ws, req) => {
       }
     } catch (e) {
       const internal = !(e instanceof engine.GameError);
-      if (internal) console.error('Action crashed', msg && msg.action, e);
+      if (internal) console.error('Action crashed:', logText(msg.action && msg.action.type, 60), '|', logText(e && e.message, 200), '|', logText(String((e && e.stack) || '').split('\n').slice(1, 4).join(' '), 400)); // (never the action itself: it is visitor data)
       sendWs(c, { t: 'err', rid: msg.rid, msg: internal ? 'Server error: ' + e.message : e.message, params: e.params, internal });
     }
   });
@@ -606,34 +677,46 @@ setInterval(() => {
 }, 30000);
 
 // colors were renamed in v1.1: old 'green' is now 'teal', old 'brown' (shown purple) is now 'purple'
+// One damaged game must never stop the server: every start-up step below runs per game, and a game that makes it throw is set aside (store.quarantineGame).
+function eachGame(step, fn) {
+  for (const g of [...db.games.values()]) { try { fn(g); } catch (e) { store.quarantineGame(g.meta.id, step + ': ' + (e && e.message)); } }
+}
 (function migrateColors() {
   if (db.users.some(u => u.colorsV === 2)) return;
   const map = c => ({ green: 'teal', brown: 'purple' }[c] || c);
   db.users.forEach(u => { u.color = map(u.color); u.colorsV = 2; });
-  db.history.forEach(h => (h.players || []).forEach(p => { p.color = map(p.color); }));
-  db.games.forEach(g => { if (g.state) g.state.players.forEach(p => { p.color = map(p.color); }); if (g.meta.colors) for (const k in g.meta.colors) g.meta.colors[k] = map(g.meta.colors[k]); store.saveGame(g, true); });
+  db.history.forEach(h => { if (Array.isArray(h.players)) h.players.forEach(p => { if (p) p.color = map(p.color); }); });
+  eachGame('color migration', g => { if (g.state) g.state.players.forEach(p => { p.color = map(p.color); }); if (g.meta.colors) for (const k in g.meta.colors) g.meta.colors[k] = map(g.meta.colors[k]); store.saveGame(g, true); });
   if (db.users.length) { store.saveUsers(); store.saveHistory(); }
 })();
 
 // make sure finished-but-unrecorded games (e.g. crash right at the end) land in history
-for (const g of db.games.values()) if (g.state) engine.migrate(g.state);
+eachGame('migrate', g => { if (g.state) engine.migrate(g.state); });
 // open and running games of the retired simplified Explorers & Pirates (expansion 'explorers') are now the standalone game
-for (const g of db.games.values()) {
+eachGame('explorers migration', g => {
   const m = g.meta;
-  if (m.expansion !== 'explorers' || engine.isStandalone(m.mode) || (g.state && g.state.mode !== 'explorers')) continue;
+  if (m.expansion !== 'explorers' || engine.isStandalone(m.mode) || (g.state && g.state.mode !== 'explorers')) return;
   Object.assign(m, { mode: 'explorers', expansion: 'none', scenario: '2', variants: null, big: false, variable: false, gameOptions: {} });
   m.maxPlayers = Math.max(engine.minPlayers('explorers'), Math.min(engine.maxPlayers('explorers'), m.maxPlayers));
   m.vpTarget = engine.defaultVp('explorers', m.scenario);
   delete m.missions;
   store.saveGame(g, true);
-}
-for (const g of db.games.values()) if (g.state && g.state.phase === 'over' && g.meta.status !== 'over') finishGame(g);
+});
+eachGame('finish', g => { if (g.state && g.state.phase === 'over' && g.meta.status !== 'over') finishGame(g); });
 
 function shutdown() { console.log('Saving and shutting down…'); store.saveEverythingNow(); process.exit(0); }
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
+// Safety net: an error nobody caught (a bug in one request, a timer or a socket) is logged and the data saved, but the server keeps running
+// so one bad request cannot interrupt everybody's games. (Anything that ends up here is a bug to fix: the log line says where.)
+function survive(kind, e) {
+  console.error(kind, e && e.stack ? e.stack : e);
+  try { store.saveEverythingNow(); } catch (err) { console.error('save after error failed', err && err.message); }
+}
+process.on('uncaughtException', e => survive('Uncaught exception', e));
+process.on('unhandledRejection', e => survive('Unhandled rejection', e));
 
 // games with bots that were running when the server stopped: let the bots go on
-for (const g of db.games.values()) if (g.state && g.meta.status === 'playing') runner.schedule(g);
+eachGame('bots', g => { if (g.state && g.meta.status === 'playing') runner.schedule(g); });
 
 server.listen(PORT, () => console.log(`Broch listening on :${PORT} (data in ${store.DATA_DIR})`));

@@ -87,7 +87,7 @@ function layout({ scenario, players, big }) {
 }
 
 function build({ scenario = 'shores', players = 4, big = false }) {
-  if (!SCENARIOS[scenario]) throw new Error('Unknown scenario');
+  if (!Object.hasOwn(SCENARIOS, scenario)) throw new Error('Unknown scenario');
   let L = null;
   for (let attempt = 0; attempt < 60; attempt++) {
     L = layout({ scenario, players, big });

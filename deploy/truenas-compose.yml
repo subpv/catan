@@ -14,10 +14,13 @@ services:
       DATA_DIR: /data
       TRUST_PROXY: "1"              # the app sits behind Cloudflare: use the real visitor address and mark the cookie Secure
       REGISTRATION_CODE: "CHANGE-ME-a-long-random-invite-code"   # friends need this code to create an account (the first account never does)
-      FEEDBACK_URL: ""
+      FEEDBACK_URL: ""                # empty = no "Send feedback" link in the footer and the error banner (leave it out to get the default form of the developer)
     volumes:
       - /mnt/CHANGE-ME-POOL/broch/app:/app:ro       # the program (unzipped broch-app.zip), read only
       - /mnt/CHANGE-ME-POOL/broch/data:/data        # accounts, running games, history: this is what you back up
+    logging:                        # Docker does not rotate logs by itself: without this a chatty or attacked server could slowly fill the disk
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
     ports:
       - "30080:8080"                # only to test inside your home network: http://TRUENAS-IP:30080 (remove this block once the tunnel works)
     healthcheck:
@@ -34,5 +37,8 @@ services:
     command: tunnel --no-autoupdate run
     environment:
       TUNNEL_TOKEN: "CHANGE-ME-token-from-the-cloudflare-dashboard"
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
     depends_on:
       - broch

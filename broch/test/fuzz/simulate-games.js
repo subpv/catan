@@ -1,6 +1,7 @@
 'use strict';
 // Random-play fuzzer for the standalone games: plays many games with random legal moves, checks nothing crashes and
 // that every game ends. Usage: node test/fuzz/simulate-games.js [games] [mode]
+require('../seed');
 const engine = require('../../server/engine');
 const { GameError } = engine;
 const pick = a => a[Math.floor(Math.random() * a.length)];

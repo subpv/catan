@@ -1,5 +1,6 @@
 'use strict';
 // Random-play fuzzer: plays many games with random legal-ish moves and checks invariants.
+require('../seed');
 const { createGame, act, viewFor, GameError, _internal, vp } = require('../../server/engine/classic/game');
 const C = require('../../server/engine/shared/constants');
 

@@ -780,174 +780,172 @@
 780|Verso nuove sponde
 781|Le Quattro Isole
 782|Le Isole della Nebbia
-783|Pescatori di Catan
-784|Fiumi di Catan
+783|Pescatori di Broch
+784|Fiumi di Broch
 785|Carte evento
-786|Pesci per Catan
-787|Spezie per Catan
-788|Zone di pesca, gettoni pesce e vecchio stivale.
-789|Ponti, oro, e il giocatore più ricco e più povero.
-790|Un mazzo di carte evento sostituisce i dadi.
-791|Regola della casa: brigante dimenticato
-792|Se un giocatore termina il turno senza spostare il brigante, questo torna nel deserto.
-793|Se termini ora il turno, il brigante torna nel deserto.
-794|Questa regola della casa non è attiva.
-795|{@p} ha dimenticato di spostare il brigante, quindi torna nel deserto.
-796|Regola della casa: risorse iniziali per entrambi
-797|Regole della casa
-798|Entrambi gli edifici della fase di preparazione danno risorse iniziali. In Città e Cavalieri la città conta come un insediamento.
-799|Non è ancora successo niente.
-800|Fase di preparazione
-801|I grafici si riempiono dopo i primi turni.
-802|Punti vittoria nel tempo
-803|Tiri dei dadi
-804|Barre: uscite · linea: attese dopo {n} tiri
-805|Risorse ricevute
-806|Tiri
-807|Più uscito
-808|Uscite del 7
-809|Obiettivo
-810|uscite
-811|attese
-812|Più di {n} carte: con un 7 ne perdi la metà.
-813|Solo l'ultimo tiro
-814|Mostra turni precedenti
-815|Difensore di Broch
-816|−1 città
-817|Tabellone vivo
-818|Tabellone vivo: attivo
-819|Tabellone vivo: disattivato
-820|Banca
-821|Vale 1 punto. Si mette scoperta davanti a te.
-822|Come si gioca: {mode}
-823|Come si gioca
-824|Come funziona {mode} (1 min)
-825|Benvenuto a Broch!
-826|Costruisci, commercia e cresci. Vince il primo a 10 punti.
-827|Ogni esagono produce una risorsa.
-828|Foresta, colline, pascolo, campi e montagne. Il deserto non produce nulla.
-829|Costruisci insediamenti sugli incroci.
-830|Tocca l'incrocio illuminato.
-831|Un insediamento tocca fino a 3 esagoni.
-832|Anche i tuoi avversari costruiscono.
-833|Tira i dadi a ogni turno.
-834|Tocca i dadi.
-835|Ogni esagono con quel numero produce.
-836|Chi è adiacente riceve una carta, anche nei turni degli altri.
-837|Più puntini, più fortuna.
-838|Il 6 e l'8 rossi escono più spesso, il 2 e il 12 di rado.
-839|Spendi carte per costruire.
-840|Una strada costa legname e argilla. Tocca il lato illuminato.
-841|Le città producono il doppio.
-842|Trasforma un insediamento in città con 2 grano e 3 minerali. Tocca il tuo insediamento.
-843|Un 7 sveglia il brigante!
-844|Sposta il brigante su un esagono.
-845|Smette di produrre. Tocca un esagono vicino al tuo avversario.
-846|Poi ruba una carta a qualcuno lì.
-847|Chi ha più di 7 carte ne perde la metà.
-848|Commercia con i giocatori o con la banca.
-849|La banca scambia 4 carte uguali con 1. Porti: 3:1 o 2:1.
-850|I cavalieri spostano il brigante. Le altre danno strade, risorse o un punto vittoria.
-851|3 cavalieri giocati: armata più grande, +2 punti.
-852|Chi la possiede issa stendardi di guerra sul tabellone.
-853|5 strade di fila: strada più lunga, +2 punti.
-854|Il percorso più lungo brilla d'oro.
-855|Raggiungi 10 punti per vincere!
-856|Insediamento 1 · Città 2 · Strada più lunga 2 · Armata più grande 2 · Carta punto vittoria 1
-857|Tutto il Classico, più merci, cavalieri e barbari. Si vince a 13 punti.
-858|Le città producono merci.
-859|Foresta: carta · Pascolo: stoffa · Montagne: monete
-860|Le merci comprano le migliorie cittadine.
-861|Il commercio costa stoffa, la politica monete, la scienza carta. Tocca +.
-862|Il livello 3 sblocca un potere speciale.
-863|Scienza: una risorsa quando non ricevi nulla. Commercio: merci 2:1. Politica: cavalieri più forti.
-864|Il primo al livello 4 costruisce una metropoli.
-865|Vale 2 punti e svetta sulla tua città.
-866|I cavalieri difendono Broch.
-867|Reclutane uno per lana e minerale. Tocca l'incrocio illuminato.
-868|Attivalo con il grano.
-869|Combattono solo i cavalieri attivi. Promuovili per renderli più forti.
-870|Una nave sul dado evento fa avanzare i barbari.
-871|Ogni nave li avvicina di un passo a Broch.
-872|La loro forza: tutte le città sul tabellone. La tua difesa: tutti i cavalieri attivi.
-873|Il difensore più forte guadagna un punto. Se vincono i barbari, la città più debole viene saccheggiata.
-874|Una porta colorata sul dado evento dà carte ai giocatori con migliorie abbastanza alte.
-875|Mura
-876|Ogni città con le mura ti fa tenere 2 carte in più quando esce un 7.
-877|Raggiungi 13 punti per vincere!
-878|Insediamento 1 · Città 2 · Metropoli 2 · Difensore 1 · Strada più lunga 2
-879|La terra è divisa in isole. Le navi attraversano il mare.
-880|Costruisci navi sull'acqua.
-881|Una nave costa legname e lana. Tocca il lato illuminato.
-882|Le navi formano una catena, come le strade.
-883|L'ultima nave di una catena aperta può navigare in un nuovo punto una volta per turno.
-884|Naviga vicino alla nebbia per svelarla.
-885|Scoprire nuove terre ti dà una risorsa.
-886|Colonizza una nuova isola: +1 punto!
-887|I campi d'oro danno la risorsa che preferisci.
-888|Il pirata
-889|Le navi vicino al suo esagono sono bloccate, e lui ruba. Un 7 o un cavaliere lo spostano.
-890|Per vincere servono da 12 a 14 punti.
-891|Scegli uno scenario quando crei la partita: Nuove sponde, Quattro Isole o Isole della Nebbia.
-892|Tre varianti da combinare: Pescatori, Fiumi e Carte evento.
-893|Pescatori
-894|Il deserto diventa un lago e sulla costa compaiono zone di pesca.
-895|Fai uscire il numero di una zona di pesca per pescare.
-896|Il lago produce con 2, 3, 11 e 12.
-897|Paga con i pesci
-898|2 scaccia il brigante · 3 ruba · 4 prendi una risorsa · 5 una strada · 7 una carta sviluppo
-899|Il vecchio stivale
-900|Chi lo pesca ha bisogno di un punto in più per vincere, e può passarlo a chi è in testa.
-901|Fiumi
-902|Ogni strada o insediamento vicino a un fiume frutta 1 oro.
-903|I ponti attraversano il fiume.
-904|Un ponte costa 2 argilla e 1 legname e frutta 3 oro.
-905|Scambia 2 oro con qualsiasi risorsa. Il più ricco ottiene +1 punto, il più povero −2.
-906|Un mazzo con tutti i 36 risultati dei dadi sostituisce i dadi, così ogni numero esce quanto deve.
-907|Naviga nella nebbia, scopri terre e completa missioni.
-908|Esplora la nebbia con le navi.
-909|Tocca il lato illuminato. Le nuove terre ti danno una risorsa.
-910|Una nave vicino a un banco di pesci pesca quando esce il suo numero.
-911|Spezie per Broch
-912|Gli insediamenti vicino a un campo di spezie caricano spezie quando produce.
-913|Consegna il carico al consiglio.
-914|Ogni 2 consegne valgono 1 punto, fino a 3 punti per missione.
-915|Attacca da una nave vicino a un covo per 1 minerale e 1 lana. Quando cade, chi l'ha colpito di più guadagna un punto.
-916|Raggiungi 12 punti per vincere!
-917|Contano insediamenti, città, nuove isole, missioni e covi.
-918|Un tabellone più grande con più esagoni, porti e carte, fino a 6 giocatori.
-919|Fase di costruzione speciale
-920|Dopo ogni turno, tutti gli altri possono costruire uno alla volta, ma non commerciare.
-921|Così nessuno aspetta a lungo.
-922|I turni restano brevi, anche a tavolo pieno.
-923|Indietro
-924|Pausa
-925|Avanti
-926|Ora conosci {mode}!
-927|Guarda di nuovo
-928|Avanti con {mode}
-929|Giochiamo!
-930|Carta evento
-931|Tira
-932|Vittoria!
-933|Partita finita
-934|Hai vinto!
-935|punti vittoria
-936|Hai chiuso al {n}° posto con {m} punti.
-937|Classifica finale
-938|Guarda il tabellone
-939|Insediamenti
-940|Città
-941|Metropoli
-942|Carte punto vittoria
-943|Punti bonus
-944|Com'è andata la corsa
-945|Più risorse
-946|Numero più uscito
-947|{n}×
-948|Durata della partita
-949|{n} turni
-950|Momenti salienti
-951|Rotta commerciale più lunga
-952|Scegli la tua risorsa una volta sola. D’ora in poi l’acquedotto la paga ogni volta che un lancio non ti dà nulla (tranne con un 7).
-953|Acquedotto: {res}. Tocca per cambiare.
+786|Zone di pesca, gettoni pesce e vecchio stivale.
+787|Ponti, oro, e il giocatore più ricco e più povero.
+788|Un mazzo di carte evento sostituisce i dadi.
+789|Regola della casa: brigante dimenticato
+790|Se un giocatore termina il turno senza spostare il brigante, questo torna nel deserto.
+791|Se termini ora il turno, il brigante torna nel deserto.
+792|Questa regola della casa non è attiva.
+793|{@p} ha dimenticato di spostare il brigante, quindi torna nel deserto.
+794|Regola della casa: risorse iniziali per entrambi
+795|Regole della casa
+796|Entrambi gli edifici della fase di preparazione danno risorse iniziali. In Città e Cavalieri la città conta come un insediamento.
+797|Non è ancora successo niente.
+798|Fase di preparazione
+799|I grafici si riempiono dopo i primi turni.
+800|Punti vittoria nel tempo
+801|Tiri dei dadi
+802|Barre: uscite · linea: attese dopo {n} tiri
+803|Risorse ricevute
+804|Tiri
+805|Più uscito
+806|Uscite del 7
+807|Obiettivo
+808|uscite
+809|attese
+810|Più di {n} carte: con un 7 ne perdi la metà.
+811|Solo l'ultimo tiro
+812|Mostra turni precedenti
+813|Difensore di Broch
+814|−1 città
+815|Tabellone vivo
+816|Tabellone vivo: attivo
+817|Tabellone vivo: disattivato
+818|Banca
+819|Vale 1 punto. Si mette scoperta davanti a te.
+820|Come si gioca: {mode}
+821|Come si gioca
+822|Come funziona {mode} (1 min)
+823|Benvenuto a Broch!
+824|Costruisci, commercia e cresci. Vince il primo a 10 punti.
+825|Ogni esagono produce una risorsa.
+826|Foresta, colline, pascolo, campi e montagne. Il deserto non produce nulla.
+827|Costruisci insediamenti sugli incroci.
+828|Tocca l'incrocio illuminato.
+829|Un insediamento tocca fino a 3 esagoni.
+830|Anche i tuoi avversari costruiscono.
+831|Tira i dadi a ogni turno.
+832|Tocca i dadi.
+833|Ogni esagono con quel numero produce.
+834|Chi è adiacente riceve una carta, anche nei turni degli altri.
+835|Più puntini, più fortuna.
+836|Il 6 e l'8 rossi escono più spesso, il 2 e il 12 di rado.
+837|Spendi carte per costruire.
+838|Una strada costa legname e argilla. Tocca il lato illuminato.
+839|Le città producono il doppio.
+840|Trasforma un insediamento in città con 2 grano e 3 minerali. Tocca il tuo insediamento.
+841|Un 7 sveglia il brigante!
+842|Sposta il brigante su un esagono.
+843|Smette di produrre. Tocca un esagono vicino al tuo avversario.
+844|Poi ruba una carta a qualcuno lì.
+845|Chi ha più di 7 carte ne perde la metà.
+846|Commercia con i giocatori o con la banca.
+847|La banca scambia 4 carte uguali con 1. Porti: 3:1 o 2:1.
+848|I cavalieri spostano il brigante. Le altre danno strade, risorse o un punto vittoria.
+849|3 cavalieri giocati: armata più grande, +2 punti.
+850|Chi la possiede issa stendardi di guerra sul tabellone.
+851|5 strade di fila: strada più lunga, +2 punti.
+852|Il percorso più lungo brilla d'oro.
+853|Raggiungi 10 punti per vincere!
+854|Insediamento 1 · Città 2 · Strada più lunga 2 · Armata più grande 2 · Carta punto vittoria 1
+855|Tutto il Classico, più merci, cavalieri e barbari. Si vince a 13 punti.
+856|Le città producono merci.
+857|Foresta: carta · Pascolo: stoffa · Montagne: monete
+858|Le merci comprano le migliorie cittadine.
+859|Il commercio costa stoffa, la politica monete, la scienza carta. Tocca +.
+860|Il livello 3 sblocca un potere speciale.
+861|Scienza: una risorsa quando non ricevi nulla. Commercio: merci 2:1. Politica: cavalieri più forti.
+862|Il primo al livello 4 costruisce una metropoli.
+863|Vale 2 punti e svetta sulla tua città.
+864|I cavalieri difendono Broch.
+865|Reclutane uno per lana e minerale. Tocca l'incrocio illuminato.
+866|Attivalo con il grano.
+867|Combattono solo i cavalieri attivi. Promuovili per renderli più forti.
+868|Una nave sul dado evento fa avanzare i barbari.
+869|Ogni nave li avvicina di un passo a Broch.
+870|La loro forza: tutte le città sul tabellone. La tua difesa: tutti i cavalieri attivi.
+871|Il difensore più forte guadagna un punto. Se vincono i barbari, la città più debole viene saccheggiata.
+872|Una porta colorata sul dado evento dà carte ai giocatori con migliorie abbastanza alte.
+873|Mura
+874|Ogni città con le mura ti fa tenere 2 carte in più quando esce un 7.
+875|Raggiungi 13 punti per vincere!
+876|Insediamento 1 · Città 2 · Metropoli 2 · Difensore 1 · Strada più lunga 2
+877|La terra è divisa in isole. Le navi attraversano il mare.
+878|Costruisci navi sull'acqua.
+879|Una nave costa legname e lana. Tocca il lato illuminato.
+880|Le navi formano una catena, come le strade.
+881|L'ultima nave di una catena aperta può navigare in un nuovo punto una volta per turno.
+882|Naviga vicino alla nebbia per svelarla.
+883|Scoprire nuove terre ti dà una risorsa.
+884|Colonizza una nuova isola: +1 punto!
+885|I campi d'oro danno la risorsa che preferisci.
+886|Il pirata
+887|Le navi vicino al suo esagono sono bloccate, e lui ruba. Un 7 o un cavaliere lo spostano.
+888|Per vincere servono da 12 a 14 punti.
+889|Scegli uno scenario quando crei la partita: Nuove sponde, Quattro Isole o Isole della Nebbia.
+890|Tre varianti da combinare: Pescatori, Fiumi e Carte evento.
+891|Pescatori
+892|Il deserto diventa un lago e sulla costa compaiono zone di pesca.
+893|Fai uscire il numero di una zona di pesca per pescare.
+894|Il lago produce con 2, 3, 11 e 12.
+895|Paga con i pesci
+896|2 scaccia il brigante · 3 ruba · 4 prendi una risorsa · 5 una strada · 7 una carta sviluppo
+897|Il vecchio stivale
+898|Chi lo pesca ha bisogno di un punto in più per vincere, e può passarlo a chi è in testa.
+899|Fiumi
+900|Ogni strada o insediamento vicino a un fiume frutta 1 oro.
+901|I ponti attraversano il fiume.
+902|Un ponte costa 2 argilla e 1 legname e frutta 3 oro.
+903|Scambia 2 oro con qualsiasi risorsa. Il più ricco ottiene +1 punto, il più povero −2.
+904|Un mazzo con tutti i 36 risultati dei dadi sostituisce i dadi, così ogni numero esce quanto deve.
+905|Naviga nella nebbia, scopri terre e completa missioni.
+906|Esplora la nebbia con le navi.
+907|Tocca il lato illuminato. Le nuove terre ti danno una risorsa.
+908|Una nave vicino a un banco di pesci pesca quando esce il suo numero.
+909|Spezie per Broch
+910|Gli insediamenti vicino a un campo di spezie caricano spezie quando produce.
+911|Consegna il carico al consiglio.
+912|Ogni 2 consegne valgono 1 punto, fino a 3 punti per missione.
+913|Attacca da una nave vicino a un covo per 1 minerale e 1 lana. Quando cade, chi l'ha colpito di più guadagna un punto.
+914|Raggiungi 12 punti per vincere!
+915|Contano insediamenti, città, nuove isole, missioni e covi.
+916|Un tabellone più grande con più esagoni, porti e carte, fino a 6 giocatori.
+917|Fase di costruzione speciale
+918|Dopo ogni turno, tutti gli altri possono costruire uno alla volta, ma non commerciare.
+919|Così nessuno aspetta a lungo.
+920|I turni restano brevi, anche a tavolo pieno.
+921|Indietro
+922|Pausa
+923|Avanti
+924|Ora conosci {mode}!
+925|Guarda di nuovo
+926|Avanti con {mode}
+927|Giochiamo!
+928|Carta evento
+929|Tira
+930|Vittoria!
+931|Partita finita
+932|Hai vinto!
+933|punti vittoria
+934|Hai chiuso al {n}° posto con {m} punti.
+935|Classifica finale
+936|Guarda il tabellone
+937|Insediamenti
+938|Città
+939|Metropoli
+940|Carte punto vittoria
+941|Punti bonus
+942|Com'è andata la corsa
+943|Più risorse
+944|Numero più uscito
+945|{n}×
+946|Durata della partita
+947|{n} turni
+948|Momenti salienti
+949|Rotta commerciale più lunga
+950|Scegli la tua risorsa una volta sola. D’ora in poi l’acquedotto la paga ogni volta che un lancio non ti dà nulla (tranne con un 7).
+951|Acquedotto: {res}. Tocca per cambiare.

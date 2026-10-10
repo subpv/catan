@@ -40,8 +40,9 @@ Die zweite Datei, `deploy/truenas-compose.yml`, wird nicht hochgeladen, sondern 
 1. Apps → Discover Apps → **Custom App** → **Install via YAML**.
 2. Inhalt von `deploy/truenas-compose.yml` einfügen und drei Dinge ändern:
    - `CHANGE-ME-POOL` → der Name deines Pools (zweimal),
-   - `REGISTRATION_CODE` → ein langer, zufälliger Einladungscode (den bekommen nur deine Freunde),
+   - `REGISTRATION_CODE` → ein langer, zufälliger Einladungscode (den bekommen nur deine Freunde). Er ist optional: lässt du ihn leer, kann sich jeder anmelden, der die Adresse findet (höchstens 10 neue Konten pro Stunde und Adresse), und im Log steht eine Warnung. Für eine öffentliche Adresse also immer setzen.
    - `TUNNEL_TOKEN` → der Token aus Schritt 3.
+   - Optional: `FEEDBACK_URL: ""` heißt „kein Feedback-Link“ (Fußzeile und Fehlerbanner). Ohne diese Zeile zeigt Broch das Feedback-Formular des ursprünglichen Entwicklers.
 3. Speichern. Nach 1–2 Minuten läuft „broch“ (und „broch-tunnel“). Logs: Apps → broch → Logs. Es sollte `Broch listening on :8080` stehen.
 
 ## 5. Zuerst DEIN Konto anlegen (wichtig!)
@@ -57,11 +58,35 @@ Adresse + Einladungscode schicken. Jeder legt ein Konto an. In der Lobby „New 
 - Passwörter stehen nie im Klartext irgendwo (scrypt mit Salz). Niemand sieht fremde E-Mail-Adressen oder Passwörter: weder andere Spieler noch die Webseite; jeder sieht nur seine eigene Adresse.
 - Falsche Passwörter werden pro Besucher gebremst (15 Fehlversuche, dann 10 Minuten Pause). Cookies sind `HttpOnly` und über Cloudflare `Secure`. Fremde Webseiten können keine Verbindung in dein Spiel öffnen.
 - Wer Zugriff auf dein TrueNAS hat, kann `users.json` lesen: das Dataset also nicht freigeben und Snapshots/Backups nur auf eigene Datenträger legen.
+- Beschädigte Dateien (Stromausfall, falsch kopiertes Dataset) löschen nie still alle Konten: `users.json` und `history.json` werden aus `…json.bak` (der vorletzten Speicherung) wiederhergestellt, die kaputte Datei bleibt als `…corrupt-ZEIT` liegen. Gibt es keine brauchbare `.bak`, **startet die App absichtlich nicht** und schreibt im Log (Apps → broch → Logs) `FATAL: …users.json…`: Rechte prüfen (`chown -R 568:568 …/broch/data`), ein Backup/Snapshot zurückspielen, oder nur wenn die Konten wirklich weg sind, die Datei löschen und neu anfangen (das erste Konto wird dann wieder Admin). Ein kaputtes Spiel (`games/*.json`) wird nach `games/_broken/` verschoben, alle anderen laufen weiter.
 
 ## Extra-Schutz (empfohlen, 2 Minuten)
 Cloudflare Zero Trust → Access → Applications → Add → Self-hosted → Hostname `broch.deine-domain.de` → Policy „Allow“ → E-Mail-Adressen deiner Freunde (Login per Einmalcode). Dann kommt niemand Fremdes überhaupt bis zur Anmeldeseite.
+Achtung: Das sperrt alles, auch die Demo unter `/demo` und das Vorschaubild `/og-image.png`, das Chat-Programme beim Teilen des Links laden (ohne Bypass zeigt die Link-Vorschau nur ein Anmeldefenster von Cloudflare). Soll jeder die Demo und die Vorschau sehen, lege eine zweite Access-Anwendung mit Policy-Aktion **Bypass** (Include: Everyone) für die Pfade `/demo` und `/og-image.png` an. Wer das nicht braucht, lässt alles gesperrt.
 
-## Sicherung und Updates
-- Datenschutz: Data Protection → Periodic Snapshot Tasks für das Dataset `broch/data` (z. B. täglich, 30 Tage behalten).
-- Update: neue `broch-app.zip` hochladen, App stoppen, `unzip -o …` wie in Schritt 2 (das Dataset `data` bleibt unberührt), App starten.
+## Sicherung und Wiederherstellung
+- Die ganze Sicherung ist das Dataset `broch/data` (Konten, laufende Spiele, Statistik). Das Programm (`app`) kannst du jederzeit aus `broch-app.zip` neu entpacken.
+- Snapshots (Data Protection → Periodic Snapshot Tasks, z. B. täglich, 30 Tage behalten) schützen vor Versehen, **nicht** vor einem Plattenausfall: sie liegen auf demselben Pool. Kopiere `broch/data` deshalb ab und zu auf einen anderen Datenträger (Replication Task oder einfach `cp -a /mnt/DEIN-POOL/broch/data /mnt/ANDERER-POOL/broch-backup-$(date +%F)`), am besten bei gestoppter App.
+- Wiederherstellen: App stoppen, den Inhalt von `data` zurückkopieren, dann `chown -R 568:568 /mnt/DEIN-POOL/broch/data && chmod 700 /mnt/DEIN-POOL/broch/data`, App starten. Aus einem Snapshot: Datasets → `broch/data` → Snapshots → Rollback (oder die Dateien aus `.zfs/snapshot/NAME/` zurückkopieren).
+- Logs: Die YAML begrenzt sie auf 3 × 10 MB (`logging:`), damit sie die Platte nicht füllen.
+
+## Vergessenes Passwort, Konto ändern
+Es gibt keine E-Mail-Zurücksetzung. Du (der Betreiber) setzt das Passwort offline zurück:
+1. In Apps die App **broch stoppen** (wichtig: sonst überschreibt die laufende App deine Änderung).
+2. TrueNAS → System → Shell, dann (Pool-Name anpassen, E-Mail des Freundes einsetzen). Fragt nach dem neuen Passwort, mindestens 8 Zeichen:
+   ```
+   docker run --rm -it --user 568:568 -v /mnt/DEIN-POOL/broch/app:/app:ro -v /mnt/DEIN-POOL/broch/data:/data -e DATA_DIR=/data node:22-alpine node /app/scripts/admin.js reset-password freund@beispiel.de
+   ```
+   Der Freund wird auf allen Geräten abgemeldet und kann sich mit dem neuen Passwort anmelden.
+3. App wieder starten.
+Weitere Befehle statt `reset-password`: `list-users` (alle Konten anzeigen), `make-admin EMAIL`, `delete-user EMAIL` (nur wenn die Person in keinem offenen oder laufenden Spiel sitzt; den einzigen Admin löscht es nicht).
+
+## Updates
+- Neue `broch-app.zip` hochladen, App **stoppen**, dann das alte Programm komplett ersetzen (sonst bleiben entfernte Dateien und alte Demo-Dateien liegen); das Dataset `data` bleibt unberührt:
+  ```
+  rm -rf /mnt/DEIN-POOL/broch/app/*
+  unzip /mnt/DEIN-POOL/broch/upload/broch-app.zip -d /mnt/DEIN-POOL/broch/app
+  chmod -R a+rX /mnt/DEIN-POOL/broch/app
+  ```
+  Dann die App starten. Prüfen: unten auf der Seite steht die Build-Nummer, und `/api/health` meldet sie.
 - Alte Spielstände bleiben beim Update erhalten; bei Regeländerungen werden laufende Spiele automatisch angepasst, wo es möglich ist.

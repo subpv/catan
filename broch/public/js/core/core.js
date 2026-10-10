@@ -111,7 +111,7 @@ export const logoSvg = (cls = '') => `<svg class="${cls}" viewBox="0 0 100 100">
 // ------------------------------------------------------------ feedback reporting
 let feedbackUrl = 'https://feedback.maidev.dk/';
 let lastReportAt = 0;
-export function setFeedbackUrl(u) { if (u) feedbackUrl = u; }
+export function setFeedbackUrl(u) { if (typeof u === 'string') feedbackUrl = u; } // '' = the server runs without a feedback link (FEEDBACK_URL=""): none is shown
 export function getFeedbackUrl() { return feedbackUrl; }
 
 export function reportProblem(title, detail) {
@@ -127,15 +127,15 @@ export function reportProblem(title, detail) {
     <div class="fb-ico">!</div>
     <div style="flex:1;min-width:0">
       <b>${esc(t('Something went wrong'))}</b>
-      <p>${esc(t(title))}. ${esc(t("Tell us what you were doing and we'll fix it. The button copies the error details so you can paste them into the form."))}</p>
+      <p>${esc(t(title))}.${feedbackUrl ? ' ' + esc(t("Tell us what you were doing and we'll fix it. The button copies the error details so you can paste them into the form.")) : ''}</p>
       <details><summary>${esc(t('Error details'))}</summary><pre>${esc(text)}</pre></details>
       <div class="row wrap">
-        <a class="btn primary small" href="${esc(feedbackUrl)}" target="_blank" rel="noopener" data-fb-go>${esc(t('Send feedback'))}</a>
+        ${feedbackUrl ? `<a class="btn primary small" href="${esc(feedbackUrl)}" target="_blank" rel="noopener" data-fb-go>${esc(t('Send feedback'))}</a>` : ''}
         <button class="btn small" data-fb-close>${esc(t('Dismiss'))}</button>
       </div>
     </div>
     <button class="x" aria-label="${esc(t('Dismiss'))}" data-fb-close>×</button>`;
-  el.querySelector('[data-fb-go]').addEventListener('click', () => {
+  el.querySelector('[data-fb-go]')?.addEventListener('click', () => {
     navigator.clipboard?.writeText(text).then(() => toast(t('Error details copied. Paste them into the feedback form.'))).catch(() => {});
   });
   el.querySelectorAll('[data-fb-close]').forEach(b => b.addEventListener('click', () => el.remove()));
@@ -173,6 +173,8 @@ export async function api(path, opts = {}) {
   if (!res.ok) {
     const err = new Error(data.error ? t(data.error) : t('Request failed ({n})', { n: res.status }));
     err.status = res.status; err.handled = true;
+    // a request that needs the login failed: the session is gone (app.js checks /me and shows the login page)
+    if (res.status === 401 && !/^\/(login|register|me)\b/.test(path)) window.dispatchEvent(new Event('broch:session'));
     if (res.status >= 500 || data.internal) reportProblem('The server reported an error', `${opts.method || 'GET'} ${path}: ${err.message}`);
     throw err;
   }
@@ -182,21 +184,32 @@ export async function api(path, opts = {}) {
 // ------------------------------------------------------------ websocket
 const listeners = new Set();
 let ws = null, wsOpen = false, watching = null, retry = 0, downSince = null, reqSeq = 0;
+let wantWs = false, wasDown = false, lastRx = 0, retryTimer = 0, probeTimer = 0, beat = 0;
 const waiting = new Map();
+const PING_EVERY = 15000, PONG_WITHIN = 8000;
 export function onWs(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 export function wsConnect() {
   if (window.BROCH_MOCK) {
     if (!wsOpen) { wsOpen = true; window.BROCH_MOCK.connect(msg => listeners.forEach(fn => fn(msg))); }
     return;
   }
+  wantWs = true;
+  clearTimeout(retryTimer); retryTimer = 0;
   if (ws && ws.readyState <= 1) return;
-  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
-  ws.onopen = () => {
-    wsOpen = true; retry = 0; downSince = null; connBar(false);
-    if (watching) ws.send(JSON.stringify({ t: 'watch', game: watching }));
+  const sock = ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
+  startBeat();
+  sock.onopen = () => {
+    if (sock !== ws) return;
+    wsOpen = true; retry = 0; downSince = null; lastRx = Date.now(); connBar(false);
+    if (watching) sock.send(JSON.stringify({ t: 'watch', game: watching }));
+    // whatever happened while we were away (new games, finished games, stats) is fetched again by the open screens
+    if (wasDown) { wasDown = false; listeners.forEach(fn => { fn({ t: 'lobby' }); fn({ t: 'stats' }); }); }
   };
-  ws.onmessage = ev => {
+  sock.onmessage = ev => {
+    if (sock !== ws) return;
+    lastRx = Date.now();
     const msg = JSON.parse(ev.data);
+    if (msg.t === 'pong') return;
     if (msg.t === 'state' && !hydrate(msg)) return;
     if (msg.rid && waiting.has(msg.rid)) {
       const w = waiting.get(msg.rid); waiting.delete(msg.rid);
@@ -204,14 +217,45 @@ export function wsConnect() {
     }
     listeners.forEach(fn => fn(msg));
   };
-  ws.onclose = ev => {
+  sock.onclose = ev => {
+    if (sock !== ws) return;
     wsOpen = false;
-    if (ev.code === 4001) return; // not logged in
+    if (ev.code === 4001) { wantWs = false; window.dispatchEvent(new Event('broch:session')); return; } // not (or no longer) logged in
+    wasDown = true;
     if (!downSince) downSince = Date.now();
     connBar(true);
     if (Date.now() - downSince > 20000) reportProblem('Lost connection to the game server', `WebSocket closed (code ${ev.code}) and has not come back for 20 seconds.`);
-    setTimeout(wsConnect, Math.min(8000, 500 * 2 ** retry++));
+    clearTimeout(retryTimer);
+    retryTimer = setTimeout(wsConnect, Math.min(8000, 500 * 2 ** retry++));
   };
+}
+// A connection can die without the browser noticing (network switch, phone asleep, NAT timeout): nothing arrives and
+// nothing fails. So we ping now and then; if no message of any kind comes back, the socket is dropped and a new one opened.
+function hardReconnect() {
+  if (!wantWs || window.BROCH_MOCK) return;
+  if (ws) { ws.onopen = ws.onmessage = ws.onclose = null; try { ws.close(); } catch { /* already gone */ } ws = null; }
+  wsOpen = false; wasDown = true;
+  if (!downSince) downSince = Date.now();
+  for (const [rid, w] of waiting) { waiting.delete(rid); w.reject(Object.assign(new Error(t('The server did not answer.')), { handled: true })); }
+  connBar(true);
+  wsConnect();
+}
+function probe() {
+  if (!wantWs || window.BROCH_MOCK) return;
+  if (!ws || ws.readyState > 1) return hardReconnect();
+  if (ws.readyState !== 1) return; // still connecting (the browser gives up by itself)
+  const sentAt = Date.now(), sock = ws;
+  try { sock.send(JSON.stringify({ t: 'ping' })); } catch { return hardReconnect(); }
+  clearTimeout(probeTimer);
+  probeTimer = setTimeout(() => { if (sock === ws && lastRx < sentAt) hardReconnect(); }, PONG_WITHIN);
+}
+function startBeat() {
+  if (beat) return; beat = setInterval(probe, PING_EVERY);
+  // coming back to the tab, back online, page restored from the cache: check at once instead of waiting for the next beat
+  const wake = () => { if (!document.hidden) probe(); };
+  document.addEventListener('visibilitychange', wake);
+  window.addEventListener('online', probe);
+  window.addEventListener('pageshow', probe);
 }
 // The server leaves out what we already have (see stateFor in server/index.js); put it back together here.
 const known = { game: null, board: null, track: [] };
@@ -248,7 +292,11 @@ export function wsAct(game, action) {
     const rid = ++reqSeq;
     waiting.set(rid, { resolve, reject });
     ws.send(JSON.stringify({ t: 'act', game, action, rid }));
-    setTimeout(() => { if (waiting.has(rid)) { waiting.delete(rid); reject(Object.assign(new Error(t('The server did not answer.')), { handled: true })); } }, 10000);
+    setTimeout(() => {
+      if (!waiting.has(rid)) return;
+      waiting.delete(rid); reject(Object.assign(new Error(t('The server did not answer.')), { handled: true }));
+      probe(); // no answer in 10 s: find out whether the connection is dead (and replace it if so)
+    }, 10000);
   });
 }
 // tells the server that every animation of the state with this version has been played; the bots wait for it (see server/bots/runner.js)
@@ -256,7 +304,7 @@ export function wsFxIdle(game, v) {
   if (window.BROCH_MOCK || !wsOpen || !ws) return;
   try { ws.send(JSON.stringify({ t: 'fx', game, v })); } catch { /* the connection just closed */ }
 }
-export function wsClose() { if (window.BROCH_MOCK) { wsOpen = false; return; } if (ws) { ws.onclose = null; ws.close(); ws = null; wsOpen = false; } }
+export function wsClose() { wantWs = false; clearTimeout(retryTimer); retryTimer = 0; connBar(false); if (window.BROCH_MOCK) { wsOpen = false; return; } if (ws) { ws.onclose = null; ws.close(); ws = null; wsOpen = false; } }
 function connBar(show) {
   let el = document.querySelector('.conn-bar');
   if (show && !el) { el = document.createElement('div'); el.className = 'conn-bar'; el.textContent = t('Reconnecting…'); document.body.appendChild(el); }
@@ -345,6 +393,32 @@ function mClosed() {
   }, 0);
 }
 
+// Keyboard for dialogs, one listener for all: Escape closes the top dismissable one, Tab stays inside it.
+let mtSeq = 0, keysHooked = false;
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+function modalKeys() {
+  if (keysHooked) return; keysHooked = true;
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' && e.key !== 'Tab') return;
+    const backs = document.querySelectorAll('#modal-root .modal-back');
+    const top = backs[backs.length - 1];
+    if (!top || !top._entry) return;
+    if (e.key === 'Escape') {
+      if (!top._entry.dismissable) return;
+      e.preventDefault(); e.stopImmediatePropagation(); top._entry.close();
+      return;
+    }
+    const box = top.querySelector('.modal');
+    const items = [...box.querySelectorAll(FOCUSABLE)].filter(x => x.getClientRects().length);
+    const a = document.activeElement;
+    if (!items.length) { e.preventDefault(); box.focus(); return; }
+    const first = items[0], last = items[items.length - 1];
+    if (!box.contains(a) || a === box) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+    else if (e.shiftKey && a === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+  }, true);
+}
+
 // dismissable: can be closed by Back, a swipe and (unless backdrop is false) a tap beside it; backdrop: false keeps entered data safe from a stray tap
 export function modal(html, { onMount, dismissable = true, backdrop = dismissable } = {}) {
   const root = document.getElementById('modal-root');
@@ -354,18 +428,30 @@ export function modal(html, { onMount, dismissable = true, backdrop = dismissabl
   back.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><div class="m-grab" aria-hidden="true"></div>${html}</div>`;
   const phone = isPhone();
   const entry = { back, dismissable, close: null };
-  const close = entry.close = () => { if (!back.isConnected) return; back.remove(); const i = mstack.indexOf(entry); if (i >= 0) mstack.splice(i, 1); mClosed(); };
+  back._entry = entry;
+  const opener = document.activeElement; // focus goes back here when the dialog closes
+  const close = entry.close = () => {
+    if (!back.isConnected) return;
+    back.remove(); const i = mstack.indexOf(entry); if (i >= 0) mstack.splice(i, 1); mClosed();
+    // keyboard users land where they were (not on a phone's text field: that would raise the keyboard)
+    if (opener && opener !== document.body && opener.isConnected && !root.querySelector('.modal-back') && !(isCoarse() && /^(INPUT|TEXTAREA|SELECT)$/.test(opener.tagName))) { try { opener.focus({ preventScroll: true }); } catch { /* ignore */ } }
+  };
   if (dismissable && backdrop) back.addEventListener('click', e => { if (e.target === back) close(); });
   back.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', close));
   root.appendChild(back);
   if (phone || isCoarse()) { mHook(); mPrune(); mstack.push(entry); if (!mEntry) mPush(); clearTimeout(mPopTimer); mPopTimer = 0; }
   const box = back.querySelector('.modal');
+  modalKeys();
+  // screen readers: the dialog is named by its first heading, and focus has a place to start
+  const head = box.querySelector('h2, h3');
+  if (head) { head.id = head.id || 'mt' + (++mtSeq); box.setAttribute('aria-labelledby', head.id); }
+  box.tabIndex = -1; box.style.outline = 'none';
   if (phone && dismissable) swipeToDismiss(back, box, box.querySelector('.m-grab'), close);
   else if (phone) box.classList.add('fixed');
   onMount && onMount(box, close);
   // a phone never auto-focuses a text field (the keyboard would cover the sheet)
-  const f = back.querySelector(phone ? 'button.primary' : 'input, button.primary');
-  f && f.focus({ preventScroll: true });
+  const f = (phone ? ['button.primary'] : ['input, button.primary', '.m-main', '[data-close]', 'button']).map(q => back.querySelector(q)).find(Boolean) || box;
+  f.focus({ preventScroll: true });
   return close;
 }
 export function closeModals() { document.getElementById('modal-root').innerHTML = ''; mstack.length = 0; mClosed(); }

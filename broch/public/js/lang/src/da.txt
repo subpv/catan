@@ -780,174 +780,172 @@
 780|Mod nye kyster
 781|De fire øer
 782|Tågeøerne
-783|Fiskerne på Catan
-784|Floderne på Catan
+783|Fiskerne på Broch
+784|Floderne på Broch
 785|Begivenhedskort
-786|Fisk til Catan
-787|Krydderi til Catan
-788|Fiskepladser, fiskebrikker og den gamle støvle.
-789|Broer, guld samt den rigeste og fattigste spiller.
-790|En bunke begivenhedskort erstatter terningerne.
-791|Husregel: glemt røver
-792|Hvis en spiller afslutter sin tur uden at flytte røveren, vender den tilbage til ørkenen.
-793|Hvis du afslutter din tur nu, vender røveren tilbage til ørkenen.
-794|Den husregel er ikke slået til.
-795|{@p} glemte at flytte røveren, så den vender tilbage til ørkenen.
-796|Husregel: startråvarer for begge
-797|Husregler
-798|Begge bygninger fra opsætningsfasen giver startråvarer. I Byer & Riddere tæller byen som en bosættelse.
-799|Der er ikke sket noget endnu.
-800|Opsætningsfase
-801|Graferne fyldes ud, når de første ture er spillet.
-802|Sejrspoint over tid
-803|Terningslag
-804|Søjler: slået · linje: forventet efter {n} slag
-805|Modtagne råvarer
-806|Slag
-807|Oftest slået
-808|Syvere
-809|Mål
-810|slået
-811|forventet
-812|Mere end {n} kort: slås der 7, mister du halvdelen.
-813|Kun seneste slag
-814|Vis tidligere ture
-815|Brochs forsvarer
-816|−1 by
-817|Levende bræt
-818|Levende bræt: til
-819|Levende bræt: fra
-820|Bank
-821|Giver 1 point. Lægges åbent foran dig.
-822|Sådan spiller du: {mode}
-823|Sådan spiller du
-824|Sådan fungerer {mode} (1 min.)
-825|Velkommen til Broch!
-826|Byg, handl og voks. Først til 10 point vinder.
-827|Hvert felt giver en råvare.
-828|Skov, bakker, græsmark, marker og bjerge. Ørkenen giver intet.
-829|Byg bosættelser på hjørnerne.
-830|Tryk på det lysende hjørne.
-831|En bosættelse rører op til 3 felter.
-832|Dine modstandere bygger også.
-833|Slå med terningerne hver tur.
-834|Tryk på terningerne.
-835|Alle felter med det tal giver råvarer.
-836|Alle ved siden af får et kort, også i andre spilleres tur.
-837|Flere prikker, mere held.
-838|Røde 6 og 8 slås oftest, 2 og 12 sjældent.
-839|Brug kort til at bygge.
-840|En vej koster træ og ler. Tryk på den lysende kant.
-841|Byer giver dobbelt.
-842|Opgrader en bosættelse med 2 korn og 3 malm. Tryk på din bosættelse.
-843|En 7'er vækker røveren!
-844|Flyt røveren til et felt.
-845|Feltet holder op med at give. Tryk på et felt ved din modstander.
-846|Stjæl derefter et kort fra en spiller der.
-847|Alle med mere end 7 kort mister halvdelen.
-848|Handl med spillerne eller banken.
-849|Banken bytter 4 ens til 1. Havne: 3:1 eller 2:1.
-850|Riddere flytter røveren. Andre kort giver veje, råvarer eller et sejrspoint.
-851|3 riddere spillet: Største hær, +2 point.
-852|Indehaveren hejser krigsbannere på brættet.
-853|5 veje i træk: Længste vej, +2 point.
-854|Den længste strækning lyser gyldent.
-855|Nå 10 point for at vinde!
-856|Bosættelse 1 · By 2 · Længste vej 2 · Største hær 2 · Sejrspointkort 1
-857|Alt fra Klassisk plus varer, riddere og barbarer. Først til 13 point vinder.
-858|Byer giver varer.
-859|Skov: papir · Græsmark: stof · Bjerge: mønt
-860|Med varer køber du byforbedringer.
-861|Handel koster stof, politik mønt, videnskab papir. Tryk på +.
-862|Niveau 3 låser en særlig evne op.
-863|Videnskab: få en råvare, når du ikke får noget. Handel: varer 2:1. Politik: stærkere riddere.
-864|Den første på niveau 4 rejser en metropol.
-865|Den er 2 point værd og står på din by.
-866|Riddere forsvarer Broch.
-867|Hverv en for uld og malm. Tryk på det lysende hjørne.
-868|Aktivér den med korn.
-869|Kun aktive riddere kæmper. Forfrem dem for at gøre dem stærkere.
-870|Et skib på begivenhedsterningen flytter barbarerne.
-871|Hvert skib bringer dem et skridt nærmere Broch.
-872|Deres styrke: alle byer på brættet. Dit forsvar: alle aktive riddere.
-873|Den stærkeste forsvarer får et point. Vinder barbarerne, bliver den svageste by plyndret.
-874|En farvet port på begivenhedsterningen giver kort til spillere med høje nok forbedringer.
-875|Bymure
-876|Hver mur lader dig beholde 2 kort mere, når der slås 7.
-877|Nå 13 point for at vinde!
-878|Bosættelse 1 · By 2 · Metropol 2 · Forsvarer 1 · Længste vej 2
-879|Landet er delt i øer. Skibe krydser havet.
-880|Byg skibe på vandet.
-881|Et skib koster træ og uld. Tryk på den lysende kant.
-882|Skibe danner en kæde, ligesom veje.
-883|Det sidste skib i en åben kæde må sejle til et nyt sted én gang pr. tur.
-884|Sejl op til tågen for at afsløre den.
-885|Når du opdager land, får du en råvare.
-886|Bosæt en ny ø: +1 point!
-887|Guldmarker giver den råvare, du vil have.
-888|Piraten
-889|Skibe ved hans felt er blokeret, og han stjæler. En 7'er eller en ridder flytter ham.
-890|Vind med 12 til 14 point.
-891|Vælg et scenarie, når du opretter spillet: Mod nye kyster, De fire øer eller Tågeøerne.
-892|Tre varianter, du kan kombinere: Fiskere, Floder og Begivenhedskort.
-893|Fiskere
-894|Ørkenen bliver en sø, og kysten får fiskepladser.
-895|Slå tallet ved en fiskeplads for at fange fisk.
-896|Søen giver fisk på 2, 3, 11 og 12.
-897|Betal med fisk
-898|2 jag røveren væk · 3 stjæl · 4 tag en råvare · 5 en vej · 7 et udviklingskort
-899|Den gamle støvle
-900|Den, der fisker den op, mangler ét point mere for at vinde og må give den videre til den førende.
-901|Floder
-902|Hver vej eller bosættelse ved en flod indbringer 1 guld.
-903|Broer krydser floden.
-904|En bro koster 2 ler og 1 træ og indbringer 3 guld.
-905|Byt 2 guld til en valgfri råvare. Den rigeste spiller får +1 point, den fattigste −2.
-906|En bunke med alle 36 mulige slag erstatter terningerne, så hvert tal kommer lige så ofte, som det skal.
-907|Sejl ind i tågen, opdag land og fuldfør missioner.
-908|Udforsk tågen med skibe.
-909|Tryk på den lysende kant. Nyt land giver dig en råvare.
-910|Et skib ved en fiskestim fanger fisk, når dens tal slås.
-911|Krydderier til Broch
-912|Bosættelser ved en krydderimark læsser krydderi, når den giver.
-913|Lever lasten til rådet.
-914|Hver 2. levering giver 1 point, op til 3 point pr. mission.
-915|Angrib fra et skib ved et gemmested for 1 malm og 1 uld. Den, der har ramt mest, når det falder, får et point.
-916|Nå 12 point for at vinde!
-917|Bosættelser, byer, nye øer, missioner og gemmesteder tæller alle.
-918|Et større bræt med flere felter, havne og kort til op til 6 spillere.
-919|Særlig byggefase
-920|Efter hver tur må alle de andre bygge på skift, men ikke handle.
-921|Så ingen venter længe.
-922|Turene forbliver korte, selv ved et fuldt bord.
-923|Tilbage
-924|Pause
-925|Næste
-926|Nu kan du {mode}!
-927|Se igen
-928|Næste: {mode}
-929|Lad os spille!
-930|Begivenhedskort
-931|Slå
-932|Sejr!
-933|Spillet er slut
-934|Du vandt!
-935|sejrspoint
-936|Du blev nr. {n} med {m} point.
-937|Slutstilling
-938|Se på brættet
-939|Bosættelser
-940|Byer
-941|Metropol
-942|Sejrspointkort
-943|Bonuspoint
-944|Sådan gik løbet
-945|Flest råvarer
-946|Hyppigste tal
-947|{n}×
-948|Spillets længde
-949|{n} ture
-950|Højdepunkter
-951|Længste handelsvej
-952|Vælg din råvare én gang. Fra nu af udbetaler akvædukten den, hver gang et slag ikke giver dig noget (undtagen ved 7).
-953|Akvædukt: {res}. Tryk for at ændre.
+786|Fiskepladser, fiskebrikker og den gamle støvle.
+787|Broer, guld samt den rigeste og fattigste spiller.
+788|En bunke begivenhedskort erstatter terningerne.
+789|Husregel: glemt røver
+790|Hvis en spiller afslutter sin tur uden at flytte røveren, vender den tilbage til ørkenen.
+791|Hvis du afslutter din tur nu, vender røveren tilbage til ørkenen.
+792|Den husregel er ikke slået til.
+793|{@p} glemte at flytte røveren, så den vender tilbage til ørkenen.
+794|Husregel: startråvarer for begge
+795|Husregler
+796|Begge bygninger fra opsætningsfasen giver startråvarer. I Byer & Riddere tæller byen som en bosættelse.
+797|Der er ikke sket noget endnu.
+798|Opsætningsfase
+799|Graferne fyldes ud, når de første ture er spillet.
+800|Sejrspoint over tid
+801|Terningslag
+802|Søjler: slået · linje: forventet efter {n} slag
+803|Modtagne råvarer
+804|Slag
+805|Oftest slået
+806|Syvere
+807|Mål
+808|slået
+809|forventet
+810|Mere end {n} kort: slås der 7, mister du halvdelen.
+811|Kun seneste slag
+812|Vis tidligere ture
+813|Brochs forsvarer
+814|−1 by
+815|Levende bræt
+816|Levende bræt: til
+817|Levende bræt: fra
+818|Bank
+819|Giver 1 point. Lægges åbent foran dig.
+820|Sådan spiller du: {mode}
+821|Sådan spiller du
+822|Sådan fungerer {mode} (1 min.)
+823|Velkommen til Broch!
+824|Byg, handl og voks. Først til 10 point vinder.
+825|Hvert felt giver en råvare.
+826|Skov, bakker, græsmark, marker og bjerge. Ørkenen giver intet.
+827|Byg bosættelser på hjørnerne.
+828|Tryk på det lysende hjørne.
+829|En bosættelse rører op til 3 felter.
+830|Dine modstandere bygger også.
+831|Slå med terningerne hver tur.
+832|Tryk på terningerne.
+833|Alle felter med det tal giver råvarer.
+834|Alle ved siden af får et kort, også i andre spilleres tur.
+835|Flere prikker, mere held.
+836|Røde 6 og 8 slås oftest, 2 og 12 sjældent.
+837|Brug kort til at bygge.
+838|En vej koster træ og ler. Tryk på den lysende kant.
+839|Byer giver dobbelt.
+840|Opgrader en bosættelse med 2 korn og 3 malm. Tryk på din bosættelse.
+841|En 7'er vækker røveren!
+842|Flyt røveren til et felt.
+843|Feltet holder op med at give. Tryk på et felt ved din modstander.
+844|Stjæl derefter et kort fra en spiller der.
+845|Alle med mere end 7 kort mister halvdelen.
+846|Handl med spillerne eller banken.
+847|Banken bytter 4 ens til 1. Havne: 3:1 eller 2:1.
+848|Riddere flytter røveren. Andre kort giver veje, råvarer eller et sejrspoint.
+849|3 riddere spillet: Største hær, +2 point.
+850|Indehaveren hejser krigsbannere på brættet.
+851|5 veje i træk: Længste vej, +2 point.
+852|Den længste strækning lyser gyldent.
+853|Nå 10 point for at vinde!
+854|Bosættelse 1 · By 2 · Længste vej 2 · Største hær 2 · Sejrspointkort 1
+855|Alt fra Klassisk plus varer, riddere og barbarer. Først til 13 point vinder.
+856|Byer giver varer.
+857|Skov: papir · Græsmark: stof · Bjerge: mønt
+858|Med varer køber du byforbedringer.
+859|Handel koster stof, politik mønt, videnskab papir. Tryk på +.
+860|Niveau 3 låser en særlig evne op.
+861|Videnskab: få en råvare, når du ikke får noget. Handel: varer 2:1. Politik: stærkere riddere.
+862|Den første på niveau 4 rejser en metropol.
+863|Den er 2 point værd og står på din by.
+864|Riddere forsvarer Broch.
+865|Hverv en for uld og malm. Tryk på det lysende hjørne.
+866|Aktivér den med korn.
+867|Kun aktive riddere kæmper. Forfrem dem for at gøre dem stærkere.
+868|Et skib på begivenhedsterningen flytter barbarerne.
+869|Hvert skib bringer dem et skridt nærmere Broch.
+870|Deres styrke: alle byer på brættet. Dit forsvar: alle aktive riddere.
+871|Den stærkeste forsvarer får et point. Vinder barbarerne, bliver den svageste by plyndret.
+872|En farvet port på begivenhedsterningen giver kort til spillere med høje nok forbedringer.
+873|Bymure
+874|Hver mur lader dig beholde 2 kort mere, når der slås 7.
+875|Nå 13 point for at vinde!
+876|Bosættelse 1 · By 2 · Metropol 2 · Forsvarer 1 · Længste vej 2
+877|Landet er delt i øer. Skibe krydser havet.
+878|Byg skibe på vandet.
+879|Et skib koster træ og uld. Tryk på den lysende kant.
+880|Skibe danner en kæde, ligesom veje.
+881|Det sidste skib i en åben kæde må sejle til et nyt sted én gang pr. tur.
+882|Sejl op til tågen for at afsløre den.
+883|Når du opdager land, får du en råvare.
+884|Bosæt en ny ø: +1 point!
+885|Guldmarker giver den råvare, du vil have.
+886|Piraten
+887|Skibe ved hans felt er blokeret, og han stjæler. En 7'er eller en ridder flytter ham.
+888|Vind med 12 til 14 point.
+889|Vælg et scenarie, når du opretter spillet: Mod nye kyster, De fire øer eller Tågeøerne.
+890|Tre varianter, du kan kombinere: Fiskere, Floder og Begivenhedskort.
+891|Fiskere
+892|Ørkenen bliver en sø, og kysten får fiskepladser.
+893|Slå tallet ved en fiskeplads for at fange fisk.
+894|Søen giver fisk på 2, 3, 11 og 12.
+895|Betal med fisk
+896|2 jag røveren væk · 3 stjæl · 4 tag en råvare · 5 en vej · 7 et udviklingskort
+897|Den gamle støvle
+898|Den, der fisker den op, mangler ét point mere for at vinde og må give den videre til den førende.
+899|Floder
+900|Hver vej eller bosættelse ved en flod indbringer 1 guld.
+901|Broer krydser floden.
+902|En bro koster 2 ler og 1 træ og indbringer 3 guld.
+903|Byt 2 guld til en valgfri råvare. Den rigeste spiller får +1 point, den fattigste −2.
+904|En bunke med alle 36 mulige slag erstatter terningerne, så hvert tal kommer lige så ofte, som det skal.
+905|Sejl ind i tågen, opdag land og fuldfør missioner.
+906|Udforsk tågen med skibe.
+907|Tryk på den lysende kant. Nyt land giver dig en råvare.
+908|Et skib ved en fiskestim fanger fisk, når dens tal slås.
+909|Krydderier til Broch
+910|Bosættelser ved en krydderimark læsser krydderi, når den giver.
+911|Lever lasten til rådet.
+912|Hver 2. levering giver 1 point, op til 3 point pr. mission.
+913|Angrib fra et skib ved et gemmested for 1 malm og 1 uld. Den, der har ramt mest, når det falder, får et point.
+914|Nå 12 point for at vinde!
+915|Bosættelser, byer, nye øer, missioner og gemmesteder tæller alle.
+916|Et større bræt med flere felter, havne og kort til op til 6 spillere.
+917|Særlig byggefase
+918|Efter hver tur må alle de andre bygge på skift, men ikke handle.
+919|Så ingen venter længe.
+920|Turene forbliver korte, selv ved et fuldt bord.
+921|Tilbage
+922|Pause
+923|Næste
+924|Nu kan du {mode}!
+925|Se igen
+926|Næste: {mode}
+927|Lad os spille!
+928|Begivenhedskort
+929|Slå
+930|Sejr!
+931|Spillet er slut
+932|Du vandt!
+933|sejrspoint
+934|Du blev nr. {n} med {m} point.
+935|Slutstilling
+936|Se på brættet
+937|Bosættelser
+938|Byer
+939|Metropol
+940|Sejrspointkort
+941|Bonuspoint
+942|Sådan gik løbet
+943|Flest råvarer
+944|Hyppigste tal
+945|{n}×
+946|Spillets længde
+947|{n} ture
+948|Højdepunkter
+949|Længste handelsvej
+950|Vælg din råvare én gang. Fra nu af udbetaler akvædukten den, hver gang et slag ikke giver dig noget (undtagen ved 7).
+951|Akvædukt: {res}. Tryk for at ændre.

@@ -780,174 +780,172 @@
 780|Auf zu neuen Ufern
 781|Die vier Inseln
 782|Die Nebelinseln
-783|Die Fischer von Catan
-784|Die Flüsse von Catan
+783|Die Fischer von Broch
+784|Die Flüsse von Broch
 785|Ereigniskarten
-786|Fisch für Catan
-787|Gewürz für Catan
-788|Fischgründe, Fischplättchen und der alte Stiefel.
-789|Brücken, Gold sowie der reichste und ärmste Spieler.
-790|Ein Stapel Ereigniskarten ersetzt die Würfel.
-791|Hausregel: vergessener Räuber
-792|Beendet ein Spieler seinen Zug, ohne den Räuber zu versetzen, kehrt er in die Wüste zurück.
-793|Wenn du deinen Zug jetzt beendest, kehrt der Räuber in die Wüste zurück.
-794|Diese Hausregel ist nicht aktiviert.
-795|{@p} hat vergessen, den Räuber zu versetzen, er kehrt daher in die Wüste zurück.
-796|Hausregel: Startrohstoffe für beide
-797|Hausregeln
-798|Beide Gebäude aus der Aufbauphase liefern Startrohstoffe. Bei Städte & Ritter zählt die Stadt wie eine Siedlung.
-799|Noch ist nichts passiert.
-800|Aufbauphase
-801|Die Diagramme füllen sich, sobald die ersten Züge gespielt sind.
-802|Siegpunkte im Spielverlauf
-803|Würfelergebnisse
-804|Balken: gewürfelt · Linie: erwartet nach {n} Würfen
-805|Erhaltene Rohstoffe
-806|Würfe
-807|Häufigste Zahl
-808|Siebener
-809|Ziel
-810|gewürfelt
-811|erwartet
-812|Mehr als {n} Karten: Bei einer 7 verlierst du die Hälfte.
-813|Nur letzter Wurf
-814|Frühere Züge zeigen
-815|Verteidiger von Broch
-816|−1 Stadt
-817|Lebendiges Spielfeld
-818|Lebendiges Spielfeld: an
-819|Lebendiges Spielfeld: aus
-820|Bank
-821|Zählt 1 Punkt. Wird offen vor dir ausgelegt.
-822|So wird gespielt: {mode}
-823|So wird gespielt
-824|So funktioniert {mode} (1 Min.)
-825|Willkommen in Broch!
-826|Bauen, handeln, wachsen. Wer zuerst 10 Punkte hat, gewinnt.
-827|Jedes Feld liefert einen Rohstoff.
-828|Wald, Hügelland, Weideland, Ackerland und Gebirge. Die Wüste liefert nichts.
-829|Baue Siedlungen auf den Ecken.
-830|Tippe auf die leuchtende Ecke.
-831|Eine Siedlung grenzt an bis zu 3 Felder.
-832|Deine Gegner bauen auch.
-833|Würfle in jedem Zug.
-834|Tippe auf die Würfel.
-835|Jedes Feld mit dieser Zahl bringt Ertrag.
-836|Wer daran grenzt, bekommt eine Karte – auch im Zug der anderen.
-837|Mehr Pünktchen, mehr Glück.
-838|Die roten 6 und 8 fallen am häufigsten, 2 und 12 selten.
-839|Bauen kostet Karten.
-840|Eine Straße kostet Holz und Lehm. Tippe auf die leuchtende Kante.
-841|Städte bringen doppelten Ertrag.
-842|Baue eine Siedlung für 2 Getreide und 3 Erz zur Stadt aus. Tippe auf deine Siedlung.
-843|Eine 7 weckt den Räuber!
-844|Versetze den Räuber auf ein Feld.
-845|Das Feld bringt dann keinen Ertrag mehr. Tippe auf ein Feld neben deinem Gegner.
-846|Dann ziehst du eine Karte von jemandem dort.
-847|Wer mehr als 7 Karten hat, verliert die Hälfte.
-848|Handle mit Spielern oder der Bank.
-849|Die Bank tauscht 4 gleiche Karten gegen 1. Häfen: 3:1 oder 2:1.
-850|Ritter versetzen den Räuber. Die anderen bringen Straßen, Rohstoffe oder einen Siegpunkt.
-851|3 Ritter ausgespielt: Größte Rittermacht, +2 Punkte.
-852|Wer sie hat, lässt Kriegsbanner auf dem Spielfeld wehen.
-853|5 Straßen am Stück: Längste Straße, +2 Punkte.
-854|Die längste Strecke leuchtet golden.
-855|Mit 10 Punkten gewinnst du!
-856|Siedlung 1 · Stadt 2 · Längste Straße 2 · Größte Rittermacht 2 · Siegpunktkarte 1
-857|Alles vom klassischen Spiel, dazu Waren, Ritter und Barbaren. Sieg mit 13 Punkten.
-858|Städte liefern Waren.
-859|Wald: Papier · Weideland: Tuch · Gebirge: Münzen
-860|Mit Waren kaufst du Stadtausbauten.
-861|Handel kostet Tuch, Politik Münzen, Wissenschaft Papier. Tippe auf +.
-862|Stufe 3 schaltet eine Sonderfähigkeit frei.
-863|Wissenschaft: ein Rohstoff, wenn du leer ausgehst. Handel: Waren 2:1. Politik: stärkere Ritter.
-864|Wer zuerst Stufe 4 erreicht, errichtet eine Metropole.
-865|Sie zählt 2 Punkte und thront auf deiner Stadt.
-866|Ritter verteidigen Broch.
-867|Rekrutiere einen für Wolle und Erz. Tippe auf die leuchtende Ecke.
-868|Aktiviere ihn mit Getreide.
-869|Nur aktive Ritter kämpfen. Befördere sie, dann werden sie stärker.
-870|Ein Schiff auf dem Ereigniswürfel lässt die Barbaren vorrücken.
-871|Jedes Schiff bringt sie Broch einen Schritt näher.
-872|Ihre Stärke: alle Städte auf dem Spielfeld. Deine Abwehr: alle aktiven Ritter.
-873|Der stärkste Verteidiger bekommt einen Punkt. Siegen die Barbaren, wird die schwächste Stadt geplündert.
-874|Ein farbiges Tor auf dem Ereigniswürfel bringt Karten für alle, deren Ausbau hoch genug ist.
-875|Stadtmauern
-876|Mit jeder Mauer darfst du 2 Karten mehr behalten, wenn eine 7 fällt.
-877|Mit 13 Punkten gewinnst du!
-878|Siedlung 1 · Stadt 2 · Metropole 2 · Verteidiger 1 · Längste Straße 2
-879|Das Land ist in Inseln geteilt. Schiffe überqueren das Meer.
-880|Baue Schiffe auf dem Wasser.
-881|Ein Schiff kostet Holz und Wolle. Tippe auf die leuchtende Kante.
-882|Schiffe bilden eine Kette, wie Straßen.
-883|Das letzte Schiff einer offenen Kette darf einmal pro Zug an eine neue Stelle segeln.
-884|Segle neben den Nebel, um ihn aufzudecken.
-885|Entdecktes Land bringt dir einen Rohstoff.
-886|Besiedle eine neue Insel: +1 Punkt!
-887|Goldfelder liefern einen Rohstoff deiner Wahl.
-888|Der Pirat
-889|Schiffe neben seinem Feld sind blockiert, und er stiehlt. Eine 7 oder ein Ritter versetzt ihn.
-890|Gewonnen wird mit 12 bis 14 Punkten.
-891|Wähle beim Erstellen des Spiels ein Szenario: Neue Ufer, Vier Inseln oder Nebelinseln.
-892|Drei Varianten zum Kombinieren: Fischer, Flüsse und Ereigniskarten.
-893|Fischer
-894|Die Wüste wird zum See, und an der Küste gibt es Fischgründe.
-895|Fällt die Zahl eines Fischgrunds, fängst du Fische.
-896|Der See bringt Fische bei 2, 3, 11 und 12.
-897|Mit Fisch bezahlen
-898|2 Räuber vertreiben · 3 Karte ziehen · 4 Rohstoff nehmen · 5 Straße · 7 Entwicklungskarte
-899|Der alte Stiefel
-900|Wer ihn angelt, braucht einen Punkt mehr zum Sieg und darf ihn an einen Führenden weitergeben.
-901|Flüsse
-902|Jede Straße und Siedlung an einem Fluss bringt 1 Gold.
-903|Brücken führen über den Fluss.
-904|Eine Brücke kostet 2 Lehm und 1 Holz und bringt 3 Gold.
-905|Tausche 2 Gold gegen einen beliebigen Rohstoff. Der Reichste bekommt +1 Punkt, der Ärmste −2.
-906|Ein Stapel mit allen 36 Würfelergebnissen ersetzt die Würfel – so fällt jede Zahl genau so oft, wie sie soll.
-907|Segle in den Nebel, entdecke Land und erfülle Missionen.
-908|Erkunde den Nebel mit Schiffen.
-909|Tippe auf die leuchtende Kante. Neues Land bringt dir einen Rohstoff.
-910|Ein Schiff neben einem Fischschwarm holt Fische an Bord, wenn dessen Zahl fällt.
-911|Gewürze für Broch
-912|Siedlungen an einem Gewürzfeld laden Gewürze ein, wenn es Ertrag bringt.
-913|Liefere Fracht an den Rat.
-914|Je 2 Lieferungen bringen 1 Punkt, höchstens 3 Punkte pro Mission.
-915|Greife für 1 Erz und 1 Wolle von einem Schiff neben einem Nest aus an. Fällt es, bekommt der mit den meisten Treffern einen Punkt.
-916|Mit 12 Punkten gewinnst du!
-917|Es zählen Siedlungen, Städte, neue Inseln, Missionen und Piratennester.
-918|Ein größeres Spielfeld mit mehr Feldern, Häfen und Karten für bis zu 6 Spieler.
-919|Sonderbauphase
-920|Nach jedem Zug dürfen alle anderen reihum bauen, aber nicht handeln.
-921|Damit niemand lange wartet.
-922|Die Züge bleiben kurz, auch bei vollem Tisch.
-923|Zurück
-924|Pause
-925|Weiter
-926|Jetzt kennst du {mode}!
-927|Nochmal ansehen
-928|Weiter mit {mode}
-929|Los geht's!
-930|Ereigniskarte
-931|Würfeln
-932|Sieg!
-933|Spielende
-934|Du hast gewonnen!
-935|Siegpunkte
-936|Du bist mit {m} Punkten auf Platz {n} gelandet.
-937|Endstand
-938|Spielfeld ansehen
-939|Siedlungen
-940|Städte
-941|Metropole
-942|Siegpunktkarten
-943|Bonuspunkte
-944|So lief das Rennen
-945|Meiste Rohstoffe
-946|Häufigste Würfelzahl
-947|{n}×
-948|Spieldauer
-949|{n} Züge
-950|Höhepunkte
-951|Längste Handelsroute
-952|Wähle einmal deine Ressource. Ab jetzt zahlt der Aquädukt sie jedes Mal aus, wenn dir ein Wurf nichts einbringt (außer bei einer 7).
-953|Aquädukt: {res}. Tippen zum Ändern.
+786|Fischgründe, Fischplättchen und der alte Stiefel.
+787|Brücken, Gold sowie der reichste und ärmste Spieler.
+788|Ein Stapel Ereigniskarten ersetzt die Würfel.
+789|Hausregel: vergessener Räuber
+790|Beendet ein Spieler seinen Zug, ohne den Räuber zu versetzen, kehrt er in die Wüste zurück.
+791|Wenn du deinen Zug jetzt beendest, kehrt der Räuber in die Wüste zurück.
+792|Diese Hausregel ist nicht aktiviert.
+793|{@p} hat vergessen, den Räuber zu versetzen, er kehrt daher in die Wüste zurück.
+794|Hausregel: Startrohstoffe für beide
+795|Hausregeln
+796|Beide Gebäude aus der Aufbauphase liefern Startrohstoffe. Bei Städte & Ritter zählt die Stadt wie eine Siedlung.
+797|Noch ist nichts passiert.
+798|Aufbauphase
+799|Die Diagramme füllen sich, sobald die ersten Züge gespielt sind.
+800|Siegpunkte im Spielverlauf
+801|Würfelergebnisse
+802|Balken: gewürfelt · Linie: erwartet nach {n} Würfen
+803|Erhaltene Rohstoffe
+804|Würfe
+805|Häufigste Zahl
+806|Siebener
+807|Ziel
+808|gewürfelt
+809|erwartet
+810|Mehr als {n} Karten: Bei einer 7 verlierst du die Hälfte.
+811|Nur letzter Wurf
+812|Frühere Züge zeigen
+813|Verteidiger von Broch
+814|−1 Stadt
+815|Lebendiges Spielfeld
+816|Lebendiges Spielfeld: an
+817|Lebendiges Spielfeld: aus
+818|Bank
+819|Zählt 1 Punkt. Wird offen vor dir ausgelegt.
+820|So wird gespielt: {mode}
+821|So wird gespielt
+822|So funktioniert {mode} (1 Min.)
+823|Willkommen in Broch!
+824|Bauen, handeln, wachsen. Wer zuerst 10 Punkte hat, gewinnt.
+825|Jedes Feld liefert einen Rohstoff.
+826|Wald, Hügelland, Weideland, Ackerland und Gebirge. Die Wüste liefert nichts.
+827|Baue Siedlungen auf den Ecken.
+828|Tippe auf die leuchtende Ecke.
+829|Eine Siedlung grenzt an bis zu 3 Felder.
+830|Deine Gegner bauen auch.
+831|Würfle in jedem Zug.
+832|Tippe auf die Würfel.
+833|Jedes Feld mit dieser Zahl bringt Ertrag.
+834|Wer daran grenzt, bekommt eine Karte – auch im Zug der anderen.
+835|Mehr Pünktchen, mehr Glück.
+836|Die roten 6 und 8 fallen am häufigsten, 2 und 12 selten.
+837|Bauen kostet Karten.
+838|Eine Straße kostet Holz und Lehm. Tippe auf die leuchtende Kante.
+839|Städte bringen doppelten Ertrag.
+840|Baue eine Siedlung für 2 Getreide und 3 Erz zur Stadt aus. Tippe auf deine Siedlung.
+841|Eine 7 weckt den Räuber!
+842|Versetze den Räuber auf ein Feld.
+843|Das Feld bringt dann keinen Ertrag mehr. Tippe auf ein Feld neben deinem Gegner.
+844|Dann ziehst du eine Karte von jemandem dort.
+845|Wer mehr als 7 Karten hat, verliert die Hälfte.
+846|Handle mit Spielern oder der Bank.
+847|Die Bank tauscht 4 gleiche Karten gegen 1. Häfen: 3:1 oder 2:1.
+848|Ritter versetzen den Räuber. Die anderen bringen Straßen, Rohstoffe oder einen Siegpunkt.
+849|3 Ritter ausgespielt: Größte Rittermacht, +2 Punkte.
+850|Wer sie hat, lässt Kriegsbanner auf dem Spielfeld wehen.
+851|5 Straßen am Stück: Längste Straße, +2 Punkte.
+852|Die längste Strecke leuchtet golden.
+853|Mit 10 Punkten gewinnst du!
+854|Siedlung 1 · Stadt 2 · Längste Straße 2 · Größte Rittermacht 2 · Siegpunktkarte 1
+855|Alles vom klassischen Spiel, dazu Waren, Ritter und Barbaren. Sieg mit 13 Punkten.
+856|Städte liefern Waren.
+857|Wald: Papier · Weideland: Tuch · Gebirge: Münzen
+858|Mit Waren kaufst du Stadtausbauten.
+859|Handel kostet Tuch, Politik Münzen, Wissenschaft Papier. Tippe auf +.
+860|Stufe 3 schaltet eine Sonderfähigkeit frei.
+861|Wissenschaft: ein Rohstoff, wenn du leer ausgehst. Handel: Waren 2:1. Politik: stärkere Ritter.
+862|Wer zuerst Stufe 4 erreicht, errichtet eine Metropole.
+863|Sie zählt 2 Punkte und thront auf deiner Stadt.
+864|Ritter verteidigen Broch.
+865|Rekrutiere einen für Wolle und Erz. Tippe auf die leuchtende Ecke.
+866|Aktiviere ihn mit Getreide.
+867|Nur aktive Ritter kämpfen. Befördere sie, dann werden sie stärker.
+868|Ein Schiff auf dem Ereigniswürfel lässt die Barbaren vorrücken.
+869|Jedes Schiff bringt sie Broch einen Schritt näher.
+870|Ihre Stärke: alle Städte auf dem Spielfeld. Deine Abwehr: alle aktiven Ritter.
+871|Der stärkste Verteidiger bekommt einen Punkt. Siegen die Barbaren, wird die schwächste Stadt geplündert.
+872|Ein farbiges Tor auf dem Ereigniswürfel bringt Karten für alle, deren Ausbau hoch genug ist.
+873|Stadtmauern
+874|Mit jeder Mauer darfst du 2 Karten mehr behalten, wenn eine 7 fällt.
+875|Mit 13 Punkten gewinnst du!
+876|Siedlung 1 · Stadt 2 · Metropole 2 · Verteidiger 1 · Längste Straße 2
+877|Das Land ist in Inseln geteilt. Schiffe überqueren das Meer.
+878|Baue Schiffe auf dem Wasser.
+879|Ein Schiff kostet Holz und Wolle. Tippe auf die leuchtende Kante.
+880|Schiffe bilden eine Kette, wie Straßen.
+881|Das letzte Schiff einer offenen Kette darf einmal pro Zug an eine neue Stelle segeln.
+882|Segle neben den Nebel, um ihn aufzudecken.
+883|Entdecktes Land bringt dir einen Rohstoff.
+884|Besiedle eine neue Insel: +1 Punkt!
+885|Goldfelder liefern einen Rohstoff deiner Wahl.
+886|Der Pirat
+887|Schiffe neben seinem Feld sind blockiert, und er stiehlt. Eine 7 oder ein Ritter versetzt ihn.
+888|Gewonnen wird mit 12 bis 14 Punkten.
+889|Wähle beim Erstellen des Spiels ein Szenario: Neue Ufer, Vier Inseln oder Nebelinseln.
+890|Drei Varianten zum Kombinieren: Fischer, Flüsse und Ereigniskarten.
+891|Fischer
+892|Die Wüste wird zum See, und an der Küste gibt es Fischgründe.
+893|Fällt die Zahl eines Fischgrunds, fängst du Fische.
+894|Der See bringt Fische bei 2, 3, 11 und 12.
+895|Mit Fisch bezahlen
+896|2 Räuber vertreiben · 3 Karte ziehen · 4 Rohstoff nehmen · 5 Straße · 7 Entwicklungskarte
+897|Der alte Stiefel
+898|Wer ihn angelt, braucht einen Punkt mehr zum Sieg und darf ihn an einen Führenden weitergeben.
+899|Flüsse
+900|Jede Straße und Siedlung an einem Fluss bringt 1 Gold.
+901|Brücken führen über den Fluss.
+902|Eine Brücke kostet 2 Lehm und 1 Holz und bringt 3 Gold.
+903|Tausche 2 Gold gegen einen beliebigen Rohstoff. Der Reichste bekommt +1 Punkt, der Ärmste −2.
+904|Ein Stapel mit allen 36 Würfelergebnissen ersetzt die Würfel – so fällt jede Zahl genau so oft, wie sie soll.
+905|Segle in den Nebel, entdecke Land und erfülle Missionen.
+906|Erkunde den Nebel mit Schiffen.
+907|Tippe auf die leuchtende Kante. Neues Land bringt dir einen Rohstoff.
+908|Ein Schiff neben einem Fischschwarm holt Fische an Bord, wenn dessen Zahl fällt.
+909|Gewürze für Broch
+910|Siedlungen an einem Gewürzfeld laden Gewürze ein, wenn es Ertrag bringt.
+911|Liefere Fracht an den Rat.
+912|Je 2 Lieferungen bringen 1 Punkt, höchstens 3 Punkte pro Mission.
+913|Greife für 1 Erz und 1 Wolle von einem Schiff neben einem Nest aus an. Fällt es, bekommt der mit den meisten Treffern einen Punkt.
+914|Mit 12 Punkten gewinnst du!
+915|Es zählen Siedlungen, Städte, neue Inseln, Missionen und Piratennester.
+916|Ein größeres Spielfeld mit mehr Feldern, Häfen und Karten für bis zu 6 Spieler.
+917|Sonderbauphase
+918|Nach jedem Zug dürfen alle anderen reihum bauen, aber nicht handeln.
+919|Damit niemand lange wartet.
+920|Die Züge bleiben kurz, auch bei vollem Tisch.
+921|Zurück
+922|Pause
+923|Weiter
+924|Jetzt kennst du {mode}!
+925|Nochmal ansehen
+926|Weiter mit {mode}
+927|Los geht's!
+928|Ereigniskarte
+929|Würfeln
+930|Sieg!
+931|Spielende
+932|Du hast gewonnen!
+933|Siegpunkte
+934|Du bist mit {m} Punkten auf Platz {n} gelandet.
+935|Endstand
+936|Spielfeld ansehen
+937|Siedlungen
+938|Städte
+939|Metropole
+940|Siegpunktkarten
+941|Bonuspunkte
+942|So lief das Rennen
+943|Meiste Rohstoffe
+944|Häufigste Würfelzahl
+945|{n}×
+946|Spieldauer
+947|{n} Züge
+948|Höhepunkte
+949|Längste Handelsroute
+950|Wähle einmal deine Ressource. Ab jetzt zahlt der Aquädukt sie jedes Mal aus, wenn dir ein Wurf nichts einbringt (außer bei einer 7).
+951|Aquädukt: {res}. Tippen zum Ändern.

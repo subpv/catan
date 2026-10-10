@@ -780,174 +780,172 @@
 780|Rumbo a nuevas costas
 781|Las cuatro islas
 782|Las islas de la niebla
-783|Pescadores de Catán
-784|Ríos de Catán
+783|Pescadores de Broch
+784|Ríos de Broch
 785|Cartas de evento
-786|Pescado para Catán
-787|Especia para Catán
-788|Caladeros, fichas de pescado y la bota vieja.
-789|Puentes, oro y el jugador más rico y más pobre.
-790|Un mazo de cartas de evento sustituye a los dados.
-791|Regla de la casa: ladrón olvidado
-792|Si un jugador termina su turno sin mover al ladrón, este vuelve al desierto.
-793|Si terminas tu turno ahora, el ladrón vuelve al desierto.
-794|Esa regla de la casa no está activada.
-795|{@p} olvidó mover al ladrón, así que vuelve al desierto.
-796|Regla de la casa: recursos iniciales por ambos
-797|Reglas de la casa
-798|Los dos edificios de la fase de preparación dan recursos iniciales. En Ciudades y Caballeros la ciudad cuenta como un poblado.
-799|Aún no ha pasado nada.
-800|Fase de preparación
-801|Los gráficos se rellenan en cuanto se juegan los primeros turnos.
-802|Evolución de los puntos de victoria
-803|Tiradas de dados
-804|Barras: real · línea: esperado tras {n} tiradas
-805|Recursos recibidos
-806|Tiradas
-807|Más frecuente
-808|Sietes
-809|Meta
-810|real
-811|esperado
-812|Más de {n} cartas: con un 7 pierdes la mitad.
-813|Solo la última tirada
-814|Ver turnos anteriores
-815|Defensor de Broch
-816|−1 ciudad
-817|Tablero vivo
-818|Tablero vivo: activado
-819|Tablero vivo: desactivado
-820|Banca
-821|Vale 1 punto. Se coloca boca arriba delante de ti.
-822|Cómo se juega: {mode}
-823|Cómo se juega
-824|Cómo funciona {mode} (1 min)
-825|¡Bienvenido a Broch!
-826|Construye, comercia y crece. Gana el primero en llegar a 10 puntos.
-827|Cada casilla produce un recurso.
-828|Bosque, colinas, pradera, campos y montañas. El desierto no produce nada.
-829|Construye poblados en las esquinas.
-830|Toca la esquina iluminada.
-831|Un poblado toca hasta 3 casillas.
-832|Tus rivales también construyen.
-833|Tira los dados en cada turno.
-834|Toca los dados.
-835|Cada casilla con ese número produce.
-836|Quien esté al lado recibe una carta, incluso en el turno de otros.
-837|Más puntitos, más suerte.
-838|El 6 y el 8 rojos salen más a menudo; el 2 y el 12, rara vez.
-839|Gasta cartas para construir.
-840|Una carretera cuesta madera y arcilla. Toca el borde iluminado.
-841|Las ciudades producen el doble.
-842|Convierte un poblado en ciudad con 2 cereales y 3 minerales. Toca tu poblado.
-843|¡Un 7 despierta al ladrón!
-844|Mueve al ladrón a una casilla.
-845|Deja de producir. Toca una casilla junto a tu rival.
-846|Luego roba una carta a alguien de allí.
-847|Quien tenga más de 7 cartas pierde la mitad.
-848|Comercia con los jugadores o con la banca.
-849|La banca cambia 4 cartas iguales por 1. Puertos: 3:1 o 2:1.
-850|Los caballeros mueven al ladrón. Las demás dan carreteras, recursos o un punto de victoria.
-851|3 caballeros jugados: gran ejército, +2 puntos.
-852|Quien lo tiene ondea estandartes de guerra en el tablero.
-853|5 carreteras seguidas: gran ruta comercial, +2 puntos.
-854|El camino más largo brilla en dorado.
-855|¡Llega a 10 puntos para ganar!
-856|Poblado 1 · Ciudad 2 · Gran ruta comercial 2 · Gran ejército 2 · Carta de punto de victoria 1
-857|Todo lo del Clásico, más mercancías, caballeros y bárbaros. Se gana con 13 puntos.
-858|Las ciudades producen mercancías.
-859|Bosque: papel · Pradera: tela · Montañas: monedas
-860|Las mercancías compran mejoras de ciudad.
-861|El comercio cuesta tela, la política monedas y la ciencia papel. Toca +.
-862|El nivel 3 desbloquea un poder especial.
-863|Ciencia: un recurso cuando no recibes nada. Comercio: mercancías 2:1. Política: caballeros más fuertes.
-864|El primero en llegar al nivel 4 levanta una metrópolis.
-865|Vale 2 puntos y se alza sobre tu ciudad.
-866|Los caballeros defienden Broch.
-867|Recluta uno por lana y mineral. Toca la esquina iluminada.
-868|Actívalo con cereal.
-869|Solo luchan los caballeros activos. Asciéndelos para hacerlos más fuertes.
-870|Un barco en el dado de evento hace avanzar a los bárbaros.
-871|Cada barco los acerca un paso más a Broch.
-872|Su fuerza: todas las ciudades del tablero. Tu defensa: todos los caballeros activos.
-873|El defensor más fuerte gana un punto. Si ganan los bárbaros, saquean la ciudad más débil.
-874|Una puerta de color en el dado de evento da cartas a quienes tengan mejoras suficientes.
-875|Murallas
-876|Cada muralla te deja guardar 2 cartas más cuando sale un 7.
-877|¡Llega a 13 puntos para ganar!
-878|Poblado 1 · Ciudad 2 · Metrópolis 2 · Defensor 1 · Gran ruta comercial 2
-879|La tierra está dividida en islas. Los barcos cruzan el mar.
-880|Construye barcos en el agua.
-881|Un barco cuesta madera y lana. Toca el borde iluminado.
-882|Los barcos forman una cadena, como las carreteras.
-883|El último barco de una cadena abierta puede navegar a otro lugar una vez por turno.
-884|Navega junto a la niebla para descubrirla.
-885|Descubrir tierra te da un recurso.
-886|Puebla una isla nueva: ¡+1 punto!
-887|Los campos de oro dan el recurso que quieras.
-888|El pirata
-889|Los barcos junto a su casilla quedan bloqueados, y él roba. Un 7 o un caballero lo mueven.
-890|Para ganar hacen falta de 12 a 14 puntos.
-891|Elige un escenario al crear la partida: Nuevas costas, Cuatro islas o Islas de la niebla.
-892|Tres variantes que puedes combinar: Pescadores, Ríos y Cartas de evento.
-893|Pescadores
-894|El desierto se convierte en un lago y la costa recibe caladeros.
-895|Saca el número de un caladero para pescar.
-896|El lago produce con 2, 3, 11 y 12.
-897|Pagar con pescado
-898|2 ahuyentar al ladrón · 3 robar · 4 tomar un recurso · 5 una carretera · 7 una carta de desarrollo
-899|La bota vieja
-900|Quien la pesca necesita un punto más para ganar, y puede pasársela a quien vaya en cabeza.
-901|Ríos
-902|Cada carretera o poblado junto a un río da 1 de oro.
-903|Los puentes cruzan el río.
-904|Un puente cuesta 2 de arcilla y 1 de madera y da 3 de oro.
-905|Cambia 2 de oro por cualquier recurso. El más rico gana +1 punto; el más pobre, −2.
-906|Un mazo con los 36 resultados de los dados sustituye a los dados, así cada número sale tantas veces como debe.
-907|Navega hacia la niebla, descubre tierras y cumple misiones.
-908|Explora la niebla con barcos.
-909|Toca el borde iluminado. La tierra nueva te da un recurso.
-910|Un barco junto a un banco de peces recoge pescado cuando sale su número.
-911|Especias para Broch
-912|Los poblados junto a un campo de especias cargan especia cuando produce.
-913|Entrega la carga al consejo.
-914|Cada 2 entregas dan 1 punto, hasta 3 puntos por misión.
-915|Ataca desde un barco junto a una guarida por 1 mineral y 1 lana. Cuando cae, quien más la haya golpeado gana un punto.
-916|¡Llega a 12 puntos para ganar!
-917|Cuentan poblados, ciudades, islas nuevas, misiones y guaridas.
-918|Un tablero más grande, con más casillas, puertos y cartas, para hasta 6 jugadores.
-919|Fase de construcción especial
-920|Tras cada turno, los demás pueden construir por orden, pero no comerciar.
-921|Así nadie espera mucho.
-922|Los turnos siguen siendo cortos, incluso con la mesa llena.
-923|Atrás
-924|Pausa
-925|Siguiente
-926|¡Ya conoces {mode}!
-927|Ver otra vez
-928|Siguiente: {mode}
-929|¡A jugar!
-930|Carta de evento
-931|Tirar
-932|¡Victoria!
-933|Fin de la partida
-934|¡Has ganado!
-935|puntos de victoria
-936|Has terminado en el puesto {n} con {m} puntos.
-937|Clasificación final
-938|Ver el tablero
-939|Poblados
-940|Ciudades
-941|Metrópolis
-942|Cartas de punto de victoria
-943|Puntos extra
-944|Así fue la carrera
-945|Más recursos
-946|Número más frecuente
-947|{n}×
-948|Duración de la partida
-949|{n} turnos
-950|Lo más destacado
-951|Gran ruta comercial
-952|Elige tu recurso una sola vez. A partir de ahora el acueducto lo entrega cada vez que una tirada no te dé nada (salvo con un 7).
-953|Acueducto: {res}. Toca para cambiar.
+786|Caladeros, fichas de pescado y la bota vieja.
+787|Puentes, oro y el jugador más rico y más pobre.
+788|Un mazo de cartas de evento sustituye a los dados.
+789|Regla de la casa: ladrón olvidado
+790|Si un jugador termina su turno sin mover al ladrón, este vuelve al desierto.
+791|Si terminas tu turno ahora, el ladrón vuelve al desierto.
+792|Esa regla de la casa no está activada.
+793|{@p} olvidó mover al ladrón, así que vuelve al desierto.
+794|Regla de la casa: recursos iniciales por ambos
+795|Reglas de la casa
+796|Los dos edificios de la fase de preparación dan recursos iniciales. En Ciudades y Caballeros la ciudad cuenta como un poblado.
+797|Aún no ha pasado nada.
+798|Fase de preparación
+799|Los gráficos se rellenan en cuanto se juegan los primeros turnos.
+800|Evolución de los puntos de victoria
+801|Tiradas de dados
+802|Barras: real · línea: esperado tras {n} tiradas
+803|Recursos recibidos
+804|Tiradas
+805|Más frecuente
+806|Sietes
+807|Meta
+808|real
+809|esperado
+810|Más de {n} cartas: con un 7 pierdes la mitad.
+811|Solo la última tirada
+812|Ver turnos anteriores
+813|Defensor de Broch
+814|−1 ciudad
+815|Tablero vivo
+816|Tablero vivo: activado
+817|Tablero vivo: desactivado
+818|Banca
+819|Vale 1 punto. Se coloca boca arriba delante de ti.
+820|Cómo se juega: {mode}
+821|Cómo se juega
+822|Cómo funciona {mode} (1 min)
+823|¡Bienvenido a Broch!
+824|Construye, comercia y crece. Gana el primero en llegar a 10 puntos.
+825|Cada casilla produce un recurso.
+826|Bosque, colinas, pradera, campos y montañas. El desierto no produce nada.
+827|Construye poblados en las esquinas.
+828|Toca la esquina iluminada.
+829|Un poblado toca hasta 3 casillas.
+830|Tus rivales también construyen.
+831|Tira los dados en cada turno.
+832|Toca los dados.
+833|Cada casilla con ese número produce.
+834|Quien esté al lado recibe una carta, incluso en el turno de otros.
+835|Más puntitos, más suerte.
+836|El 6 y el 8 rojos salen más a menudo; el 2 y el 12, rara vez.
+837|Gasta cartas para construir.
+838|Una carretera cuesta madera y arcilla. Toca el borde iluminado.
+839|Las ciudades producen el doble.
+840|Convierte un poblado en ciudad con 2 cereales y 3 minerales. Toca tu poblado.
+841|¡Un 7 despierta al ladrón!
+842|Mueve al ladrón a una casilla.
+843|Deja de producir. Toca una casilla junto a tu rival.
+844|Luego roba una carta a alguien de allí.
+845|Quien tenga más de 7 cartas pierde la mitad.
+846|Comercia con los jugadores o con la banca.
+847|La banca cambia 4 cartas iguales por 1. Puertos: 3:1 o 2:1.
+848|Los caballeros mueven al ladrón. Las demás dan carreteras, recursos o un punto de victoria.
+849|3 caballeros jugados: gran ejército, +2 puntos.
+850|Quien lo tiene ondea estandartes de guerra en el tablero.
+851|5 carreteras seguidas: gran ruta comercial, +2 puntos.
+852|El camino más largo brilla en dorado.
+853|¡Llega a 10 puntos para ganar!
+854|Poblado 1 · Ciudad 2 · Gran ruta comercial 2 · Gran ejército 2 · Carta de punto de victoria 1
+855|Todo lo del Clásico, más mercancías, caballeros y bárbaros. Se gana con 13 puntos.
+856|Las ciudades producen mercancías.
+857|Bosque: papel · Pradera: tela · Montañas: monedas
+858|Las mercancías compran mejoras de ciudad.
+859|El comercio cuesta tela, la política monedas y la ciencia papel. Toca +.
+860|El nivel 3 desbloquea un poder especial.
+861|Ciencia: un recurso cuando no recibes nada. Comercio: mercancías 2:1. Política: caballeros más fuertes.
+862|El primero en llegar al nivel 4 levanta una metrópolis.
+863|Vale 2 puntos y se alza sobre tu ciudad.
+864|Los caballeros defienden Broch.
+865|Recluta uno por lana y mineral. Toca la esquina iluminada.
+866|Actívalo con cereal.
+867|Solo luchan los caballeros activos. Asciéndelos para hacerlos más fuertes.
+868|Un barco en el dado de evento hace avanzar a los bárbaros.
+869|Cada barco los acerca un paso más a Broch.
+870|Su fuerza: todas las ciudades del tablero. Tu defensa: todos los caballeros activos.
+871|El defensor más fuerte gana un punto. Si ganan los bárbaros, saquean la ciudad más débil.
+872|Una puerta de color en el dado de evento da cartas a quienes tengan mejoras suficientes.
+873|Murallas
+874|Cada muralla te deja guardar 2 cartas más cuando sale un 7.
+875|¡Llega a 13 puntos para ganar!
+876|Poblado 1 · Ciudad 2 · Metrópolis 2 · Defensor 1 · Gran ruta comercial 2
+877|La tierra está dividida en islas. Los barcos cruzan el mar.
+878|Construye barcos en el agua.
+879|Un barco cuesta madera y lana. Toca el borde iluminado.
+880|Los barcos forman una cadena, como las carreteras.
+881|El último barco de una cadena abierta puede navegar a otro lugar una vez por turno.
+882|Navega junto a la niebla para descubrirla.
+883|Descubrir tierra te da un recurso.
+884|Puebla una isla nueva: ¡+1 punto!
+885|Los campos de oro dan el recurso que quieras.
+886|El pirata
+887|Los barcos junto a su casilla quedan bloqueados, y él roba. Un 7 o un caballero lo mueven.
+888|Para ganar hacen falta de 12 a 14 puntos.
+889|Elige un escenario al crear la partida: Nuevas costas, Cuatro islas o Islas de la niebla.
+890|Tres variantes que puedes combinar: Pescadores, Ríos y Cartas de evento.
+891|Pescadores
+892|El desierto se convierte en un lago y la costa recibe caladeros.
+893|Saca el número de un caladero para pescar.
+894|El lago produce con 2, 3, 11 y 12.
+895|Pagar con pescado
+896|2 ahuyentar al ladrón · 3 robar · 4 tomar un recurso · 5 una carretera · 7 una carta de desarrollo
+897|La bota vieja
+898|Quien la pesca necesita un punto más para ganar, y puede pasársela a quien vaya en cabeza.
+899|Ríos
+900|Cada carretera o poblado junto a un río da 1 de oro.
+901|Los puentes cruzan el río.
+902|Un puente cuesta 2 de arcilla y 1 de madera y da 3 de oro.
+903|Cambia 2 de oro por cualquier recurso. El más rico gana +1 punto; el más pobre, −2.
+904|Un mazo con los 36 resultados de los dados sustituye a los dados, así cada número sale tantas veces como debe.
+905|Navega hacia la niebla, descubre tierras y cumple misiones.
+906|Explora la niebla con barcos.
+907|Toca el borde iluminado. La tierra nueva te da un recurso.
+908|Un barco junto a un banco de peces recoge pescado cuando sale su número.
+909|Especias para Broch
+910|Los poblados junto a un campo de especias cargan especia cuando produce.
+911|Entrega la carga al consejo.
+912|Cada 2 entregas dan 1 punto, hasta 3 puntos por misión.
+913|Ataca desde un barco junto a una guarida por 1 mineral y 1 lana. Cuando cae, quien más la haya golpeado gana un punto.
+914|¡Llega a 12 puntos para ganar!
+915|Cuentan poblados, ciudades, islas nuevas, misiones y guaridas.
+916|Un tablero más grande, con más casillas, puertos y cartas, para hasta 6 jugadores.
+917|Fase de construcción especial
+918|Tras cada turno, los demás pueden construir por orden, pero no comerciar.
+919|Así nadie espera mucho.
+920|Los turnos siguen siendo cortos, incluso con la mesa llena.
+921|Atrás
+922|Pausa
+923|Siguiente
+924|¡Ya conoces {mode}!
+925|Ver otra vez
+926|Siguiente: {mode}
+927|¡A jugar!
+928|Carta de evento
+929|Tirar
+930|¡Victoria!
+931|Fin de la partida
+932|¡Has ganado!
+933|puntos de victoria
+934|Has terminado en el puesto {n} con {m} puntos.
+935|Clasificación final
+936|Ver el tablero
+937|Poblados
+938|Ciudades
+939|Metrópolis
+940|Cartas de punto de victoria
+941|Puntos extra
+942|Así fue la carrera
+943|Más recursos
+944|Número más frecuente
+945|{n}×
+946|Duración de la partida
+947|{n} turnos
+948|Lo más destacado
+949|Gran ruta comercial
+950|Elige tu recurso una sola vez. A partir de ahora el acueducto lo entrega cada vez que una tirada no te dé nada (salvo con un 7).
+951|Acueducto: {res}. Toca para cambiar.

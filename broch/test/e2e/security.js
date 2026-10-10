@@ -6,6 +6,7 @@ const http = require('http');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
+const net = require('net');
 const WebSocket = require('ws');
 
 const PORT = 19000 + Math.floor(Math.random() * 900);
@@ -64,6 +65,68 @@ const reg = (email, name, pw, code, jar, h) => call('POST', '/api/register', { e
     const wsTry = origin => new Promise(resolve => { const ws = new WebSocket(`ws://127.0.0.1:${PORT}/ws`, { headers: { Cookie: a.c, ...(origin ? { Origin: origin } : {}) } }); ws.on('open', () => { ws.close(); resolve(true); }); ws.on('error', () => resolve(false)); ws.on('unexpected-response', () => resolve(false)); });
     assert(!(await wsTry('https://evil.example')), 'a web page of another site cannot open the game WebSocket');
     assert(await wsTry(`http://127.0.0.1:${PORT}`), 'the site itself can');
+    // nothing a visitor sends may take the server down (each of these once killed the process)
+    const alive = async label => { const h = await call('GET', '/api/health'); assert(h.status === 200 && h.body && h.body.ok, `the server still answers after: ${label}`); };
+    const rawHttp = text => new Promise(resolve => { const s = net.connect(PORT, '127.0.0.1', () => s.write(text)); let d = ''; s.on('data', x => { d += x; }); s.on('close', () => resolve(d)); s.on('error', () => resolve(d)); setTimeout(() => { s.destroy(); }, 800); });
+    assert(/ 400 /.test((await rawHttp('GET /%E0%A4%A HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n')).split('\r\n')[0]), 'a malformed %-escape in a page address is answered with 400');
+    await alive('a malformed %-escape in a page address');
+    await rawHttp('GET //[ HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n'); await alive('a bad request target (//[)');
+    await rawHttp('GET /demo/%e0%a4%a HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n'); await alive('a malformed escape below /demo/');
+    r = await call('GET', '/api/me', null, { Cookie: 'broch_session=%E0%A4%A' }); assert(r.status === 200 && r.body.user === null, 'a malformed cookie means "not logged in" (no 500)');
+    r = await call('POST', '/api/login', null, {}); assert(r.status === 401, 'an empty login body is just a wrong login');
+    const rawBody = await new Promise(resolve => { const q = http.request({ host: '127.0.0.1', port: PORT, path: '/api/login', method: 'POST', headers: { 'Content-Type': 'application/json' } }, x => { x.resume(); resolve(x.statusCode); }); q.end('null'); });
+    assert(rawBody === 400, 'a JSON body that is not an object (null) is refused with 400');
+    const wsRun = (headers, fn) => new Promise(resolve => { const ws = new WebSocket(`ws://127.0.0.1:${PORT}/ws`, { headers }); const done = () => resolve(); ws.on('open', () => fn(ws)); ws.on('close', done); ws.on('error', done); setTimeout(() => { try { ws.terminate(); } catch { } done(); }, 1500); });
+    await wsRun({ Cookie: 'broch_session=%E0%A4%A' }, () => { }); await alive('a WebSocket with a malformed cookie');
+    await wsRun({}, ws => ws.send('x'.repeat(70000))); await alive('an oversized WebSocket frame without login');
+    await wsRun({ Cookie: a.c }, ws => ws.send('x'.repeat(70000))); await alive('an oversized WebSocket frame when logged in');
+    await wsRun({ Cookie: a.c }, ws => { ws.send('null'); ws.send('"str"'); ws.send('[1]'); ws.send('{'); setTimeout(() => ws.close(), 200); }); await alive('WebSocket messages null, string, array and broken JSON');
+    await wsRun({ Cookie: a.c }, ws => ws._socket.write(Buffer.from([0x81, 0x82, 0, 0, 0, 0, 0xff, 0xfe]))); await alive('a WebSocket frame with invalid UTF-8');
+    // a WebSocket loses its login with the session: logout and password change close it
+    {
+      const jar = {}; r = await call('POST', '/api/login', { email: 'second@example.com', password: 'another-long-pw' }, { 'CF-Connecting-IP': '203.0.113.60' }, jar);
+      const closed = key => new Promise(resolve => { const ws = new WebSocket(`ws://127.0.0.1:${PORT}/ws`, { headers: { Cookie: jar.c } }); let code = null; ws.on('open', async () => { await sleep(100); await key(); await sleep(100); ws.send(JSON.stringify({ t: 'watch', game: null })); }); ws.on('close', c => { code = c; resolve(c); }); setTimeout(() => { try { ws.terminate(); } catch { } resolve(code); }, 2000); });
+      const code = await closed(() => call('POST', '/api/logout', {}, {}, jar));
+      assert(code === 4001, 'a WebSocket is closed (4001) when its session logs out');
+      const j2 = {}, j3 = {}; await call('POST', '/api/login', { email: 'second@example.com', password: 'another-long-pw' }, { 'CF-Connecting-IP': '203.0.113.60' }, j2); await call('POST', '/api/login', { email: 'second@example.com', password: 'another-long-pw' }, { 'CF-Connecting-IP': '203.0.113.60' }, j3);
+      jar.c = j2.c;
+      const code2 = await closed(() => call('PATCH', '/api/me', { newPassword: 'another-long-pw2', password: 'another-long-pw' }, {}, j3));
+      assert(code2 === 4001, 'a WebSocket of another device is closed when the password changes');
+      await call('PATCH', '/api/me', { newPassword: 'another-long-pw', password: 'another-long-pw2' }, {}, j3);
+      await call('POST', '/api/login', { email: 'second@example.com', password: 'another-long-pw' }, { 'CF-Connecting-IP': '203.0.113.60' }, b); // (the password change logged b out too)
+    }
+    // input limits
+    r = await reg('x'.repeat(300) + '@example.com', 'Long', 'a-long-password', 'letmein-123', {}, { 'CF-Connecting-IP': '203.0.113.61' }); assert(r.status === 400, 'an email longer than 254 characters is refused');
+    r = await reg('long@example.com', 'Long', 'p'.repeat(300), 'letmein-123', {}, { 'CF-Connecting-IP': '203.0.113.61' }); assert(r.status === 400, 'a password longer than 256 characters is refused');
+    r = await call('PATCH', '/api/me', { lang: ['en'] }, https, a); assert(r.status === 400, 'a language that is not a plain string is refused');
+    r = await call('GET', '/api/users', null, https, a); const meId = (await call('GET', '/api/me', null, https, a)).body.user.id;
+    r = await call('POST', '/api/stats/manual', { players: [meId, meId, meId], winner: meId, mode: 'classic' }, https, a);
+    assert(r.status === 200 && r.body.entry.players.length === 1, 'a player listed several times in a manual game counts once');
+    let cap = null;
+    for (let i = 0; i < 12 && !cap; i++) { const x = await call('POST', '/api/games', { name: 'g' + i, mode: 'classic', maxPlayers: 2 }, https, a); if (x.status === 429) cap = i; }
+    assert(cap !== null && cap >= 5, `one account can only host a limited number of games (stopped at the ${cap + 1}th)`);
+    // logins are counted too (also the right password), and the sessions of one account are capped
+    {
+      const secondId = (await call('GET', '/api/me', null, https, b)).body.user.id;
+      const ipH = { 'CF-Connecting-IP': '203.0.113.99', 'X-Forwarded-Proto': 'https' }; let limited = 0, okc = 0;
+      for (let i = 0; i < 70; i++) { const x = await call('POST', '/api/login', { email: 'second@example.com', password: 'another-long-pw' }, ipH); if (x.status === 429) limited++; else if (x.status === 200) okc++; }
+      assert(limited > 0 && okc >= 50, `even correct logins are rate limited per address (${okc} accepted, ${limited} refused)`);
+      await sleep(700);
+      const sessions = JSON.parse(fs.readFileSync(path.join(dir, 'sessions.json'), 'utf8'));
+      assert(Object.values(sessions).filter(x => x.userId === secondId).length <= 20, 'an account keeps at most 20 sessions');
+    }
+    // an abandoned game stays gone (a pending delayed save used to write its file again)
+    {
+      await call('POST', '/api/login', { email: 'second@example.com', password: 'another-long-pw' }, { 'CF-Connecting-IP': '203.0.113.62' }, b);
+      const g = await call('POST', '/api/games', { name: 'gone', mode: 'classic', maxPlayers: 2 }, https, b);
+      const gid = g.body.game.id;
+      await call('POST', `/api/games/${gid}/bots`, {}, https, b); await call('POST', `/api/games/${gid}/start`, {}, https, b);
+      await new Promise(resolve => { const ws = new WebSocket(`ws://127.0.0.1:${PORT}/ws`, { headers: { Cookie: b.c } }); ws.on('open', async () => { ws.send(JSON.stringify({ t: 'watch', game: gid })); await sleep(150); ws.send(JSON.stringify({ t: 'act', game: gid, rid: 1, action: { type: 'chat', text: 'hi' } })); await sleep(100); resolve(); }); });
+      const gf = path.join(dir, 'games', gid + '.json');
+      assert((await call('POST', `/api/games/${gid}/abandon`, {}, https, b)).status === 200, 'the host abandons a running game right after a move');
+      await sleep(900);
+      assert(!fs.existsSync(gf), 'an abandoned game is not written to disk again');
+    }
     // brute force
     let blocked = false;
     for (let i = 0; i < 20 && !blocked; i++) { const x = await call('POST', '/api/login', { email: 'first@example.com', password: 'nope-nope-' + i }, { 'CF-Connecting-IP': '198.51.100.9', 'X-Forwarded-Proto': 'https' }); if (x.status === 429) blocked = true; }

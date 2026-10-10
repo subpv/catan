@@ -78,12 +78,21 @@ export function celebrate({ name, color, country, sub, scores = [], actions = ''
 const SECTIONS = [['standings', 'Standings'], ['history', 'History'], ['duels', 'Duels'], ['records', 'Records'], ['games', 'Games']];
 const S = { year: new Date().getFullYear(), tab: 'all', open: null, data: null, sec: 'standings', lbOpen: null, hl: null, histAll: false, manual: { players: [], winner: null, mode: 'classic', date: new Date().toISOString().slice(0, 10) } };
 
-export async function mountStats(app) {
+// Returns the cleanup function at once (the data arrives later); a late answer after leaving the page is dropped.
+export function mountStats(app) {
+  let dead = false;
   app.innerHTML = `${topbar('stats')}<div class="page narrow" id="stats"><h1 class="page-title">Siedlermeister</h1><div class="muted">${tx('Loading…')}</div></div>`;
   const load = async () => {
-    try { S.data = await api('/stats'); draw(app); } catch (e) { toast(e.message, 'warn'); }
+    try { const d = await api('/stats'); if (dead) return; S.data = d; draw(app); } catch (e) {
+      if (dead) return;
+      toast(e.message, 'warn');
+      if (!S.data) { // nothing to show yet: say so and offer another try (the page would stay on "Loading…" for good)
+        const box = app.querySelector('#stats');
+        if (box) { box.innerHTML = `<h1 class="page-title">Siedlermeister</h1><div class="card load-fail"><p class="muted">${tx('Could not load this page.')}</p><button class="btn" data-retry>${tx('Try again')}</button></div>`; box.querySelector('[data-retry]').onclick = () => load(); }
+      }
+    }
   };
-  await load();
+  load();
   // phones: the charts are drawn at the real pixel width, so they are drawn again when the window changes
   let lastW = app.querySelector('#stats')?.clientWidth || 0, timer = 0;
   const onResize = () => {
@@ -93,7 +102,7 @@ export async function mountStats(app) {
   window.addEventListener('resize', onResize); window.addEventListener('orientationchange', onResize);
   const offPhone = onPhoneChange(() => S.data && draw(app));
   const offWs = onWs(m => { if (m.t === 'stats') load(); });
-  return () => { offWs && offWs(); offPhone(); clearTimeout(timer); window.removeEventListener('resize', onResize); window.removeEventListener('orientationchange', onResize); };
+  return () => { dead = true; offWs && offWs(); offPhone(); clearTimeout(timer); window.removeEventListener('resize', onResize); window.removeEventListener('orientationchange', onResize); };
 }
 
 function computeTallies(games, users) {

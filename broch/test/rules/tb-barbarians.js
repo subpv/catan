@@ -1,6 +1,7 @@
 'use strict';
 // Rule checks for Traders & Barbarians, scenario Barbarian Attack, against the English rulebook (6th edition, 2025: p. 15-19) and the
 // 5-6 player expansion (p. 2, 8-9, 12). Each case builds a small situation and plays actions.
+require('../seed');
 const assert = require('assert');
 const { createGame, act, viewFor, vp, GameError } = require('../../server/engine/classic/game');
 const C = require('../../server/engine/shared/constants');

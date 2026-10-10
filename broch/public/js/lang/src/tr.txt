@@ -780,174 +780,172 @@
 780|Yeni Kıyılara Doğru
 781|Dört Ada
 782|Sis Adaları
-783|Catan Balıkçıları
-784|Catan Nehirleri
+783|Broch Balıkçıları
+784|Broch Nehirleri
 785|Olay kartları
-786|Catan için balık
-787|Catan için baharat
-788|Balık sahaları, balık jetonları ve eski bot.
-789|Köprüler, altın ve en zengin ile en yoksul oyuncu.
-790|Zarların yerini bir olay kartı destesi alır.
-791|Ev kuralı: unutulan haydut
-792|Bir oyuncu hayduda dokunmadan turunu bitirirse haydut çöle geri döner.
-793|Turunu şimdi bitirirsen haydut çöle geri döner.
-794|Bu ev kuralı açık değil.
-795|{@p} hayduyu taşımayı unuttu, bu yüzden haydut çöle geri dönüyor.
-796|Ev kuralı: iki binadan da başlangıç kaynakları
-797|Ev kuralları
-798|Kurulum aşamasındaki iki bina da başlangıç kaynakları verir. Şehirler ve Şövalyeler'de şehir, köy gibi sayılır.
-799|Henüz bir şey olmadı.
-800|Kurulum aşaması
-801|İlk turlar oynanınca grafikler dolar.
-802|Zaman içinde zafer puanları
-803|Zar atışları
-804|Çubuklar: gelen · çizgi: {n} atışta beklenen
-805|Alınan kaynaklar
-806|Atışlar
-807|En çok gelen
-808|Gelen 7'ler
-809|Hedef
-810|gelen
-811|beklenen
-812|{n} karttan fazla: 7 gelirse yarısını kaybedersin.
-813|Yalnızca son atış
-814|Önceki turları göster
-815|Broch'un Savunucusu
-816|−1 şehir
-817|Canlı tahta
-818|Canlı tahta: açık
-819|Canlı tahta: kapalı
-820|Banka
-821|1 puan değerindedir. Önüne açık olarak konur.
-822|Nasıl oynanır: {mode}
-823|Nasıl oynanır
-824|{mode} nasıl oynanır (1 dk)
-825|Broch'a hoş geldin!
-826|İnşa et, ticaret yap, büyü. 10 puana ilk ulaşan kazanır.
-827|Her alan bir kaynak üretir.
-828|Orman, tepeler, mera, tarla ve dağlar. Çöl hiçbir şey üretmez.
-829|Köşelere köy kur.
-830|Parlayan köşeye dokun.
-831|Bir köy en fazla 3 alana değer.
-832|Rakiplerin de inşa ediyor.
-833|Her tur zar at.
-834|Zarlara dokun.
-835|O sayıdaki her alan ürün verir.
-836|Yanındaki herkes bir kart alır, başkalarının turunda bile.
-837|Daha çok nokta, daha çok şans.
-838|Kırmızı 6 ve 8 en sık gelir, 2 ve 12 nadiren.
-839|İnşa etmek için kart harca.
-840|Yol kereste ve tuğla tutar. Parlayan kenara dokun.
-841|Şehirler iki kat üretir.
-842|2 tahıl ve 3 madenle bir köyü şehre yükselt. Köyüne dokun.
-843|7 gelince haydut uyanır!
-844|Haydutu bir alana taşı.
-845|Orası artık ürün vermez. Rakibinin yanındaki bir alana dokun.
-846|Sonra oradaki birinden bir kart çal.
-847|Elinde 7'den fazla kart olan herkes yarısını kaybeder.
-848|Oyuncularla ya da bankayla ticaret yap.
-849|Banka 4 aynı kartı 1 karta değişir. Limanlar: 3:1 veya 2:1.
-850|Şövalyeler haydutu taşır. Diğerleri yol, kaynak ya da zafer puanı verir.
-851|3 şövalye oyna: En büyük ordu, +2 puan.
-852|Sahibinin savaş sancakları tahtada dalgalanır.
-853|Art arda 5 yol: En uzun yol, +2 puan.
-854|En uzun yol altın gibi parlar.
-855|Kazanmak için 10 puana ulaş!
-856|Köy 1 · Şehir 2 · En uzun yol 2 · En büyük ordu 2 · Zafer puanı kartı 1
-857|Klasik'teki her şey, artı ticari mallar, şövalyeler ve barbarlar. 13 puanla kazanılır.
-858|Şehirler ticari mal üretir.
-859|Orman: kâğıt · Mera: kumaş · Dağlar: sikke
-860|Şehir geliştirmeleri ticari mallarla alınır.
-861|Ticaret kumaş, siyaset sikke, bilim kâğıt ister. + düğmesine dokun.
-862|3. seviye özel bir güç açar.
-863|Bilim: hiçbir şey alamadığında bir kaynak al. Ticaret: mallarda 2:1 takas. Siyaset: daha güçlü şövalyeler.
-864|4. seviyeye ilk ulaşan bir metropol kurar.
-865|2 puan değerindedir ve şehrinin üstünde durur.
-866|Şövalyeler Broch'u savunur.
-867|Yün ve madenle bir şövalye al. Parlayan köşeye dokun.
-868|Onu tahılla etkinleştir.
-869|Yalnızca aktif şövalyeler savaşır. Güçlendirmek için terfi ettir.
-870|Olay zarında gemi gelirse barbarlar ilerler.
-871|Her gemi onları Broch'a bir adım daha yaklaştırır.
-872|Güçleri: tahtadaki tüm şehirler. Savunman: tüm aktif şövalyeler.
-873|En güçlü savunucu bir puan kazanır. Barbarlar kazanırsa en zayıf şehir yağmalanır.
-874|Olay zarındaki renkli kapı, geliştirmeleri yeterince yüksek oyunculara kart verir.
-875|Şehir surları
-876|Her sur, 7 geldiğinde elinde 2 kart daha tutmanı sağlar.
-877|Kazanmak için 13 puana ulaş!
-878|Köy 1 · Şehir 2 · Metropol 2 · Savunucu 1 · En uzun yol 2
-879|Kara adalara bölünmüştür. Gemiler denizi aşar.
-880|Denizde gemi inşa et.
-881|Gemi kereste ve yün tutar. Parlayan kenara dokun.
-882|Gemiler, yollar gibi zincir oluşturur.
-883|Açık bir zincirin son gemisi turda bir kez yeni bir yere gidebilir.
-884|Sisin yanına yelken aç, sis dağılsın.
-885|Kara keşfetmek sana bir kaynak kazandırır.
-886|Yeni bir adaya yerleş: +1 puan!
-887|Altın sahaları istediğin kaynağı verir.
-888|Korsan
-889|Yanındaki gemiler engellenir; korsan kart da çalar. 7 ya da şövalye onu taşır.
-890|12 ila 14 puanla kazan.
-891|Oyunu oluştururken bir senaryo seç: Yeni Kıyılar, Dört Ada ya da Sis Adaları.
-892|Birleştirebileceğin üç varyant: Balıkçılar, Nehirler ve Olay kartları.
-893|Balıkçılar
-894|Çöl göle dönüşür, kıyıda balık sahaları belirir.
-895|Balık sahasının sayısı gelince balık tutarsın.
-896|Göl 2, 3, 11 ve 12'de balık verir.
-897|Balıkla öde
-898|2 haydutu kov · 3 kart çal · 4 kaynak al · 5 yol · 7 gelişim kartı
-899|Eski bot
-900|Onu çıkaran, kazanmak için bir puan daha almalı; botu öndeki oyuncuya verebilir.
-901|Nehirler
-902|Nehir kenarındaki her yol ya da köy 1 altın kazandırır.
-903|Köprüler nehrin üzerinden geçer.
-904|Köprü 2 tuğla ve 1 kereste tutar, 3 altın kazandırır.
-905|2 altını istediğin bir kaynakla takas et. En zengin oyuncu +1 puan alır, en yoksul −2.
-906|Zarların yerini 36 zar sonucunun hepsini içeren bir deste alır; böylece her sayı olması gerektiği sıklıkta gelir.
-907|Sise yelken aç, kara keşfet ve görevleri tamamla.
-908|Sisi gemilerle keşfet.
-909|Parlayan kenara dokun. Yeni kara sana bir kaynak kazandırır.
-910|Balık sürüsünün yanındaki gemi, sürünün sayısı gelince balık toplar.
-911|Broch için baharat
-912|Baharat alanındaki köyler, alan ürün verince baharat yükler.
-913|Yükü konseye teslim et.
-914|Her 2 teslimat 1 puan kazandırır, görev başına en fazla 3 puan.
-915|Sığınağın yanındaki bir gemiden 1 maden ve 1 yünle saldır. Sığınak düşünce en çok vuran bir puan kazanır.
-916|Kazanmak için 12 puana ulaş!
-917|Köyler, şehirler, yeni adalar, görevler ve sığınaklar; hepsi sayılır.
-918|6 oyuncuya kadar: daha çok alan, liman ve kart içeren daha büyük bir tahta.
-919|Özel inşa aşaması
-920|Her turdan sonra diğer herkes sırayla inşa edebilir ama ticaret yapamaz.
-921|Böylece kimse uzun süre beklemez.
-922|Masa dolu olsa bile turlar kısa kalır.
-923|Geri
-924|Duraklat
-925|İleri
-926|{mode} kurallarını öğrendin!
-927|Tekrar izle
-928|Sıradaki: {mode}
-929|Hadi oynayalım!
-930|Olay kartı
-931|Zar at
-932|Zafer!
-933|Oyun bitti
-934|Kazandın!
-935|zafer puanı
-936|{m} puanla {n}. oldun.
-937|Son sıralama
-938|Tahtaya bak
-939|Köy
-940|Şehir
-941|Metropol
-942|Zafer puanı kartları
-943|Bonus puan
-944|Yarış nasıl geçti
-945|En çok kaynak
-946|En çok gelen sayı
-947|{n}×
-948|Oyun süresi
-949|{n} tur
-950|Öne çıkanlar
-951|En uzun ticaret yolu
-952|Kaynağını bir kez seç. Bundan sonra su kemeri, bir atış sana hiçbir şey getirmediğinde (7 hariç) onu otomatik verir.
-953|Su kemeri: {res}. Değiştirmek için dokun.
+786|Balık sahaları, balık jetonları ve eski bot.
+787|Köprüler, altın ve en zengin ile en yoksul oyuncu.
+788|Zarların yerini bir olay kartı destesi alır.
+789|Ev kuralı: unutulan haydut
+790|Bir oyuncu hayduda dokunmadan turunu bitirirse haydut çöle geri döner.
+791|Turunu şimdi bitirirsen haydut çöle geri döner.
+792|Bu ev kuralı açık değil.
+793|{@p} hayduyu taşımayı unuttu, bu yüzden haydut çöle geri dönüyor.
+794|Ev kuralı: iki binadan da başlangıç kaynakları
+795|Ev kuralları
+796|Kurulum aşamasındaki iki bina da başlangıç kaynakları verir. Şehirler ve Şövalyeler'de şehir, köy gibi sayılır.
+797|Henüz bir şey olmadı.
+798|Kurulum aşaması
+799|İlk turlar oynanınca grafikler dolar.
+800|Zaman içinde zafer puanları
+801|Zar atışları
+802|Çubuklar: gelen · çizgi: {n} atışta beklenen
+803|Alınan kaynaklar
+804|Atışlar
+805|En çok gelen
+806|Gelen 7'ler
+807|Hedef
+808|gelen
+809|beklenen
+810|{n} karttan fazla: 7 gelirse yarısını kaybedersin.
+811|Yalnızca son atış
+812|Önceki turları göster
+813|Broch'un Savunucusu
+814|−1 şehir
+815|Canlı tahta
+816|Canlı tahta: açık
+817|Canlı tahta: kapalı
+818|Banka
+819|1 puan değerindedir. Önüne açık olarak konur.
+820|Nasıl oynanır: {mode}
+821|Nasıl oynanır
+822|{mode} nasıl oynanır (1 dk)
+823|Broch'a hoş geldin!
+824|İnşa et, ticaret yap, büyü. 10 puana ilk ulaşan kazanır.
+825|Her alan bir kaynak üretir.
+826|Orman, tepeler, mera, tarla ve dağlar. Çöl hiçbir şey üretmez.
+827|Köşelere köy kur.
+828|Parlayan köşeye dokun.
+829|Bir köy en fazla 3 alana değer.
+830|Rakiplerin de inşa ediyor.
+831|Her tur zar at.
+832|Zarlara dokun.
+833|O sayıdaki her alan ürün verir.
+834|Yanındaki herkes bir kart alır, başkalarının turunda bile.
+835|Daha çok nokta, daha çok şans.
+836|Kırmızı 6 ve 8 en sık gelir, 2 ve 12 nadiren.
+837|İnşa etmek için kart harca.
+838|Yol kereste ve tuğla tutar. Parlayan kenara dokun.
+839|Şehirler iki kat üretir.
+840|2 tahıl ve 3 madenle bir köyü şehre yükselt. Köyüne dokun.
+841|7 gelince haydut uyanır!
+842|Haydutu bir alana taşı.
+843|Orası artık ürün vermez. Rakibinin yanındaki bir alana dokun.
+844|Sonra oradaki birinden bir kart çal.
+845|Elinde 7'den fazla kart olan herkes yarısını kaybeder.
+846|Oyuncularla ya da bankayla ticaret yap.
+847|Banka 4 aynı kartı 1 karta değişir. Limanlar: 3:1 veya 2:1.
+848|Şövalyeler haydutu taşır. Diğerleri yol, kaynak ya da zafer puanı verir.
+849|3 şövalye oyna: En büyük ordu, +2 puan.
+850|Sahibinin savaş sancakları tahtada dalgalanır.
+851|Art arda 5 yol: En uzun yol, +2 puan.
+852|En uzun yol altın gibi parlar.
+853|Kazanmak için 10 puana ulaş!
+854|Köy 1 · Şehir 2 · En uzun yol 2 · En büyük ordu 2 · Zafer puanı kartı 1
+855|Klasik'teki her şey, artı ticari mallar, şövalyeler ve barbarlar. 13 puanla kazanılır.
+856|Şehirler ticari mal üretir.
+857|Orman: kâğıt · Mera: kumaş · Dağlar: sikke
+858|Şehir geliştirmeleri ticari mallarla alınır.
+859|Ticaret kumaş, siyaset sikke, bilim kâğıt ister. + düğmesine dokun.
+860|3. seviye özel bir güç açar.
+861|Bilim: hiçbir şey alamadığında bir kaynak al. Ticaret: mallarda 2:1 takas. Siyaset: daha güçlü şövalyeler.
+862|4. seviyeye ilk ulaşan bir metropol kurar.
+863|2 puan değerindedir ve şehrinin üstünde durur.
+864|Şövalyeler Broch'u savunur.
+865|Yün ve madenle bir şövalye al. Parlayan köşeye dokun.
+866|Onu tahılla etkinleştir.
+867|Yalnızca aktif şövalyeler savaşır. Güçlendirmek için terfi ettir.
+868|Olay zarında gemi gelirse barbarlar ilerler.
+869|Her gemi onları Broch'a bir adım daha yaklaştırır.
+870|Güçleri: tahtadaki tüm şehirler. Savunman: tüm aktif şövalyeler.
+871|En güçlü savunucu bir puan kazanır. Barbarlar kazanırsa en zayıf şehir yağmalanır.
+872|Olay zarındaki renkli kapı, geliştirmeleri yeterince yüksek oyunculara kart verir.
+873|Şehir surları
+874|Her sur, 7 geldiğinde elinde 2 kart daha tutmanı sağlar.
+875|Kazanmak için 13 puana ulaş!
+876|Köy 1 · Şehir 2 · Metropol 2 · Savunucu 1 · En uzun yol 2
+877|Kara adalara bölünmüştür. Gemiler denizi aşar.
+878|Denizde gemi inşa et.
+879|Gemi kereste ve yün tutar. Parlayan kenara dokun.
+880|Gemiler, yollar gibi zincir oluşturur.
+881|Açık bir zincirin son gemisi turda bir kez yeni bir yere gidebilir.
+882|Sisin yanına yelken aç, sis dağılsın.
+883|Kara keşfetmek sana bir kaynak kazandırır.
+884|Yeni bir adaya yerleş: +1 puan!
+885|Altın sahaları istediğin kaynağı verir.
+886|Korsan
+887|Yanındaki gemiler engellenir; korsan kart da çalar. 7 ya da şövalye onu taşır.
+888|12 ila 14 puanla kazan.
+889|Oyunu oluştururken bir senaryo seç: Yeni Kıyılar, Dört Ada ya da Sis Adaları.
+890|Birleştirebileceğin üç varyant: Balıkçılar, Nehirler ve Olay kartları.
+891|Balıkçılar
+892|Çöl göle dönüşür, kıyıda balık sahaları belirir.
+893|Balık sahasının sayısı gelince balık tutarsın.
+894|Göl 2, 3, 11 ve 12'de balık verir.
+895|Balıkla öde
+896|2 haydutu kov · 3 kart çal · 4 kaynak al · 5 yol · 7 gelişim kartı
+897|Eski bot
+898|Onu çıkaran, kazanmak için bir puan daha almalı; botu öndeki oyuncuya verebilir.
+899|Nehirler
+900|Nehir kenarındaki her yol ya da köy 1 altın kazandırır.
+901|Köprüler nehrin üzerinden geçer.
+902|Köprü 2 tuğla ve 1 kereste tutar, 3 altın kazandırır.
+903|2 altını istediğin bir kaynakla takas et. En zengin oyuncu +1 puan alır, en yoksul −2.
+904|Zarların yerini 36 zar sonucunun hepsini içeren bir deste alır; böylece her sayı olması gerektiği sıklıkta gelir.
+905|Sise yelken aç, kara keşfet ve görevleri tamamla.
+906|Sisi gemilerle keşfet.
+907|Parlayan kenara dokun. Yeni kara sana bir kaynak kazandırır.
+908|Balık sürüsünün yanındaki gemi, sürünün sayısı gelince balık toplar.
+909|Broch için baharat
+910|Baharat alanındaki köyler, alan ürün verince baharat yükler.
+911|Yükü konseye teslim et.
+912|Her 2 teslimat 1 puan kazandırır, görev başına en fazla 3 puan.
+913|Sığınağın yanındaki bir gemiden 1 maden ve 1 yünle saldır. Sığınak düşünce en çok vuran bir puan kazanır.
+914|Kazanmak için 12 puana ulaş!
+915|Köyler, şehirler, yeni adalar, görevler ve sığınaklar; hepsi sayılır.
+916|6 oyuncuya kadar: daha çok alan, liman ve kart içeren daha büyük bir tahta.
+917|Özel inşa aşaması
+918|Her turdan sonra diğer herkes sırayla inşa edebilir ama ticaret yapamaz.
+919|Böylece kimse uzun süre beklemez.
+920|Masa dolu olsa bile turlar kısa kalır.
+921|Geri
+922|Duraklat
+923|İleri
+924|{mode} kurallarını öğrendin!
+925|Tekrar izle
+926|Sıradaki: {mode}
+927|Hadi oynayalım!
+928|Olay kartı
+929|Zar at
+930|Zafer!
+931|Oyun bitti
+932|Kazandın!
+933|zafer puanı
+934|{m} puanla {n}. oldun.
+935|Son sıralama
+936|Tahtaya bak
+937|Köy
+938|Şehir
+939|Metropol
+940|Zafer puanı kartları
+941|Bonus puan
+942|Yarış nasıl geçti
+943|En çok kaynak
+944|En çok gelen sayı
+945|{n}×
+946|Oyun süresi
+947|{n} tur
+948|Öne çıkanlar
+949|En uzun ticaret yolu
+950|Kaynağını bir kez seç. Bundan sonra su kemeri, bir atış sana hiçbir şey getirmediğinde (7 hariç) onu otomatik verir.
+951|Su kemeri: {res}. Değiştirmek için dokun.

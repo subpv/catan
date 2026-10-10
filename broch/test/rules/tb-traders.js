@@ -1,6 +1,7 @@
 'use strict';
 // Rule checks for the scenario "Traders & Barbarians" (the wagon scenario), after the English 6th edition (book p20-24) and the
 // 5-6 player book (p10-12). Run: node test/rules/tb-traders.js
+require('../seed');
 const assert = require('assert');
 const engine = require('../../server/engine');
 const C = require('../../server/engine/shared/constants');
@@ -282,6 +283,8 @@ const steps = (s, p) => L(s, p).wagon.steps;
   const c = s.board.centers[hexId];
   t.wagons[p] = s.board.landCorners[hexId][0];
   t.tab[p].ware = 'marble';
+  // no road on the paths into the plaza, else the step costs a toll and the gold check below would depend on the random setup
+  for (const e of s.board.vertices[c].edges) delete s.roads[e];
   act(s, p, { type: 'endTurn' });
   const g0 = s.players[p].gold, n0 = t.stacks.glassworks.length;
   act(s, p, { type: 'wagonStep', to: c });
@@ -318,7 +321,9 @@ const steps = (s, p) => L(s, p).wagon.steps;
   const s = mk(4); setup(s); toMain(s);
   const p = s.current, q = (p + 1) % 4;
   // a 7: the barbarian moves; on a road, one random resource card of its owner (never gold) is stolen
-  const road = Object.keys(s.roads).map(Number).find(e => s.roads[e] === q);
+  // a road of q with no barbarian on it yet (a random setup road can lie under one of the start barbarians, which refuses a second one)
+  const road = Object.keys(s.roads).map(Number).find(e => s.roads[e] === q && s.hub.tb.barb[e] === undefined);
+  assert(road !== undefined, 'q has a road without a barbarian');
   s.players[q].res = { lumber: 1, brick: 0, wool: 0, grain: 0, ore: 0 };
   s.players[q].gold = 7;
   s.players.forEach((pl, i) => { if (i !== q) pl.res = { lumber: 0, brick: 0, wool: 0, grain: 0, ore: 0 }; });

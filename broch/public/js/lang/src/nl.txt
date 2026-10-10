@@ -780,174 +780,172 @@
 780|Op weg naar nieuwe kusten
 781|De vier eilanden
 782|De mistige eilanden
-783|Vissers van Catan
-784|Rivieren van Catan
+783|Vissers van Broch
+784|Rivieren van Broch
 785|Gebeurteniskaarten
-786|Vis voor Catan
-787|Specerij voor Catan
-788|Visgronden, vistokens en de oude laars.
-789|Bruggen, goud, en de rijkste en armste speler.
-790|Een stapel gebeurteniskaarten vervangt de dobbelstenen.
-791|Huisregel: vergeten rover
-792|Als een speler zijn beurt beëindigt zonder de rover te verplaatsen, gaat die terug naar de woestijn.
-793|Als je nu je beurt beëindigt, gaat de rover terug naar de woestijn.
-794|Die huisregel staat niet aan.
-795|{@p} vergat de rover te verplaatsen, dus hij gaat terug naar de woestijn.
-796|Huisregel: startgrondstoffen voor beide
-797|Huisregels
-798|Beide gebouwen uit de opbouwfase leveren startgrondstoffen op. Bij Steden & Ridders telt de stad als een dorp.
-799|Er is nog niets gebeurd.
-800|Opbouwfase
-801|De grafieken vullen zich zodra de eerste beurten gespeeld zijn.
-802|Verloop van de overwinningspunten
-803|Dobbelsteenworpen
-804|Balken: gegooid · lijn: verwacht na {n} worpen
-805|Ontvangen grondstoffen
-806|Worpen
-807|Vaakst gegooid
-808|Zevens
-809|Doel
-810|gegooid
-811|verwacht
-812|Meer dan {n} kaarten: bij een 7 ben je de helft kwijt.
-813|Alleen de laatste worp
-814|Eerdere beurten tonen
-815|Verdediger van Broch
-816|−1 stad
-817|Levend bord
-818|Levend bord: aan
-819|Levend bord: uit
-820|Bank
-821|Is 1 punt waard. Wordt open voor je neergelegd.
-822|Speluitleg: {mode}
-823|Speluitleg
-824|Zo werkt {mode} (1 min)
-825|Welkom in Broch!
-826|Bouw, handel en groei. Wie als eerste 10 punten heeft, wint.
-827|Elke tegel levert een grondstof op.
-828|Bos, heuvels, weiland, akkers en bergen. De woestijn levert niets op.
-829|Bouw dorpen op de hoeken.
-830|Tik op de oplichtende hoek.
-831|Een dorp grenst aan maximaal 3 tegels.
-832|Je tegenstanders bouwen ook.
-833|Gooi elke beurt de dobbelstenen.
-834|Tik op de dobbelstenen.
-835|Elke tegel met dat getal levert grondstoffen op.
-836|Iedereen ernaast krijgt een kaart, ook in de beurt van een ander.
-837|Meer stipjes, meer geluk.
-838|De rode 6 en 8 vallen het vaakst, 2 en 12 zelden.
-839|Geef kaarten uit om te bouwen.
-840|Een straat kost hout en baksteen. Tik op de oplichtende rand.
-841|Steden leveren dubbel op.
-842|Breid een dorp uit tot stad met 2 graan en 3 erts. Tik op je dorp.
-843|Een 7 wekt de rover!
-844|Verplaats de rover naar een tegel.
-845|Die levert dan niets meer op. Tik op een tegel naast je tegenstander.
-846|Steel dan een kaart van iemand daar.
-847|Wie meer dan 7 kaarten heeft, verliest de helft.
-848|Handel met spelers of met de bank.
-849|De bank ruilt 4 gelijke kaarten voor 1. Havens: 3:1 of 2:1.
-850|Ridders verplaatsen de rover. Andere kaarten geven straten, grondstoffen of een overwinningspunt.
-851|3 ridders gespeeld: grootste riddermacht, +2 punten.
-852|Wie die heeft, laat oorlogsvaandels wapperen op het bord.
-853|5 straten op een rij: langste handelsroute, +2 punten.
-854|De langste route licht goud op.
-855|Haal 10 punten om te winnen!
-856|Dorp 1 · Stad 2 · Langste handelsroute 2 · Grootste riddermacht 2 · Overwinningspuntkaart 1
-857|Alles uit het klassieke spel, plus handelswaren, ridders en barbaren. Winnen doe je met 13 punten.
-858|Steden leveren handelswaren op.
-859|Bos: papier · Weiland: stof · Bergen: munten
-860|Met handelswaren koop je stadsuitbreidingen.
-861|Handel kost stof, politiek munten, wetenschap papier. Tik op +.
-862|Niveau 3 ontgrendelt een speciale kracht.
-863|Wetenschap: een grondstof als je niets krijgt. Handel: handelswaren 2:1. Politiek: sterkere ridders.
-864|Wie als eerste niveau 4 haalt, bouwt een metropool.
-865|Die is 2 punten waard en prijkt op je stad.
-866|Ridders verdedigen Broch.
-867|Rekruteer er een voor wol en erts. Tik op de oplichtende hoek.
-868|Activeer hem met graan.
-869|Alleen actieve ridders vechten. Promoveer ze om ze sterker te maken.
-870|Een schip op de gebeurtenisdobbelsteen laat de barbaren oprukken.
-871|Elk schip brengt ze een stap dichter bij Broch.
-872|Hun kracht: alle steden op het bord. Jouw verdediging: alle actieve ridders.
-873|De sterkste verdediger krijgt een punt. Winnen de barbaren, dan wordt de zwakste stad geplunderd.
-874|Een gekleurde poort op de gebeurtenisdobbelsteen geeft kaarten aan spelers met genoeg stadsuitbreidingen.
-875|Stadsmuren
-876|Met elke muur mag je 2 kaarten meer houden als er een 7 valt.
-877|Haal 13 punten om te winnen!
-878|Dorp 1 · Stad 2 · Metropool 2 · Verdediger 1 · Langste handelsroute 2
-879|Het land is verdeeld in eilanden. Schepen steken de zee over.
-880|Bouw schepen op het water.
-881|Een schip kost hout en wol. Tik op de oplichtende rand.
-882|Schepen vormen een ketting, net als straten.
-883|Het laatste schip van een open ketting mag één keer per beurt naar een nieuwe plek varen.
-884|Vaar naast de mist om die te onthullen.
-885|Land ontdekken levert je een grondstof op.
-886|Vestig je op een nieuw eiland: +1 punt!
-887|Goudvelden leveren een grondstof naar keuze op.
-888|De piraat
-889|Schepen naast zijn tegel zijn geblokkeerd, en hij steelt. Een 7 of een ridder verplaatst hem.
-890|Win met 12 tot 14 punten.
-891|Kies een scenario als je het spel aanmaakt: Nieuwe kusten, Vier eilanden of Mistige eilanden.
-892|Drie varianten om te combineren: Vissers, Rivieren en Gebeurteniskaarten.
-893|Vissers
-894|De woestijn wordt een meer en de kust krijgt visgronden.
-895|Gooi het getal van een visgrond om vis te vangen.
-896|Het meer levert op bij 2, 3, 11 en 12.
-897|Betalen met vis
-898|2 rover wegjagen · 3 stelen · 4 grondstof nemen · 5 een straat · 7 een ontwikkelingskaart
-899|De oude laars
-900|Wie hem opvist, heeft een punt meer nodig om te winnen, en mag hem doorschuiven naar een koploper.
-901|Rivieren
-902|Elke straat of elk dorp aan een rivier levert 1 goud op.
-903|Bruggen gaan over de rivier.
-904|Een brug kost 2 baksteen en 1 hout en levert 3 goud op.
-905|Ruil 2 goud voor een grondstof naar keuze. De rijkste krijgt +1 punt, de armste −2.
-906|Een stapel met alle 36 worpen vervangt de dobbelstenen, zodat elk getal precies zo vaak valt als het hoort.
-907|Vaar de mist in, ontdek land en voltooi missies.
-908|Verken de mist met schepen.
-909|Tik op de oplichtende rand. Nieuw land levert je een grondstof op.
-910|Een schip naast een school vissen haalt vis binnen als het bijbehorende getal valt.
-911|Specerijen voor Broch
-912|Dorpen aan een specerijveld laden specerijen in zodra het veld oplevert.
-913|Lever vracht af bij de raad.
-914|Elke 2 leveringen zijn 1 punt waard, tot 3 punten per missie.
-915|Val vanaf een schip naast een schuilplaats aan voor 1 erts en 1 wol. Valt die, dan krijgt wie het vaakst raakte een punt.
-916|Haal 12 punten om te winnen!
-917|Dorpen, steden, nieuwe eilanden, missies en schuilplaatsen tellen allemaal mee.
-918|Een groter bord met meer tegels, havens en kaarten voor maximaal 6 spelers.
-919|Extra bouwfase
-920|Na elke beurt mogen alle anderen om de beurt bouwen, maar niet handelen.
-921|Zo hoeft niemand lang te wachten.
-922|Beurten blijven kort, zelfs met een volle tafel.
-923|Terug
-924|Pauze
-925|Volgende
-926|Nu ken je {mode}!
-927|Opnieuw bekijken
-928|Volgende: {mode}
-929|Spelen maar!
-930|Gebeurteniskaart
-931|Gooien
-932|Overwinning!
-933|Einde spel
-934|Je hebt gewonnen!
-935|overwinningspunten
-936|Je bent als {n}e geëindigd met {m} punten.
-937|Eindstand
-938|Bord bekijken
-939|Dorpen
-940|Steden
-941|Metropool
-942|Overwinningspuntkaarten
-943|Bonuspunten
-944|Zo verliep de race
-945|Meeste grondstoffen
-946|Vaakst gegooide getal
-947|{n}×
-948|Speelduur
-949|{n} beurten
-950|Hoogtepunten
-951|Langste handelsroute
-952|Kies je grondstof één keer. Vanaf nu keert het aquaduct hem uit telkens als een worp je niets oplevert (behalve bij een 7).
-953|Aquaduct: {res}. Tik om te wijzigen.
+786|Visgronden, vistokens en de oude laars.
+787|Bruggen, goud, en de rijkste en armste speler.
+788|Een stapel gebeurteniskaarten vervangt de dobbelstenen.
+789|Huisregel: vergeten rover
+790|Als een speler zijn beurt beëindigt zonder de rover te verplaatsen, gaat die terug naar de woestijn.
+791|Als je nu je beurt beëindigt, gaat de rover terug naar de woestijn.
+792|Die huisregel staat niet aan.
+793|{@p} vergat de rover te verplaatsen, dus hij gaat terug naar de woestijn.
+794|Huisregel: startgrondstoffen voor beide
+795|Huisregels
+796|Beide gebouwen uit de opbouwfase leveren startgrondstoffen op. Bij Steden & Ridders telt de stad als een dorp.
+797|Er is nog niets gebeurd.
+798|Opbouwfase
+799|De grafieken vullen zich zodra de eerste beurten gespeeld zijn.
+800|Verloop van de overwinningspunten
+801|Dobbelsteenworpen
+802|Balken: gegooid · lijn: verwacht na {n} worpen
+803|Ontvangen grondstoffen
+804|Worpen
+805|Vaakst gegooid
+806|Zevens
+807|Doel
+808|gegooid
+809|verwacht
+810|Meer dan {n} kaarten: bij een 7 ben je de helft kwijt.
+811|Alleen de laatste worp
+812|Eerdere beurten tonen
+813|Verdediger van Broch
+814|−1 stad
+815|Levend bord
+816|Levend bord: aan
+817|Levend bord: uit
+818|Bank
+819|Is 1 punt waard. Wordt open voor je neergelegd.
+820|Speluitleg: {mode}
+821|Speluitleg
+822|Zo werkt {mode} (1 min)
+823|Welkom in Broch!
+824|Bouw, handel en groei. Wie als eerste 10 punten heeft, wint.
+825|Elke tegel levert een grondstof op.
+826|Bos, heuvels, weiland, akkers en bergen. De woestijn levert niets op.
+827|Bouw dorpen op de hoeken.
+828|Tik op de oplichtende hoek.
+829|Een dorp grenst aan maximaal 3 tegels.
+830|Je tegenstanders bouwen ook.
+831|Gooi elke beurt de dobbelstenen.
+832|Tik op de dobbelstenen.
+833|Elke tegel met dat getal levert grondstoffen op.
+834|Iedereen ernaast krijgt een kaart, ook in de beurt van een ander.
+835|Meer stipjes, meer geluk.
+836|De rode 6 en 8 vallen het vaakst, 2 en 12 zelden.
+837|Geef kaarten uit om te bouwen.
+838|Een straat kost hout en baksteen. Tik op de oplichtende rand.
+839|Steden leveren dubbel op.
+840|Breid een dorp uit tot stad met 2 graan en 3 erts. Tik op je dorp.
+841|Een 7 wekt de rover!
+842|Verplaats de rover naar een tegel.
+843|Die levert dan niets meer op. Tik op een tegel naast je tegenstander.
+844|Steel dan een kaart van iemand daar.
+845|Wie meer dan 7 kaarten heeft, verliest de helft.
+846|Handel met spelers of met de bank.
+847|De bank ruilt 4 gelijke kaarten voor 1. Havens: 3:1 of 2:1.
+848|Ridders verplaatsen de rover. Andere kaarten geven straten, grondstoffen of een overwinningspunt.
+849|3 ridders gespeeld: grootste riddermacht, +2 punten.
+850|Wie die heeft, laat oorlogsvaandels wapperen op het bord.
+851|5 straten op een rij: langste handelsroute, +2 punten.
+852|De langste route licht goud op.
+853|Haal 10 punten om te winnen!
+854|Dorp 1 · Stad 2 · Langste handelsroute 2 · Grootste riddermacht 2 · Overwinningspuntkaart 1
+855|Alles uit het klassieke spel, plus handelswaren, ridders en barbaren. Winnen doe je met 13 punten.
+856|Steden leveren handelswaren op.
+857|Bos: papier · Weiland: stof · Bergen: munten
+858|Met handelswaren koop je stadsuitbreidingen.
+859|Handel kost stof, politiek munten, wetenschap papier. Tik op +.
+860|Niveau 3 ontgrendelt een speciale kracht.
+861|Wetenschap: een grondstof als je niets krijgt. Handel: handelswaren 2:1. Politiek: sterkere ridders.
+862|Wie als eerste niveau 4 haalt, bouwt een metropool.
+863|Die is 2 punten waard en prijkt op je stad.
+864|Ridders verdedigen Broch.
+865|Rekruteer er een voor wol en erts. Tik op de oplichtende hoek.
+866|Activeer hem met graan.
+867|Alleen actieve ridders vechten. Promoveer ze om ze sterker te maken.
+868|Een schip op de gebeurtenisdobbelsteen laat de barbaren oprukken.
+869|Elk schip brengt ze een stap dichter bij Broch.
+870|Hun kracht: alle steden op het bord. Jouw verdediging: alle actieve ridders.
+871|De sterkste verdediger krijgt een punt. Winnen de barbaren, dan wordt de zwakste stad geplunderd.
+872|Een gekleurde poort op de gebeurtenisdobbelsteen geeft kaarten aan spelers met genoeg stadsuitbreidingen.
+873|Stadsmuren
+874|Met elke muur mag je 2 kaarten meer houden als er een 7 valt.
+875|Haal 13 punten om te winnen!
+876|Dorp 1 · Stad 2 · Metropool 2 · Verdediger 1 · Langste handelsroute 2
+877|Het land is verdeeld in eilanden. Schepen steken de zee over.
+878|Bouw schepen op het water.
+879|Een schip kost hout en wol. Tik op de oplichtende rand.
+880|Schepen vormen een ketting, net als straten.
+881|Het laatste schip van een open ketting mag één keer per beurt naar een nieuwe plek varen.
+882|Vaar naast de mist om die te onthullen.
+883|Land ontdekken levert je een grondstof op.
+884|Vestig je op een nieuw eiland: +1 punt!
+885|Goudvelden leveren een grondstof naar keuze op.
+886|De piraat
+887|Schepen naast zijn tegel zijn geblokkeerd, en hij steelt. Een 7 of een ridder verplaatst hem.
+888|Win met 12 tot 14 punten.
+889|Kies een scenario als je het spel aanmaakt: Nieuwe kusten, Vier eilanden of Mistige eilanden.
+890|Drie varianten om te combineren: Vissers, Rivieren en Gebeurteniskaarten.
+891|Vissers
+892|De woestijn wordt een meer en de kust krijgt visgronden.
+893|Gooi het getal van een visgrond om vis te vangen.
+894|Het meer levert op bij 2, 3, 11 en 12.
+895|Betalen met vis
+896|2 rover wegjagen · 3 stelen · 4 grondstof nemen · 5 een straat · 7 een ontwikkelingskaart
+897|De oude laars
+898|Wie hem opvist, heeft een punt meer nodig om te winnen, en mag hem doorschuiven naar een koploper.
+899|Rivieren
+900|Elke straat of elk dorp aan een rivier levert 1 goud op.
+901|Bruggen gaan over de rivier.
+902|Een brug kost 2 baksteen en 1 hout en levert 3 goud op.
+903|Ruil 2 goud voor een grondstof naar keuze. De rijkste krijgt +1 punt, de armste −2.
+904|Een stapel met alle 36 worpen vervangt de dobbelstenen, zodat elk getal precies zo vaak valt als het hoort.
+905|Vaar de mist in, ontdek land en voltooi missies.
+906|Verken de mist met schepen.
+907|Tik op de oplichtende rand. Nieuw land levert je een grondstof op.
+908|Een schip naast een school vissen haalt vis binnen als het bijbehorende getal valt.
+909|Specerijen voor Broch
+910|Dorpen aan een specerijveld laden specerijen in zodra het veld oplevert.
+911|Lever vracht af bij de raad.
+912|Elke 2 leveringen zijn 1 punt waard, tot 3 punten per missie.
+913|Val vanaf een schip naast een schuilplaats aan voor 1 erts en 1 wol. Valt die, dan krijgt wie het vaakst raakte een punt.
+914|Haal 12 punten om te winnen!
+915|Dorpen, steden, nieuwe eilanden, missies en schuilplaatsen tellen allemaal mee.
+916|Een groter bord met meer tegels, havens en kaarten voor maximaal 6 spelers.
+917|Extra bouwfase
+918|Na elke beurt mogen alle anderen om de beurt bouwen, maar niet handelen.
+919|Zo hoeft niemand lang te wachten.
+920|Beurten blijven kort, zelfs met een volle tafel.
+921|Terug
+922|Pauze
+923|Volgende
+924|Nu ken je {mode}!
+925|Opnieuw bekijken
+926|Volgende: {mode}
+927|Spelen maar!
+928|Gebeurteniskaart
+929|Gooien
+930|Overwinning!
+931|Einde spel
+932|Je hebt gewonnen!
+933|overwinningspunten
+934|Je bent als {n}e geëindigd met {m} punten.
+935|Eindstand
+936|Bord bekijken
+937|Dorpen
+938|Steden
+939|Metropool
+940|Overwinningspuntkaarten
+941|Bonuspunten
+942|Zo verliep de race
+943|Meeste grondstoffen
+944|Vaakst gegooide getal
+945|{n}×
+946|Speelduur
+947|{n} beurten
+948|Hoogtepunten
+949|Langste handelsroute
+950|Kies je grondstof één keer. Vanaf nu keert het aquaduct hem uit telkens als een worp je niets oplevert (behalve bij een 7).
+951|Aquaduct: {res}. Tik om te wijzigen.

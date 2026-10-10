@@ -724,7 +724,13 @@ const HANDLERS = {
       if (old) s.ships[old.id] = old;
       fail(!has(P(s, p), COSTS.ship) ? 'Not enough resources.' : 'The ship goes on a sea path next to one of your harbor settlements.');
     }
-    if (old && old.cargo.length) log(s, "The cargo of {@p}'s ship is lost.", { p });
+    if (old) {
+      // fish and spice go back to the supply / their village; only the crew of the taken-back ship is lost
+      const back = old.cargo.filter(c => c.t === 'F' || c.t === 'S');
+      back.forEach(c => returnPiece(s, p, c));
+      if (back.length) log(s, '{@p} puts a piece back into the supply.', { p });
+      if (old.cargo.length > back.length) log(s, "The cargo of {@p}'s ship is lost.", { p });
+    }
     pay(s, P(s, p), COSTS.ship);
     newShip(s, p, a.e);
     log(s, '{@p} built a ship.', { p });
@@ -833,7 +839,7 @@ const HANDLERS = {
   sail(s, p, a) {
     requireMove(s, p);
     const ship = ownShip(s, p, a.ship);
-    const r = reach(s, ship)[a.to];
+    const r = Number.isInteger(a.to) ? reach(s, ship)[a.to] : null;
     if (!r) fail('That ship cannot go there.');
     if (r[1]) { P(s, p).res.gold -= 1; ship.paid = true; log(s, '{@p} pays 1 gold tribute to the pirates.', { p }); }
     ship.mp -= r[0]; ship.e = a.to; ship.moved = true;
@@ -886,7 +892,7 @@ const HANDLERS = {
     const c = ship.cargo[a.idx];
     if (!c) fail('Pick something on the ship.');
     ship.cargo.splice(a.idx, 1);
-    if (c.t === 'F') s.fishLeft++;
+    returnPiece(s, p, c);
     log(s, '{@p} puts a piece back into the supply.', { p });
   },
   // exchange between a ship and the harbor settlement it points at
@@ -942,7 +948,7 @@ const HANDLERS = {
     if (h.village.bags < 1) fail('The village has no spice left.');
     ship.cargo.splice(i, 1);
     h.village.friends.push(p); h.village.bags--;
-    ship.cargo.push({ t: 'S' });
+    ship.cargo.push({ t: 'S', from: h.id });
     // quick sailing helps at once: every ship of yours gets 1 more move
     if (h.village.kind === 'fast') for (const x of shipsOf(s, p)) x.mp += 1;
     log(s, '{@p} befriends a spice village and loads a bag of spice.', { p, h: h.id });
@@ -1012,12 +1018,26 @@ function buildFigure(s, p, a, t) {
   log(s, t === 'E' ? '{@p} sends out an explorer.' : '{@p} recruits a unit.', { p });
 }
 
+// A cargo piece that leaves the game board goes back where it came from, so no piece is ever lost for good (fish and spice are
+// limited, and a game whose last fish or bag has vanished could never be won): a fish swarm to the supply, a spice bag to its
+// village (and the friendship with that village ends: it is undone, the bag can be fetched again).
+function returnPiece(s, p, c) {
+  if (c.t === 'F') s.fishLeft++;
+  else if (c.t === 'S') {
+    let h = c.from != null ? H(s, c.from) : null;
+    if (!h || !h.village || !h.village.friends.includes(p)) h = s.board.hexes.find(x => x.village && x.terrain === 'spice' && x.village.friends.includes(p)); // (games saved before the bag knew its village)
+    if (!h) return;
+    h.village.friends.splice(h.village.friends.indexOf(p), 1);
+    h.village.bags++;
+  }
+}
+
 // ---------------------------------------------------------------- act
 function act(s, p, a) {
   if (!a || typeof a.type !== 'string') fail('Bad action.');
   if (s.phase === 'over') fail('The game is over.');
   if (p < 0 || p >= s.players.length) fail('You are not in this game.');
-  const handler = HANDLERS[a.type];
+  const handler = Object.hasOwn(HANDLERS, a.type) ? HANDLERS[a.type] : null;
   if (!handler) fail('Unknown action.');
   handler(s, p, a);
   s.version++;

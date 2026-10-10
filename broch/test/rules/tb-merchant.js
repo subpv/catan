@@ -1,6 +1,7 @@
 'use strict';
 // Merchant Trains (the old "Caravans" scenario of Traders & Barbarians), checked against the English 6th edition book
 // (T&B p13-14, 5-6 player book p7 + p12): node test/rules/tb-merchant.js
+require('../seed');
 const { createGame, act, viewFor, GameError, vp, _internal } = require('../../server/engine/classic/game');
 
 let bad = 0;

@@ -1,6 +1,7 @@
 'use strict';
 // Rule checks for Explorers & Pirates, one assertion per rule of the rulebook that is easy to get wrong.
 // Run: node test/rules/eup-rules.js
+require('../seed');
 const assert = require('assert');
 const engine = require('../../server/engine');
 const X = require('../../server/engine/explorers-pirates/explorers');
@@ -333,7 +334,7 @@ function shipNearFog(s, p) {
   assert.equal(sh.mp, 4);
   act(s, p, { type: 'dropVillage', ship: sh.id, hex: sp.id });
   assert.equal(sh.mp, 5, 'quick sailing: one more move at once');
-  assert.deepEqual(sh.cargo, [{ t: 'S' }]);
+  assert.deepEqual(sh.cargo, [{ t: 'S', from: sp.id }]); // the bag knows its village (it goes back there if the ship is taken back)
   throws(() => act(s, p, { type: 'dropVillage', ship: sh.id, hex: sp.id }), 'already friends');
   assert.equal(sp.village.bags, 2);
   // only after a unit stays in the village may buildings stand on its corners
