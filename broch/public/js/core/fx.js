@@ -116,8 +116,8 @@ export const afterFx = cb => { queue = queue.then(() => { try { cb(); } catch { 
 function enqueue(fn, { noBuilderWait = false } = {}) {
   busy++;
   window.BROCH_FX_BUSY = true;
-  // full-screen moments (a new turn, loot) wait a little for the builders (never longer than 3.5 s), so they are not cut off; the dice never wait
-  const afterBuilders = async () => { const left = noBuilderWait ? 0 : buildersBusyFor(); if (left > 0) await wait(Math.min(left + 150, 3500)); return fn(); };
+  // full-screen moments (a new turn, loot) wait a little for the builders (never longer than 2 s), so they are not cut off; the dice never wait
+  const afterBuilders = async () => { const left = noBuilderWait ? 0 : buildersBusyFor(); if (left > 0) await wait(Math.min(left + 150, 2000)); return fn(); };
   queue = queue.then(afterBuilders).catch(() => {}).finally(() => { busy--; if (!busy) window.BROCH_FX_BUSY = false; });
   return queue;
 }
