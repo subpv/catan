@@ -1,6 +1,6 @@
 # Architecture
 
-How Broch works, with the contracts you need to change it safely. Paths are relative to `/home/user/catan/broch` unless they start with `docs/` or `deploy/`. Companion documents: `../CLAUDE.md` (conventions, pitfalls), `OPERATIONS.md`, `RULES-AND-GAPS.md`.
+How Broch works, with the contracts you need to change it safely. Paths are relative to the `broch/` folder of the repository unless they start with `docs/`, `deploy/` or `dist/`. Companion documents: `../CLAUDE.md` (conventions, pitfalls), `OPERATIONS.md`, `RULES-AND-GAPS.md`.
 
 ## 1. The whole picture
 
@@ -64,7 +64,7 @@ Errors are `{ error: 'English sentence' }` (the client runs it through `t()`); 5
 
 ## 3. WebSocket protocol
 
-One socket per tab at `/ws`. The upgrade is refused unless `Origin` matches the host (`sameOrigin`) and a valid session cookie is present (otherwise the socket closes with code **4001**, which the client treats as "logged out", see `app.js` `broch:session`). The session is checked again on every message. `maxPayload` is 64 KB, more than 200 messages per second closes the socket with 1008.
+One socket per tab at `/ws`. The upgrade is refused (HTTP 401, the `ws` library default for a failed `verifyClient`) unless `Origin` matches the host (`sameOrigin`; a request without `Origin`, i.e. not a browser, passes). A socket without a valid session cookie is accepted and closed at once with code **4001**, which the client treats as "logged out" (see `core.js` `onclose` and `app.js` `broch:session`). The session is checked again on every message. `maxPayload` is 64 KB, more than 200 messages per second closes the socket with 1008.
 
 ```
 client -> server                                   server -> client
@@ -194,7 +194,7 @@ The same `decide()` functions run in the demo (`demo/mock.js`), so a bot bug sho
 
 ```
 index.html -> js/app.js
-  app.js            auth/landing, lobby (new-game form), profile, router (#/ #/game/ID #/join/ID #/stats #/profile), session guard, language dialog
+  app.js            auth/landing, lobby (new-game form), profile, router (#/ #/game/ID #/join/ID #/stats #/profile, plus #/login and #/register while logged out), session guard, language dialog
   core/core.js      api(), websocket (wsConnect/wsWatch/wsAct/wsFxIdle), modal(), toast(), colours, glyphs, extendCore() (games add cards/terms/glyphs), reportProblem()
   core/i18n.js      t(key, params), setLang() (loads lang/<code>.js and lang/x/<code>.js?v=BUILD)
   games/registry.js GAMES{}, register(plugin)

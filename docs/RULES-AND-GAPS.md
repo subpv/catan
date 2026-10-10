@@ -1,6 +1,6 @@
 # Rules, house rules and known gaps
 
-Which books the games follow, every house rule and experiment with the exact place where it lives, the known data gaps and the Beta status of each mode, and step lists for adding a house rule, an experiment or a whole game. Paths are relative to `/home/user/catan/broch` unless they start with `rulebooks/`. The long list of deliberate deviations per game is the "Rule notes" section of `broch/README.md`; do not duplicate it here.
+Which books the games follow, every house rule and experiment with the exact place where it lives, the known data gaps and the Beta status of each mode, and step lists for adding a house rule, an experiment or a whole game. Paths are relative to the `broch/` folder of the repository unless they start with `rulebooks/`. The long list of deliberate deviations per game is the "Rule notes" section of `broch/README.md`; do not duplicate it here.
 
 ## 1. Rulebooks (`rulebooks/`)
 
@@ -29,7 +29,7 @@ Tests that pin the rules to the books are named in each test file's header (`tes
 | Classic (2-6; books are for 3-6) | `engine/classic/game.js` | 10 | complete | - |
 | Cities & Knights | `engine/knights/knights.js` in the classic engine | 13 (Seafarers scenario points + 2) | complete | - |
 | Seafarers (8 scenarios, optionally with C&K) | `engine/seafarers/` | scenario: 14, 13, 12, 14, 13, 14, 10, 12 | **Beta** | `app.js` (every `expansion !== 'none'`), `classic/screen.js` `modeLabel` |
-| Traders & Barbarians (the 5 scenarios of the book, one per game, plus the variants Event cards, Friendly robber and Harbors; the 3 big scenarios only with the classic rules, not with C&K) | `engine/traders-barbarians/` | `tradersVp(variants)` in `shared/constants.js` (12 for the big scenarios) | **Beta** | same |
+| Traders & Barbarians (the 5 scenarios of the book, one per game, plus the variants Event cards, Friendly robber and Harbors; the 3 big scenarios only with the classic rules, not with C&K) | `engine/traders-barbarians/` | `tradersVp(variants)` in `shared/constants.js`: 10 (Fishermen, Rivers, plain), 12 (Merchant Trains, Barbarian Attack), 13 (wagon scenario), +1 with the Harbors variant | **Beta** | same |
 | Explorers & Pirates (5 scenarios, 2-6) | `engine/explorers-pirates/explorers.js` (own engine) | 8, 12, 15, 15, 17 | **Beta** | `app.js` (`g.mode === 'explorers'`) |
 | New Energies (3-4) | `engine/energies/` on the kit | 10 | complete | - |
 | Dawn of Humankind (3-4) | `engine/humankind/` on the kit | 10 | **Beta** | `beta: true` in `games/humankind/plugin.js` |
@@ -69,8 +69,8 @@ These are missing facts, not missing code. Each says where the stand-in lives, s
 | Catan for Two (Traders & Barbarians, two players, neutral players, trade tokens) | not implemented (the engine already supports the two-wagon Merchant Trains round for it) | would be a variant in `traders-barbarians/hub.js` | - |
 | Traders & Barbarians 5-6 pictures | bridge-site edges on the river art and the positions of the 5-6 fishing grounds read from pictures; event card counts per number not printed (36 shuffled cards) | `engine/traders-barbarians/hub.js` | - |
 | New Energies slot counts of the events (4/4/3/3 brown, 4 climate, 3/4 green) | read from the frame picture | `EVENTS` in `engine/energies/energies.js` | - |
-| Rise of the Inkas | the 2 pure ocean fields of the real board are not drawn (no rule effect) | `FRAME` / art in `games/inkas/art.js` | cosmetic |
-| Demo ignores three switches | the lobby of the demo shows `vpAtOnce`, `expBuildAnytime`, `expExtraStart`, but `demo/mock.js` never copies them into `meta` or into the `createGame` options (lines ~78, ~131, ~188), so they have no effect in the demo | `demo/mock.js` | add the three keys next to `robberReturn` in the three places, rebuild the demo |
+| Rise of the Inkas | the 2 pure ocean fields of the real board are not drawn (no rule effect) | `FRAME` in `engine/inkas/inkas.js`, art in `public/js/games/inkas/art.js` | cosmetic |
+| Demo ignores three switches | `demo/mock.js` never copies `vpAtOnce`, `expBuildAnytime`, `expExtraStart` into `meta` or into the `createGame` options (lines ~78, ~131, ~188). The public `/demo` hides every switch with CSS (`demo/demo.css`), so nobody notices there; the single-file `dist/broch-demo.html` shows the switches and they have no effect | `demo/mock.js` | add the three keys next to `robberReturn` in the three places, rebuild the demo |
 
 Deliberate deviations that are not gaps (classic board laid out at random, first player drawn, victory point cards counted automatically, ...) are listed in `broch/README.md`, "Rule notes".
 
@@ -84,7 +84,7 @@ Deliberate deviations that are not gaps (classic board laid out at random, first
 4. **Lobby** `public/js/app.js`: default in `newGame`, a `sw('myRule', label, hint)` entry in the right group (`house` or `exp`, there is a list of keys per group for the phone fold-out), and nothing else: the whole `newGame` object is posted.
 5. **In-game UI**: `public/js/games/classic/screen.js` (and `knights/ui.js` for C&K) read `v.options.myRule`; show the active house rules in the costs dialog list (`house` in `costsDialog`).
 6. **Texts**: label, hint, any new log line (`log(s, 'English template', {...})`), any new refusal message (`fail('...')`) and tutorial text, each as a tsv row with 15 translations in `public/js/lang/games/` (an existing file such as `experiments.tsv`, or a new one); run `node public/js/lang/build-games-lang.js`.
-7. **Tests**: a case in `test/rules/experiments.js` (it has `started(opts)` helpers), and a config line in `CONFIGS` of `test/fuzz/simulate.js` (`'classic-myrule': ['classic', { myRule: true }]`) so random games exercise it.
+7. **Tests**: a case in `test/rules/experiments.js` (helpers: `setupAll(mode, options)` plays the setup phase and returns the state; `started(bool)` is specific to `expBuildAnytime`), and a config line in `CONFIGS` of `test/fuzz/simulate.js` (`'classic-myrule': ['classic', { myRule: true }]`) so random games exercise it. `npm test` runs only the first two configs (`classic`, `knights`); run yours with `node test/fuzz/simulate.js 30 classic-myrule`. Check the whole path with a real server: create a game with the switch through `POST /api/games` (see `test/e2e/bots-server.js` for a minimal client), start it and look at `options` in the first `state` message.
 8. **Docs**: house rule list in `broch/README.md`, the table in section 3 above, `demo/progress-data.js` if the status changes.
 9. Run `npm test`, `npm run test:demo`, `npm run test:browser`.
 
@@ -105,7 +105,7 @@ Client:
 6. `public/js/games/<id>/tutorial.js` using `addChapter` of `core/tutorial.js`.
 7. Import both in `public/js/app.js` (that registers them) and list every new module in `public/index.html` as `<link rel="modulepreload">` (`node test/rules/preload.js` checks).
 8. Texts: tsv rows for everything new (names, blurbs, log templates, errors, tutorial).
-9. Tests: `test/rules/<id>-rules.js` for the book's rules, entries in `test/fuzz/simulate-games.js`, add the mode to the `test:browser` script in `package.json`, and to `test/e2e/bots-server.js` if it takes mode names.
+9. Tests: `test/rules/<id>-rules.js` for the book's rules (and add it to the `test` script in `package.json`, which lists every suite by name), `test/fuzz/simulate-games.js` picks the game up from `engine.STANDALONE` (it needs `server/bots/fuzz-<id>.js`), add the mode as an entry of the `modes` table in `test/e2e/bots-server.js` and of the mode table near the top of `test/e2e/mobile-shots.js`, and to the mode list of the `test:browser` script in `package.json`. Also check `test/rules/counter-offers.js` (it loops over the games) and `STANDALONE` in `public/js/core/stats.js` (display names on the stats page).
 10. Docs: README mode list and rule notes, `demo/progress-data.js` row (status `Beta` until the data is complete), this file's tables, `CLAUDE.md` repo map if a folder is new. Then `node scripts/make-dist.js`.
 
 ### 5.4 A Seafarers scenario or a Traders & Barbarians variant

@@ -35,7 +35,8 @@ The project is **complete and in maintenance mode**; the original owner does not
 | `broch/public/js/games/classic/screen.js` | the screen of the whole classic family; `knights/ui.js`, `seafarers/ui.js`, `traders-barbarians/hub*.js` are its plug-ins |
 | `broch/public/js/games/sgame.js` + `games/registry.js` | the one screen for the standalone games; each game has `games/<id>/plugin.js` that calls `register({...})` |
 | `broch/public/js/lang/` | translations: `src/*.txt` + `_keys.json` -> `<code>.js`; `games/*.tsv` -> `x/<code>.js` (both generated) |
-| `broch/demo/` | in-browser demo: `build.js`, `mock.js` (the real engine in the page), `public-prelude.js`, `progress-data.js` |
+| `broch/demo/` | in-browser demo: `build.js`, `mock.js` (the real engine in the page), `public-prelude.js`, `demo.css` (hides lobby switches etc. in the public demo), `progress-data.js` -> `progress.js` writes `PROGRESS.md` |
+| `broch/Dockerfile`, `broch/docker-compose.yml` | image (stage 1 builds `/demo`, stage 2 is the app, `DATA_DIR=/data`) and a compose file with a TrueNAS-style bind mount you must adapt (see `docs/OPERATIONS.md`) |
 | `broch/scripts/` | `make-dist.js` (release), `dist-check.js`, `admin.js` (reset password etc.) |
 | `broch/test/` | `rules/` (rule tests), `fuzz/` (random games), `e2e/` (real server, some with Chromium), `seed.js` |
 | `deploy/` | `ANLEITUNG-TrueNAS.md` (German guide), `truenas-compose.yml` |
@@ -44,25 +45,27 @@ The project is **complete and in maintenance mode**; the original owner does not
 
 ## Run, test, build
 
-Node 22 (`engines` says >=20). All from `/home/user/catan/broch`:
+Node 22 (`engines` says >=20). All from the `broch/` folder of the repository (the paths below are relative to it):
 
 ```sh
 npm ci                      # ws + esbuild (dev); npm install works too
 npm start                   # http://localhost:8080, data in broch/data (PORT, DATA_DIR override)
-npm test                    # 25-45 s: 17 rule suites + fuzz (random bot games through the engines)
+npm test                    # 25-45 s: 17 rule suites + fuzz (random games through the engines; the classic fuzz runs only the configs classic and knights,
+                            # "knights: 26/30 finished" is normal (step cap). Other configs: node test/fuzz/simulate.js 30 classic-rr,sea-shores (names: CONFIGS in test/fuzz/simulate.js))
 npm run test:all            # npm test + test:security + test:resign + test:ops (no browser needed)
-npm run test:bots           # bots play whole games on a real server; one mode: npm run test:bots -- classic
+npm run test:bots           # bots play whole games on a real server (13 setups, 2-4 min); some: npm run test:bots -- classic knights energies
+                            # (names = keys of `modes` in test/e2e/bots-server.js: classic knights energies inkas humankind explorers seafarers traders merchant barbarians wagons classic56 barbarians56)
 npm run test:pacing         # bots wait for the client's animation ack ({t:'fx'})
 # Browser tests: Playwright is NOT in package.json (not needed in production)
 npm i -g playwright && npx playwright install chromium
 npm run test:demo           # builds the demo, plays a classic game in Chromium (sets NODE_PATH=$(npm root -g) itself)
-npm run test:browser        # all nine modes at 390x844, fails on JS page errors, screenshots in /tmp/broch-shots
-CHROMIUM=/path/to/chrome npm run test:browser   # default path /opt/pw-browsers/chromium-1194/chrome-linux/chrome, then Playwright's own
+npm run test:browser        # ~5 min: nine setups (the 8 modes + the classic 5-6 player board) at 390x844, fails on JS page errors, screenshots in /tmp/broch-shots
+CHROMIUM=/path/to/chrome npm run test:browser   # default path /opt/pw-browsers/chromium-1194/chrome-linux/chrome, then (test:browser only) Playwright's own; test:demo has no fallback, set CHROMIUM when that path does not exist
 SEED=13 node test/rules/tb-traders.js           # replay a random-play test deterministically (test/seed.js)
 node public/js/lang/build-lang.js               # src/*.txt -> lang/<code>.js
 node public/js/lang/build-games-lang.js         # games/*.tsv -> lang/x/<code>.js (reports missing columns, lost placeholders)
 node demo/build.js --public                     # public/demo/ so that /demo works from a checkout (git-ignored)
-node scripts/make-dist.js && npm run dist:check # release: dist/broch-app.zip, dist/broch-demo.html, PROGRESS.md
+node scripts/make-dist.js && npm run dist:check # release: dist/broch-app.zip, dist/broch-demo.html, PROGRESS.md (needs zip + unzip + network for npm ci --omit=dev; dist:check compares only the zip with server/ public/ scripts/admin.js, not broch-demo.html)
 node --check server/file.js                     # after every server edit
 node --input-type=module --check < public/js/file.js   # after every client edit
 ```
@@ -74,7 +77,7 @@ node --input-type=module --check < public/js/file.js   # after every client edit
 - **Comments:** every file starts with a comment that says what it is and how it is used. Short English comments explain *why* (a rule of the book, a past bug), not what. Section dividers: `// ------------------------------------------------------------ name` (client, server) and `// ---------------------------------------------------------------- name` (engines). Rule references name the book ("rulebook p. 15", "the German book").
 - **Style:** 2 spaces, single quotes, semicolons, terse one-line helpers (`const tx = (k, p) => esc(t(k, p))`). Server and tests are CommonJS with `'use strict'`; the client is ES modules with explicit `.js` extensions. No TypeScript, no framework, no build step for the app.
 - **Engine errors:** a refused move is `fail('English sentence', params)` -> `GameError`. The sentence is shown to the player through `t()`, so it is an i18n key too. Other exceptions are bugs and are logged as `Action crashed`.
-- **Log entries** are English templates plus parameters so each client translates them: `log(s, '{@p} rolled {n}.', { p, n })`. Placeholders: `{@x}` player index or list, `{$x}` card object, `{#x}` game term, `{%x}` card name, `{x}` plain value. `fx.js` matches some templates by their exact text: do not reword an existing one without searching `public/js`.
+- **Log entries** are English templates plus parameters so each client translates them: `log(s, '{@p} rolled {n}.', { p, n })`. Placeholders: `{@x}` player index or list, `{$x}` card object, `{#x}` game term, `{%x}` card name, `{x}` plain value. `fx.js` and `core/feed.js` match some templates by their exact text: do not reword an existing one without searching `public/js`.
 - **i18n:** `t(english, params)`; escape with `esc()` / `tx()` before putting text into HTML. Missing keys fall back to English. New text: tsv row with English + de da sv nb nl fr es it pt pl tr uk ko ja zh (tab separated, keep `{placeholders}`), then run the build. `test/rules/i18n-check.js` only checks the word "Catan" and the Traders & Barbarians waiting texts; for everything else you are the check.
 - **Generated, never edit by hand:** `public/js/lang/<code>.js`, `public/js/lang/x/<code>.js`, `public/demo/`, `dist/*`, `PROGRESS.md` (edit `broch/demo/progress-data.js`, then `node demo/progress.js`).
 - **Phone vs desktop CSS:** `styles.css` is the desktop. Phone rules go into `css/mobile-shell.css` (pages), `mobile-game.css` (game screens, dock, sheet), `mobile-dialogs.css`, each wrapped in `@media (max-width: 760px)` or the landscape-phone query. JS must agree with CSS on what a phone is: use `isPhone()` from `core/phone.js`, never your own width check. Shared variables `--m-*` are documented at the top of `mobile-shell.css`.
@@ -115,8 +118,8 @@ A bot is a seat whose user id starts with `bot_` (`meta.bots[id].name`). `server
 - **Inline scripts are blocked by the CSP**, so anything generated for the real site must be an external module (this is why `public/demo/` exists).
 - **The server computes `BUILD_ID` at start.** Changed files are served at once (mtime check) but the id in the footer only changes after a restart.
 - **A game file or user file edited by hand while the app runs is overwritten** by the app's memory. Stop the app first (`scripts/admin.js` says so too).
-- **Fuzz/e2e tests can fail rarely.** Replay with `SEED`; formerly flaky: knights bots (forced progress-card deadlock, fixed, the runner now logs `stuck`) and `tb-traders` (test no longer depends on random setup roads).
-- **`demo/mock.js` is a second copy of the server's lobby code** (card, create, start). A new lobby field or house rule must be added there too, or the demo shows the switch and ignores it (that happened to `vpAtOnce`, `expBuildAnytime`, `expExtraStart`, see `docs/RULES-AND-GAPS.md` section 4).
+- **Fuzz/e2e tests can fail rarely.** Replay with `SEED`; formerly flaky: knights bots (forced progress-card deadlock, fixed, the runner now logs `stuck`) and `tb-traders` (test no longer depends on random setup roads; 40 seeds passed when this was checked). Open at the time of writing (2026-10-10): `npm run test:bots -- explorers` ended with "the game did not finish" (120 s limit) in 3 of 3 runs while every other setup passed and `test/fuzz/simulate-games.js` plays Explorers & Pirates to the end; the human seat of that test is the bot brain plus random moves (`test/e2e/bots-server.js`). Delete this sentence once it is fixed.
+- **`demo/mock.js` is a second copy of the server's lobby code** (card, create, start). A new lobby field or house rule must be added there too, or the demo ignores the switch (that happened to `vpAtOnce`, `expBuildAnytime`, `expExtraStart`, see `docs/RULES-AND-GAPS.md` section 4; the public `/demo` hides all switches by CSS, `dist/broch-demo.html` shows them).
 - **Text emitted by the server is user-visible too.** Log templates (`log(s, '...')`) and `fail('...')` messages in `server/engine/` are English keys translated by the client. `i18n-check.js` scans only `public/js` and `demo/*.js`: a log line 'The Catanians clear ...' once stayed behind in `energies.js` after its translation row had been renamed (fixed). Search `server/` as well when you rename a text, and keep the key identical on both sides.
 - **`.dockerignore` excludes `*.md` and `test/`;** the Dockerfile builds the demo in its own stage because `public/demo/` is not in git.
 

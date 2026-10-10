@@ -98,7 +98,7 @@ Identical, plus one line under `broch.environment`:
 
 ### Without TrueNAS
 
-`docker compose up` in `broch/` uses `broch/docker-compose.yml` and the `Dockerfile` (stage 1 builds `/demo` with esbuild, stage 2 is the app; data in the volume path set in the file, user 568). Without Docker: `cd broch && npm ci --omit=dev && PORT=8080 DATA_DIR=/var/lib/broch node server/index.js` (run `node demo/build.js --public` first if you want `/demo`). Put any reverse proxy with HTTPS in front and allow WebSockets (`Upgrade` headers, and pass the original `Host`, otherwise the WebSocket origin check refuses the connection).
+`docker compose up` in `broch/` uses `broch/docker-compose.yml` and the `Dockerfile` (stage 1 builds `/demo` with esbuild, stage 2 is the app; the container runs as user 568 and keeps its data in the bind mount `/mnt/tank/apps/broch/data`). **That path is a TrueNAS example: on any other machine edit the `volumes:` line to a folder you own and `chown 568:568` it** (otherwise Docker creates it as root and the app stops with `EACCES`). The compose file sets neither `TRUST_PROXY` nor `PORT`; add `TRUST_PROXY: "1"` when a proxy sits in front. Without Docker: `cd broch && npm ci --omit=dev && PORT=8080 DATA_DIR=/var/lib/broch node server/index.js` (for `/demo` run a full `npm ci` instead, because `node demo/build.js --public` needs the dev dependency esbuild). Put any reverse proxy with HTTPS in front and allow WebSockets (`Upgrade` headers, and pass the original `Host`, otherwise the WebSocket origin check refuses the connection).
 
 ## 4. Cloudflare settings and cache notes
 
@@ -122,7 +122,7 @@ Program and data are separate datasets, so an update never touches the data.
    unzip /mnt/POOL/broch/upload/broch-app.zip -d /mnt/POOL/broch/app
    chmod -R a+rX /mnt/POOL/broch/app
    ```
-5. Start the app. Check the log for `Broch listening on :8080 (data in /data)` and no `WARNING`/`FATAL`.
+5. Start the app. Check the log for `Broch listening on :8080 (data in /data)` and no `FATAL` or `... is damaged` / `... is broken` warnings (the line `WARNING: REGISTRATION_CODE is not set` is expected when you run without an invite code).
 6. Compare the build id: the footer of the page and `https://your-host/api/health` must show the same 7 characters, and it must differ from before the update (it is a hash of all of `server/` and `public/`). If the footer differs from `/api/health`, see "Old page after an update" below.
 7. Running games continue: on start the server runs `engine.migrate` on every saved game and restarts the bots of running games.
 
@@ -186,7 +186,7 @@ Where to look first: Apps -> broch -> Logs (or `docker logs broch --tail 200`). 
 | Page looks old / new feature missing after an update | browser or Cloudflare cache, or the old program is still in `app/`, or the container was not restarted | footer build id vs `/api/health` (below); hard reload; Cloudflare -> Caching -> Purge Everything; `curl -sI https://host/` must show `cache-control: private, no-cache` and no `cf-cache-status: HIT`; redo the update with `rm -rf app/*`; restart |
 | Everybody gets "Too many attempts" or "Too many new accounts from this address" | `TRUST_PROXY` not set, so every visitor looks like the tunnel | set `TRUST_PROXY: "1"`, restart |
 | Logged out all the time, or the login page loops | cookie blocked (browser setting), or the session file was reset (server restarted with an empty `sessions.json`) | log in again; check that `DATA_DIR` is persistent and writable |
-| "Reconnecting..." bar, no live updates | WebSocket blocked (proxy without Upgrade headers, `Host` rewritten so the origin check fails with 403), or tunnel down | check `cloudflared` logs; in a proxy pass `Upgrade`/`Connection` and the original `Host` (or `X-Forwarded-Host` with `TRUST_PROXY=1`) |
+| "Reconnecting..." bar, no live updates | WebSocket blocked (proxy without Upgrade headers, `Host` rewritten so the origin check fails with 401), or tunnel down | check `cloudflared` logs; in a proxy pass `Upgrade`/`Connection` and the original `Host` (or `X-Forwarded-Host` with `TRUST_PROXY=1`) |
 | "Wrong invite code" for a friend | code mistyped, or it was changed | re-send the code; the first account never needs it |
 | Friend forgot the password | there is no mail reset | section 7 |
 | Link preview in chat apps shows a Cloudflare login | Access blocks `/og-image.png` | add the Bypass application (section 4) |

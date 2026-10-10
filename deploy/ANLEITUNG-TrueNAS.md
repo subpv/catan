@@ -38,7 +38,7 @@ Die zweite Datei, `deploy/truenas-compose.yml`, wird nicht hochgeladen, sondern 
 
 ## 4. App installieren (TrueNAS: Apps)
 1. Apps → Discover Apps → **Custom App** → **Install via YAML**.
-2. Inhalt von `deploy/truenas-compose.yml` einfügen und drei Dinge ändern:
+2. Inhalt von `deploy/truenas-compose.yml` einfügen und diese Dinge ändern:
    - `CHANGE-ME-POOL` → der Name deines Pools (zweimal),
    - `REGISTRATION_CODE` → ein langer, zufälliger Einladungscode (den bekommen nur deine Freunde). Er ist optional: lässt du ihn leer, kann sich jeder anmelden, der die Adresse findet (höchstens 10 neue Konten pro Stunde und Adresse), und im Log steht eine Warnung. Für eine öffentliche Adresse also immer setzen.
    - `TUNNEL_TOKEN` → der Token aus Schritt 3.

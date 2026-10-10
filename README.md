@@ -17,7 +17,7 @@ npm test               # rule tests and random-play simulations, under a minute
 
 No server? Open `dist/broch-demo.html` in a browser: the real rules engine runs in the page, bots play the other seats.
 
-Docker: `cd broch && docker compose up` (the Dockerfile also builds the `/demo` page).
+Docker: `cd broch && docker compose up` (the Dockerfile also builds the `/demo` page). First edit the `volumes:` line of `broch/docker-compose.yml`: it points to a TrueNAS example folder and the container runs as user 568, so the folder must exist and belong to `568:568` (see `docs/OPERATIONS.md`).
 
 ## Self-hosting (TrueNAS SCALE)
 
